@@ -614,6 +614,7 @@
 <v t="felix.20220327223745.1"><vh>cleanLeoID</vh></v>
 <v t="felix.20201106200100.1"><vh>addFileToGlobal</vh></v>
 <v t="felix.20201106200109.1"><vh>removeFileFromGlobal</vh></v>
+<v t="felix.20220730152836.1"><vh>buildApId</vh></v>
 <v t="felix.20200718195558.3"><vh>buildNodeIconPaths</vh></v>
 <v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
 <v t="ekr.20200815091945.1"><vh>buildButtonsIconPaths</vh></v>
@@ -1132,26 +1133,29 @@ private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): 
         // To check if selected node should self-select while redrawing whole tree
         this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
     }
-    // Force showing last used Leo outline first
     try {
         if (this.lastSelectedNode &amp;&amp; !(this._leoTreeExView.visible || this._leoTreeView.visible)) {
-
+            // Force showing last used Leo outline first
             this._lastTreeView.reveal(this.lastSelectedNode).then(
                 () =&gt; {
+                    // TODO  what about _needRefresh?
                     this._retriedRefresh = false;
                     this._leoTreeProvider.refreshTreeRoot();
                 },
                 (p_reason) =&gt; {
                     // Reveal failed: retry once.
+                    console.log('_refreshOutline could not reveal. Rejected reason: ', p_reason);
                     this._leoTreeProvider.refreshTreeRoot();
                 }
             );
 
         } else {
+            // was visible, just refresh
             this._leoTreeProvider.refreshTreeRoot();
         }
     } catch (error) {
         // Also retry once on error
+        console.log('_refreshOutline could not reveal. Catch Error: ', error);
         this._leoTreeProvider.refreshTreeRoot();
     }
 }
@@ -1179,9 +1183,12 @@ private _revealTreeViewNode(
             return w_treeview.reveal(p_leoNode, p_options).then(
                 () =&gt; {
                     // ok
+                    // TODO  what about _needRefresh?
                     this._retriedRefresh = false;
                 },
                 (p_reason) =&gt; {
+                    console.log('_revealTreeViewNode could not reveal. Reason: ', p_reason);
+
                     if (!this._retriedRefresh) {
                         this._retriedRefresh = true;
                         // Reveal failed. Retry refreshOutline once
@@ -1251,15 +1258,18 @@ public async _launchRefresh(): Promise&lt;unknown&gt; {
     ) {
         // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
         // do this only if gnx is different from what is coming from Leo in this refresh cycle
+        const w_lastChangedDocGnx = utils.leoUriToStr(this._bodyLastChangedDocument.uri);
         if (
-            this._refreshNode.gnx !== utils.leoUriToStr(this._bodyLastChangedDocument.uri) &amp;&amp;
-            !this._bodyLastChangedDocumentSaved
+            this._refreshNode.gnx !== w_lastChangedDocGnx &amp;&amp; !this._bodyLastChangedDocumentSaved
         ) {
+
+            console.log("refresh is launched with 'refresh body' requested! ", this.lastSelectedNode?.gnx);
+
             this._bodyLastChangedDocument.save(); // Voluntarily save to 'clean' any pending body
             this._bodyLastChangedDocumentSaved = true;
         }
 
-        if (this._refreshNode.gnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)) {
+        if (this._refreshNode.gnx === w_lastChangedDocGnx) {
             this._leoFileSystem.preventSaveToLeo = true;
             this._bodyLastChangedDocument.save();
         }
@@ -1341,7 +1351,7 @@ private async _tryApplyNodeToBody(
                 this._locateOpenedBody(utils.leoUriToStr(this.bodyUri));
                 // Make sure any pending changes in old body are applied before switching
                 return this._bodyTextDocument.save().then(() =&gt; {
-                    return this._switchBody(p_node.gnx, p_aside, p_showBodyKeepFocus);
+                    return this._switchBody(p_aside, p_showBodyKeepFocus);
                 });
             }
         }
@@ -1355,12 +1365,8 @@ private async _tryApplyNodeToBody(
 </t>
 <t tx="ekr.20200815090400.1">/**
  * * Tries to add a command to the frontend stack, returns true if added, false otherwise
- * @param p_action A string commands for leobridgeserver.py, from Constants.LEOBRIDGE,
- * @param p_node Specific node to pass as parameter, or the selected node if omitted
- * @param p_refresh Specifies to either refresh nothing, the tree or body and tree when finished
- * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
- * @param p_text Specific string to pass along as parameter with the action, similar to p_node parameter
- * @returns Promise back from commands execution on leoBridgeServer if added, undefined otherwise
+ * @param p_userCommand Contains command details such as action, node, fromOutline, refresh type, etc.
+ * @returns Promise back from command's execution, if added on stack, undefined otherwise.
  * (see command stack 'rules' in commandStack.ts)
  */
 public nodeCommand(p_userCommand: UserCommand): Promise&lt;LeoBridgePackage&gt; | undefined {
@@ -1462,24 +1468,20 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
  * @param p_node the node of the at-buttons panel that was chosen to remove
  * @returns the launchRefresh promise started after it's done removing the button
  */
-public removeAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
-    return this._isBusyTriggerSave(false)
-        .then((p_saveResult) =&gt; {
-            return this.sendAction(
-                Constants.LEOBRIDGE.REMOVE_BUTTON,
-                JSON.stringify({ index: p_node.button.index })
-            );
-        })
-        .then((p_removeButtonResult: LeoBridgePackage) =&gt; {
-            this._setupRefresh(
-                false,
-                {
-                    buttons: true
-                }
-            );
-            this.launchRefresh();
-            return Promise.resolve(true); // TODO launchRefresh should be a returned promise
-        });
+public async removeAtButton(p_node: LeoButtonNode): Promise&lt;any&gt; {
+    await this._isBusyTriggerSave(false);
+    const w_package = await this.sendAction(
+        Constants.LEOBRIDGE.REMOVE_BUTTON,
+        JSON.stringify({ index: p_node.button.index })
+    );
+    this._setupRefresh(
+        false,
+        {
+            buttons: true
+        }
+    );
+    this.launchRefresh();
+    return w_package;
 }
 
 </t>
@@ -5028,7 +5030,7 @@ public static ASYNC_ASK_RETURN_CODES = {
 
 </t>
 <t tx="felix.20200718020912.13">/**
- * * Commands for leobridgeserver.py
+ * * Commands for leoserver.py
  * A Command is a string, which is either:
  *  - The name of public method in leoserver.py, prefixed with '!'.
  *  - The name of a Leo command, prefixed with '-'
@@ -5908,7 +5910,7 @@ import { LeoIntegration } from "./leoIntegration";
  */
 export class Config implements ConfigMembers {
 
-    // Config settings used in leobridgeserver.py, on Leo's side
+    // Config settings used in leoserver.py
     public checkForChangeExternalFiles: string = Constants.CONFIG_DEFAULTS.CHECK_FOR_CHANGE_EXTERNAL_FILES;
     public defaultReloadIgnore: string = Constants.CONFIG_DEFAULTS.DEFAULT_RELOAD_IGNORE;
     // Config settings used in leoInteg/vscode's side
@@ -6371,57 +6373,103 @@ import { BodyTimeInfo } from "./types";
 }
 
 </t>
-<t tx="felix.20200718040540.11">public readFile(p_uri: vscode.Uri): Thenable&lt;Uint8Array&gt; {
+<t tx="felix.20200718040540.11">public async readFile(p_uri: vscode.Uri): Promise&lt;Uint8Array&gt; {
     if (this._leoIntegration.leoStates.fileOpenedReady) {
         if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
-            throw vscode.FileSystemError.FileIsADirectory();
+            throw vscode.FileSystemError.FileIsADirectory(p_uri);
         } else {
             const w_gnx = utils.leoUriToStr(p_uri);
             // if (!this._possibleGnxList.includes(w_gnx)) {
             if (!this._openedBodiesGnx.includes(w_gnx)) {
-                console.error("readFile: ERROR File not in _openedBodiesGnx! readFile missing refreshes?");
+                console.log(
+                    " _openedBodiesGnx length: ", this._openedBodiesGnx.length,
+                    '\n *** readFile: ERROR File not in _openedBodiesGnx! readFile missing refreshes? gnx: ', w_gnx
+                );
                 // throw vscode.FileSystemError.FileNotFound();
                 // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                /*
                 if (!this._errorRefreshFlag) {
                     this._tryFullRefresh();
                 }
                 return Promise.resolve(Buffer.from(""));
-            } else {
-                return this._leoIntegration.sendAction(
+                 */
+
+                // TODO : CLeanup this code duplication experiment!
+
+                const p_result = await this._leoIntegration.sendAction(
                     Constants.LEOBRIDGE.GET_BODY,
                     JSON.stringify({ "gnx": w_gnx })
-                ).then((p_result) =&gt; {
-                    if (p_result.body) {
-                        this._errorRefreshFlag = false; // got body so reset possible flag!
-                        this._lastGnx = w_gnx;
-                        this._lastBodyData = p_result.body;
-                        const w_buffer: Uint8Array = Buffer.from(p_result.body);
-                        this._lastBodyLength = w_buffer.byteLength;
-                        return Promise.resolve(w_buffer);
-                    } else if (p_result.body === "") {
-                        this._lastGnx = w_gnx;
-                        this._lastBodyLength = 0;
-                        this._lastBodyData = "";
-                        return Promise.resolve(Buffer.from(""));
-                    } else {
-                        if (!this._errorRefreshFlag) {
-                            this._tryFullRefresh();
-                        }
-                        if (this._lastGnx === w_gnx) {
-                            // was last gnx of closed file about to be switched to new document selected
-                            console.log('Passed in not found: ' + w_gnx);
-                            return Promise.resolve(Buffer.from(this._lastBodyData));
-                        }
-                        console.error("ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
-                        //  throw vscode.FileSystemError.FileNotFound();
-                        // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
-                        return Promise.resolve(Buffer.from(""));
+                );
+                if (p_result.body) {
+                    this._errorRefreshFlag = false; // got body so reset possible flag!
+                    this._lastGnx = w_gnx;
+                    this._lastBodyData = p_result.body;
+                    const w_buffer: Uint8Array = Buffer.from(p_result.body);
+                    this._lastBodyLength = w_buffer.byteLength;
+                    return Promise.resolve(w_buffer);
+                } else if (p_result.body === "") {
+                    this._lastGnx = w_gnx;
+                    this._lastBodyLength = 0;
+                    this._lastBodyData = "";
+                    return Promise.resolve(Buffer.from(""));
+                } else {
+                    if (!this._errorRefreshFlag) {
+                        this._tryFullRefresh();
                     }
-                });
+                    if (this._lastGnx === w_gnx) {
+                        // was last gnx of closed file about to be switched to new document selected
+                        console.log('Passed in not found: ' + w_gnx);
+                        return Promise.resolve(Buffer.from(this._lastBodyData));
+                    }
+                    console.error("ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
+
+
+                    //  throw vscode.FileSystemError.FileNotFound();
+                    // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                    return Promise.resolve(Buffer.from(""));
+                }
+            } else {
+
+                const p_result_1 = await this._leoIntegration.sendAction(
+                    Constants.LEOBRIDGE.GET_BODY,
+                    JSON.stringify({ "gnx": w_gnx })
+                );
+                if (p_result_1.body) {
+                    console.log('back from read gnx: ', w_gnx, '   - read ok has body');
+
+                    this._errorRefreshFlag = false; // got body so reset possible flag!
+                    this._lastGnx = w_gnx;
+                    this._lastBodyData = p_result_1.body;
+                    const w_buffer_1: Uint8Array = Buffer.from(p_result_1.body);
+                    this._lastBodyLength = w_buffer_1.byteLength;
+                    return Promise.resolve(w_buffer_1);
+                } else if (p_result_1.body === "") {
+                    console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
+
+                    this._lastGnx = w_gnx;
+                    this._lastBodyLength = 0;
+                    this._lastBodyData = "";
+                    return Promise.resolve(Buffer.from(""));
+                } else {
+                    if (!this._errorRefreshFlag) {
+                        this._tryFullRefresh();
+                    }
+                    if (this._lastGnx === w_gnx) {
+                        // was last gnx of closed file about to be switched to new document selected
+                        console.log('Passed in not found: ' + w_gnx);
+                        return Promise.resolve(Buffer.from(this._lastBodyData));
+                    }
+                    console.error("ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
+
+
+                    //  throw vscode.FileSystemError.FileNotFound();
+                    // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                    return Promise.resolve(Buffer.from(""));
+                }
             }
         }
     } else {
-        throw vscode.FileSystemError.FileNotFound();
+        throw vscode.FileSystemError.FileNotFound(p_uri);
     }
 }
 
@@ -6432,14 +6480,14 @@ import { BodyTimeInfo } from "./types";
         w_directory.push([this._lastBodyTimeGnx, vscode.FileType.File]);
         return Promise.resolve(w_directory);
     } else {
-        throw vscode.FileSystemError.FileNotFound();
+        throw vscode.FileSystemError.FileNotFound(p_uri);
     }
 }
 
 </t>
 <t tx="felix.20200718040540.13">public createDirectory(p_uri: vscode.Uri): void {
     console.warn('Called createDirectory with ', p_uri.fsPath); // should not happen
-    throw vscode.FileSystemError.NoPermissions();
+    throw vscode.FileSystemError.NoPermissions(p_uri);
 }
 
 </t>
@@ -6494,7 +6542,7 @@ import { BodyTimeInfo } from "./types";
 </t>
 <t tx="felix.20200718040540.17">public copy(p_uri: vscode.Uri): void {
     console.warn('Called copy on ', p_uri.fsPath); // should not happen
-    throw vscode.FileSystemError.NoPermissions();
+    throw vscode.FileSystemError.NoPermissions(p_uri);
 }
 
 </t>
@@ -6573,7 +6621,7 @@ public setBodyTime(p_uri: vscode.Uri): void {
  */
 public fireRefreshFile(p_gnx: string): void {
     if (!this._openedBodiesGnx.includes(p_gnx)) {
-        console.error("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", p_gnx);
+        console.log("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", p_gnx);
         this._openedBodiesGnx.push(p_gnx);
     }
     const w_now = new Date().getTime();
@@ -6593,14 +6641,13 @@ public fireRefreshFile(p_gnx: string): void {
  * * Refreshes the '_possibleGnxList' list of all unique gnx from Leo
  * @returns a promise that resolves to the fresh gnx string array
  */
-public refreshPossibleGnxList(): Thenable&lt;string[]&gt; {
+public async refreshPossibleGnxList(): Promise&lt;string[]&gt; {
     // * Get updated list of possible gnx
-    return this._leoIntegration.sendAction(
+    const p_result = await this._leoIntegration.sendAction(
         Constants.LEOBRIDGE.GET_ALL_GNX
-    ).then((p_result) =&gt; {
-        this._possibleGnxList = p_result.gnx || [];
-        return Promise.resolve(this._possibleGnxList);
-    });
+    );
+    this._possibleGnxList = p_result.gnx || [];
+    return await Promise.resolve(this._possibleGnxList);
 }
 
 </t>
@@ -6710,7 +6757,7 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
 </t>
 <t tx="felix.20200718153505.13">/**
  * * Send into the python process input
- * @param p_data JSON Message string to be sent to leobridgeserver.py
+ * @param p_data JSON Message string to be sent to leoserver.py
  */
 private _send(p_data: string): void {
     if (this._readyPromise) {
@@ -6724,7 +6771,7 @@ private _send(p_data: string): void {
 
 </t>
 <t tx="felix.20200718153505.2">/**
- * * Handles communication with the leobridgeserver.py python script via websockets
+ * * Handles communication with the leoserver.py python script via websockets
  * This implements a bridge-facing action stack, (push on top, remove bottom)
  * 'actions' get sent to Leo, and resolve a promise with the result when the answer comes back.
  * This 'stack' concept is similar to the 'CommandStack' class used for vscode's user interactions.
@@ -6759,11 +6806,11 @@ export class LeoBridge {
 </t>
 <t tx="felix.20200718153505.3">/**
  * * Places an action on top of a stack, to be resolved from the bottom
- * @param p_action Command string to be performed by Leo via leobridgeserver.py
+ * @param p_action Command string to be performed by Leo via leoserver.py
  * @param p_jsonParam Optional JSON parameter for the specified action
  * @param p_deferredPayload Used to build this._readyPromise that resolves itself at startup
  * @param p_preventCall Flag for special action used to build this._readyPromise that resolves itself at startup
- * @returns a Promise that will contain the JSON package answered back by leobridgeserver.py
+ * @returns a Promise that will contain the JSON package answered back by leoserver.py
  */
 public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise&lt;LeoBridgePackage&gt; {
     return new Promise((p_resolve, p_reject) =&gt; {
@@ -6827,7 +6874,7 @@ private _asyncAction(w_parsedData: any): void {
 </t>
 <t tx="felix.20200718153505.5">/**
  * * Build JSON string for action parameter to the leoBridge
- * @param p_action Action string to be invoked as command by Leo in the leobridgeserver.py script
+ * @param p_action Action string to be invoked as command by Leo in the leoserver.py script
  * @param p_jsonParam Optional JSON string to be added as a 'param' to the action sent to Leo
  * @returns the JSON string built from the action string and the parameters
  */
@@ -8153,7 +8200,6 @@ set leoAtFile(p_value: boolean) {
 <t tx="felix.20200718193719.1"></t>
 <t tx="felix.20200718193731.1"></t>
 <t tx="felix.20200718194857.1">import * as vscode from "vscode";
-import { LeoNode } from "./leoNode";
 
 @language typescript
 @tabwidth -4
@@ -8378,7 +8424,7 @@ export interface ReqRefresh {
  * * Stackable front end commands
  */
 export interface UserCommand {
-    action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver
+    action: string; // String from Constants.LEOBRIDGE, which are commands for leoserver.py
     node?: ArchivedPosition | undefined;  // We can START a stack with a targeted command
     name?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command
@@ -9126,7 +9172,7 @@ private _openLastFiles(): Promise&lt;LeoBridgePackage&gt; {
                         }
                     );
                     this.launchRefresh();
-                    return Promise.resolve(p_openFileResult);
+                    return p_openFileResult;
 
                 } else {
                     this.serverHasOpenedFile = false;
@@ -9164,16 +9210,18 @@ private _openLastFiles(): Promise&lt;LeoBridgePackage&gt; {
  * @param p_file path+file name string
  * @returns A promise that resolves when all workspace storage modifications are done
  */
-private _addRecentAndLastFile(p_file: string): Promise&lt;void&gt; {
+private async _addRecentAndLastFile(p_file: string): Promise&lt;void&gt; {
+
     if (!p_file.length) {
         return Promise.resolve();
     }
-    return Promise.all([
+
+    await Promise.all([
         utils.addFileToWorkspace(this._context, p_file, Constants.RECENT_FILES_KEY),
         utils.addFileToWorkspace(this._context, p_file, Constants.LAST_FILES_KEY),
-    ]).then(() =&gt; {
-        return Promise.resolve();
-    });
+    ]);
+
+    return Promise.resolve();
 }
 
 </t>
@@ -9201,7 +9249,7 @@ private _removeLastFile(p_file: string): Thenable&lt;void&gt; {
  * * Shows the recent Leo files list, choosing one will open it
  * @returns A promise that resolves when the a file is finally opened, rejected otherwise
  */
-public showRecentLeoFiles(): Thenable&lt;LeoBridgePackage | undefined&gt; {
+public async showRecentLeoFiles(): Promise&lt;LeoBridgePackage | undefined&gt; {
     const w_recentFiles: string[] =
         this._context.workspaceState.get(Constants.RECENT_FILES_KEY) || [];
     let q_chooseFile: Thenable&lt;string | undefined&gt;;
@@ -9213,14 +9261,13 @@ public showRecentLeoFiles(): Thenable&lt;LeoBridgePackage | undefined&gt; {
         // No file to list
         return Promise.resolve(undefined);
     }
-    return q_chooseFile.then((p_result) =&gt; {
-        if (p_result) {
-            return this.openLeoFile(vscode.Uri.file(p_result));
-        } else {
-            // Canceled
-            return Promise.resolve(undefined);
-        }
-    });
+    const w_result = await q_chooseFile;
+    if (w_result) {
+        return this.openLeoFile(vscode.Uri.file(w_result));
+    } else {
+        // Canceled
+        return Promise.resolve(undefined);
+    }
 }
 
 </t>
@@ -9282,15 +9329,17 @@ export class LeoIntegration {
     private _leoFilesBrowser: LeoFilesBrowser; // Browsing dialog service singleton used in the openLeoFile and save-as methods
 
     // * LeoBridge
-    private _leoBridge: LeoBridge; // Singleton service to access leobridgeserver
+    private _leoBridge: LeoBridge; // Singleton service to access the Leo server.
 
     // * Outline Pane
     private _leoTreeProvider: LeoApOutlineProvider; // TreeDataProvider single instance
     private _leoTreeView: vscode.TreeView&lt;ArchivedPosition&gt;; // Outline tree view added to the Tree View Container with an Activity Bar icon
     private _leoTreeExView: vscode.TreeView&lt;ArchivedPosition&gt;; // Outline tree view added to the Explorer Sidebar
     private _lastTreeView: vscode.TreeView&lt;ArchivedPosition&gt;; // Last visible treeview
-    private _retriedRefresh: boolean = false;
     private _renamingHeadline: string = "";
+
+    // TODO : REFRESH HELPER NEEDED ???
+    private _retriedRefresh: boolean = false;
 
     private _lastSelectedNode: ArchivedPosition | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
     get lastSelectedNode(): ArchivedPosition | undefined {
@@ -9307,11 +9356,12 @@ export class LeoIntegration {
     // * Outline Pane redraw/refresh flags. Also set when calling refreshTreeRoot
 
     // If there's no reveal and its the selected node, the old id will be re-used for the node. (see _id property in LeoNode)
-    // TODO : NEEDED ???
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
 
     private _preventShowBody = false; // Used when refreshing treeview from config: It requires not to open the body pane when refreshing
-    private _needRefresh = false; // Used at the end of refresh process, when a setLanguage checks if gnx is same as lastSelectedNode
+
+    // TODO : REFRESH HELPER NEEDED ???
+    private _needRefresh: number = 0; // Used at the end of refresh process, when a setLanguage checks if gnx is same as lastSelectedNode
 
     // * Documents Pane
     private _leoDocumentsProvider: LeoDocumentsProvider;
@@ -9406,7 +9456,7 @@ export class LeoIntegration {
         prompt: '',
     };
 
-    // * Automatic leobridgeserver startup management service
+    // * Automatic leoserver startup management service
     private _serverService: ServerService;
 
     // * Timing
@@ -9597,7 +9647,7 @@ private _onChangeCollapsedState(
 ): void {
     // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
     this.triggerBodySave(true);
-    if (p_treeView.selection[0] &amp;&amp; p_treeView.selection[0] === p_event.element) {
+    if (p_treeView.selection[0] &amp;&amp; utils.buildApId(p_treeView.selection[0]) === utils.buildApId(p_event.element)) {
         // * This happens if the tree selection is already the same as the expanded/collapsed node
         // Pass
     } else {
@@ -9605,14 +9655,22 @@ private _onChangeCollapsedState(
         this._revealTreeViewNode(p_event.element, { select: true, focus: false }); // No force focus : it breaks collapse/expand when direct parent
         this.selectTreeNode(p_event.element, true); // not waiting for a .then(...) so not to add any lag
     }
+
+    // * vscode will update its tree by itself, but we need to change Leo's model of its outline
     this.sendAction(
         p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE,
         utils.buildNodeCommandJson(JSON.stringify(p_event.element))
-    ).then(() =&gt; {
+    );
+
+    // Needed ?
+
+    /*
+    .then(() =&gt; {
         if (this.config.leoTreeBrowse) {
             this._refreshOutline(true, RevealType.RevealSelect);
         }
     });
+    */
 }
 
 </t>
@@ -9940,6 +9998,9 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
         p_textDocumentChange.contentChanges.length &amp;&amp;
         p_textDocumentChange.document.uri.scheme === Constants.URI_LEO_SCHEME
     ) {
+
+        console.log('Actual leo body change detected: ', p_textDocumentChange.document.getText());
+
         // * There was an actual change on a Leo Body by the user
         this._bodyLastChangedDocument = p_textDocumentChange.document;
         this._bodyLastChangedDocumentSaved = false;
@@ -10042,7 +10103,7 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
  * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
  * @returns a promise that resolves when the complete saving process is finished
  */
-private _bodySaveDocument(
+private async _bodySaveDocument(
     p_document: vscode.TextDocument,
     p_forcedVsCodeSave?: boolean
 ): Promise&lt;boolean&gt; {
@@ -10052,16 +10113,19 @@ private _bodySaveDocument(
             gnx: utils.leoUriToStr(p_document.uri),
             body: p_document.getText(),
         };
-        this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)); // Don't wait for promise
-        // This bodySaveSelection is placed on the stack right after saving body, returns promise either way
-        return this._bodySaveSelection().then(() =&gt; {
-            this._refreshType.states = true;
-            this.getStates();
-            if (p_forcedVsCodeSave) {
-                return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
-            }
-            return Promise.resolve(p_document.isDirty);
-        });
+        // Don't wait for promise!
+        this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
+
+        // await for bodySaveSelection that is placed on the stack right after saving body
+        await this._bodySaveSelection();
+
+        this._refreshType.states = true;
+        this.getStates();
+        if (p_forcedVsCodeSave) {
+            return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
+        }
+
+        return Promise.resolve(p_document.isDirty);
     } else {
         return Promise.resolve(false);
     }
@@ -10072,9 +10136,9 @@ private _bodySaveDocument(
  * * Show the outline, with Leo's selected node also selected, and optionally focussed
  * @param p_focusOutline Flag for focus to be placed in outline
  */
-public showOutline(p_focusOutline?: boolean): void {
+public async showOutline(p_focusOutline?: boolean): Promise&lt;void&gt; {
     if (this.lastSelectedNode) {
-        this._lastTreeView.reveal(this.lastSelectedNode, {
+        return this._lastTreeView.reveal(this.lastSelectedNode, {
             select: true,
             focus: !!p_focusOutline,
         }).then(
@@ -10083,12 +10147,13 @@ public showOutline(p_focusOutline?: boolean): void {
             },
             (p_reason) =&gt; {
                 // showOutline failed: try refresh only once.
-                console.log('showOutline could not reveal');
+                console.log('showOutline could not reveal. Reason: ', p_reason);
 
                 // this._refreshOutline(true, RevealType.RevealSelect);
             }
         );
     }
+    return Promise.resolve();
 }
 
 </t>
@@ -10205,19 +10270,19 @@ public arrayToLeoNodesArray(p_array: ArchivedPosition[]): LeoNode[] {
 
 </t>
 <t tx="felix.20200719025231.47">/**
- * * Close body pane document and change the bodyUri
+ * * Close body pane document and change the bodyUri to this.lastSelectedNode's gnx
  * This blocks 'undos' from crossing over
- * @param p_newGnx New gnx body id to switch to
+ * @param p_aside From 'Open Aside'.
+ * @param p_preserveFocus prevents forcing focus on text body.
  */
 private _switchBody(
-    p_newGnx: string,
     p_aside: boolean,
     p_preserveFocus?: boolean
 ): Thenable&lt;vscode.TextEditor&gt; {
     const w_oldUri: vscode.Uri = this.bodyUri;
 
     // ? Set timestamps ?
-    // this._leoFileSystem.setRenameTime(p_newGnx);
+    // this._leoFileSystem.setRenameTime(this.lastSelectedNode );
 
     let w_visibleCount = 0;
 
@@ -10232,9 +10297,9 @@ private _switchBody(
         });
     });
 
-    if (this._bodyPreviewMode &amp;&amp; this._bodyEnablePreview &amp;&amp; w_visibleCount &lt; 2) {
+    if (this.lastSelectedNode &amp;&amp; this._bodyPreviewMode &amp;&amp; this._bodyEnablePreview &amp;&amp; w_visibleCount &lt; 2) {
         // just show in same column and delete after
-        this.bodyUri = utils.strToLeoUri(p_newGnx);
+        this.bodyUri = utils.strToLeoUri(this.lastSelectedNode.gnx);
         const q_showBody = this.showBody(p_aside, p_preserveFocus);
 
         if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
@@ -10285,7 +10350,7 @@ private _switchBody(
             const q_delete = vscode.workspace.applyEdit(w_edit); // delete old document
             // Set new uri and remove from 'Recently opened'
             this._bodyPreviewMode = true;
-            this.bodyUri = utils.strToLeoUri(p_newGnx);
+            this.bodyUri = utils.strToLeoUri(this.lastSelectedNode!.gnx);
             // async, so don't wait for this to finish
             if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
                 vscode.commands.executeCommand(
@@ -10414,12 +10479,12 @@ public closeBody(): Thenable&lt;any&gt; {
 
 </t>
 <t tx="felix.20200719025231.5">/**
- * * Core of the integration of Leo into vscode: Sends an action to leobridgeserver.py, to run in Leo.
+ * * Core of the integration of Leo into vscode: Sends an action to the leoBridge in leoserver.py.
  * @param p_action is the action string constant, from Constants.LEOBRIDGE
  * @param p_jsonParam (optional) JSON string to be given to the python script action call
  * @param p_deferredPayload (optional) a pre-made package that will be given back as the response, instead of package coming back from python
  * @param p_preventCall (optional) Flag for special case, only used at startup
- * @returns a Promise that will contain the JSON package answered back by leobridgeserver.py
+ * @returns a Promise that will contain the JSON package answered back by the leoBridge in leoserver.py
  */
 public sendAction(
     p_action: string,
@@ -10437,7 +10502,7 @@ public sendAction(
  * @param p_preserveFocus flag that when true will stop the editor from taking focus once opened
  * @returns a promise for the editor that will show the body pane
  */
-public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.TextEditor&gt; {
+public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.TextEditor&gt; {
 
     // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
     if (this._refreshType.body) {
@@ -10449,208 +10514,188 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
     }
 
     if (this._preventShowBody) {
-        this._needRefresh = false;
+        this._needRefresh = 0;
         this._preventShowBody = false;
         return Promise.resolve(vscode.window.activeTextEditor!);
     }
 
-    return Promise.resolve(vscode.workspace.openTextDocument(this.bodyUri)).then(
-        (p_document) =&gt; {
-            this._bodyTextDocument = p_document;
+    const w_openedDocument = await Promise.resolve(vscode.workspace.openTextDocument(this.bodyUri));
 
-            // * Set document language along with the proper cursor position, selection range and scrolling position
-            let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
+    this._bodyTextDocument = w_openedDocument;
 
-            if (!this._needLastSelectedRefresh) {
+    // * Set document language along with the proper cursor position, selection range and scrolling position
+    let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
+    if (!this._needLastSelectedRefresh) {
 
-                q_bodyStates = this.sendAction(
-                    Constants.LEOBRIDGE.GET_BODY_STATES,
-                    utils.buildNodeCommandJson(JSON.stringify(this.lastSelectedNode))
-                );
+        q_bodyStates = this.sendAction(
+            Constants.LEOBRIDGE.GET_BODY_STATES,
+            utils.buildNodeCommandJson(JSON.stringify(this.lastSelectedNode))
+        );
 
-                q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
+        q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
 
-                    let w_language: string = p_bodyStates.language!;
-                    let w_wrap: boolean = !!p_bodyStates.wrap;
-                    let w_tabWidth: number | boolean = p_bodyStates.tabWidth || !!p_bodyStates.tabWidth;
+            let w_language: string = p_bodyStates.language!;
+            let w_wrap: boolean = !!p_bodyStates.wrap;
+            let w_tabWidth: number | boolean = p_bodyStates.tabWidth || !!p_bodyStates.tabWidth;
 
-                    // TODO : Apply tabwidth
-                    // console.log('TABWIDTH: ', w_tabWidth);
+            // TODO : Apply tabwidth
+            // console.log('TABWIDTH: ', w_tabWidth);
+            // TODO : Apply Wrap
+            // console.log('WRAP: ', w_wrap);
+            // Replace language string if in 'exceptions' array
+            w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
+            // Apply language if the selected node is still the same after all those events
+            if (!w_openedDocument.isClosed &amp;&amp;
+                this.lastSelectedNode &amp;&amp;
+                utils.leoUriToStr(w_openedDocument.uri) === this.lastSelectedNode.gnx) {
+                this._needRefresh = 0;
+                this._setBodyLanguage(w_openedDocument, w_language);
+            } else if (!w_openedDocument.isClosed &amp;&amp;
+                this.lastSelectedNode &amp;&amp;
+                utils.leoUriToStr(w_openedDocument.uri) !== this.lastSelectedNode.gnx) {
 
-                    // TODO : Apply Wrap
-                    // console.log('WRAP: ', w_wrap);
+                // * check X times and retry.
+                // IF FLAG ALREADY SET ERROR MESSAGE &amp; RETURN
+                if (this._needRefresh &gt; 10) {
+                    vscode.window.showInformationMessage("LeoInteg: Refresh Failed 10 sequential attempts!");
+                    this._needRefresh = 0; // reset flag
 
-                    // Replace language string if in 'exceptions' array
-                    w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
-                    // Apply language if the selected node is still the same after all those events
-                    if (
-                        !p_document.isClosed &amp;&amp;
-                        this.lastSelectedNode &amp;&amp;
-                        utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
-                    ) {
-                        this._needRefresh = false;
-                        this._setBodyLanguage(p_document, w_language);
-                    } else if (!p_document.isClosed &amp;&amp;
-                        this.lastSelectedNode &amp;&amp;
-                        utils.leoUriToStr(p_document.uri) !== this.lastSelectedNode.gnx) {
+                } else {
+                    // SET FLAG AND LAUNCH FULL REFRESH
+                    this._needRefresh += 1;
+                    this.sendAction(Constants.LEOBRIDGE.DO_NOTHING).then((p_package) =&gt; {
+                        this._setupRefresh(
+                            !!p_preserveFocus,
+                            {
+                                tree: true,
+                                body: true,
+                                states: true,
+                                buttons: true,
+                                documents: true
+                            },
+                            p_package.node
+                        );
+                        // refresh and reveal selection
+                        this.launchRefresh();
+                    });
+                }
 
-                        // * check ONCE(?) and retry.
-                        // IF FLAG ALREADY SET ERROR MESSAGE &amp; RETURN
-                        if (this._needRefresh) {
+            }
+        });
+    }
 
-                            // * TODO MAYBE RETRY MORE THAN ONCE !
-                            vscode.window.showInformationMessage("Leo Refresh Failed");
-                            this._needRefresh = false; // reset flag
-
-                        } else {
-                            // SET FLAG AND LAUNCH FULL REFRESH
-                            this._needRefresh = true;
-                            this.sendAction(Constants.LEOBRIDGE.DO_NOTHING).then((p_package) =&gt; {
-                                this._setupRefresh(
-                                    !!p_preserveFocus, // ??? was 'false' before Jul 10 2022
-                                    {
-                                        tree: true,
-                                        body: true,
-                                        states: true,
-                                        buttons: true,
-                                        documents: true
-                                    },
-                                    p_package.node
-                                );
-                                // refresh and reveal selection
-                                this.launchRefresh();
-                            });
-                        }
-
+    // Find body pane's position if already opened with same gnx (language still needs to be set per position)
+    vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
+        p_tabGroup.tabs.forEach((p_tab) =&gt; {
+            if ((p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri.fsPath === w_openedDocument.uri.fsPath) {
+                vscode.workspace.textDocuments.forEach((p_textDocument) =&gt; {
+                    if (p_textDocument.uri.fsPath === (p_tab.input as vscode.TabInputText).uri.fsPath) {
+                        this._bodyTextDocument = p_textDocument; // vscode.workspace.openTextDocument
+                        this._bodyMainSelectionColumn = p_tab.group.viewColumn;
                     }
                 });
             }
-
-            // Find body pane's position if already opened with same gnx (language still needs to be set per position)
-            vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
-                p_tabGroup.tabs.forEach((p_tab) =&gt; {
-                    if (
-                        (p_tab.input as vscode.TabInputText).uri &amp;&amp;
-                        (p_tab.input as vscode.TabInputText).uri.fsPath === p_document.uri.fsPath
-                    ) {
-                        vscode.workspace.textDocuments.forEach((p_textDocument) =&gt; {
-                            if (
-                                p_textDocument.uri.fsPath === (p_tab.input as vscode.TabInputText).uri.fsPath
-                            ) {
-                                this._bodyTextDocument = p_textDocument; // vscode.workspace.openTextDocument
-                                this._bodyMainSelectionColumn = p_tab.group.viewColumn;
-                            }
-                        });
-                    }
-                });
-            });
-
-            // vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
-            //     if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
-            //         this._bodyMainSelectionColumn = p_textEditor.viewColumn;
-            //         this._bodyTextDocument = p_textEditor.document;
-            //     }
-            // });
-
-            // Setup options for the preview state of the opened editor, and to choose which column it should appear
-            const w_showOptions: vscode.TextDocumentShowOptions = p_aside
-                ? {
-                    viewColumn: vscode.ViewColumn.Beside,
-                    preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
-                    preview: true, // should text document be in preview only? set false for fully opened
-                    // selection is instead set when the GET_BODY_STATES above resolves
-                }
-                : {
-                    viewColumn: this._bodyMainSelectionColumn
-                        ? this._bodyMainSelectionColumn
-                        : 1, // view column in which the editor should be shown
-                    preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
-                    preview: true, // should text document be in preview only? set false for fully opened
-                    // selection is instead set when the GET_BODY_STATES above resolves
-                };
-
-            // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
-            const q_showTextDocument = vscode.window.showTextDocument(
-                this._bodyTextDocument,
-                w_showOptions
-            ).then(
-                (p_result) =&gt; { return p_result; },
-                (p_reason) =&gt; {
-                    if (this.trace || this.verbose) {
-                        console.log('showTextDocument rejected');
-                    }
-                }
-            );
-
-            // else q_bodyStates will exist.
-            if (q_bodyStates &amp;&amp; !this._needLastSelectedRefresh) {
-                Promise.all([q_bodyStates, q_showTextDocument]).then(
-                    (p_values: [LeoBridgePackage, vscode.TextEditor]) =&gt; {
-                        const w_resultBodyStates = p_values[0];
-                        const w_bodyTextEditor = p_values[1];
-                        if (!w_resultBodyStates.selection) {
-                            console.log("no selection in returned package from get_body_states");
-                        }
-                        const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
-
-                        // Cursor position and selection range
-                        const w_activeRow: number = w_leoBodySel.insert.line;
-                        const w_activeCol: number = w_leoBodySel.insert.col;
-                        let w_anchorLine: number = w_leoBodySel.start.line;
-                        let w_anchorCharacter: number = w_leoBodySel.start.col;
-
-                        if (w_activeRow === w_anchorLine &amp;&amp; w_activeCol === w_anchorCharacter) {
-                            // Active insertion same as start selection, so use the other ones
-                            w_anchorLine = w_leoBodySel.end.line;
-                            w_anchorCharacter = w_leoBodySel.end.col;
-                        }
-
-                        const w_selection = new vscode.Selection(
-                            w_anchorLine,
-                            w_anchorCharacter,
-                            w_activeRow,
-                            w_activeCol
-                        );
-
-                        let w_scrollRange: vscode.Range | undefined;
-
-                        // ! Test scroll position from selection range instead
-                        // const w_scroll: number = w_leoBodySel.scroll;
-                        // if (w_scroll) {
-                        // w_scrollRange = new vscode.Range(w_scroll, 0, w_scroll, 0);
-                        // }
-
-                        // Build scroll position from selection range.
-                        w_scrollRange = new vscode.Range(
-                            w_activeRow,
-                            w_activeCol,
-                            w_activeRow,
-                            w_activeCol
-                        );
-
-                        if (w_bodyTextEditor) {
-                            w_bodyTextEditor.selection = w_selection; // set cursor insertion point &amp; selection range
-                            if (!w_scrollRange) {
-                                w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
-                            }
-
-                            if (this._refreshType.scroll) {
-                                this._refreshType.scroll = false;
-                                w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
-                            }
-
-                        } else {
-                            if (this.trace || this.verbose) {
-                                console.log("no selection in returned package from showTextDocument");
-                            }
-                        }
-
-                    }
-                );
+        });
+    });
+    // vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
+    //     if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
+    //         this._bodyMainSelectionColumn = p_textEditor.viewColumn;
+    //         this._bodyTextDocument = p_textEditor.document;
+    //     }
+    // });
+    // Setup options for the preview state of the opened editor, and to choose which column it should appear
+    const w_showOptions: vscode.TextDocumentShowOptions = p_aside
+        ? {
+            viewColumn: vscode.ViewColumn.Beside,
+            preserveFocus: p_preserveFocus,
+            preview: true, // should text document be in preview only? set false for fully opened
+        }
+        : {
+            viewColumn: this._bodyMainSelectionColumn
+                ? this._bodyMainSelectionColumn
+                : 1,
+            preserveFocus: p_preserveFocus,
+            preview: true, // should text document be in preview only? set false for fully opened
+        };
+    // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
+    const q_showTextDocument = vscode.window.showTextDocument(
+        this._bodyTextDocument,
+        w_showOptions
+    ).then(
+        (p_result) =&gt; { return p_result; },
+        (p_reason) =&gt; {
+            if (this.trace || this.verbose) {
+                console.log('showTextDocument rejected');
             }
-            return q_showTextDocument;
         }
     );
+    // else q_bodyStates will exist.
+    if (q_bodyStates &amp;&amp; !this._needLastSelectedRefresh) {
+        Promise.all([q_bodyStates, q_showTextDocument]).then(
+            (p_values: [LeoBridgePackage, vscode.TextEditor]) =&gt; {
+                const w_resultBodyStates = p_values[0];
+                const w_bodyTextEditor = p_values[1];
+                if (!w_resultBodyStates.selection) {
+                    console.log("no selection in returned package from get_body_states");
+                }
+                const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
+
+                // Cursor position and selection range
+                const w_activeRow: number = w_leoBodySel.insert.line;
+                const w_activeCol: number = w_leoBodySel.insert.col;
+                let w_anchorLine: number = w_leoBodySel.start.line;
+                let w_anchorCharacter: number = w_leoBodySel.start.col;
+
+                if (w_activeRow === w_anchorLine &amp;&amp; w_activeCol === w_anchorCharacter) {
+                    // Active insertion same as start selection, so use the other ones
+                    w_anchorLine = w_leoBodySel.end.line;
+                    w_anchorCharacter = w_leoBodySel.end.col;
+                }
+
+                const w_selection = new vscode.Selection(
+                    w_anchorLine,
+                    w_anchorCharacter,
+                    w_activeRow,
+                    w_activeCol
+                );
+
+                let w_scrollRange: vscode.Range | undefined;
+
+                // ! Test scroll position from selection range instead
+                // const w_scroll: number = w_leoBodySel.scroll;
+                // if (w_scroll) {
+                // w_scrollRange = new vscode.Range(w_scroll, 0, w_scroll, 0);
+                // }
+                // Build scroll position from selection range.
+                w_scrollRange = new vscode.Range(
+                    w_activeRow,
+                    w_activeCol,
+                    w_activeRow,
+                    w_activeCol
+                );
+
+                if (w_bodyTextEditor) {
+                    w_bodyTextEditor.selection = w_selection; // set cursor insertion point &amp; selection range
+                    if (!w_scrollRange) {
+                        w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
+                    }
+
+                    if (this._refreshType.scroll) {
+                        this._refreshType.scroll = false;
+                        w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
+                    }
+
+                } else {
+                    if (this.trace || this.verbose) {
+                        console.log("no selection in returned package from showTextDocument");
+                    }
+                }
+
+            }
+        );
+    }
+    return await q_showTextDocument;
 }
 
 </t>
@@ -10711,7 +10756,7 @@ public selectTreeNode(
  * @param p_isMark Set 'True' to mark, otherwise unmarks the node
  * @param p_node Specifies which node use, or leave undefined to mark or unmark the currently selected node
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
- * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
+ * @returns Promise of LeoBridgePackage from execution on the Leo server.
  */
 public changeMark(
     p_isMark: boolean,
@@ -10740,48 +10785,46 @@ public changeMark(
  * * Asks for a new headline label, and replaces the current label with this new one one the specified, or currently selected node
  * @param p_node Specifies which node to rename, or leave undefined to rename the currently selected node
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
- * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
+ * @returns Promise of LeoBridgePackage from execution on the server.
  */
-public editHeadline(
+public async editHeadline(
     p_node?: ArchivedPosition,
     p_fromOutline?: boolean
 ): Promise&lt;LeoBridgePackage | undefined&gt; {
-    return this._isBusyTriggerSave(false, true)
-        .then(() =&gt; {
-            if (!p_node &amp;&amp; this.lastSelectedNode) {
-                p_node = this.lastSelectedNode; // Gets last selected node if called via keyboard shortcut or command palette (not set in command stack class)
-            }
-            if (p_node) {
-                this._headlineInputOptions.prompt =
-                    Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
-                this._renamingHeadline = p_node.headline;
-                this._headlineInputOptions.value = p_node.headline; // preset input pop up
-                return vscode.window.showInputBox(this._headlineInputOptions);
-            } else {
-                return Promise.reject('No node selected');
-            }
-        })
-        .then((p_newHeadline) =&gt; {
-            if ((typeof p_newHeadline !== "undefined") &amp;&amp; p_newHeadline !== this._renamingHeadline) {
-                // Is different!
-                p_node!.headline = p_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
-                const q_commandResult = this.nodeCommand({
-                    action: Constants.LEOBRIDGE.SET_HEADLINE,
-                    node: p_node,
-                    refreshType: { tree: true, states: true },
-                    fromOutline: !!p_fromOutline,
-                    name: p_newHeadline,
-                });
-                if (q_commandResult) {
-                    return q_commandResult;
-                } else {
-                    return Promise.reject('Edit Headline not added on command stack');
-                }
-            } else {
-                // Canceled
-                return Promise.resolve(undefined);
-            }
+
+    await this._isBusyTriggerSave(false, true);
+
+    if (!p_node &amp;&amp; this.lastSelectedNode) {
+        p_node = this.lastSelectedNode; // Gets last selected node if called via keyboard shortcut or command palette (not set in command stack class)
+    }
+    if (!p_node) {
+        return Promise.reject('No node selected');
+    }
+    this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
+    this._renamingHeadline = p_node.headline;
+    this._headlineInputOptions.value = p_node.headline; // preset input pop up
+
+    const w_newHeadline = await vscode.window.showInputBox(this._headlineInputOptions);
+
+    if ((typeof w_newHeadline !== "undefined") &amp;&amp; w_newHeadline !== this._renamingHeadline) {
+        // Is different!
+        p_node!.headline = w_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
+        const q_commandResult = this.nodeCommand({
+            action: Constants.LEOBRIDGE.SET_HEADLINE,
+            node: p_node,
+            refreshType: { tree: true, states: true },
+            fromOutline: !!p_fromOutline,
+            name: w_newHeadline,
         });
+        if (q_commandResult) {
+            return q_commandResult;
+        } else {
+            return Promise.reject('Edit Headline not added on command stack');
+        }
+    } else {
+        // Canceled
+        return Promise.resolve(undefined);
+    }
 }
 
 </t>
@@ -10790,7 +10833,7 @@ public editHeadline(
  * @param p_node specified under which node to insert, or leave undefined to use whichever is currently selected
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
  * @param p_interrupt Signifies the insert action is actually interrupting itself (e.g. rapid CTRL+I actions by the user)
- * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
+ * @returns Promise of LeoBridgePackage from execution the server.
  */
 public insertNode(
     p_node?: ArchivedPosition,
@@ -10908,29 +10951,30 @@ public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | und
  * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
  * @returns Promise that resolves when the save command is placed on the front-end command stack
  */
-public saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undefined&gt; {
-    return this._isBusyTriggerSave(true, true).then((p_saveResult) =&gt; {
-        if (this.leoStates.fileOpenedReady) {
-            if (this.lastSelectedNode &amp;&amp; this._isCurrentFileNamed()) {
-                const q_commandResult = this.nodeCommand({
-                    action: Constants.LEOBRIDGE.SAVE_FILE,
-                    node: undefined,
-                    refreshType: { tree: true, states: true, documents: true },
-                    fromOutline: !!p_fromOutline,
-                    name: '',
-                });
-                return q_commandResult
-                    ? q_commandResult
-                    : Promise.reject('Save file not added on command stack');
-            } else {
-                return this.saveAsLeoFile(p_fromOutline); // Override this command call if file is unnamed!
-            }
+public async saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undefined&gt; {
+
+    await this._isBusyTriggerSave(true, true);
+
+    if (this.leoStates.fileOpenedReady) {
+        if (this.lastSelectedNode &amp;&amp; this._isCurrentFileNamed()) {
+            const q_commandResult = this.nodeCommand({
+                action: Constants.LEOBRIDGE.SAVE_FILE,
+                node: undefined,
+                refreshType: { tree: true, states: true, documents: true },
+                fromOutline: !!p_fromOutline,
+                name: '',
+            });
+            return q_commandResult
+                ? q_commandResult
+                : Promise.reject('Save file not added on command stack');
         } else {
-            // 'when-conditions' should prevent this
-            vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
-            return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+            return this.saveAsLeoFile(p_fromOutline); // Override this command call if file is unnamed!
         }
-    });
+    } else {
+        // 'when-conditions' should prevent this
+        vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+        return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+    }
 }
 
 </t>
@@ -11015,47 +11059,42 @@ public switchLeoFile(): Promise&lt;LeoBridgePackage | undefined&gt; {
  * @param p_index position of the opened Leo document in the document array
  * @returns A promise that resolves with a textEditor of the selected node's body from the newly opened document
  */
-public selectOpenedLeoDocument(p_index: number): Promise&lt;LeoBridgePackage&gt; {
-    return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
-            return this.sendAction(
-                Constants.LEOBRIDGE.SET_OPENED_FILE,
-                JSON.stringify({ index: p_index })
-            );
-        })
-        .then((p_openFileResult: LeoBridgePackage) =&gt; {
-            // Like we just opened or made a new file
-            if (p_openFileResult.total) {
-                // * TODO : LAUNCH REFRESH INSTEAD
+public async selectOpenedLeoDocument(p_index: number): Promise&lt;LeoBridgePackage&gt; {
+    await this._isBusyTriggerSave(true, true);
+    const w_openFileResult = await this.sendAction(
+        Constants.LEOBRIDGE.SET_OPENED_FILE,
+        JSON.stringify({ index: p_index })
+    );
+    // Like we just opened or made a new file
+    if (w_openFileResult.total) {
+        // * TODO : LAUNCH REFRESH INSTEAD
+        this.serverHasOpenedFile = true;
+        this.serverOpenedFileName = w_openFileResult.filename!;
+        this.serverOpenedNode = w_openFileResult.node!;
 
-                this.serverHasOpenedFile = true;
-                this.serverOpenedFileName = p_openFileResult.filename!;
-                this.serverOpenedNode = p_openFileResult.node!;
-
-                this.loadSearchSettings();
-                this._setupRefresh(
-                    this.fromOutline,
-                    {
-                        tree: true,
-                        body: true,
-                        documents: true,
-                        buttons: true,
-                        states: true
-                    }
-                );
-                this.launchRefresh();
-
-                // this._setupOpenedLeoDocument(p_openFileResult);
-                return p_openFileResult; //
-            } else {
-                this.serverHasOpenedFile = false;
-                this.serverOpenedFileName = "";
-                this.serverOpenedNode = undefined;
-                this.launchRefresh();
-                console.log('Select Opened Leo File Error');
-                return Promise.reject('Select Opened Leo File Error');
+        this.loadSearchSettings();
+        this._setupRefresh(
+            this.fromOutline,
+            {
+                tree: true,
+                body: true,
+                documents: true,
+                buttons: true,
+                states: true
             }
-        });
+        );
+        this.launchRefresh();
+
+        // this._setupOpenedLeoDocument(p_openFileResult);
+        return w_openFileResult; //
+    } else {
+        this.serverHasOpenedFile = false;
+        this.serverOpenedFileName = "";
+        this.serverOpenedNode = undefined;
+        this.launchRefresh();
+        console.log('Select Opened Leo File Error');
+        return Promise.reject('Select Opened Leo File Error');
+    }
 }
 
 </t>
@@ -11204,40 +11243,34 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
  * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
  * @returns A promise that resolves with a textEditor of the new file
  */
-public newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
-    return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: "" }));
-        })
-        .then((p_openFileResult: LeoBridgePackage) =&gt; {
-            if (p_openFileResult.total) {
-                this.serverHasOpenedFile = true;
-                this.serverOpenedFileName = p_openFileResult.filename!;
-                this.serverOpenedNode = p_openFileResult.node!;
+public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
+    await this._isBusyTriggerSave(true, true);
+    const w_openFileResult = await this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: "" }));
+    if (w_openFileResult.total) {
+        this.serverHasOpenedFile = true;
+        this.serverOpenedFileName = w_openFileResult.filename!;
+        this.serverOpenedNode = w_openFileResult.node!;
 
-                this.loadSearchSettings();
-                this._setupRefresh(
-                    this.fromOutline,
-                    {
-                        tree: true,
-                        body: true,
-                        documents: true,
-                        buttons: true,
-                        states: true,
-                    }
-                );
-                this.launchRefresh();
-                return p_openFileResult;
-                // * TODO : SHOULD LAUNCH REFRESH INSTEAD
-                // return this._setupOpenedLeoDocument(p_openFileResult);
-            } else {
-                this.serverHasOpenedFile = false;
-                this.serverOpenedFileName = "";
-                this.serverOpenedNode = undefined;
-                this.launchRefresh();
-                return Promise.reject('New Leo File Error');
+        this.loadSearchSettings();
+        this._setupRefresh(
+            this.fromOutline,
+            {
+                tree: true,
+                body: true,
+                documents: true,
+                buttons: true,
+                states: true,
             }
-        });
+        );
+        this.launchRefresh();
+        return w_openFileResult;
+    } else {
+        this.serverHasOpenedFile = false;
+        this.serverOpenedFileName = "";
+        this.serverOpenedNode = undefined;
+        this.launchRefresh();
+        return Promise.reject('New Leo File Error');
+    }
 }
 
 </t>
@@ -11695,7 +11728,7 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
  * * Saves the cursor position along with the text selection range and scroll position
  * @returns Promise that resolves when the "setSelection" action returns from Leo's side
  */
-private _bodySaveSelection(): Promise&lt;boolean&gt; {
+private async _bodySaveSelection(): Promise&lt;boolean&gt; {
     if (this._selectionDirty &amp;&amp; this._selection) {
         // Prepare scroll data separately
         // ! TEST NEW SCROLL WITH SINGLE LINE NUMBER
@@ -11748,11 +11781,10 @@ private _bodySaveSelection(): Promise&lt;boolean&gt; {
 
         this._scrollDirty = false;
         this._selectionDirty = false; // don't wait for return of this call
-        return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(
-            (p_result) =&gt; {
-                return Promise.resolve(true);
-            }
-        );
+
+        await this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param));
+
+        return Promise.resolve(true);
     } else {
         return Promise.resolve(true);
     }
@@ -11936,74 +11968,71 @@ public setTreeViewTitle(p_title?: string): void {
  * * Opens quickPick minibuffer pallette to choose from all commands in this file's commander
  * @returns Promise that resolves when the chosen command is placed on the front-end command stack
  */
-public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
+public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
+
     // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
-    return this._isBusyTriggerSave(false)
-        .then((p_saveResult) =&gt; {
-            const q_commandList: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
-                Constants.LEOBRIDGE.GET_COMMANDS
-            ).then((p_result: LeoBridgePackage) =&gt; {
-                if (p_result.commands &amp;&amp; p_result.commands.length) {
-                    const w_regexp = new RegExp('\\s+', 'g');
-                    p_result.commands.forEach(p_command =&gt; {
-                        if (p_command.detail) {
-                            p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
-                        }
-                    });
-                    // Remove unsupported commands
-                    for (const p_name of Constants.unsupportedMinibufferCommands) {
-                        const i_command = p_result.commands.findIndex((object) =&gt; {
-                            return object.label === p_name;
-                        });
-                        if (i_command !== -1) {
-                            p_result.commands.splice(i_command, 1);
-                        }
-                    }
-                    // Add some commands traditionally from plugins or other sources
-                    p_result.commands.push(...Constants.addMinibufferCommands);
-                    return p_result.commands;
-                } else {
-                    return [];
+    await this._isBusyTriggerSave(false);
+
+    const w_commandList: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
+        Constants.LEOBRIDGE.GET_COMMANDS
+    ).then((p_result: LeoBridgePackage) =&gt; {
+        if (p_result.commands &amp;&amp; p_result.commands.length) {
+            const w_regexp = new RegExp('\\s+', 'g');
+            p_result.commands.forEach(p_command =&gt; {
+                if (p_command.detail) {
+                    p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
                 }
             });
-            // Add Nav tab special commands
-            const w_options: vscode.QuickPickOptions = {
-                placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
-                matchOnDetail: true,
-            };
-            return vscode.window.showQuickPick(q_commandList, w_options);
-        })
-        .then((p_picked) =&gt; {
-            // * First check for overridden command: Exit by doing the overridden command
-            if (
-                p_picked &amp;&amp;
-                p_picked.label &amp;&amp;
-                Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
-            ) {
-                return vscode.commands.executeCommand(
-                    Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
-                );
-            }
-            // * Ok, it was really a minibuffer command
-            if (p_picked &amp;&amp; p_picked.label) {
-                const w_commandResult = this.nodeCommand({
-                    action: "-" + p_picked.label, // Adding HYPHEN prefix to specify a command-name
-                    node: undefined,
-                    refreshType: {
-                        tree: true,
-                        body: true,
-                        documents: true,
-                        buttons: true,
-                        states: true,
-                    },
-                    fromOutline: false, // true // TODO : Differentiate from outline?
+            // Remove unsupported commands
+            for (const p_name of Constants.unsupportedMinibufferCommands) {
+                const i_command = p_result.commands.findIndex((object) =&gt; {
+                    return object.label === p_name;
                 });
-                return w_commandResult ? w_commandResult : Promise.reject('Command not added');
-            } else {
-                // Canceled
-                return Promise.resolve(undefined);
+                if (i_command !== -1) {
+                    p_result.commands.splice(i_command, 1);
+                }
             }
+            // Add some commands traditionally from plugins or other sources
+            p_result.commands.push(...Constants.addMinibufferCommands);
+            return p_result.commands;
+        } else {
+            return [];
+        }
+    });
+    // Add Nav tab special commands
+    const w_options: vscode.QuickPickOptions = {
+        placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
+        matchOnDetail: true,
+    };
+
+    const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
+    // * First check for overridden command: Exit by doing the overridden command
+    if (w_picked &amp;&amp;
+        w_picked.label &amp;&amp;
+        Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]) {
+        return vscode.commands.executeCommand(
+            Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]
+        );
+    }
+    // * Ok, it was really a minibuffer command
+    if (w_picked &amp;&amp; w_picked.label) {
+        const w_commandResult = this.nodeCommand({
+            action: "-" + w_picked.label,
+            node: undefined,
+            refreshType: {
+                tree: true,
+                body: true,
+                documents: true,
+                buttons: true,
+                states: true,
+            },
+            fromOutline: false, // true // TODO : Differentiate from outline?
         });
+        return w_commandResult ? w_commandResult : Promise.reject('Command not added');
+    } else {
+        // Canceled
+        return Promise.resolve(undefined);
+    }
 }
 
 </t>
@@ -12471,23 +12500,35 @@ private _checkPreviewMode(p_editor: vscode.TextEditor): void {
 
 </t>
 <t tx="felix.20210516233931.1">/**
- * * Opens the find panel and selects all &amp; focuses on the find field.
+ * * Opens the find panel and focuses on the "find/replace" field, selecting all it's content.
  */
 public startSearch(): void {
     let w_panelID = '';
-    let w_panel: vscode.WebviewView | undefined;
     if (this._lastTreeView === this._leoTreeExView) {
         w_panelID = Constants.FIND_EXPLORER_ID;
-        w_panel = this._findPanelWebviewExplorerView;
     } else {
         w_panelID = Constants.FIND_ID;
-        w_panel = this._findPanelWebviewView;
     }
     vscode.commands.executeCommand(w_panelID + '.focus').then((p_result) =&gt; {
+        let w_panel: vscode.WebviewView | undefined;
+        if (this._lastTreeView === this._leoTreeExView) {
+            w_panel = this._findPanelWebviewExplorerView;
+        } else {
+            w_panel = this._findPanelWebviewView;
+        }
+        let w_delay = 0;
         if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
             w_panel.show(false);
+            w_delay = 100;
         }
-        w_panel?.webview.postMessage({ type: 'selectFind' });
+
+        setTimeout(() =&gt; {
+            if (this._lastTreeView === this._leoTreeExView) {
+                this._findPanelWebviewExplorerView?.webview.postMessage({ type: 'selectFind' });
+            } else {
+                this._findPanelWebviewView?.webview.postMessage({ type: 'selectFind' });
+            }
+        }, w_delay); // small delay
     });
 }
 
@@ -12498,38 +12539,36 @@ public startSearch(): void {
  * @param p_reverse
  * @returns Promise that resolves when the "launch refresh" is started
  */
-public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
+public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
     const w_action: string = p_reverse
         ? Constants.LEOBRIDGE.FIND_PREVIOUS
         : Constants.LEOBRIDGE.FIND_NEXT;
-    return this._isBusyTriggerSave(false, true)
-        .then((p_saveResult) =&gt; {
-            return this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline }));
-        })
-        .then((p_findResult: LeoBridgePackage) =&gt; {
-            if (!p_findResult.found || !p_findResult.focus) {
-                vscode.window.showInformationMessage('Not found');
-            } else {
-                let w_focusOnOutline = false;
-                const w_focus = p_findResult.focus.toLowerCase();
-                if (w_focus.includes('tree') || w_focus.includes('head')) {
-                    // tree
-                    w_focusOnOutline = true;
-                }
-                this._setupRefresh(
-                    w_focusOnOutline,
-                    {
-                        tree: true,
-                        body: true,
-                        scroll: p_findResult.found &amp;&amp; !w_focusOnOutline,
-                        documents: false,
-                        buttons: false,
-                        states: true,
-                    },
-                );
-                this.launchRefresh();
-            }
-        });
+
+    await this._isBusyTriggerSave(false, true);
+
+    const p_findResult = await this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline }));
+
+    if (!p_findResult.found || !p_findResult.focus) {
+        vscode.window.showInformationMessage('Not found');
+    } else {
+        let w_focusOnOutline = false;
+        const w_focus = p_findResult.focus.toLowerCase();
+        if (w_focus.includes('tree') || w_focus.includes('head')) {
+            // tree
+            w_focusOnOutline = true;
+        }
+        this._setupRefresh(
+            w_focusOnOutline,
+            {
+                tree: true,
+                body: true,
+                scroll: p_findResult.found &amp;&amp; !w_focusOnOutline,
+                documents: false,
+                buttons: false,
+                states: true,
+            });
+        this.launchRefresh();
+    }
 }
 
 </t>
@@ -13164,18 +13203,17 @@ public loadSearchSettings(): void {
 <t tx="felix.20210528012836.1">/**
  * * Check if Leo should be focused on outline
  */
-public getBridgeFocus(): Thenable&lt;LeoBridgePackage&gt; {
-    return this.sendAction(Constants.LEOBRIDGE.GET_FOCUS).then((p_resultFocus: LeoBridgePackage) =&gt; {
-        if (p_resultFocus.focus) {
-            const w_focus = p_resultFocus.focus.toLowerCase();
-            if (w_focus.includes('tree') || w_focus.includes('head')) {
-                this.fromOutline = true;
-            } else {
-                this.fromOutline = false;
-            }
+public async getBridgeFocus(): Promise&lt;LeoBridgePackage&gt; {
+    const w_resultFocus = await this.sendAction(Constants.LEOBRIDGE.GET_FOCUS);
+    if (w_resultFocus.focus) {
+        const w_focus = w_resultFocus.focus.toLowerCase();
+        if (w_focus.includes('tree') || w_focus.includes('head')) {
+            this.fromOutline = true;
+        } else {
+            this.fromOutline = false;
         }
-        return p_resultFocus;
-    });
+    }
+    return w_resultFocus;
 }
 
 </t>
@@ -13353,38 +13391,37 @@ public getBridgeFocus(): Thenable&lt;LeoBridgePackage&gt; {
  * @param p_thenFind
  * @returns Promise that resolves when the "launch refresh" is started
  */
-public replace(p_fromOutline: boolean, p_thenFind: boolean): Promise&lt;any&gt; {
+public async replace(p_fromOutline: boolean, p_thenFind: boolean): Promise&lt;any&gt; {
     const w_action: string = p_thenFind
         ? Constants.LEOBRIDGE.REPLACE_THEN_FIND
         : Constants.LEOBRIDGE.REPLACE;
-    return this._isBusyTriggerSave(false, true)
-        .then((p_saveResult) =&gt; {
-            return this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline }));
-        })
-        .then((p_replaceResult: LeoBridgePackage) =&gt; {
-            if (!p_replaceResult.found || !p_replaceResult.focus) {
-                vscode.window.showInformationMessage('Not found');
-            } else {
-                let w_focusOnOutline = false;
-                const w_focus = p_replaceResult.focus.toLowerCase();
-                if (w_focus.includes('tree') || w_focus.includes('head')) {
-                    // tree
-                    w_focusOnOutline = true;
-                }
-                this._setupRefresh(
-                    w_focusOnOutline,
-                    {
-                        tree: true,
-                        body: true,
-                        scroll: true,
-                        documents: false,
-                        buttons: false,
-                        states: true,
-                    }
-                );
-                this.launchRefresh();
+
+    await this._isBusyTriggerSave(false, true);
+
+    const w_replaceResult = await this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline }));
+
+    if (!w_replaceResult.found || !w_replaceResult.focus) {
+        vscode.window.showInformationMessage('Not found');
+    } else {
+        let w_focusOnOutline = false;
+        const w_focus = w_replaceResult.focus.toLowerCase();
+        if (w_focus.includes('tree') || w_focus.includes('head')) {
+            // tree
+            w_focusOnOutline = true;
+        }
+        this._setupRefresh(
+            w_focusOnOutline,
+            {
+                tree: true,
+                body: true,
+                scroll: true,
+                documents: false,
+                buttons: false,
+                states: true,
             }
-        });
+        );
+        this.launchRefresh();
+    }
 }
 
 </t>
@@ -13525,8 +13562,8 @@ public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
                             {
                                 tree: true,
                                 body: true,
-                                documents: false,
-                                buttons: false,
+                                // documents: false,
+                                // buttons: false,
                                 states: true
                             }
                         );
@@ -13585,8 +13622,8 @@ public gotoGlobalLine(): void {
                             {
                                 tree: true,
                                 body: true,
-                                documents: false,
-                                buttons: false,
+                                // documents: false,
+                                // buttons: false,
                                 states: true,
                             }
                         );
@@ -13859,22 +13896,22 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
  * @param p_next Flag to mean 'next' instead of default 'previous'
  * @returns the promise from the command sent to the leo bridge
  */
-public prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise&lt;any&gt; {
-    return this._isBusyTriggerSave(false, true)
-        .then((p_saveResult) =&gt; {
-            let w_command: string;
-            if (p_next) {
-                w_command = Constants.LEOBRIDGE.GOTO_NEXT_HISTORY;
-            } else {
-                w_command = Constants.LEOBRIDGE.GOTO_PREV_HISTORY;
-            }
-            return this.nodeCommand({
-                action: w_command,
-                node: undefined,
-                refreshType: { tree: true, states: true, body: true },
-                fromOutline: !!p_fromOutline,
-            });
-        });
+public async prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise&lt;any&gt; {
+
+    await this._isBusyTriggerSave(false, true);
+
+    let w_command: string;
+    if (p_next) {
+        w_command = Constants.LEOBRIDGE.GOTO_NEXT_HISTORY;
+    } else {
+        w_command = Constants.LEOBRIDGE.GOTO_PREV_HISTORY;
+    }
+    return this.nodeCommand({
+        action: w_command,
+        node: undefined,
+        refreshType: { tree: true, states: true, body: true },
+        fromOutline: !!p_fromOutline,
+    });
 }
 
 </t>
@@ -13989,9 +14026,9 @@ public tagChildren(): void {
                         false,
                         {
                             tree: true,
-                            body: false,
-                            documents: false,
-                            buttons: false,
+                            // body: false,
+                            // documents: false,
+                            // buttons: false,
                             states: true,
                         }
                     );
@@ -14028,8 +14065,8 @@ public cloneFindTag(): void {
                         {
                             tree: true,
                             body: true,
-                            documents: false,
-                            buttons: false,
+                            // documents: false,
+                            // buttons: false,
                             states: true,
                         }
                     );
@@ -14065,39 +14102,37 @@ export function getUniqueId(): string {
  * @param p_def find-def instead of find-var
  * @returns Promise that resolves when the "launch refresh" is started
  */
-public findSymbol(p_def: boolean): Promise&lt;any&gt; {
+public async findSymbol(p_def: boolean): Promise&lt;any&gt; {
     const w_action: string = p_def
         ? Constants.LEOBRIDGE.FIND_DEF
         : Constants.LEOBRIDGE.FIND_VAR;
-    return this._isBusyTriggerSave(false, true)
-        .then((p_saveResult) =&gt; {
-            return this.sendAction(w_action, JSON.stringify({ fromOutline: false }));
-        })
-        .then((p_findResult: LeoBridgePackage) =&gt; {
-            if (!p_findResult.found || !p_findResult.focus) {
-                vscode.window.showInformationMessage('Not found');
-            } else {
-                let w_focusOnOutline = false;
-                const w_focus = p_findResult.focus.toLowerCase();
-                if (w_focus.includes('tree') || w_focus.includes('head')) {
-                    // tree
-                    w_focusOnOutline = true;
-                }
-                this.loadSearchSettings();
-                this._setupRefresh(
-                    w_focusOnOutline,
-                    {
-                        tree: true,
-                        body: true,
-                        scroll: p_findResult.found &amp;&amp; !w_focusOnOutline,
-                        documents: false,
-                        buttons: false,
-                        states: true,
-                    },
-                );
-                this.launchRefresh();
-            }
-        });
+
+    await this._isBusyTriggerSave(false, true);
+
+    const p_findResult = await this.sendAction(w_action, JSON.stringify({ fromOutline: false }));
+
+    if (!p_findResult.found || !p_findResult.focus) {
+        vscode.window.showInformationMessage('Not found');
+    } else {
+        let w_focusOnOutline = false;
+        const w_focus = p_findResult.focus.toLowerCase();
+        if (w_focus.includes('tree') || w_focus.includes('head')) {
+            // tree
+            w_focusOnOutline = true;
+        }
+        this.loadSearchSettings();
+        this._setupRefresh(
+            w_focusOnOutline,
+            {
+                tree: true,
+                body: true,
+                scroll: p_findResult.found &amp;&amp; !w_focusOnOutline,
+                documents: false,
+                buttons: false,
+                states: true,
+            });
+        this.launchRefresh();
+    }
 }
 
 </t>
@@ -14744,33 +14779,28 @@ function closeLeoTextEditors(): Thenable&lt;unknown&gt; {
  * @param p_node the node of the at-buttons panel that was right-clicked
  * @returns the launchRefresh promise started after it's done finding the node
  */
-public gotoScript(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
-    return this._isBusyTriggerSave(false)
-        .then((p_saveResult) =&gt; {
-            return this.sendAction(
-                Constants.LEOBRIDGE.GOTO_SCRIPT,
-                JSON.stringify({ index: p_node.button.index })
-            );
-        })
-        .then((p_gotoScriptResult: LeoBridgePackage) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
-        })
-        .then((p_package) =&gt; {
-            // refresh and reveal selection
-            this._setupRefresh(
-                false,
-                {
-                    tree: true,
-                    body: true,
-                    states: true,
-                    buttons: false,
-                    documents: false
-                },
-                p_package.node
-            );
-            this.launchRefresh();
-            return Promise.resolve(true); // TODO launchRefresh should be a returned promise
-        });
+public async gotoScript(p_node: LeoButtonNode): Promise&lt;any&gt; {
+    await this._isBusyTriggerSave(false);
+    await this.sendAction(
+        Constants.LEOBRIDGE.GOTO_SCRIPT,
+        JSON.stringify({ index: p_node.button.index })
+    );
+
+    const w_package = await this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+
+    // refresh and reveal selection
+    this._setupRefresh(
+        false,
+        {
+            tree: true,
+            body: true,
+            states: true,
+        },
+        w_package.node
+    );
+
+    this.launchRefresh();
+    return w_package;
 }
 
 </t>
@@ -14852,6 +14882,7 @@ public debouncedRefreshBodyStates() {
 },
 </t>
 <t tx="felix.20211129222933.1">private _tryFullRefresh(): void {
+    // TODO : Needed? Could be in leointegration instead of body !
     this._errorRefreshFlag = true;
     this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
         .then((p_package) =&gt; {
@@ -14894,6 +14925,8 @@ private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): T
                     w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED
                 );
             } else if (!w_langName) {
+                console.log('no lang in error: ', p_error);
+
                 vscode.window.showInformationMessage(
                     Constants.USER_MESSAGES.UNKNOWN_LANGUAGE_NOT_SUPPORTED + " : " + p_language
                 );
@@ -14936,7 +14969,7 @@ export interface RClick {
 <t tx="felix.20220221003719.1">/**
  * * Show input window to select
  */
-private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable&lt;ChooseRClickItem&gt; {
+private async _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Promise&lt;ChooseRClickItem&gt; {
     const w_choices: ChooseRClickItem[] = [];
     let w_index = 0;
     if (topLevelName) {
@@ -14951,134 +14984,143 @@ private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable&lt;
     const w_options: vscode.QuickPickOptions = {
         placeHolder: Constants.USER_MESSAGES.CHOOSE_BUTTON
     };
-    return vscode.window.showQuickPick(w_choices, w_options).then((p_picked) =&gt; {
-        if (p_picked) {
-            this._rclickSelected.push(p_picked.index);
-            if (topLevelName &amp;&amp; p_picked.index === 0) {
-                return Promise.resolve(p_picked);
-            }
-            if (p_picked.rclick &amp;&amp; p_picked.rclick.children &amp;&amp; p_picked.rclick.children.length) {
-                return this._handleRClicks(p_picked.rclick.children);
-            } else {
-                return Promise.resolve(p_picked);
-            }
+
+    const w_picked = await vscode.window.showQuickPick(w_choices, w_options);
+
+    if (w_picked) {
+        this._rclickSelected.push(w_picked.index);
+        if (topLevelName &amp;&amp; w_picked.index === 0) {
+            return Promise.resolve(w_picked);
         }
-        // Escaped
-        return Promise.reject();
-    });
+        if (w_picked.rclick &amp;&amp; w_picked.rclick.children &amp;&amp; w_picked.rclick.children.length) {
+            return this._handleRClicks(w_picked.rclick.children);
+        } else {
+            return Promise.resolve(w_picked);
+        }
+    }
+    return Promise.reject();
 }
 
 </t>
-<t tx="felix.20220222012528.1">public cutNode(
+<t tx="felix.20220222012528.1">/**
+ * * Place the XML or JSON Leo outline tree on the clipboard for the given node, and removes it from the outline.
+ */
+public async cutNode(
     p_node?: ArchivedPosition,
     p_fromOutline?: boolean
 ): Promise&lt;LeoBridgePackage&gt; {
-    return this._isBusyTriggerSave(false, true)
-        .then(() =&gt; {
 
-            const q_commandResult = this.nodeCommand({
-                action: Constants.LEOBRIDGE.CUT_PNODE,
-                node: p_node,
-                refreshType: { tree: true, body: true, states: true },
-                fromOutline: !!p_fromOutline,
-            });
-            if (q_commandResult) {
-                return q_commandResult.then(p_package =&gt; {
-                    if (p_package.string) {
-                        this.replaceClipboardWith(p_package.string);
-                    } else {
-                    }
-                    return p_package;
-                });
+    await this._isBusyTriggerSave(false, true);
 
+    const w_commandResult = this.nodeCommand({
+        action: Constants.LEOBRIDGE.CUT_PNODE,
+        node: p_node,
+        refreshType: { tree: true, body: true, states: true },
+        fromOutline: !!p_fromOutline,
+    });
+
+    if (w_commandResult) {
+        return w_commandResult.then(p_package =&gt; {
+            if (p_package.string) {
+                this.replaceClipboardWith(p_package.string);
             } else {
-                return Promise.reject('Cut Node not added on command stack');
             }
+            return p_package;
         });
+
+    } else {
+        return Promise.reject('Cut Node not added on command stack');
+    }
+
 }
 
 </t>
-<t tx="felix.20220222012540.1">public copyNode(
+<t tx="felix.20220222012540.1">/**
+ * * Place the XML or JSON Leo outline tree on the clipboard for the given node
+ */
+public async copyNode(
     p_node?: ArchivedPosition,
     p_fromOutline?: boolean
 ): Promise&lt;LeoBridgePackage&gt; {
-    return this._isBusyTriggerSave(false, true)
-        .then(() =&gt; {
 
-            const q_commandResult = this.nodeCommand({
-                action: Constants.LEOBRIDGE.COPY_PNODE,
-                node: p_node,
-                refreshType: {}, // none
-                fromOutline: !!p_fromOutline,
-            });
-            if (q_commandResult) {
-                return q_commandResult.then(p_package =&gt; {
-                    if (p_package.string) {
-                        this.replaceClipboardWith(p_package.string);
-                    } else {
-                    }
-                    return p_package;
-                });
+    await this._isBusyTriggerSave(false, true);
 
+    const w_commandResult = this.nodeCommand({
+        action: Constants.LEOBRIDGE.COPY_PNODE,
+        node: p_node,
+        refreshType: {},
+        fromOutline: !!p_fromOutline,
+    });
+
+    if (w_commandResult) {
+        return w_commandResult.then(p_package =&gt; {
+            if (p_package.string) {
+                this.replaceClipboardWith(p_package.string);
             } else {
-                return Promise.reject('Copy Node not added on command stack');
             }
-
+            return p_package;
         });
+
+    } else {
+        return Promise.reject('Copy Node not added on command stack');
+    }
+}
+
+</t>
+<t tx="felix.20220222012552.1">/**
+ * * Creates a section of tree outline from the XML or JSON Leo outline on the clipboard
+ */
+public async pasteNode(
+    p_node?: ArchivedPosition,
+    p_fromOutline?: boolean
+): Promise&lt;LeoBridgePackage&gt; {
+
+    await this._isBusyTriggerSave(false, true);
+
+    const text = await this.asyncGetTextFromClipboard();
+
+    const w_commandResult = this.nodeCommand({
+        action: Constants.LEOBRIDGE.PASTE_PNODE,
+        node: p_node,
+        refreshType: { tree: true, body: true, states: true },
+        name: text,
+        fromOutline: !!p_fromOutline,
+    });
+
+    if (w_commandResult) {
+        return w_commandResult;
+    } else {
+        return Promise.reject('Cut Node not added on command stack');
+    }
 
 }
 
 </t>
-<t tx="felix.20220222012552.1">public pasteNode(
+<t tx="felix.20220222012602.1">/**
+ * * Creates while preserving the top gnx of a section of tree outline from the XML or JSON Leo outline on the clipboard
+ */
+public async pasteAsCloneNode(
     p_node?: ArchivedPosition,
     p_fromOutline?: boolean
-): Thenable&lt;LeoBridgePackage&gt; {
-    return this._isBusyTriggerSave(false, true).then(() =&gt; {
+): Promise&lt;LeoBridgePackage&gt; {
 
-        return this.asyncGetTextFromClipboard().then((p_text) =&gt; {
+    await this._isBusyTriggerSave(false, true);
 
-            const q_commandResult = this.nodeCommand({
-                action: Constants.LEOBRIDGE.PASTE_PNODE,
-                node: p_node,
-                refreshType: { tree: true, body: true, states: true },
-                name: p_text,
-                fromOutline: !!p_fromOutline,
-            });
-            if (q_commandResult) {
-                return q_commandResult;
-            } else {
-                return Promise.reject('Cut Node not added on command stack');
-            }
+    const text = await this.asyncGetTextFromClipboard();
 
-        });
+    const w_commandResult = this.nodeCommand({
+        action: Constants.LEOBRIDGE.PASTE_CLONE_PNODE,
+        node: p_node,
+        refreshType: { tree: true, body: true, states: true },
+        name: text,
+        fromOutline: !!p_fromOutline,
     });
 
-}
-
-</t>
-<t tx="felix.20220222012602.1">public pasteAsCloneNode(
-    p_node?: ArchivedPosition,
-    p_fromOutline?: boolean
-): Thenable&lt;LeoBridgePackage&gt; {
-    return this._isBusyTriggerSave(false, true).then(() =&gt; {
-
-        return this.asyncGetTextFromClipboard().then((p_text) =&gt; {
-
-            const q_commandResult = this.nodeCommand({
-                action: Constants.LEOBRIDGE.PASTE_CLONE_PNODE,
-                node: p_node,
-                refreshType: { tree: true, body: true, states: true },
-                name: p_text,
-                fromOutline: !!p_fromOutline,
-            });
-            if (q_commandResult) {
-                return q_commandResult;
-            } else {
-                return Promise.reject('Cut Node not added on command stack');
-            }
-
-        });
-    });
+    if (w_commandResult) {
+        return w_commandResult;
+    } else {
+        return Promise.reject('Cut Node not added on command stack');
+    }
 }
 
 </t>
@@ -15599,36 +15641,31 @@ public getTextFromClipboard(): string {
     vscode.postMessage({ type: 'refreshSearchConfig' });
 })();
 </t>
-<t tx="felix.20220305225942.1">public navEnter(): Thenable&lt;LeoBridgePackage&gt; {
-    return this._isBusyTriggerSave(false, true).then(() =&gt; {
-
-        return this.sendAction(
-            Constants.LEOBRIDGE.NAV_SEARCH
-        ).then((p_package) =&gt; {
-            this._leoGotoProvider.refreshTreeRoot();
-            this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
-            return p_package;
-        });
-
-    });
-
+<t tx="felix.20220305225942.1">/**
+ * Handles an enter press in the 'nav pattern' input
+ */
+public async navEnter(): Promise&lt;LeoBridgePackage&gt; {
+    await this._isBusyTriggerSave(false, true);
+    const w_package = await this.sendAction(
+        Constants.LEOBRIDGE.NAV_SEARCH
+    );
+    this._leoGotoProvider.refreshTreeRoot();
+    this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+    return w_package;
 }
 
 </t>
-<t tx="felix.20220305231404.1">public navTextChange(): Thenable&lt;LeoBridgePackage&gt; {
-
-    return this._isBusyTriggerSave(false, true).then(() =&gt; {
-
-        return this.sendAction(
-            Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH
-        ).then((p_package) =&gt; {
-            this._leoGotoProvider.refreshTreeRoot();
-            this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
-            return p_package;
-        });
-
-    });
-
+<t tx="felix.20220305231404.1">/**
+ * Handles a debounced text change in the nav pattern input box
+ */
+public async navTextChange(): Promise&lt;LeoBridgePackage&gt; {
+    await this._isBusyTriggerSave(false, true);
+    const w_package = await this.sendAction(
+        Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH
+    );
+    this._leoGotoProvider.refreshTreeRoot();
+    this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+    return w_package;
 }
 
 </t>
@@ -15886,9 +15923,11 @@ export class LeoGotoNode extends vscode.TreeItem {
 <t tx="felix.20220308213538.1">/**
  * Opens the Nav tab and focus on nav text input
  */
-public findQuick(p_string?: string): Thenable&lt;unknown&gt; {
+public async findQuick(p_string?: string): Promise&lt;unknown&gt; {
+
     let w_panelID = '';
     let w_panel: vscode.WebviewView | undefined;
+
     if (this._lastTreeView === this._leoTreeExView) {
         w_panelID = Constants.FIND_EXPLORER_ID;
         w_panel = this._findPanelWebviewExplorerView;
@@ -15896,17 +15935,22 @@ public findQuick(p_string?: string): Thenable&lt;unknown&gt; {
         w_panelID = Constants.FIND_ID;
         w_panel = this._findPanelWebviewView;
     }
-    vscode.commands.executeCommand(w_panelID + '.focus').then((p_result) =&gt; {
-        if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
-            w_panel.show(false);
-        }
-        const w_message: { [key: string]: string } = { type: 'selectNav' };
-        if (p_string &amp;&amp; p_string?.trim()) {
-            w_message["text"] = p_string.trim();
-        }
-        w_panel?.webview.postMessage(w_message);
-    });
+
+    await vscode.commands.executeCommand(w_panelID + '.focus');
+
+    if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
+        w_panel.show(false);
+    }
+    const w_message: { [key: string]: string } = { type: 'selectNav' };
+    if (p_string &amp;&amp; p_string?.trim()) {
+        w_message["text"] = p_string.trim();
+    }
+    if (w_panel) {
+        return w_panel.webview.postMessage(w_message);
+    }
+
     return Promise.resolve();
+
 }
 
 </t>
@@ -15929,48 +15973,40 @@ public findQuickSelected(): Thenable&lt;unknown&gt; {
 <t tx="felix.20220308213552.1">/**
  * Lists all nodes in reversed gnx order, newest to oldest
  */
-public findQuickTimeline(): Thenable&lt;unknown&gt; {
-    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
-        .then((p_result: LeoBridgePackage) =&gt; {
-            this._leoGotoProvider.refreshTreeRoot();
-            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
-        });
+public async findQuickTimeline(): Promise&lt;unknown&gt; {
+    await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE);
+    this._leoGotoProvider.refreshTreeRoot();
+    return await this.findQuickGoAnywhere();
 }
 
 </t>
 <t tx="felix.20220308213557.1">/**
  * Lists all nodes that are changed (aka "dirty") since last save.
  */
-public findQuickChanged(): Thenable&lt;unknown&gt; {
-    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
-        .then((p_result: LeoBridgePackage) =&gt; {
-            this._leoGotoProvider.refreshTreeRoot();
-            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
-        });
+public async findQuickChanged(): Promise&lt;unknown&gt; {
+    await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED);
+    this._leoGotoProvider.refreshTreeRoot();
+    return await this.findQuickGoAnywhere();
 }
 
 </t>
 <t tx="felix.20220308213600.1">/**
  * Lists nodes from c.nodeHistory.
  */
-public findQuickHistory(): Thenable&lt;unknown&gt; {
-    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
-        .then((p_result: LeoBridgePackage) =&gt; {
-            this._leoGotoProvider.refreshTreeRoot();
-            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
-        });
+public async findQuickHistory(): Promise&lt;unknown&gt; {
+    await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY);
+    this._leoGotoProvider.refreshTreeRoot();
+    return await this.findQuickGoAnywhere();
 }
 
 </t>
 <t tx="felix.20220308213605.1">/**
  * List all marked nodes.
  */
-public findQuickMarked(): Thenable&lt;unknown&gt; {
-    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
-        .then((p_result: LeoBridgePackage) =&gt; {
-            this._leoGotoProvider.refreshTreeRoot();
-            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
-        });
+public async findQuickMarked(): Promise&lt;unknown&gt; {
+    await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
+    this._leoGotoProvider.refreshTreeRoot();
+    return await this.findQuickGoAnywhere();
 }
 
 </t>
@@ -15984,9 +16020,7 @@ public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt
     } else {
         w_panel = Constants.GOTO_ID;
     }
-    vscode.commands.executeCommand(w_panel + '.focus', p_options);
-
-    return Promise.resolve();
+    return vscode.commands.executeCommand(w_panel + '.focus', p_options);
 }
 
 </t>
@@ -16019,87 +16053,75 @@ public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt
   "when": "leoTreeOpened"
 },
 </t>
-<t tx="felix.20220309215616.1">public gotoNavEntry(p_node: LeoGotoNode): Thenable&lt;unknown&gt; {
+<t tx="felix.20220309215616.1">/**
+ * Handles a click (selection) of a nav panel node: Sends 'goto' command to server.
+ */
+public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
+
+    await this._isBusyTriggerSave(false, true);
 
     if (p_node.entryType === 'tag') {
 
-        return this._isBusyTriggerSave(false, true)
-            .then((p_saveResult) =&gt; {
+        let w_string: string = p_node.label as string;
+        let w_panelID = '';
+        let w_panel: vscode.WebviewView | undefined;
+        if (this._lastTreeView === this._leoTreeExView) {
+            w_panelID = Constants.FIND_EXPLORER_ID;
+            w_panel = this._findPanelWebviewExplorerView;
+        } else {
+            w_panelID = Constants.FIND_ID;
+            w_panel = this._findPanelWebviewView;
+        }
+        await vscode.commands.executeCommand(w_panelID + '.focus');
 
-                let w_string: string = p_node.label as string;
+        if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
+            w_panel.show(false);
+        }
+        const w_message: { [key: string]: string; } = { type: 'selectNav' };
+        if (w_string &amp;&amp; w_string?.trim()) {
+            w_message["text"] = w_string.trim();
+        }
+        await w_panel!.webview.postMessage(w_message);
+        // Do search
 
-                let w_panelID = '';
-                let w_panel: vscode.WebviewView | undefined;
-                if (this._lastTreeView === this._leoTreeExView) {
-                    w_panelID = Constants.FIND_EXPLORER_ID;
-                    w_panel = this._findPanelWebviewExplorerView;
-                } else {
-                    w_panelID = Constants.FIND_ID;
-                    w_panel = this._findPanelWebviewView;
-                }
-                vscode.commands.executeCommand(w_panelID + '.focus').then((p_result) =&gt; {
-                    if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
-                        w_panel.show(false);
-                    }
-                    const w_message: { [key: string]: string } = { type: 'selectNav' };
-                    if (w_string &amp;&amp; w_string?.trim()) {
-                        w_message["text"] = w_string.trim();
-                    }
-                    return w_panel!.webview.postMessage(w_message);
-                }).then(() =&gt; {
-                    // Do search
-                    setTimeout(() =&gt; {
-                        this.sendAction(
-                            Constants.LEOBRIDGE.NAV_SEARCH
-                        ).then((p_package) =&gt; {
-                            this._leoGotoProvider.refreshTreeRoot();
-                            this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
-                            return p_package;
-                        });
-                    }, 10);
+        setTimeout(async () =&gt; {
+            await this.sendAction(Constants.LEOBRIDGE.NAV_SEARCH);
+            this._leoGotoProvider.refreshTreeRoot();
+            await this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+        }, 10);
 
+    } else if (p_node.entryType !== 'generic' &amp;&amp; p_node.entryType !== 'parent') {
+        // Other and not a tag
+        const p_navEntryResult = await this.sendAction(
+            Constants.LEOBRIDGE.GOTO_NAV_ENTRY,
+            JSON.stringify({ key: p_node.key })
+        );
+
+        if (!p_navEntryResult.focus) {
+            return vscode.window.showInformationMessage('Not found');
+        } else {
+            let w_focusOnOutline = false;
+            const w_focus = p_navEntryResult.focus.toLowerCase();
+
+            if (w_focus.includes('tree') || w_focus.includes('head')) {
+                // tree
+                w_focusOnOutline = true;
+            }
+
+            this._setupRefresh(
+                w_focusOnOutline,
+                {
+                    tree: true,
+                    body: true,
+                    scroll: !w_focusOnOutline,
+                    documents: false,
+                    buttons: false,
+                    states: true,
                 });
-            });
 
+            return this.launchRefresh();
+        }
     }
-
-    // Was not a tag
-    if (p_node.entryType !== 'generic' &amp;&amp; p_node.entryType !== 'parent') {
-        return this._isBusyTriggerSave(false, true)
-            .then((p_saveResult) =&gt; {
-                return this.sendAction(
-                    Constants.LEOBRIDGE.GOTO_NAV_ENTRY,
-                    JSON.stringify({ key: p_node.key })
-                );
-            })
-            .then((p_navEntryResult: LeoBridgePackage) =&gt; {
-                if (!p_navEntryResult.focus) {
-                    vscode.window.showInformationMessage('Not found');
-                } else {
-                    let w_focusOnOutline = false;
-                    const w_focus = p_navEntryResult.focus.toLowerCase();
-
-                    if (w_focus.includes('tree') || w_focus.includes('head')) {
-                        // tree
-                        w_focusOnOutline = true;
-                    }
-
-                    this._setupRefresh(
-                        w_focusOnOutline,
-                        {
-                            tree: true,
-                            body: true,
-                            scroll: !w_focusOnOutline,
-                            documents: false,
-                            buttons: false,
-                            states: true,
-                        },
-                    );
-                    this.launchRefresh();
-                }
-            });
-    }
-    return Promise.resolve();
 }
 
 </t>
@@ -16151,9 +16173,9 @@ public tagNode(): void {
                         false,
                         {
                             tree: true,
-                            body: false,
-                            documents: false,
-                            buttons: false,
+                            // body: false,
+                            // documents: false,
+                            // buttons: false,
                             states: true,
                         }
                     );
@@ -16217,9 +16239,9 @@ public removeTag(): void {
                             false,
                             {
                                 tree: true,
-                                body: false,
-                                documents: false,
-                                buttons: false,
+                                // body: false,
+                                // documents: false,
+                                // buttons: false,
                                 states: true,
                             }
                         );
@@ -16250,9 +16272,9 @@ public removeTags(): void {
                         false,
                         {
                             tree: true,
-                            body: false,
-                            documents: false,
-                            buttons: false,
+                            // body: false,
+                            // documents: false,
+                            // buttons: false,
                             states: true,
                         }
                     );
@@ -16337,7 +16359,7 @@ set leoIDMissing(p_value: boolean) {
  * * Inputs user for ID, then sets on server. If install path is known, also asks to save.
  * @returns a promise that resolves when the id is sent to the server or input is canceled
  */
-public setLeoID(): Thenable&lt;unknown&gt; {
+public async setLeoID(): Promise&lt;unknown&gt; {
 
     // showInputBox
     const w_idInputOption: vscode.InputBoxOptions = {
@@ -16356,89 +16378,88 @@ public setLeoID(): Thenable&lt;unknown&gt; {
         ignoreFocusOut: true
     };
 
-    return vscode.window.showInputBox(w_idInputOption).then((p_idResult) =&gt; {
+    let w_idResult = await vscode.window.showInputBox(w_idInputOption);
+    // p_idResult is string | undefined
+    if (w_idResult) {
+        w_idResult = utils.cleanLeoID(w_idResult);
+    }
+    if (w_idResult) {
+        // OK: id valid!
+        this.sendAction(
+            Constants.LEOBRIDGE.SET_LEOID,
+            JSON.stringify({ leoID: w_idResult })
+        );
+        this.leoStates.leoIDMissing = false; // At least set for this session
 
-        // p_idResult is string | undefined
-        if (p_idResult) {
-            p_idResult = utils.cleanLeoID(p_idResult);
-        }
-        if (p_idResult) {
-            // OK: id valid!
-            this.sendAction(
-                Constants.LEOBRIDGE.SET_LEOID,
-                JSON.stringify({ leoID: p_idResult })
-            );
-            this.leoStates.leoIDMissing = false; // At least set for this session
 
-            // Ask to save to .leoID.txt in Leo's dir.
-            return vscode.window.showInformationMessage(
-                "Save Leo ID?",
-                {
-                    modal: true,
-                    detail: "Write id '" + p_idResult + "' in " + Constants.LEO_ID_NAME + "?"
-                },
-                "Save ID"
-            ).then(answer =&gt; {
-                if (answer === "Save ID") {
-                    const w_leoDir = this.config.leoEditorPath;
-                    const w_userHome: undefined | string = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
+        // Ask to save to .leoID.txt in Leo's dir.
+        return vscode.window.showInformationMessage(
+            "Save Leo ID?",
+            {
+                modal: true,
+                detail: "Write id '" + w_idResult + "' in " + Constants.LEO_ID_NAME + "?"
+            },
+            "Save ID"
+        ).then(answer =&gt; {
+            if (answer === "Save ID") {
+                const w_leoDir = this.config.leoEditorPath;
+                const w_userHome: undefined | string = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
 
-                    const w_folders = [];
-                    if (w_userHome) {
-                        w_folders.push([
-                            path.join(w_userHome, ".leo"),
-                            path.join(w_userHome, ".leo", Constants.LEO_ID_NAME)
-                        ]);
-                    }
+                const w_folders = [];
+                if (w_userHome) {
                     w_folders.push([
-                        path.join(w_leoDir, Constants.CONFIG_PATH),
-                        path.join(w_leoDir, Constants.CONFIG_PATH, Constants.LEO_ID_NAME)
+                        path.join(w_userHome, ".leo"),
+                        path.join(w_userHome, ".leo", Constants.LEO_ID_NAME)
                     ]);
-                    w_folders.push([
-                        path.join(w_leoDir, Constants.SERVER_PATH),
-                        path.join(w_leoDir, Constants.SERVER_PATH, Constants.LEO_ID_NAME)
-                    ]);
-
-                    let w_wroteFile = false;
-                    w_folders.forEach(p_dir_file =&gt; {
-                        if (!w_wroteFile &amp;&amp; fs.existsSync(p_dir_file[0])) {
-                            // .leo in user home exists
-                            try {
-                                fs.writeFileSync(p_dir_file[1], p_idResult!, { encoding: 'utf8', flag: 'w' });
-                                if (fs.existsSync(p_dir_file[1])) {
-                                    vscode.window.showInformationMessage(Constants.LEO_ID_NAME + " created in " + p_dir_file[0]);
-                                    w_wroteFile = true;
-                                    return true;
-                                }
-                            } catch (p_err) {
-                                console.log('Could not write ' + p_dir_file[1]);
-                            }
-                        }
-                    });
-                    if (w_wroteFile) {
-                        return true;
-                    } else {
-                        vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME);
-                    }
-
-                } else {
-                    vscode.window.showInformationMessage("Using ID " + p_idResult + " for this Leo session only.");
                 }
-                return false;
-            });
+                w_folders.push([
+                    path.join(w_leoDir, Constants.CONFIG_PATH),
+                    path.join(w_leoDir, Constants.CONFIG_PATH, Constants.LEO_ID_NAME)
+                ]);
+                w_folders.push([
+                    path.join(w_leoDir, Constants.SERVER_PATH),
+                    path.join(w_leoDir, Constants.SERVER_PATH, Constants.LEO_ID_NAME)
+                ]);
 
-        } else {
-            // invalid or canceled
-            // Show a message with button to call this command again
-            vscode.window.showWarningMessage("Leo ID not set", "Set Leo ID")
-                .then(p_chosenButton =&gt; {
-                    if (p_chosenButton === "Set Leo ID") {
-                        vscode.commands.executeCommand(Constants.COMMANDS.SET_LEOID);
+                let w_wroteFile = false;
+                w_folders.forEach(p_dir_file =&gt; {
+                    if (!w_wroteFile &amp;&amp; fs.existsSync(p_dir_file[0])) {
+                        // .leo in user home exists
+                        try {
+                            fs.writeFileSync(p_dir_file[1], w_idResult!, { encoding: 'utf8', flag: 'w' });
+                            if (fs.existsSync(p_dir_file[1])) {
+                                vscode.window.showInformationMessage(Constants.LEO_ID_NAME + " created in " + p_dir_file[0]);
+                                w_wroteFile = true;
+                                return true;
+                            }
+                        } catch (p_err) {
+                            console.log('Could not write ' + p_dir_file[1]);
+                        }
                     }
                 });
-        }
-        return true;
-    });
+                if (w_wroteFile) {
+                    return true;
+                } else {
+                    vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME);
+                }
+
+            } else {
+                vscode.window.showInformationMessage("Using ID " + w_idResult + " for this Leo session only.");
+            }
+            return false;
+        });
+
+    } else {
+        // invalid or canceled
+        // Show a message with button to call this command again
+        vscode.window.showWarningMessage("Leo ID not set", "Set Leo ID")
+            .then(p_chosenButton =&gt; {
+                if (p_chosenButton === "Set Leo ID") {
+                    vscode.commands.executeCommand(Constants.COMMANDS.SET_LEOID);
+                }
+            });
+    }
+    return true;
 
     /*
         console.log('get CONNECT results: ', p_package);
@@ -16853,7 +16874,7 @@ public setUndoSelection(p_node: LeoUndoNode): void {
 <t tx="felix.20220706233403.1">/**
  * Reverts to a particular undo bead state
  */
-public revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
+public async revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
     if (p_undo.label === 'Unchanged') {
         return Promise.resolve();
     }
@@ -16863,22 +16884,21 @@ public revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
         action = Constants.LEOBRIDGE.UNDO;
         repeat = (-p_undo.beadIndex) + 1;
     }
-    return this.sendAction(
+    const w_package = await this.sendAction(
         action,
         JSON.stringify({ repeat: repeat })
-    ).then(p_package =&gt; {
-        this._setupRefresh(
-            true,
-            {
-                tree: true,
-                body: true,
-                states: true,
-                buttons: true,
-            }
-        );
-        this.launchRefresh();
-        return p_package;
-    });
+    );
+    this._setupRefresh(
+        true,
+        {
+            tree: true,
+            body: true,
+            states: true,
+            buttons: true,
+        }
+    );
+    this.launchRefresh();
+    return w_package;
 
 }
 
@@ -16898,112 +16918,107 @@ public revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
  * Offers choices of chapters below the input dialog to choose from
  * and selects the chosen - or typed - chapter
  */
-public chapterSelect(): Thenable&lt;unknown&gt; {
+public async chapterSelect(): Promise&lt;unknown&gt; {
 
-    return this._isBusyTriggerSave(false)
-        .then((p_saveResult) =&gt; {
-            const q_chaptersList: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
-                Constants.LEOBRIDGE.GET_CHAPTERS
-            ).then((p_result: LeoBridgePackage) =&gt; {
-                if (p_result.chapters &amp;&amp; p_result.chapters.length) {
-                    const chapters: vscode.QuickPickItem[] = [];
+    await this._isBusyTriggerSave(false);
 
-                    p_result.chapters.forEach(p_chapter =&gt; {
-                        chapters.push({
-                            label: p_chapter
-                        });
-                    });
+    const q_chaptersList: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
+        Constants.LEOBRIDGE.GET_CHAPTERS
+    ).then((p_result: LeoBridgePackage) =&gt; {
+        if (p_result.chapters &amp;&amp; p_result.chapters.length) {
+            const chapters: vscode.QuickPickItem[] = [];
 
-                    return chapters;
-                } else {
-                    return [];
-                }
-            });
-            // Add Nav tab special commands
-            const w_options: vscode.QuickPickOptions = {
-                placeHolder: Constants.USER_MESSAGES.SELECT_CHAPTER_PROMPT
-            };
-            return vscode.window.showQuickPick(q_chaptersList, w_options);
-        })
-        .then((p_picked) =&gt; {
-
-            if (p_picked &amp;&amp; p_picked.label) {
-                return this.sendAction(
-                    Constants.LEOBRIDGE.CHAPTER_SELECT,
-                    JSON.stringify({ name: p_picked.label })
-                ).then((p_resultTag: LeoBridgePackage) =&gt; {
-                    this._setupRefresh(
-                        false,
-                        {
-                            tree: true,
-                            body: true,
-                            documents: false,
-                            buttons: false,
-                            states: true,
-                        }
-                    );
-                    this.launchRefresh();
+            p_result.chapters.forEach(p_chapter =&gt; {
+                chapters.push({
+                    label: p_chapter
                 });
-            } else {
-                // Canceled
-                return Promise.resolve(undefined);
-            }
+            });
+
+            return chapters;
+        } else {
+            return [];
+        }
+    });
+
+    // Add Nav tab special commands
+    const w_options: vscode.QuickPickOptions = {
+        placeHolder: Constants.USER_MESSAGES.SELECT_CHAPTER_PROMPT
+    };
+
+    const p_picked = await vscode.window.showQuickPick(q_chaptersList, w_options);
+
+    if (p_picked &amp;&amp; p_picked.label) {
+        return this.sendAction(
+            Constants.LEOBRIDGE.CHAPTER_SELECT,
+            JSON.stringify({ name: p_picked.label })
+        ).then((p_resultTag: LeoBridgePackage) =&gt; {
+            this._setupRefresh(
+                false,
+                {
+                    tree: true,
+                    body: true,
+                    documents: false,
+                    buttons: false,
+                    states: true,
+                }
+            );
+            this.launchRefresh();
         });
+    }
+
+    return Promise.resolve(undefined); // Canceled
 
 }
 
 </t>
 <t tx="felix.20220714224733.1">/**
- * Asks for uA name, and value, then sets is on the server
+ * * Asks for uA name, and value, then sets is on the server
  */
-public setUa(): Thenable&lt;unknown&gt; {
+public async setUa(): Promise&lt;unknown&gt; {
     let w_name = "";
-    return this._isBusyTriggerSave(false)
-        .then((p_saveResult) =&gt; {
-            return vscode.window.showInputBox({
-                title: Constants.USER_MESSAGES.SET_UA_NAME_TITLE,
-                prompt: Constants.USER_MESSAGES.SET_UA_NAME_PROMPT,
-                placeHolder: Constants.USER_MESSAGES.SET_UA_NAME_PLACEHOLDER
-            })
-                .then((p_uaName) =&gt; {
-                    // trim string and re-check if valid string
-                    if (p_uaName &amp;&amp; p_uaName.trim()) {
-                        p_uaName = p_uaName.trim();
-                        w_name = p_uaName;
-                        return vscode.window.showInputBox({
-                            title: Constants.USER_MESSAGES.SET_UA_VAL_TITLE,
-                            prompt: Constants.USER_MESSAGES.SET_UA_VAL_PROMPT,
-                            placeHolder: Constants.USER_MESSAGES.SET_UA_VAL_PLACEHOLDER
-                        });
-                    }
-                    return Promise.resolve(undefined); // cancel
 
-                })
-                .then((p_uaVal) =&gt; {
-                    // check if invalid or canceled
-                    if (!w_name || p_uaVal === null || p_uaVal === undefined) {
-                        return Promise.resolve();
-                    }
-                    // ok got both name and val
-                    return this.sendAction(
-                        Constants.LEOBRIDGE.SET_UA_MEMBER,
-                        JSON.stringify({ name: w_name, value: p_uaVal })
-                    ).then((p_resultTag: LeoBridgePackage) =&gt; {
-                        this._setupRefresh(
-                            false,
-                            {
-                                tree: true,
-                                body: true,
-                                documents: false,
-                                buttons: false,
-                                states: true,
-                            }
-                        );
-                        this.launchRefresh();
-                    });
+    await this._isBusyTriggerSave(false);
 
-                });
+    let w_uaName = await vscode.window.showInputBox({
+        title: Constants.USER_MESSAGES.SET_UA_NAME_TITLE,
+        prompt: Constants.USER_MESSAGES.SET_UA_NAME_PROMPT,
+        placeHolder: Constants.USER_MESSAGES.SET_UA_NAME_PLACEHOLDER
+    });
+    // trim string and re-check if valid string
+    if (w_uaName &amp;&amp; w_uaName.trim()) {
+        w_uaName = w_uaName.trim();
+        w_name = w_uaName;
+
+        const w_uaVal = await vscode.window.showInputBox({
+            title: Constants.USER_MESSAGES.SET_UA_VAL_TITLE,
+            prompt: Constants.USER_MESSAGES.SET_UA_VAL_PROMPT,
+            placeHolder: Constants.USER_MESSAGES.SET_UA_VAL_PLACEHOLDER
         });
+
+        if (w_name &amp;&amp; !(typeof w_uaVal === 'undefined' || w_uaVal === null)) {
+            // ok got both name and val
+            return this.sendAction(
+                Constants.LEOBRIDGE.SET_UA_MEMBER,
+                JSON.stringify({ name: w_name, value: w_uaVal })
+            ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                this._setupRefresh(
+                    false,
+                    {
+                        tree: true,
+                        body: false,
+                        documents: false,
+                        buttons: false,
+                        states: false,
+                    }
+                );
+                this.launchRefresh();
+            });
+        }
+
+    }
+
+    return Promise.resolve(); // canceled
+
 }
 
 </t>
@@ -17096,9 +17111,8 @@ public refreshTreeRoot(): void {
  * for vscode to distinguish the collapsed state.
  */
 private _buildId(p: ArchivedPosition, p_collapsed: number): string {
-    // concatenate gnx, stacks gnx's, and collapsible state number.
     // (vscode uses id for collapsible state)
-    return this.treeId + p.gnx + p.childIndex + p.stack.map(s =&gt; s.gnx + s.childIndex).join("");
+    return this.treeId + utils.buildApId(p);
     // NOT NEEDED -&gt; expanded.toString(); // Added Uniqueness: VSCode's collapsible state in id
 }
 
@@ -17336,6 +17350,12 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
             this._lastTreeView.reveal(p_element, {
                 select: true,
                 focus: (this._revealType.valueOf() &gt;= RevealType.RevealSelectFocus.valueOf())
+            }).then(() =&gt; {
+                // ok
+            }, (p_reason) =&gt; {
+                console.log('gotSelectedNode could not reveal. Reason: ', p_reason);
+                // Reveal failed. Retry refreshOutline once
+                this._refreshOutline(true, RevealType.RevealSelect);
             });
             // Done, so reset reveal type 'flag'
             this._revealType = RevealType.NoReveal;
@@ -17408,7 +17428,7 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
 public _setupRefresh(p_focusOutline: boolean, p_refreshType: ReqRefresh, p_node?: ArchivedPosition): void {
     // Set final "focus-placement" EITHER true or false
     this.fromOutline = p_focusOutline;
-    // Set all properties WITHOUT clearing others. (ONLY 'true' properties)
+    // Set all properties WITHOUT clearing others.
     Object.assign(this._refreshType, p_refreshType);
     if (p_node) {
         this._refreshNode = p_node;
@@ -17450,6 +17470,14 @@ private _refreshButtonsPane(): void {
  */
 private _refreshGotoPane(): void {
     this._leoGotoProvider.refreshTreeRoot();
+}
+
+</t>
+<t tx="felix.20220730152836.1">/**
+ * unique string from AP's gnx, childIndex, and its stack's gnx and childIndex pairs.
+ */
+export function buildApId(p: ArchivedPosition): string {
+    return p.gnx + p.childIndex + p.stack.map(s =&gt; s.gnx + s.childIndex).join("");
 }
 
 </t>

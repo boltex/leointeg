@@ -32,9 +32,8 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
      * for vscode to distinguish the collapsed state.
      */
     private _buildId(p: ArchivedPosition, p_collapsed: number): string {
-        // concatenate gnx, stacks gnx's, and collapsible state number.
         // (vscode uses id for collapsible state)
-        return this.treeId + p.gnx + p.childIndex + p.stack.map(s => s.gnx + s.childIndex).join("");
+        return this.treeId + utils.buildApId(p);
         // NOT NEEDED -> expanded.toString(); // Added Uniqueness: VSCode's collapsible state in id
     }
 

@@ -93,6 +93,13 @@ export function removeFileFromWorkspace(p_context: vscode.ExtensionContext, p_fi
 }
 
 /**
+ * unique string from AP's gnx, childIndex, and its stack's gnx and childIndex pairs.
+ */
+export function buildApId(p: ArchivedPosition): string {
+    return p.gnx + p.childIndex + p.stack.map(s => s.gnx + s.childIndex).join("");
+}
+
+/**
  * * Build all possible strings for node icons graphic file paths
  * @param p_context Needed to get to absolute paths on the system
  * @returns An array of the 16 vscode node icons used in this vscode expansion

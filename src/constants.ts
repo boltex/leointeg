@@ -465,7 +465,7 @@ export class Constants {
     };
 
     /**
-     * * Commands for leobridgeserver.py
+     * * Commands for leoserver.py
      * A Command is a string, which is either:
      *  - The name of public method in leoserver.py, prefixed with '!'.
      *  - The name of a Leo command, prefixed with '-'

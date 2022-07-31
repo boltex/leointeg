@@ -6,7 +6,7 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoAsync } from "./leoAsync";
 
 /**
- * * Handles communication with the leobridgeserver.py python script via websockets
+ * * Handles communication with the leoserver.py python script via websockets
  * This implements a bridge-facing action stack, (push on top, remove bottom)
  * 'actions' get sent to Leo, and resolve a promise with the result when the answer comes back.
  * This 'stack' concept is similar to the 'CommandStack' class used for vscode's user interactions.
@@ -38,11 +38,11 @@ export class LeoBridge {
 
     /**
      * * Places an action on top of a stack, to be resolved from the bottom
-     * @param p_action Command string to be performed by Leo via leobridgeserver.py
+     * @param p_action Command string to be performed by Leo via leoserver.py
      * @param p_jsonParam Optional JSON parameter for the specified action
      * @param p_deferredPayload Used to build this._readyPromise that resolves itself at startup
      * @param p_preventCall Flag for special action used to build this._readyPromise that resolves itself at startup
-     * @returns a Promise that will contain the JSON package answered back by leobridgeserver.py
+     * @returns a Promise that will contain the JSON package answered back by leoserver.py
      */
     public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         return new Promise((p_resolve, p_reject) => {
@@ -112,7 +112,7 @@ export class LeoBridge {
 
     /**
      * * Build JSON string for action parameter to the leoBridge
-     * @param p_action Action string to be invoked as command by Leo in the leobridgeserver.py script
+     * @param p_action Action string to be invoked as command by Leo in the leoserver.py script
      * @param p_jsonParam Optional JSON string to be added as a 'param' to the action sent to Leo
      * @returns the JSON string built from the action string and the parameters
      */
@@ -277,7 +277,7 @@ export class LeoBridge {
 
     /**
      * * Send into the python process input
-     * @param p_data JSON Message string to be sent to leobridgeserver.py
+     * @param p_data JSON Message string to be sent to leoserver.py
      */
     private _send(p_data: string): void {
         if (this._readyPromise) {

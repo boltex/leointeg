@@ -9,7 +9,7 @@ import { LeoIntegration } from "./leoIntegration";
  */
 export class Config implements ConfigMembers {
 
-    // Config settings used in leobridgeserver.py, on Leo's side
+    // Config settings used in leoserver.py
     public checkForChangeExternalFiles: string = Constants.CONFIG_DEFAULTS.CHECK_FOR_CHANGE_EXTERNAL_FILES;
     public defaultReloadIgnore: string = Constants.CONFIG_DEFAULTS.DEFAULT_RELOAD_IGNORE;
     // Config settings used in leoInteg/vscode's side

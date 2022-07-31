@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { LeoNode } from "./leoNode";
 
 /**
  * * For simple interactions in webviews into vscode API
@@ -96,7 +95,7 @@ export interface ReqRefresh {
  * * Stackable front end commands
  */
 export interface UserCommand {
-    action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver
+    action: string; // String from Constants.LEOBRIDGE, which are commands for leoserver.py
     node?: ArchivedPosition | undefined;  // We can START a stack with a targeted command
     name?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command
