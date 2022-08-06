@@ -181,7 +181,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                         return Promise.resolve(Buffer.from(""));
                     } else {
                         if (!this._errorRefreshFlag) {
-                            this._tryFullRefresh();
+                            // this._tryFullRefresh();
+                            this._leoIntegration.fullRefresh();
                         }
                         if (this._lastGnx === w_gnx) {
                             // was last gnx of closed file about to be switched to new document selected
@@ -219,7 +220,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                         return Promise.resolve(Buffer.from(""));
                     } else {
                         if (!this._errorRefreshFlag) {
-                            this._tryFullRefresh();
+                            this._leoIntegration.fullRefresh();
                         }
                         if (this._lastGnx === w_gnx) {
                             // was last gnx of closed file about to be switched to new document selected
@@ -283,7 +284,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public delete(p_uri: vscode.Uri): void {
-        // console.log("delete", p_uri.fsPath);
+        console.log("delete", p_uri.fsPath);
         const w_gnx = utils.leoUriToStr(p_uri);
         if (this._openedBodiesGnx.includes(w_gnx)) {
             this._openedBodiesGnx.splice(this._openedBodiesGnx.indexOf(w_gnx), 1);
@@ -304,25 +305,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public copy(p_uri: vscode.Uri): void {
         console.warn('Called copy on ', p_uri.fsPath); // should not happen
         throw vscode.FileSystemError.NoPermissions(p_uri);
-    }
-
-    private _tryFullRefresh(): void {
-        // TODO : Needed? Could be in leointegration instead of body !
-        this._errorRefreshFlag = true;
-        this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
-            .then((p_package) => {
-                // refresh and reveal selection
-                const w_node = p_package.node!; // this._leoIntegration.apToLeoNode(p_package.node!);
-                this._leoIntegration.lastSelectedNode = w_node;
-                this._leoIntegration.showOutline();
-                // ! maybe overkill
-                this._leoIntegration._setupRefresh(
-                    this._leoIntegration.fromOutline, // ??? was 'false' before Jul 10 2022,
-                    { tree: true, body: true, states: true, buttons: true, documents: true },
-                    p_package.node
-                );
-                this._leoIntegration.launchRefresh();
-            });
     }
 
     private _fireSoon(...p_events: vscode.FileChangeEvent[]): void {

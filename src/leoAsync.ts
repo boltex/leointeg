@@ -41,7 +41,7 @@ export class LeoAsync {
      */
     public refresh(p_serverPackage: any): Promise<unknown> {
         // setup refresh 'all' by default for now.
-        this._leoIntegration._setupRefresh(
+        this._leoIntegration.setupRefresh(
             this._leoIntegration.fromOutline,
             {
                 tree: true,
@@ -134,7 +134,7 @@ export class LeoAsync {
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
                 }).then((p_package) => {
                     // refresh and reveal selection
-                    this._leoIntegration._setupRefresh(
+                    this._leoIntegration.setupRefresh(
                         false,
                         {
                             tree: true,
@@ -180,7 +180,7 @@ export class LeoAsync {
                 this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                     .then((p_package) => {
                         // refresh and reveal selection
-                        this._leoIntegration._setupRefresh(
+                        this._leoIntegration.setupRefresh(
                             false,
                             { tree: true, body: true, states: true, buttons: true, documents: true },
                             p_package.node

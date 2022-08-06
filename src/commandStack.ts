@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
-import { UserCommand, LeoBridgePackage, ReqRefresh } from "./types";
+import { UserCommand, LeoBridgePackage, ReqRefresh, ArchivedPosition } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
@@ -15,14 +15,15 @@ export class CommandStack {
     private _busy: boolean = false; // Flag stating commands started resolving
 
     // Refresh type, for use after the last command has done resolving (From highest so far)
-    private _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
+    public _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
 
     // Flag used to set focus on outline instead of body when done resolving (From last pushed)
     private _finalFromOutline: boolean = false;
 
-    // Received selection from the last command that finished as JSON string representation
+    // Received selection from the last command that finished
     // It will be re-sent as 'target node' instead of lastSelectedNode if present
-    private _selectedNodeJSON: string = ""; // Empty string is used as 'falsy'
+    public lastReceivedNode: ArchivedPosition | undefined;
+    public lastReceivedNodeTS: number = 0;
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -43,7 +44,7 @@ export class CommandStack {
      */
     public newSelection(): void {
         if (!this._busy) {
-            this._selectedNodeJSON = "";
+            this.lastReceivedNode = undefined;
         }
     }
 
@@ -99,8 +100,8 @@ export class CommandStack {
             w_nodeJson = JSON.stringify(w_command.node);
         } else {
             // Use received "selected node" unless first use, then use last selected node
-            if (this._selectedNodeJSON) {
-                w_nodeJson = this._selectedNodeJSON;
+            if (this.lastReceivedNode) {
+                w_nodeJson = JSON.stringify(this.lastReceivedNode);
             } else {
                 w_nodeJson = this._leoIntegration.lastSelectedNode ? JSON.stringify(this._leoIntegration.lastSelectedNode) : "";
             }
@@ -137,14 +138,15 @@ export class CommandStack {
     private _resolveResult(p_package: LeoBridgePackage): void {
         this._stack.shift(); // Finally remove resolved command from stack bottom
 
-        this._selectedNodeJSON = JSON.stringify(p_package.node);
+        this.lastReceivedNode = p_package.node;
+        this.lastReceivedNodeTS = performance.now();
 
         if (!this.size()) {
             // If last is done then do refresh outline and focus on outline, or body, as required
             this._busy = false;
             if (Object.keys(this._finalRefreshType).length) {
                 // At least some type of refresh
-                this._leoIntegration._setupRefresh(
+                this._leoIntegration.setupRefresh(
                     this._finalFromOutline,
                     this._finalRefreshType,
                     p_package.node
