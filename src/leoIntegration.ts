@@ -151,8 +151,6 @@ export class LeoIntegration {
         // }
     }
 
-
-
     public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
     public serverOpenedFileName: string = ""; // Server last reported opened file name.
     public serverOpenedNode: ArchivedPosition | undefined; // Server last reported opened file name.
@@ -820,28 +818,11 @@ export class LeoIntegration {
         }
         return true;
 
-        /*
-            console.log('get CONNECT results: ', p_package);
-
-            this.sendAction(
-                // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-                Constants.LEOBRIDGE.SET_LEOID,
-                JSON.stringify({ leoID: "bacon" })
-
-            ).then((p_result: LeoBridgePackage) => {
-                console.log('set leoid results: ', p_result);
-            }).then(() => {
-                return this.sendAction(
-                    // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-                    Constants.LEOBRIDGE.GET_LEOID
-                );
-            }).then((p_result: LeoBridgePackage) => {
-                console.log('get leoid results: ', p_result);
-            });
-        */
-
     }
 
+    /**
+     * * Checks the server version and pops up a message to the user if an update is possible
+     */
     public checkVersion(): void {
 
         this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_result: LeoBridgePackage) => {
@@ -1241,23 +1222,6 @@ export class LeoIntegration {
                 vscode.window.showInformationMessage(Constants.USER_MESSAGES.RIGHT_CLICK_TO_OPEN);
                 this._hasShownContextOpenMessage = true;
             }
-            // ? Use a picker for more 'intense' interaction ?
-            // vscode.window.showQuickPick(
-            //     [Constants.USER_MESSAGES.YES, Constants.USER_MESSAGES.NO],
-            //     { placeHolder: Constants.USER_MESSAGES.OPEN_WITH_LEOINTEG }
-            // )
-            //     .then(p_result => {
-            //         if (p_result && p_result === Constants.USER_MESSAGES.YES) {
-            //             const w_uri = p_document.uri;
-            //             vscode.window.showTextDocument(p_document.uri, { preview: true, preserveFocus: false })
-            //                 .then(() => {
-            //                     return vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-            //                 })
-            //                 .then(() => {
-            //                     this.openLeoFile(w_uri);
-            //                 });
-            //         }
-            //     });
         }
     }
 
@@ -1289,15 +1253,6 @@ export class LeoIntegration {
             utils.buildNodeCommandJson(JSON.stringify(p_event.element))
         );
 
-        // Needed ?
-
-        /*
-        .then(() => {
-            if (this.config.leoTreeBrowse) {
-                this._refreshOutline(true, RevealType.RevealSelect);
-            }
-        });
-        */
     }
 
     /**
@@ -1321,7 +1276,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Handle the change of visibility of either outline treeview and refresh it if its visible
+     * * Handle the change of visibility of either leo-documents treeview and refresh it if its visible
      * @param p_event The treeview-visibility-changed event passed by vscode
      * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
      */
@@ -1337,7 +1292,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Handle the change of visibility of either outline treeview and refresh it if its visible
+     * * Handle the change of visibility of either buttons treeview and refresh it if its visible
      * @param p_event The treeview-visibility-changed event passed by vscode
      * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
      */
@@ -1371,7 +1326,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Handle the change of visibility of either outline treeview and refresh it if its visible
+     * * Handle the change of visibility of either undo treeview and refresh it if its visible
      * @param p_event The treeview-visibility-changed event passed by vscode
      * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
      */
@@ -1553,6 +1508,18 @@ export class LeoIntegration {
     }
 
     /**
+     * * Capture instance for further calls on find panel webview
+     * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
+     */
+    public setFindPanel(p_panel: vscode.WebviewView): void {
+        if (this._lastTreeView === this._leoTreeExView) {
+            this._findPanelWebviewExplorerView = p_panel;
+        } else {
+            this._findPanelWebviewView = p_panel;
+        }
+    }
+
+    /**
      * * Save body to Leo if its dirty. That is, only if a change has been made to the body 'document' so far
      * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
      * @returns a promise that resolves when the possible saving process is finished
@@ -1605,29 +1572,7 @@ export class LeoIntegration {
             } else {
                 w_scroll = 0;
             }
-            // let w_scroll: { start: BodyPosition; end: BodyPosition; };
-            // if (this._selectionGnx === this._scrollGnx && this._scrollDirty) {
-            //     w_scroll = {
-            //         start: {
-            //             line: this._scroll?.start.line || 0,
-            //             col: this._scroll?.start.character || 0
-            //         },
-            //         end: {
-            //             line: this._scroll?.end.line || 0,
-            //             col: this._scroll?.end.character || 0
-            //         }
-            //     };
-            // } else {
-            //     w_scroll = {
-            //         start: {
-            //             line: 0, col: 0
-            //         },
-            //         end: {
-            //             line: 0, col: 0
-            //         }
-            //     };
-            // }
-            // Send whole
+
             const w_param: BodySelectionInfo = {
                 gnx: this._selectionGnx,
                 scroll: w_scroll,
@@ -1644,7 +1589,6 @@ export class LeoIntegration {
                     col: this._selection.end.character || 0,
                 },
             };
-            // console.log("set scroll to leo: " + w_scroll + " start:" + this._selection.start.line);
 
             this._scrollDirty = false;
             this._selectionDirty = false; // don't wait for return of this call
@@ -1668,7 +1612,7 @@ export class LeoIntegration {
         p_forcedVsCodeSave?: boolean
     ): Promise<boolean> {
         if (p_document) {
-            // * Fetch gnx and document's body text first, to be reused more than once in this method
+
             const w_param = {
                 gnx: utils.leoUriToStr(p_document.uri),
                 body: p_document.getText(),
@@ -1759,6 +1703,7 @@ export class LeoIntegration {
      * * Setup global refresh options
      * @param p_focusOutline Flag for focus to be placed in outline
      * @param p_refreshType Refresh flags for each UI part
+     * @param p_node The AP node to be refreshed if refresh type 'node' only is set
      */
     public setupRefresh(p_focusOutline: boolean, p_refreshType: ReqRefresh, p_node?: ArchivedPosition): void {
         // Set final "focus-placement" EITHER true or false
@@ -1858,7 +1803,6 @@ export class LeoIntegration {
     /**
      * * Adds 'do nothing' to the frontend stack and refreshes all parts.
      * @returns Promise back from command's execution, if added on stack, undefined otherwise.
-     * (see command stack 'rules' in commandStack.ts)
      */
     public fullRefresh(): Promise<LeoBridgePackage> | undefined {
         const w_command: UserCommand = {
@@ -1875,8 +1819,11 @@ export class LeoIntegration {
         const q_result = this._commandStack.add(w_command);
         return q_result;
     }
+
     /**
      * * Checks if gnx for body is still the latest body
+     * @param gnx node identity to check
+     * @param ts timestamp of last time that this gnx was set as the body
      */
     public isGnxStillValid(gnx: string, ts: number): boolean {
 
@@ -1915,6 +1862,9 @@ export class LeoIntegration {
 
     /**
      * * Checks if gnx is the same but at a later timestamp
+     * TODO : MAYBE NOT REQUIRED ?
+     * @param gnx node identity to check
+     * @param ts timestamp limit
      */
     public isGnxReselected(gnx: string, ts: number): boolean {
 
@@ -1948,8 +1898,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Refreshes the outline.
-     * * A reveal type can be passed along to specify if the selected node should also get focus
+     * * Refreshes the outline. A reveal type can be passed along for selected node.
      * @param p_incrementTreeID Flag meaning for the _treeId counter to be incremented
      * @param p_revealType Facultative reveal type to specify type of reveal when the 'selected node' is encountered
      */
@@ -2041,9 +1990,6 @@ export class LeoIntegration {
      * @param p_element The "selected" ArchivedPosition element reached.
      */
     public gotSelectedNode(p_element: ArchivedPosition): void {
-
-        console.log('Got Selected:', p_element.gnx);
-
         if (this._revealType) {
             setTimeout(() => {
                 this._lastTreeView.reveal(p_element, {
@@ -2119,6 +2065,7 @@ export class LeoIntegration {
 
     /**
      * * Refreshes the undo pane
+     * Goto Panel May be refreshed by other services (states service, ...)
      */
     private _refreshUndoPane(): void {
         this._leoUndosProvider.refreshTreeRoot();
@@ -2152,8 +2099,10 @@ export class LeoIntegration {
             ) {
                 // if needs switching by actually having different gnx
                 if (utils.leoUriToStr(this.bodyUri) !== p_node.gnx) {
+
                     // * LOCATE OLD GNX FOR PROPER COLUMN
                     this._locateOpenedBody(utils.leoUriToStr(this.bodyUri));
+
                     // Make sure any pending changes in old body are applied before switching
                     return this._bodyTextDocument.save().then(() => {
                         return this._switchBody(p_aside, p_showBodyKeepFocus);
@@ -2182,10 +2131,7 @@ export class LeoIntegration {
         const w_newUri: vscode.Uri = utils.strToLeoUri(this.lastSelectedNode!.gnx);
         const w_newTS = performance.now();
 
-        // ? Set timestamps ?
-        // this._leoFileSystem.setRenameTime(this.lastSelectedNode );
-        console.log('starting switchBody, old: ', w_oldUri.fsPath, ', new ', this.lastSelectedNode?.gnx);
-
+        // console.log('starting switchBody, old: ', w_oldUri.fsPath, ', new ', this.lastSelectedNode?.gnx);
         let w_visibleCount = 0;
 
         vscode.window.tabGroups.all.forEach((p_tabGroup) => {
@@ -2284,7 +2230,6 @@ export class LeoIntegration {
 
                 return this.showBody(p_aside, p_preserveFocus);
 
-
                 // return q_delete.then(() => {
                 //     return this.showBody(p_aside, p_preserveFocus);
                 // });
@@ -2365,10 +2310,6 @@ export class LeoIntegration {
         if (w_foundTabs.length) {
             return vscode.window.tabGroups.close(w_foundTabs, true);
         }
-
-        // if (p_textEditor.hide) {
-        //     p_textEditor.hide();
-        // }
 
         vscode.commands.executeCommand(
             'vscode.removeFromRecentlyOpened',
@@ -2556,6 +2497,7 @@ export class LeoIntegration {
                     return;
                     // TODO : CHECK IS RETURN IS OK -> NO ADDITIONAL REFRESH LAUNCHES HERE
 
+                    /*
                     // * check X times and retry.
                     // IF FLAG ALREADY SET ERROR MESSAGE & RETURN
                     if (this._showBodyRefreshed > 10) {
@@ -2595,6 +2537,7 @@ export class LeoIntegration {
                         //     this.launchRefresh(); // refresh and reveal selection
                         // });
                     }
+                    */
 
                 }
             });
@@ -2614,12 +2557,7 @@ export class LeoIntegration {
                 }
             });
         });
-        // vscode.window.visibleTextEditors.forEach((p_textEditor) => {
-        //     if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
-        //         this._bodyMainSelectionColumn = p_textEditor.viewColumn;
-        //         this._bodyTextDocument = p_textEditor.document;
-        //     }
-        // });
+
         // Setup options for the preview state of the opened editor, and to choose which column it should appear
         const w_showOptions: vscode.TextDocumentShowOptions = p_aside
             ? {
@@ -2642,6 +2580,7 @@ export class LeoIntegration {
         ) {
             return;
         }
+
         // * Actually Show the body pane document in a text editor
         const q_showTextDocument = vscode.window.showTextDocument(
             this._bodyTextDocument,
@@ -2697,11 +2636,6 @@ export class LeoIntegration {
 
                     let w_scrollRange: vscode.Range | undefined;
 
-                    // ! Test scroll position from selection range instead
-                    // const w_scroll: number = w_leoBodySel.scroll;
-                    // if (w_scroll) {
-                    // w_scrollRange = new vscode.Range(w_scroll, 0, w_scroll, 0);
-                    // }
                     // Build scroll position from selection range.
                     w_scrollRange = new vscode.Range(
                         w_activeRow,
@@ -2753,9 +2687,10 @@ export class LeoIntegration {
                         w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED
                     );
                 } else if (!w_langName) {
-                    // Document was closed: refresh all!
+                    // Document was closed: refresh
                     console.log('_setBodyLanguage had closed document, so refresh');
 
+                    // TODO : TEST IF THOSE REFRESH FLAGS ARE ENOUGH - or- TOO MUCH
                     this.setupRefresh(
                         this.fromOutline,
                         {
@@ -2792,7 +2727,7 @@ export class LeoIntegration {
             let w_language: string = p_bodyStates.language!;
             let w_wrap: boolean = !!p_bodyStates.wrap;
 
-            // TODO : Apply Wrap
+            // TODO : Apply Wrap. see https://github.com/microsoft/vscode/issues/136927
             // console.log('WRAP: ', w_wrap);
 
             // Replace language string if in 'exceptions' array
@@ -2892,6 +2827,29 @@ export class LeoIntegration {
             // Canceled
             return Promise.resolve(undefined);
         }
+    }
+
+    /**
+     * * Previous / Next Node Buttons
+     * @param p_next Flag to mean 'next' instead of default 'previous'
+     * @returns the promise from the command sent to the leo bridge
+     */
+    public async prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise<any> {
+
+        await this._isBusyTriggerSave(false, true);
+
+        let w_command: string;
+        if (p_next) {
+            w_command = Constants.LEOBRIDGE.GOTO_NEXT_HISTORY;
+        } else {
+            w_command = Constants.LEOBRIDGE.GOTO_PREV_HISTORY;
+        }
+        return this.nodeCommand({
+            action: w_command,
+            node: undefined,
+            refreshType: { tree: true, states: true, body: true },
+            fromOutline: !!p_fromOutline,
+        });
     }
 
     /**
@@ -3024,7 +2982,7 @@ export class LeoIntegration {
 
         if ((typeof w_newHeadline !== "undefined") && w_newHeadline !== this._renamingHeadline) {
             // Is different!
-            p_node!.headline = w_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
+            p_node!.headline = w_newHeadline;
             const q_commandResult = this.nodeCommand({
                 action: Constants.LEOBRIDGE.SET_HEADLINE,
                 node: p_node,
@@ -3105,7 +3063,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Place the XML or JSON Leo outline tree on the clipboard for the given node
+     * * Place the XML or JSON Leo outline tree on the clipboard for the given node.
      */
     public async copyNode(
         p_node?: ArchivedPosition,
@@ -3136,7 +3094,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Place the XML or JSON Leo outline tree on the clipboard for the given node, and removes it from the outline.
+     * * Place the XML or JSON Leo outline tree on the clipboard for the given node, and removes it.
      */
     public async cutNode(
         p_node?: ArchivedPosition,
@@ -3168,7 +3126,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Creates a section of tree outline from the XML or JSON Leo outline on the clipboard
+     * * Creates a section of tree outline from the XML or JSON Leo outline on the clipboard.
      */
     public async pasteNode(
         p_node?: ArchivedPosition,
@@ -3196,7 +3154,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Creates while preserving the top gnx of a section of tree outline from the XML or JSON Leo outline on the clipboard
+     * * Creates, while preserving the top gnx of a section of tree outline, from the clipboard content.
      */
     public async pasteAsCloneNode(
         p_node?: ArchivedPosition,
@@ -3272,28 +3230,41 @@ export class LeoIntegration {
 
     }
 
+    /**
+     * * Replaces the system's clipboard with the given string
+     * @param s actual string content to go onto the clipboard
+     * @returns a promise that resolves when the string is put on the clipboard
+     */
     public replaceClipboardWith(s: string): Thenable<void> {
         this.clipboardContent = s; // also set immediate clipboard string
         return vscode.env.clipboard.writeText(s);
     }
 
-    public asyncGetTextFromClipboard(): Thenable<string> {
-        return vscode.env.clipboard.readText().then((s) => {
-            // also set immediate clipboard string for possible future read
-            this.clipboardContent = s;
-            return this.getTextFromClipboard();
-        });
+    /**
+     * * Asynchronous clipboards getter
+     * Get the system's clipboard contents and returns a promise
+     * Also puts it in the global clipboardContents variable
+     * @returns a promise of the clipboard string content
+     */
+    public async asyncGetTextFromClipboard(): Promise<string> {
+        const s = await vscode.env.clipboard.readText();
+        // Set immediate clipboard string for future read
+        this.clipboardContent = s;
+        // Return from synchronous clipboards getter
+        return this.getTextFromClipboard();
     }
 
     /**
-     * Returns clipboard content
+     * * Synchronous clipboards getter
+     * @returns the global variable 'clipboardContent' that was set by asyncGetTextFromClipboard
      */
     public getTextFromClipboard(): string {
         return this.clipboardContent;
     }
 
     /**
-     * Offers choices of chapters below the input dialog to choose from
+     * * Opens user interface to choose chapter
+     * Offers choices of chapters below the input dialog to choose from,
      * and selects the chosen - or typed - chapter
      */
     public async chapterSelect(): Promise<unknown> {
@@ -3349,7 +3320,8 @@ export class LeoIntegration {
     }
 
     /**
-     * Opens the Nav tab and focus on nav text input
+     * * Opens the Nav tab and focus on nav text input
+     * @param p_string an optional string to be placed in the nav text input
      */
     public async findQuick(p_string?: string): Promise<unknown> {
 
@@ -3382,7 +3354,7 @@ export class LeoIntegration {
     }
 
     /**
-     * Opens the Nav tab with the selected text as the search string
+     * * Opens the Nav tab with the selected text as the search string.
      */
     public findQuickSelected(): Thenable<unknown> {
         if (vscode.window.activeTextEditor) {
@@ -3397,43 +3369,43 @@ export class LeoIntegration {
     }
 
     /**
-     * Lists all nodes in reversed gnx order, newest to oldest
+     * * Lists all nodes in reversed gnx order, newest to oldest.
      */
     public async findQuickTimeline(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE);
         this._leoGotoProvider.refreshTreeRoot();
-        return await this.findQuickGoAnywhere();
+        return this.findQuickGoAnywhere();
     }
 
     /**
-     * Lists all nodes that are changed (aka "dirty") since last save.
+     * * Lists all nodes that are changed (aka "dirty") since last save.
      */
     public async findQuickChanged(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED);
         this._leoGotoProvider.refreshTreeRoot();
-        return await this.findQuickGoAnywhere();
+        return this.findQuickGoAnywhere();
     }
 
     /**
-     * Lists nodes from c.nodeHistory.
+     * * Lists nodes from c.nodeHistory.
      */
     public async findQuickHistory(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY);
         this._leoGotoProvider.refreshTreeRoot();
-        return await this.findQuickGoAnywhere();
+        return this.findQuickGoAnywhere();
     }
 
     /**
-     * List all marked nodes.
+     * * List all marked nodes.
      */
     public async findQuickMarked(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
         this._leoGotoProvider.refreshTreeRoot();
-        return await this.findQuickGoAnywhere();
+        return this.findQuickGoAnywhere();
     }
 
     /**
-     * Opens goto and focus in depending on passed options
+     * * Opens goto and focus in depending on passed options
      */
     public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable<unknown> {
         let w_panel = "";
@@ -3446,7 +3418,7 @@ export class LeoIntegration {
     }
 
     /**
-     * Handles a click (selection) of a nav panel node: Sends 'goto' command to server.
+     * * Handles a click (selection) of a nav panel node: Sends 'goto' command to server.
      */
     public async gotoNavEntry(p_node: LeoGotoNode): Promise<unknown> {
 
@@ -3517,7 +3489,7 @@ export class LeoIntegration {
     }
 
     /**
-     * Handles an enter press in the 'nav pattern' input
+     * * Handles an enter press in the 'nav pattern' input
      */
     public async navEnter(): Promise<LeoBridgePackage> {
         await this._isBusyTriggerSave(false, true);
@@ -3530,7 +3502,7 @@ export class LeoIntegration {
     }
 
     /**
-     * Handles a debounced text change in the nav pattern input box
+     * * Handles a debounced text change in the nav pattern input box
      */
     public async navTextChange(): Promise<LeoBridgePackage> {
         await this._isBusyTriggerSave(false, true);
@@ -4790,17 +4762,6 @@ export class LeoIntegration {
                     // Has rclicks so show menu to choose
                     this._rclickSelected = [];
 
-                    /* const w_choices: ChooseRClickItem[] = [];
-                    let w_index = 0;
-                    w_choices.push(
-                        { label: p_node.button.name, picked: true, alwaysShow: true, index: w_index++ },
-                        ...p_node.rclicks.map((p_rclick): ChooseRClickItem => { return { label: p_rclick.name, index: w_index++ }; })
-                    );
-
-                    const w_options: vscode.QuickPickOptions = {
-                        placeHolder: Constants.USER_MESSAGES.CHOOSE_BUTTON
-                    };
-                    return vscode.window.showQuickPick(w_choices, w_options) */
                     return this._handleRClicks(p_node.rclicks, p_node.button.name).then((p_picked) => {
                         if (
                             p_picked
@@ -4850,12 +4811,12 @@ export class LeoIntegration {
                     p_package.node
                 );
                 this.launchRefresh();
-                return Promise.resolve(true); // TODO launchRefresh should be a returned promise
+                return Promise.resolve(true);
             });
     }
 
     /**
-     * * Show input window to select
+     * * Show input window to select the @buttons's right-click item
      */
     private async _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Promise<ChooseRClickItem> {
         const w_choices: ChooseRClickItem[] = [];
@@ -4940,7 +4901,7 @@ export class LeoIntegration {
     }
 
     /**
-     * Reverts to a particular undo bead state
+     * * Reverts to a particular undo bead state
      */
     public async revertToUndo(p_undo: LeoUndoNode): Promise<any> {
         if (p_undo.label === 'Unchanged') {
@@ -4972,7 +4933,7 @@ export class LeoIntegration {
     }
 
     /**
-     * highlights the current undo state without disturbing focus
+     * * highlights the current undo state without disturbing focus
      */
     public setUndoSelection(p_node: LeoUndoNode): void {
         setTimeout(() => {
@@ -4985,41 +4946,6 @@ export class LeoIntegration {
                 );
             }
         }, 100);
-    }
-
-    /**
-     * * Previous / Next Node Buttons
-     * @param p_next Flag to mean 'next' instead of default 'previous'
-     * @returns the promise from the command sent to the leo bridge
-     */
-    public async prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise<any> {
-
-        await this._isBusyTriggerSave(false, true);
-
-        let w_command: string;
-        if (p_next) {
-            w_command = Constants.LEOBRIDGE.GOTO_NEXT_HISTORY;
-        } else {
-            w_command = Constants.LEOBRIDGE.GOTO_PREV_HISTORY;
-        }
-        return this.nodeCommand({
-            action: w_command,
-            node: undefined,
-            refreshType: { tree: true, states: true, body: true },
-            fromOutline: !!p_fromOutline,
-        });
-    }
-
-    /**
-     * * Capture instance for further calls on find panel webview
-     * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
-     */
-    public setFindPanel(p_panel: vscode.WebviewView): void {
-        if (this._lastTreeView === this._leoTreeExView) {
-            this._findPanelWebviewExplorerView = p_panel;
-        } else {
-            this._findPanelWebviewView = p_panel;
-        }
     }
 
     /**

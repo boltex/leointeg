@@ -146,94 +146,49 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 throw vscode.FileSystemError.FileIsADirectory(p_uri);
             } else {
                 const w_gnx = utils.leoUriToStr(p_uri);
-                // if (!this._possibleGnxList.includes(w_gnx)) {
+
                 if (!this._openedBodiesGnx.includes(w_gnx)) {
                     console.log(
                         " _openedBodiesGnx length: ", this._openedBodiesGnx.length,
                         '\n *** readFile: ERROR File not in _openedBodiesGnx! readFile missing refreshes? gnx: ', w_gnx
                     );
-                    // throw vscode.FileSystemError.FileNotFound();
-                    // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
-                    /*
-                    if (!this._errorRefreshFlag) {
-                        this._tryFullRefresh();
-                    }
+                }
+
+                const p_result = await this._leoIntegration.sendAction(
+                    Constants.LEOBRIDGE.GET_BODY,
+                    JSON.stringify({ "gnx": w_gnx })
+                );
+                if (p_result.body) {
+                    // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
+
+                    this._errorRefreshFlag = false; // got body so reset possible flag!
+                    this._lastGnx = w_gnx;
+                    this._lastBodyData = p_result.body;
+                    const w_buffer_1: Uint8Array = Buffer.from(p_result.body);
+                    this._lastBodyLength = w_buffer_1.byteLength;
+                    return Promise.resolve(w_buffer_1);
+                } else if (p_result.body === "") {
+                    // console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
+
+                    this._lastGnx = w_gnx;
+                    this._lastBodyLength = 0;
+                    this._lastBodyData = "";
                     return Promise.resolve(Buffer.from(""));
-                     */
-
-                    // TODO : CLeanup this code duplication experiment!
-
-                    const p_result = await this._leoIntegration.sendAction(
-                        Constants.LEOBRIDGE.GET_BODY,
-                        JSON.stringify({ "gnx": w_gnx })
-                    );
-                    if (p_result.body) {
-                        this._errorRefreshFlag = false; // got body so reset possible flag!
-                        this._lastGnx = w_gnx;
-                        this._lastBodyData = p_result.body;
-                        const w_buffer: Uint8Array = Buffer.from(p_result.body);
-                        this._lastBodyLength = w_buffer.byteLength;
-                        return Promise.resolve(w_buffer);
-                    } else if (p_result.body === "") {
-                        this._lastGnx = w_gnx;
-                        this._lastBodyLength = 0;
-                        this._lastBodyData = "";
-                        return Promise.resolve(Buffer.from(""));
-                    } else {
-                        if (!this._errorRefreshFlag) {
-                            // this._tryFullRefresh();
-                            this._leoIntegration.fullRefresh();
-                        }
-                        if (this._lastGnx === w_gnx) {
-                            // was last gnx of closed file about to be switched to new document selected
-                            console.log('Passed in not found: ' + w_gnx);
-                            return Promise.resolve(Buffer.from(this._lastBodyData));
-                        }
-                        console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
-
-
-                        //  throw vscode.FileSystemError.FileNotFound();
-                        // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
-                        return Promise.resolve(Buffer.from(""));
-                    }
                 } else {
-
-                    const p_result_1 = await this._leoIntegration.sendAction(
-                        Constants.LEOBRIDGE.GET_BODY,
-                        JSON.stringify({ "gnx": w_gnx })
-                    );
-                    if (p_result_1.body) {
-                        console.log('back from read gnx: ', w_gnx, '   - read ok has body');
-
-                        this._errorRefreshFlag = false; // got body so reset possible flag!
-                        this._lastGnx = w_gnx;
-                        this._lastBodyData = p_result_1.body;
-                        const w_buffer_1: Uint8Array = Buffer.from(p_result_1.body);
-                        this._lastBodyLength = w_buffer_1.byteLength;
-                        return Promise.resolve(w_buffer_1);
-                    } else if (p_result_1.body === "") {
-                        console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
-
-                        this._lastGnx = w_gnx;
-                        this._lastBodyLength = 0;
-                        this._lastBodyData = "";
-                        return Promise.resolve(Buffer.from(""));
-                    } else {
-                        if (!this._errorRefreshFlag) {
-                            this._leoIntegration.fullRefresh();
-                        }
-                        if (this._lastGnx === w_gnx) {
-                            // was last gnx of closed file about to be switched to new document selected
-                            console.log('Passed in not found: ' + w_gnx);
-                            return Promise.resolve(Buffer.from(this._lastBodyData));
-                        }
-                        console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
-
-
-                        //  throw vscode.FileSystemError.FileNotFound();
-                        // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
-                        return Promise.resolve(Buffer.from(""));
+                    if (!this._errorRefreshFlag) {
+                        this._leoIntegration.fullRefresh();
                     }
+                    if (this._lastGnx === w_gnx) {
+                        // was last gnx of closed file about to be switched to new document selected
+                        console.log('Passed in not found: ' + w_gnx);
+                        return Promise.resolve(Buffer.from(this._lastBodyData));
+                    }
+                    console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
+
+
+                    //  throw vscode.FileSystemError.FileNotFound();
+                    // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                    return Promise.resolve(Buffer.from(""));
                 }
             }
         } else {
@@ -284,7 +239,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public delete(p_uri: vscode.Uri): void {
-        console.log("delete", p_uri.fsPath);
+
         const w_gnx = utils.leoUriToStr(p_uri);
         if (this._openedBodiesGnx.includes(w_gnx)) {
             this._openedBodiesGnx.splice(this._openedBodiesGnx.indexOf(w_gnx), 1);

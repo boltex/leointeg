@@ -155,7 +155,6 @@ export class CommandStack {
             }
             // Reset refresh type nonetheless
             this._finalRefreshType = {};
-            // this._finalFromOutline = false; // ? MAYBE do NOT reset last finalFromOutline ?
         } else {
             // Size > 0, so call _runStackCommand again, keep _busy set to true
             this._runStackCommand().then((p_package: LeoBridgePackage) => {
