@@ -7243,7 +7243,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
             vscode.window.showSaveDialog({
                 saveLabel: "Save Leo File",
                 defaultUri: this._getBestOpenFolderUri(),
-                filters: { 'Leo File': ['leo'] },
+                filters: { 'Leo Files': ['leo', 'leojs'] },
                 title: "Save Leo File"
             })
                 .then(p_chosenLeoFile =&gt; {
@@ -10770,7 +10770,8 @@ public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | und
                 const w_hasDot = p_chosenLeoFile.indexOf('.') !== -1;
                 if (
                     !w_hasDot ||
-                    (p_chosenLeoFile.split('.').pop() !== Constants.FILE_EXTENSION &amp;&amp; w_hasDot)
+                    ((p_chosenLeoFile.split('.').pop() !== Constants.FILE_EXTENSION) &amp;&amp;
+                        (p_chosenLeoFile.split('.').pop() !== Constants.JS_FILE_EXTENSION))
                 ) {
                     if (!p_chosenLeoFile.endsWith('.')) {
                         p_chosenLeoFile += '.'; // Add dot if needed

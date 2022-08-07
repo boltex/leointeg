@@ -4223,7 +4223,8 @@ export class LeoIntegration {
                     const w_hasDot = p_chosenLeoFile.indexOf('.') !== -1;
                     if (
                         !w_hasDot ||
-                        (p_chosenLeoFile.split('.').pop() !== Constants.FILE_EXTENSION && w_hasDot)
+                        ((p_chosenLeoFile.split('.').pop() !== Constants.FILE_EXTENSION) &&
+                            (p_chosenLeoFile.split('.').pop() !== Constants.JS_FILE_EXTENSION))
                     ) {
                         if (!p_chosenLeoFile.endsWith('.')) {
                             p_chosenLeoFile += '.'; // Add dot if needed

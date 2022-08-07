@@ -98,7 +98,7 @@ export class LeoFilesBrowser {
                 vscode.window.showSaveDialog({
                     saveLabel: "Save Leo File",
                     defaultUri: this._getBestOpenFolderUri(),
-                    filters: { 'Leo File': ['leo'] },
+                    filters: { 'Leo Files': ['leo', 'leojs'] },
                     title: "Save Leo File"
                 })
                     .then(p_chosenLeoFile => {
