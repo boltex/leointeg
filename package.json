@@ -2910,12 +2910,12 @@
         },
         {
           "command": "leointeg.deHoistFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoTopHoistChapter",
           "group": "navigation@7"
         },
         {
           "command": "leointeg.chapterMain",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoTopHoistChapter",
           "group": "navigation@7"
         },
         {

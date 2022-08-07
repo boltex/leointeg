@@ -82,8 +82,7 @@ export class LeoIntegration {
     private _lastTreeView: vscode.TreeView<ArchivedPosition>; // Last visible treeview
     private _renamingHeadline: string = "";
 
-    // TODO : REFRESH HELPER NEEDED ???
-    private _revealNodeRetriedRefreshOutline: boolean = false;
+    private _revealNodeRetriedRefreshOutline: boolean = false; // USED IN _refreshOutline and _revealNode
 
     // Last selected node we got a hold of;
     //  -  leoTreeView.selection maybe newer (user click) and unprocessed
@@ -226,7 +225,7 @@ export class LeoIntegration {
     private _serverService: ServerService;
 
     // * Timing
-    private _needLastSelectedRefresh = false;
+    private _needLastSelectedRefresh = false; // USED IN showBody
     private _bodyLastChangedDocument: vscode.TextDocument | undefined; // Only set in _onDocumentChanged
     private _bodyLastChangedDocumentSaved: boolean = true; // don't use 'isDirty' of the document!
 
