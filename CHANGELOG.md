@@ -7,8 +7,9 @@
   (Hovering the mouse triggers the retrieval of this info for a single node.)
 - Initial node selection when opening Leo Documents: Fixed in leoserver 1.0.3 to come out in Leo 6.6.4.
 - Zoom-in/Zoom-out vscode commands now called instead of replace next/previous (on Ctrl+/-) if no text range selected.
-- Main tree outline view integration: Revised and refactored internal tree model.
+- Re-wrote the main tree outline view integration: Revised and refactored internal tree model.
 - Disabled commands created with enablement clauses instead of extraneous commands.
+- Replaced the page-up/page-down Outline keyboard shortcut commands with goto-first-sibling and goto-last-sibling
 
 ## 1.0.7
 

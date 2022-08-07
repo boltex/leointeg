@@ -520,6 +520,7 @@ export class Constants {
         SCROLL_BOTTOM: "!scroll_bottom", // Utility function
         GOTO_FIRST_VISIBLE: "goToFirstVisibleNode",
         GOTO_LAST_VISIBLE: "goToLastVisibleNode",
+        GOTO_FIRST_SIBLING: "goToFirstSibling",
         GOTO_LAST_SIBLING: "goToLastSibling",
         GOTO_NEXT_VISIBLE: "selectVisNext",
         GOTO_PREV_VISIBLE: "selectVisBack",
@@ -660,6 +661,7 @@ export class Constants {
         SCROLL_BOTTOM: Constants.NAME + ".scrollBottom",
         GOTO_FIRST_VISIBLE: Constants.NAME + ".gotoFirstVisible",
         GOTO_LAST_VISIBLE: Constants.NAME + ".gotoLastVisible",
+        GOTO_FIRST_SIBLING: Constants.NAME + ".gotoFirstSibling",
         GOTO_LAST_SIBLING: Constants.NAME + ".gotoLastSibling",
         GOTO_NEXT_VISIBLE: Constants.NAME + ".gotoNextVisible",
         GOTO_PREV_VISIBLE: Constants.NAME + ".gotoPrevVisible",

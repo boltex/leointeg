@@ -1385,6 +1385,11 @@
         "title": "Scroll to Outline Bottom"
       },
       {
+        "command": "leointeg.gotoFirstSibling",
+        "category": "Leo",
+        "title": "Goto First Sibling"
+      },
+      {
         "command": "leointeg.gotoLastSibling",
         "category": "Leo",
         "title": "Goto Last Sibling"
@@ -2660,6 +2665,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.gotoFirstSibling",
+          "when": "false"
+        },
+        {
           "command": "leointeg.gotoLastSibling",
           "when": "false"
         },
@@ -3572,12 +3581,12 @@
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
-        "command": "leointeg.pageUp",
+        "command": "leointeg.gotoFirstSibling",
         "key": "pageup",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
-        "command": "leointeg.pageDown",
+        "command": "leointeg.gotoLastSibling",
         "key": "pagedown",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },

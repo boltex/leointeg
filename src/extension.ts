@@ -234,16 +234,22 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_NODE_BODY,
             fromOutline: true
         })],
-        [CMD.GOTO_FIRST_VISIBLE, () => w_leo.nodeCommand({
-            action: BRIDGE.GOTO_FIRST_VISIBLE,
+        [CMD.GOTO_FIRST_SIBLING, () => w_leo.nodeCommand({
+            action: BRIDGE.GOTO_FIRST_SIBLING,
             node: U,
-            refreshType: REFRESH_TREE_BODY,
+            refreshType: REFRESH_NODE_BODY,
             fromOutline: true
         })],
         [CMD.GOTO_LAST_SIBLING, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_LAST_SIBLING,
             node: U,
             refreshType: REFRESH_NODE_BODY,
+            fromOutline: true
+        })],
+        [CMD.GOTO_FIRST_VISIBLE, () => w_leo.nodeCommand({
+            action: BRIDGE.GOTO_FIRST_VISIBLE,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
         [CMD.GOTO_LAST_VISIBLE, () => w_leo.nodeCommand({

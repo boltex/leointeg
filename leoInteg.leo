@@ -1671,16 +1671,22 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
-[CMD.GOTO_FIRST_VISIBLE, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.GOTO_FIRST_VISIBLE,
+[CMD.GOTO_FIRST_SIBLING, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.GOTO_FIRST_SIBLING,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 [CMD.GOTO_LAST_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_SIBLING,
     node: U,
     refreshType: REFRESH_NODE_BODY,
+    fromOutline: true
+})],
+[CMD.GOTO_FIRST_VISIBLE, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.GOTO_FIRST_VISIBLE,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.GOTO_LAST_VISIBLE, () =&gt; w_leo.nodeCommand({
@@ -3324,6 +3330,11 @@ print('done')
   "title": "Scroll to Outline Bottom"
 },
 {
+  "command": "leointeg.gotoFirstSibling",
+  "category": "Leo",
+  "title": "Goto First Sibling"
+},
+{
   "command": "leointeg.gotoLastSibling",
   "category": "Leo",
   "title": "Goto Last Sibling"
@@ -4177,6 +4188,10 @@ print('done')
   "when": "false"
 },
 {
+  "command": "leointeg.gotoFirstSibling",
+  "when": "false"
+},
+{
   "command": "leointeg.gotoLastSibling",
   "when": "false"
 },
@@ -4770,12 +4785,12 @@ print('done')
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
-  "command": "leointeg.pageUp",
+  "command": "leointeg.gotoFirstSibling",
   "key": "pageup",
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
-  "command": "leointeg.pageDown",
+  "command": "leointeg.gotoLastSibling",
   "key": "pagedown",
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
@@ -5028,6 +5043,7 @@ public static LEOBRIDGE = {
     SCROLL_BOTTOM: "!scroll_bottom", // Utility function
     GOTO_FIRST_VISIBLE: "goToFirstVisibleNode",
     GOTO_LAST_VISIBLE: "goToLastVisibleNode",
+    GOTO_FIRST_SIBLING: "goToFirstSibling",
     GOTO_LAST_SIBLING: "goToLastSibling",
     GOTO_NEXT_VISIBLE: "selectVisNext",
     GOTO_PREV_VISIBLE: "selectVisBack",
@@ -5169,6 +5185,7 @@ public static COMMANDS = {
     SCROLL_BOTTOM: Constants.NAME + ".scrollBottom",
     GOTO_FIRST_VISIBLE: Constants.NAME + ".gotoFirstVisible",
     GOTO_LAST_VISIBLE: Constants.NAME + ".gotoLastVisible",
+    GOTO_FIRST_SIBLING: Constants.NAME + ".gotoFirstSibling",
     GOTO_LAST_SIBLING: Constants.NAME + ".gotoLastSibling",
     GOTO_NEXT_VISIBLE: Constants.NAME + ".gotoNextVisible",
     GOTO_PREV_VISIBLE: Constants.NAME + ".gotoPrevVisible",
@@ -8650,8 +8667,9 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | Tree Navigation    |     |                 |                             |
 | :----------------- | :-- | :-------------- | :-------------------------- |
 | `Alt + Home`       | or  | `Home` \*       | Scroll to top of outline    |
-| `Alt + End`        |     |                 | Go To Last Sibling          |
 |                    |     | `End` \*        | Scroll to bottom of outline |
+|                    |     | `PgUp` \*       | Go To First Sibling          |
+| `Alt + End`        | or  | `PdDn` \*       | Go To Last Sibling          |
 | `Alt + N`          |     |                 | Go To Next Clone            |
 | `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree                 |
 | `Alt + G`          |     |                 | Go To Global Line           |
@@ -16334,8 +16352,9 @@ export function cleanLeoID(id_: string): string {
   (Hovering the mouse triggers the retrieval of this info for a single node.)
 - Initial node selection when opening Leo Documents: Fixed in leoserver 1.0.3 to come out in Leo 6.6.4.
 - Zoom-in/Zoom-out vscode commands now called instead of replace next/previous (on Ctrl+/-) if no text range selected.
-- Main tree outline view integration: Revised and refactored internal tree model.
+- Re-wrote the main tree outline view integration: Revised and refactored internal tree model.
 - Disabled commands created with enablement clauses instead of extraneous commands.
+- Replaced the page-up/page-down Outline keyboard shortcut commands with goto-first-sibling and goto-last-sibling
 
 </t>
 <t tx="felix.20220704004247.1">private _leoCanGoBack: boolean = false;
