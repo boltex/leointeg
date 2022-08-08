@@ -11905,12 +11905,12 @@ public static VSCODE_COMMANDS = {
 <t tx="felix.20201215210439.1">"view/title": [
   {
     "command": "leointeg.openLeoFile",
-    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.newLeoFile",
-    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened",
     "group": "navigation@1"
   },
   {
@@ -11972,11 +11972,6 @@ public static VSCODE_COMMANDS = {
     "command": "leointeg.stopServer",
     "when": "view =~ /^leoIntegration/ &amp;&amp; !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoServerStarted",
     "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.saveLeoFileFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled",
-    "group": "navigation@2"
   },
   {
     "command": "leointeg.saveAsLeoFile",
@@ -12067,6 +12062,11 @@ public static VSCODE_COMMANDS = {
     "command": "leointeg.contractAllFromOutline",
     "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
     "group": "navigation@11"
+  },
+  {
+    "command": "leointeg.importAnyFile",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@12"
   }
 ],
 </t>
@@ -12078,7 +12078,7 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.saveAsLeoFile",
-    "when": "viewItem =~ /^leoDocumentSelectedUntitled/",
+    "when": "viewItem =~ /^leoDocumentSelected/",
     "group": "inline@1"
   },
   {
@@ -16356,6 +16356,7 @@ export function cleanLeoID(id_: string): string {
 - Re-wrote the main tree outline view integration: Revised and refactored internal tree model.
 - Disabled commands created with enablement clauses instead of extraneous commands.
 - Replaced the page-up/page-down Outline keyboard shortcut commands with goto-first-sibling and goto-last-sibling
+- 'new leo document' CTRL+N and 'open leo file' CTRL+O keybindings can now also be used with focus in the body pane
 
 </t>
 <t tx="felix.20220704004247.1">private _leoCanGoBack: boolean = false;

@@ -10,6 +10,7 @@
 - Re-wrote the main tree outline view integration: Revised and refactored internal tree model.
 - Disabled commands created with enablement clauses instead of extraneous commands.
 - Replaced the page-up/page-down Outline keyboard shortcut commands with goto-first-sibling and goto-last-sibling
+- 'new leo document' CTRL+N and 'open leo file' CTRL+O keybindings can now also be used with focus in the body pane
 
 ## 1.0.7
 
