@@ -7810,7 +7810,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         };
 
         this._leoIntegration.addLogPaneEntry(
-            'Starting server with command: ' +
+            'Launching server with command: ' +
             w_pythonPath + " " + w_args.join(" ")
         );
 
