@@ -3189,13 +3189,13 @@
         "command": "leointeg.newLeoFile",
         "key": "ctrl+n",
         "mac": "cmd+n",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo || leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.openLeoFile",
         "key": "ctrl+o",
         "mac": "cmd+o",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo || leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.writeAtFileNodes",
