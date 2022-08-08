@@ -11905,12 +11905,12 @@ public static VSCODE_COMMANDS = {
 <t tx="felix.20201215210439.1">"view/title": [
   {
     "command": "leointeg.openLeoFile",
-    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened || view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.newLeoFile",
-    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened || view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
     "group": "navigation@1"
   },
   {
@@ -12059,12 +12059,12 @@ public static VSCODE_COMMANDS = {
     "group": "navigation@10"
   },
   {
-    "command": "leointeg.contractAllFromOutline",
+    "command": "leointeg.importAnyFile",
     "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
     "group": "navigation@11"
   },
   {
-    "command": "leointeg.importAnyFile",
+    "command": "leointeg.contractAllFromOutline",
     "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
     "group": "navigation@12"
   }
