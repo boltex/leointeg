@@ -528,21 +528,24 @@ export class Constants {
         GOTO_NEXT_CLONE: "goToNextClone",
         CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent",
         EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild",
-        // * Leo Operations
+
+        // * Export Operations
+        EXPORT_HEADLINES: "!export_headlines",
+        EXPORT_JUPYTER_NOTEBOOK: "!export_jupyter_notebook",
+        FLATTEN_OUTLINE: "!flatten_outline",
+        OUTLINE_TO_CWEB: "!outline_to_cweb",
+        OUTLINE_TO_NOWEB: "!outline_to_noweb",
+        REMOVE_SENTINELS: "!remove_sentinels",
+        WEAVE: "!weave",
+        WRITE_FILE_FROM_NODE: "!write_file_from_node",
+
+        // * Leo Operations, setters and getters
         MARK_PNODE: "!mark_node", // "markPNode",
         UNMARK_PNODE: "!unmark_node", // "unmarkPNode",
-
-        //COPY_PNODE: "copyOutline",
         COPY_PNODE: "!copy_node",
-
         CUT_PNODE: "!cut_node", // "cutPNode",
-
-        // PASTE_PNODE: "pasteOutline",
         PASTE_PNODE: "!paste_node",
-
-        // PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
         PASTE_CLONE_PNODE: "!paste_as_clone_node",
-
         DELETE_PNODE: "!delete_node", // "deletePNode",
         MOVE_PNODE_DOWN: "moveOutlineDown",
         MOVE_PNODE_LEFT: "moveOutlineLeft",
@@ -671,6 +674,15 @@ export class Constants {
         GOTO_NEXT_CLONE_SELECTION_FO: Constants.NAME + ".gotoNextCloneSelectionFromOutline",
         CONTRACT_OR_GO_LEFT: Constants.NAME + ".contractOrGoLeft",
         EXPAND_AND_GO_RIGHT: Constants.NAME + ".expandAndGoRight",
+        // * Export Commands
+        EXPORT_HEADLINES: Constants.NAME + "exportHeadlines",
+        EXPORT_JUPYTER_NOTEBOOK: Constants.NAME + "exportJupyterNotebook",
+        FLATTEN_OUTLINE: Constants.NAME + "flattenOutline",
+        OUTLINE_TO_CWEB: Constants.NAME + "outlineToCweb",
+        OUTLINE_TO_NOWEB: Constants.NAME + "outlineToNoweb",
+        REMOVE_SENTINELS: Constants.NAME + "removeSentinels",
+        WEAVE: Constants.NAME + "weave",
+        WRITE_FILE_FROM_NODE: Constants.NAME + "writeFileFromNode",
         // * Leo Operations
         UNDO: Constants.NAME + ".undo", // From command Palette
         UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE

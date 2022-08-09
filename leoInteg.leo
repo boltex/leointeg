@@ -90,6 +90,7 @@
 <v t="ekr.20200815123601.17"><vh>Scripting &amp; @buttons</vh></v>
 <v t="ekr.20200815123601.18"><vh>Show UI Panes</vh></v>
 <v t="ekr.20200815123601.19"><vh>Leo File Documents</vh></v>
+<v t="felix.20220808231327.1"><vh>Export Files</vh></v>
 <v t="ekr.20200815123601.20"><vh>Tree View</vh></v>
 <v t="ekr.20200815123601.21"><vh>Node Editing</vh></v>
 <v t="felix.20201105010614.1"><vh>Text Editing</vh></v>
@@ -132,6 +133,7 @@
 <v t="ekr.20200815123601.45"><vh>Scripting &amp; @buttons</vh></v>
 <v t="ekr.20200815123601.46"><vh>Show UI Panes</vh></v>
 <v t="ekr.20200815123601.47"><vh>Leo File Documents</vh></v>
+<v t="felix.20220808232051.1"><vh>Export Files</vh></v>
 <v t="ekr.20200815123601.48"><vh>Tree View</vh></v>
 <v t="ekr.20200815123601.49"><vh>Node Editing</vh></v>
 <v t="felix.20210530160638.1"><vh>Text Editing</vh></v>
@@ -485,6 +487,16 @@
 <v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
 <v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
 <v t="felix.20210602155312.1"><vh>importFile</vh></v>
+</v>
+<v t="felix.20220808233838.1"><vh>Export Commands</vh>
+<v t="felix.20220808233838.2"><vh>exportHeadlines</vh></v>
+<v t="felix.20220808233838.3"><vh>exportJupyterNotebook</vh></v>
+<v t="felix.20220808233838.4"><vh>flattenOutline</vh></v>
+<v t="felix.20220808233838.5"><vh>outlineToCweb</vh></v>
+<v t="felix.20220808233838.6"><vh>outlineToNoweb</vh></v>
+<v t="felix.20220808233838.7"><vh>removeSentinels</vh></v>
+<v t="felix.20220808233838.8"><vh>weave</vh></v>
+<v t="felix.20220808233838.9"><vh>writeFileFromNode</vh></v>
 </v>
 <v t="felix.20200719033306.1"><vh>AtButtons</vh>
 <v t="ekr.20200815090517.1"><vh>clickAtButton</vh></v>
@@ -1507,6 +1519,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: false
 })],
 
+[CMD.EXPORT_HEADLINES, () =&gt; w_leo.exportHeadlines()],
+[CMD.EXPORT_JUPYTER_NOTEBOOK, () =&gt; w_leo.exportJupyterNotebook()],
+[CMD.FLATTEN_OUTLINE, () =&gt; w_leo.flattenOutline()],
+[CMD.OUTLINE_TO_CWEB, () =&gt; w_leo.outlineToCweb()],
+[CMD.OUTLINE_TO_NOWEB, () =&gt; w_leo.outlineToNoweb()],
+[CMD.REMOVE_SENTINELS, () =&gt; w_leo.removeSentinels()],
+[CMD.WEAVE, () =&gt; w_leo.weave()],
+[CMD.WRITE_FILE_FROM_NODE, () =&gt; w_leo.writeFileFromNode()],
+
+[CMD.SET_UA, () =&gt; w_leo.setUa()],
+
 [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.clickAtButton(p_node)], // Not referenced in package.json
 [CMD.GOTO_SCRIPT, (p_node: LeoButtonNode) =&gt; w_leo.gotoScript(p_node)],
 [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.removeAtButton(p_node)],
@@ -1615,7 +1638,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: true
 })],
 
-[CMD.SET_UA, () =&gt; w_leo.setUa()],
 [CMD.PASTE_SELECTION, () =&gt; w_leo.pasteNode(U, false)],
 [CMD.PASTE_SELECTION_FO, () =&gt; w_leo.pasteNode(U, true)],
 [CMD.PASTE_CLONE_SELECTION, () =&gt; w_leo.pasteAsCloneNode(U, false)],
@@ -5051,21 +5073,24 @@ public static LEOBRIDGE = {
     GOTO_NEXT_CLONE: "goToNextClone",
     CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent",
     EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild",
-    // * Leo Operations
+
+    // * Export Operations
+    EXPORT_HEADLINES: "!export_headlines",
+    EXPORT_JUPYTER_NOTEBOOK: "!export_jupyter_notebook",
+    FLATTEN_OUTLINE: "!flatten_outline",
+    OUTLINE_TO_CWEB: "!outline_to_cweb",
+    OUTLINE_TO_NOWEB: "!outline_to_noweb",
+    REMOVE_SENTINELS: "!remove_sentinels",
+    WEAVE: "!weave",
+    WRITE_FILE_FROM_NODE: "!write_file_from_node",
+
+    // * Leo Operations, setters and getters
     MARK_PNODE: "!mark_node", // "markPNode",
     UNMARK_PNODE: "!unmark_node", // "unmarkPNode",
-
-    //COPY_PNODE: "copyOutline",
     COPY_PNODE: "!copy_node",
-
     CUT_PNODE: "!cut_node", // "cutPNode",
-
-    // PASTE_PNODE: "pasteOutline",
     PASTE_PNODE: "!paste_node",
-
-    // PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
     PASTE_CLONE_PNODE: "!paste_as_clone_node",
-
     DELETE_PNODE: "!delete_node", // "deletePNode",
     MOVE_PNODE_DOWN: "moveOutlineDown",
     MOVE_PNODE_LEFT: "moveOutlineLeft",
@@ -5195,6 +5220,15 @@ public static COMMANDS = {
     GOTO_NEXT_CLONE_SELECTION_FO: Constants.NAME + ".gotoNextCloneSelectionFromOutline",
     CONTRACT_OR_GO_LEFT: Constants.NAME + ".contractOrGoLeft",
     EXPAND_AND_GO_RIGHT: Constants.NAME + ".expandAndGoRight",
+    // * Export Commands
+    EXPORT_HEADLINES: Constants.NAME + "exportHeadlines",
+    EXPORT_JUPYTER_NOTEBOOK: Constants.NAME + "exportJupyterNotebook",
+    FLATTEN_OUTLINE: Constants.NAME + "flattenOutline",
+    OUTLINE_TO_CWEB: Constants.NAME + "outlineToCweb",
+    OUTLINE_TO_NOWEB: Constants.NAME + "outlineToNoweb",
+    REMOVE_SENTINELS: Constants.NAME + "removeSentinels",
+    WEAVE: Constants.NAME + "weave",
+    WRITE_FILE_FROM_NODE: Constants.NAME + "writeFileFromNode",
     // * Leo Operations
     UNDO: Constants.NAME + ".undo", // From command Palette
     UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
@@ -17403,6 +17437,153 @@ public setFindPanel(p_panel: vscode.WebviewView): void {
     }
 }
 
+</t>
+<t tx="felix.20220808231327.1">{
+  "command": "leointeg.exportHeadlines",
+  "category": "Leo",
+  "title": "Export Outline..."
+},
+{
+  "command": "leointeg.exportJupyterNotebook",
+  "category": "Leo",
+  "title": "Export Jupyter Notebook..."
+},
+{
+  "command": "leointeg.flattenOutline",
+  "category": "Leo",
+  "title": "Flatten Selected Outline..."
+},
+{
+  "command": "leointeg.outlineToCweb",
+  "category": "Leo",
+  "title": "Outline to CWEB..."
+},
+{
+  "command": "leointeg.outlineToNoweb",
+  "category": "Leo",
+  "title": "Outline to Noweb..."
+},
+{
+  "command": "leointeg.removeSentinels",
+  "category": "Leo",
+  "title": "Remove Sentinels..."
+},
+{
+  "command": "leointeg.weave",
+  "category": "Leo",
+  "title": "Weave..."
+},
+{
+  "command": "leointeg.writeFileFromNode",
+  "category": "Leo",
+  "title": "Write File From Node..."
+},
+</t>
+<t tx="felix.20220808232051.1">{
+  "command": "leointeg.exportHeadlines",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.exportJupyterNotebook",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.flattenOutline",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.outlineToCweb",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.outlineToNoweb",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.removeSentinels",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.weave",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.writeFileFromNode",
+  "when": "leoTreeOpened"
+},
+</t>
+<t tx="felix.20220808233838.1"></t>
+<t tx="felix.20220808233838.2">/**
+ * Export Outline (export headlines)
+ */
+public exportHeadlines(): void {
+
+
+    return ;
+}
+</t>
+<t tx="felix.20220808233838.3">/**
+ * * Export Jupyter Notebook
+ */
+public exportJupyterNotebook(): void {
+
+
+    return ;
+}
+</t>
+<t tx="felix.20220808233838.4">/**
+ * * Flatten Selected Outline
+ */
+public flattenOutline(): void {
+
+
+    return ;
+}
+</t>
+<t tx="felix.20220808233838.5">/**
+ * * Outline To CWEB
+ */
+public outlineToCweb(): void {
+
+
+    return ;
+}
+</t>
+<t tx="felix.20220808233838.6">/**
+ * * Outline To Noweb
+ */
+public outlineToNoweb(): void {
+
+
+    return ;
+}
+</t>
+<t tx="felix.20220808233838.7">/**
+ * * Remove Sentinels
+ */
+public removeSentinels(): void {
+
+
+    return ;
+}
+</t>
+<t tx="felix.20220808233838.8">/**
+ * * Weave
+ */
+public weave(): void {
+
+
+    return ;
+}
+</t>
+<t tx="felix.20220808233838.9">/**
+ * * Write file from node
+ */
+public writeFileFromNode(): void {
+
+
+    return ;
+}
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

@@ -4750,6 +4750,70 @@ export class LeoIntegration {
     }
 
     /**
+     * Export Outline (export headlines)
+     */
+    public exportHeadlines(): void {
+
+
+        return ;
+    }
+    /**
+     * * Export Jupyter Notebook
+     */
+    public exportJupyterNotebook(): void {
+
+
+        return ;
+    }
+    /**
+     * * Flatten Selected Outline
+     */
+    public flattenOutline(): void {
+
+
+        return ;
+    }
+    /**
+     * * Outline To CWEB
+     */
+    public outlineToCweb(): void {
+
+
+        return ;
+    }
+    /**
+     * * Outline To Noweb
+     */
+    public outlineToNoweb(): void {
+
+
+        return ;
+    }
+    /**
+     * * Remove Sentinels
+     */
+    public removeSentinels(): void {
+
+
+        return ;
+    }
+    /**
+     * * Weave
+     */
+    public weave(): void {
+
+
+        return ;
+    }
+    /**
+     * * Write file from node
+     */
+    public writeFileFromNode(): void {
+
+
+        return ;
+    }
+    /**
      * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
      * @param p_node the node of the at-buttons panel that was clicked
      * @returns the launchRefresh promise started after it's done running the 'atButton' command

@@ -70,6 +70,17 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: false
         })],
 
+        [CMD.EXPORT_HEADLINES, () => w_leo.exportHeadlines()],
+        [CMD.EXPORT_JUPYTER_NOTEBOOK, () => w_leo.exportJupyterNotebook()],
+        [CMD.FLATTEN_OUTLINE, () => w_leo.flattenOutline()],
+        [CMD.OUTLINE_TO_CWEB, () => w_leo.outlineToCweb()],
+        [CMD.OUTLINE_TO_NOWEB, () => w_leo.outlineToNoweb()],
+        [CMD.REMOVE_SENTINELS, () => w_leo.removeSentinels()],
+        [CMD.WEAVE, () => w_leo.weave()],
+        [CMD.WRITE_FILE_FROM_NODE, () => w_leo.writeFileFromNode()],
+
+        [CMD.SET_UA, () => w_leo.setUa()],
+
         [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickAtButton(p_node)], // Not referenced in package.json
         [CMD.GOTO_SCRIPT, (p_node: LeoButtonNode) => w_leo.gotoScript(p_node)],
         [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) => w_leo.removeAtButton(p_node)],
@@ -178,7 +189,6 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        [CMD.SET_UA, () => w_leo.setUa()],
         [CMD.PASTE_SELECTION, () => w_leo.pasteNode(U, false)],
         [CMD.PASTE_SELECTION_FO, () => w_leo.pasteNode(U, true)],
         [CMD.PASTE_CLONE_SELECTION, () => w_leo.pasteAsCloneNode(U, false)],

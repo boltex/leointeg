@@ -891,6 +891,46 @@
         "title": "Git Diff"
       },
       {
+        "command": "leointeg.exportHeadlines",
+        "category": "Leo",
+        "title": "Export Outline..."
+      },
+      {
+        "command": "leointeg.exportJupyterNotebook",
+        "category": "Leo",
+        "title": "Export Jupyter Notebook..."
+      },
+      {
+        "command": "leointeg.flattenOutline",
+        "category": "Leo",
+        "title": "Flatten Selected Outline..."
+      },
+      {
+        "command": "leointeg.outlineToCweb",
+        "category": "Leo",
+        "title": "Outline to CWEB..."
+      },
+      {
+        "command": "leointeg.outlineToNoweb",
+        "category": "Leo",
+        "title": "Outline to Noweb..."
+      },
+      {
+        "command": "leointeg.removeSentinels",
+        "category": "Leo",
+        "title": "Remove Sentinels..."
+      },
+      {
+        "command": "leointeg.weave",
+        "category": "Leo",
+        "title": "Weave..."
+      },
+      {
+        "command": "leointeg.writeFileFromNode",
+        "category": "Leo",
+        "title": "Write File From Node..."
+      },
+      {
         "command": "leointeg.openAside",
         "category": "Leo",
         "title": "Open to the Side"
@@ -2130,6 +2170,38 @@
         },
         {
           "command": "leointeg.writeDirtyAtFileNodes",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.exportHeadlines",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.exportJupyterNotebook",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.flattenOutline",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.outlineToCweb",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.outlineToNoweb",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.removeSentinels",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.weave",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.writeFileFromNode",
           "when": "leoTreeOpened"
         },
         {
