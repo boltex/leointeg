@@ -753,15 +753,6 @@
         }
       },
       {
-        "command": "leointeg.importAnyFile",
-        "title": "Import File",
-        "category": "Leo",
-        "icon": {
-          "light": "resources/light/import.svg",
-          "dark": "resources/dark/import.svg"
-        }
-      },
-      {
         "command": "leointeg.clearRecentFiles",
         "category": "Leo",
         "title": "Clear Recent Files",
@@ -889,6 +880,20 @@
         "command": "leointeg.gitDiff",
         "category": "Leo",
         "title": "Git Diff"
+      },
+      {
+        "command": "leointeg.importAnyFile",
+        "title": "Import File",
+        "category": "Leo",
+        "icon": {
+          "light": "resources/light/import.svg",
+          "dark": "resources/dark/import.svg"
+        }
+      },
+      {
+        "command": "leointeg.readFileIntoNode",
+        "category": "Leo",
+        "title": "Read File Into Node..."
       },
       {
         "command": "leointeg.exportHeadlines",
@@ -2125,16 +2130,12 @@
           "when": "leoBridgeReady"
         },
         {
-          "command": "leointeg.importAnyFile",
-          "when": "leoBridgeReady && leoTreeOpened"
-        },
-        {
           "command": "leointeg.recentLeoFiles",
           "when": "leoBridgeReady"
         },
         {
           "command": "leointeg.switchLeoFile",
-          "when": "leoBridgeReady && leoTreeOpened"
+          "when": "leoTreeOpened"
         },
         {
           "command": "leointeg.newLeoFile",
@@ -2170,6 +2171,14 @@
         },
         {
           "command": "leointeg.writeDirtyAtFileNodes",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.importAnyFile",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.readFileIntoNode",
           "when": "leoTreeOpened"
         },
         {

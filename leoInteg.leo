@@ -90,7 +90,7 @@
 <v t="ekr.20200815123601.17"><vh>Scripting &amp; @buttons</vh></v>
 <v t="ekr.20200815123601.18"><vh>Show UI Panes</vh></v>
 <v t="ekr.20200815123601.19"><vh>Leo File Documents</vh></v>
-<v t="felix.20220808231327.1"><vh>Export Files</vh></v>
+<v t="felix.20220808231327.1"><vh>Import Export Files</vh></v>
 <v t="ekr.20200815123601.20"><vh>Tree View</vh></v>
 <v t="ekr.20200815123601.21"><vh>Node Editing</vh></v>
 <v t="felix.20201105010614.1"><vh>Text Editing</vh></v>
@@ -133,7 +133,7 @@
 <v t="ekr.20200815123601.45"><vh>Scripting &amp; @buttons</vh></v>
 <v t="ekr.20200815123601.46"><vh>Show UI Panes</vh></v>
 <v t="ekr.20200815123601.47"><vh>Leo File Documents</vh></v>
-<v t="felix.20220808232051.1"><vh>Export Files</vh></v>
+<v t="felix.20220808232051.1"><vh>Import Export Files</vh></v>
 <v t="ekr.20200815123601.48"><vh>Tree View</vh></v>
 <v t="ekr.20200815123601.49"><vh>Node Editing</vh></v>
 <v t="felix.20210530160638.1"><vh>Text Editing</vh></v>
@@ -488,7 +488,7 @@
 <v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
 <v t="felix.20210602155312.1"><vh>importFile</vh></v>
 </v>
-<v t="felix.20220808233838.1"><vh>Export Commands</vh>
+<v t="felix.20220808233838.1"><vh>Export/Import Commands</vh>
 <v t="felix.20220808233838.2"><vh>exportHeadlines</vh></v>
 <v t="felix.20220808233838.3"><vh>exportJupyterNotebook</vh></v>
 <v t="felix.20220808233838.4"><vh>flattenOutline</vh></v>
@@ -497,6 +497,7 @@
 <v t="felix.20220808233838.7"><vh>removeSentinels</vh></v>
 <v t="felix.20220808233838.8"><vh>weave</vh></v>
 <v t="felix.20220808233838.9"><vh>writeFileFromNode</vh></v>
+<v t="felix.20220809232939.1"><vh>readFileIntoNode</vh></v>
 </v>
 <v t="felix.20200719033306.1"><vh>AtButtons</vh>
 <v t="ekr.20200815090517.1"><vh>clickAtButton</vh></v>
@@ -1519,6 +1520,9 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: false
 })],
 
+[CMD.IMPORT_ANY_FILE, () =&gt; w_leo.importAnyFile()], // No URL passed from the command definition.
+[CMD.READ_FILE_INTO_NODE, () =&gt; w_leo.readFileIntoNode()],
+[CMD.EXPORT_HEADLINES, () =&gt; w_leo.exportHeadlines()],
 [CMD.EXPORT_HEADLINES, () =&gt; w_leo.exportHeadlines()],
 [CMD.EXPORT_JUPYTER_NOTEBOOK, () =&gt; w_leo.exportJupyterNotebook()],
 [CMD.FLATTEN_OUTLINE, () =&gt; w_leo.flattenOutline()],
@@ -1538,7 +1542,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.NEW_FILE, () =&gt; w_leo.newLeoFile()],
 
 [CMD.OPEN_FILE, (p_uri?: vscode.Uri) =&gt; w_leo.openLeoFile(p_uri)],
-[CMD.IMPORT_ANY_FILE, () =&gt; w_leo.importAnyFile()], // No URL passed from the command definition.
 
 [CMD.CLEAR_RECENT_FILES, () =&gt; w_leo.clearRecentLeoFiles()],
 [CMD.RECENT_FILES, () =&gt; w_leo.showRecentLeoFiles()],
@@ -2726,15 +2729,6 @@ print('done')
   }
 },
 {
-  "command": "leointeg.importAnyFile",
-  "title": "Import File",
-  "category": "Leo",
-  "icon": {
-    "light": "resources/light/import.svg",
-    "dark": "resources/dark/import.svg"
-  }
-},
-{
   "command": "leointeg.clearRecentFiles",
   "category": "Leo",
   "title": "Clear Recent Files",
@@ -3737,16 +3731,12 @@ print('done')
   "when": "leoBridgeReady"
 },
 {
-  "command": "leointeg.importAnyFile",
-  "when": "leoBridgeReady &amp;&amp; leoTreeOpened"
-},
-{
   "command": "leointeg.recentLeoFiles",
   "when": "leoBridgeReady"
 },
 {
   "command": "leointeg.switchLeoFile",
-  "when": "leoBridgeReady &amp;&amp; leoTreeOpened"
+  "when": "leoTreeOpened"
 },
 {
   "command": "leointeg.newLeoFile",
@@ -5049,7 +5039,6 @@ public static LEOBRIDGE = {
     GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles",
     SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile",
     OPEN_FILE: "!open_file", // "openFile",
-    IMPORT_ANY_FILE: "!import_any_file", // "importAnyFile",
     OPEN_FILES: "!open_files", //  "openFiles",
     CLOSE_FILE: "!close_file", // "closeFile",
     SAVE_FILE: "!save_file", // "saveFile",
@@ -5074,7 +5063,9 @@ public static LEOBRIDGE = {
     CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent",
     EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild",
 
-    // * Export Operations
+    // * Import Export Operations
+    IMPORT_ANY_FILE: "!import_any_file", // "importAnyFile",
+    READ_FILE_INTO_NODE: "!read_file_into_node",
     EXPORT_HEADLINES: "!export_headlines",
     EXPORT_JUPYTER_NOTEBOOK: "!export_jupyter_notebook",
     FLATTEN_OUTLINE: "!flatten_outline",
@@ -5186,7 +5177,6 @@ public static COMMANDS = {
     SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
     OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
     CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",
-    IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
     RECENT_FILES: Constants.NAME + ".recentLeoFiles", // shows recent Leo files, opens one on selection
     SWITCH_FILE: Constants.NAME + ".switchLeoFile",
     NEW_FILE: Constants.NAME + ".newLeoFile",
@@ -5220,7 +5210,9 @@ public static COMMANDS = {
     GOTO_NEXT_CLONE_SELECTION_FO: Constants.NAME + ".gotoNextCloneSelectionFromOutline",
     CONTRACT_OR_GO_LEFT: Constants.NAME + ".contractOrGoLeft",
     EXPAND_AND_GO_RIGHT: Constants.NAME + ".expandAndGoRight",
-    // * Export Commands
+    // * Import Export Commands
+    IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
+    READ_FILE_INTO_NODE: Constants.NAME + ".readFileIntoNode",
     EXPORT_HEADLINES: Constants.NAME + "exportHeadlines",
     EXPORT_JUPYTER_NOTEBOOK: Constants.NAME + "exportJupyterNotebook",
     FLATTEN_OUTLINE: Constants.NAME + "flattenOutline",
@@ -17439,6 +17431,20 @@ public setFindPanel(p_panel: vscode.WebviewView): void {
 
 </t>
 <t tx="felix.20220808231327.1">{
+  "command": "leointeg.importAnyFile",
+  "title": "Import File",
+  "category": "Leo",
+  "icon": {
+    "light": "resources/light/import.svg",
+    "dark": "resources/dark/import.svg"
+  }
+},
+{
+  "command": "leointeg.readFileIntoNode",
+  "category": "Leo",
+  "title": "Read File Into Node..."
+},
+{
   "command": "leointeg.exportHeadlines",
   "category": "Leo",
   "title": "Export Outline..."
@@ -17480,6 +17486,14 @@ public setFindPanel(p_panel: vscode.WebviewView): void {
 },
 </t>
 <t tx="felix.20220808232051.1">{
+  "command": "leointeg.importAnyFile",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.readFileIntoNode",
+  "when": "leoTreeOpened"
+},
+{
   "command": "leointeg.exportHeadlines",
   "when": "leoTreeOpened"
 },
@@ -17519,61 +17533,124 @@ public setFindPanel(p_panel: vscode.WebviewView): void {
 public exportHeadlines(): void {
 
 
-    return ;
+    return;
 }
 </t>
 <t tx="felix.20220808233838.3">/**
  * * Export Jupyter Notebook
  */
 public exportJupyterNotebook(): void {
+    // """Convert the present outline to a .ipynb file."""
 
+    // c = self.c
+    // fn = g.app.gui.runSaveFileDialog(
+    //     c,
+    //     defaultextension=".ipynb",
+    //     filetypes=[
+    //         ("Jupyter files", "*.ipynb"),
+    //         ("All files", "*"),
+    //     ],
+    //     title="Export To Jupyter File",
+    // )
 
-    return ;
+    return;
 }
 </t>
 <t tx="felix.20220808233838.4">/**
  * * Flatten Selected Outline
  */
 public flattenOutline(): void {
+    // """
+    // Export the selected outline to an external file.
+    // The outline is represented in MORE format.
+    // """
+    // c = self
+    // filetypes = [("Text files", "*.txt"), ("All files", "*")]
+    // fileName = g.app.gui.runSaveFileDialog(c,
+    //     title="Flatten Selected Outline",
+    //     filetypes=filetypes,
+    //     defaultextension=".txt")
 
-
-    return ;
+    return;
 }
 </t>
 <t tx="felix.20220808233838.5">/**
  * * Outline To CWEB
  */
 public outlineToCweb(): void {
+    // """
+    // Export the selected outline to an external file.
+    // The outline is represented in CWEB format.
+    // """
+    // c = self
+    // filetypes = [
+    //     ("CWEB files", "*.w"),
+    //     ("Text files", "*.txt"),
+    //     ("All files", "*")]
+    // fileName = g.app.gui.runSaveFileDialog(c,
+    //     title="Outline To CWEB",
+    //     filetypes=filetypes,
+    //     defaultextension=".w")
 
-
-    return ;
+    return;
 }
 </t>
 <t tx="felix.20220808233838.6">/**
  * * Outline To Noweb
  */
 public outlineToNoweb(): void {
+    // c = self
+    // filetypes = [
+    //     ("Noweb files", "*.nw"),
+    //     ("Text files", "*.txt"),
+    //     ("All files", "*")]
+    // fileName = g.app.gui.runSaveFileDialog(c,
+    //     title="Outline To Noweb",
+    //     filetypes=filetypes,
+    //     defaultextension=".nw")
 
-
-    return ;
+    return;
 }
 </t>
 <t tx="felix.20220808233838.7">/**
  * * Remove Sentinels
  */
 public removeSentinels(): void {
+    // Import one or more files, removing any sentinels.
 
+    // c = self
+    // types = [
+    //     ("All files", "*"),
+    //     ("C/C++ files", "*.c"),
+    //     ("C/C++ files", "*.cpp"),
+    //     ("C/C++ files", "*.h"),
+    //     ("C/C++ files", "*.hpp"),
+    //     ("Java files", "*.java"),
+    //     ("Lua files", "*.lua"),
+    //     ("Pascal files", "*.pas"),
+    //     ("Python files", "*.py")]
+    // names = g.app.gui.runOpenFileDialog(c,
+    //     title="Remove Sentinels",
+    //     filetypes=types,
+    //     defaultextension=".py",
+    //     multiple=True)
 
-    return ;
+    return;
 }
 </t>
 <t tx="felix.20220808233838.8">/**
  * * Weave
  */
 public weave(): void {
+    // Simulate a literate-programming weave operation by writing the outline to a text file.
 
+    // c = self
+    // fileName = g.app.gui.runSaveFileDialog(c,
+    //     title="Weave",
+    //     filetypes=[("Text files", "*.txt"), ("All files", "*")],
+    //     defaultextension=".txt")
 
-    return ;
+    return;
 }
 </t>
 <t tx="felix.20220808233838.9">/**
@@ -17581,8 +17658,41 @@ public weave(): void {
  */
 public writeFileFromNode(): void {
 
+    // * If node starts with @read-file-into-node, use the full path name in the headline.
+    // * Otherwise, prompt for a file name.
 
-    return ;
+    // h = p.h.rstrip()
+    // s = p.b
+    // tag = '@read-file-into-node'
+    // if h.startswith(tag):
+    //     fileName = h[len(tag) :].strip()
+    // else:
+    //     fileName = None
+    // if not fileName:
+    //     fileName = g.app.gui.runSaveFileDialog(c,
+    //         title='Write File From Node',
+    //         filetypes=[("All files", "*"), ("Python files", "*.py"), ("Leo files", "*.leo")],
+    //         defaultextension=None)
+    // if fileName:
+
+    return;
+}
+</t>
+<t tx="felix.20220809232939.1">/**
+ * * Read file from node
+ */
+public readFileIntoNode(): void {
+    // """Read a file into a single node."""
+    // c = self
+    // undoType = 'Read File Into Node'
+    // c.endEditing()
+    // filetypes = [("All files", "*"), ("Python files", "*.py"), ("Leo files", "*.leo"),]
+    // fileName = g.app.gui.runOpenFileDialog(c,
+    //     title="Read File Into Node",
+    //     filetypes=filetypes,
+    //     defaultextension=None)
+
+    return;
 }
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

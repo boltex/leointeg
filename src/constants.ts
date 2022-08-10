@@ -504,7 +504,6 @@ export class Constants {
         GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles",
         SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile",
         OPEN_FILE: "!open_file", // "openFile",
-        IMPORT_ANY_FILE: "!import_any_file", // "importAnyFile",
         OPEN_FILES: "!open_files", //  "openFiles",
         CLOSE_FILE: "!close_file", // "closeFile",
         SAVE_FILE: "!save_file", // "saveFile",
@@ -529,7 +528,9 @@ export class Constants {
         CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent",
         EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild",
 
-        // * Export Operations
+        // * Import Export Operations
+        IMPORT_ANY_FILE: "!import_any_file", // "importAnyFile",
+        READ_FILE_INTO_NODE: "!read_file_into_node",
         EXPORT_HEADLINES: "!export_headlines",
         EXPORT_JUPYTER_NOTEBOOK: "!export_jupyter_notebook",
         FLATTEN_OUTLINE: "!flatten_outline",
@@ -640,7 +641,6 @@ export class Constants {
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
         OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
         CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",
-        IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
         RECENT_FILES: Constants.NAME + ".recentLeoFiles", // shows recent Leo files, opens one on selection
         SWITCH_FILE: Constants.NAME + ".switchLeoFile",
         NEW_FILE: Constants.NAME + ".newLeoFile",
@@ -674,7 +674,9 @@ export class Constants {
         GOTO_NEXT_CLONE_SELECTION_FO: Constants.NAME + ".gotoNextCloneSelectionFromOutline",
         CONTRACT_OR_GO_LEFT: Constants.NAME + ".contractOrGoLeft",
         EXPAND_AND_GO_RIGHT: Constants.NAME + ".expandAndGoRight",
-        // * Export Commands
+        // * Import Export Commands
+        IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
+        READ_FILE_INTO_NODE: Constants.NAME + ".readFileIntoNode",
         EXPORT_HEADLINES: Constants.NAME + "exportHeadlines",
         EXPORT_JUPYTER_NOTEBOOK: Constants.NAME + "exportJupyterNotebook",
         FLATTEN_OUTLINE: Constants.NAME + "flattenOutline",

@@ -70,6 +70,9 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: false
         })],
 
+        [CMD.IMPORT_ANY_FILE, () => w_leo.importAnyFile()], // No URL passed from the command definition.
+        [CMD.READ_FILE_INTO_NODE, () => w_leo.readFileIntoNode()],
+        [CMD.EXPORT_HEADLINES, () => w_leo.exportHeadlines()],
         [CMD.EXPORT_HEADLINES, () => w_leo.exportHeadlines()],
         [CMD.EXPORT_JUPYTER_NOTEBOOK, () => w_leo.exportJupyterNotebook()],
         [CMD.FLATTEN_OUTLINE, () => w_leo.flattenOutline()],
@@ -89,7 +92,6 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],
 
         [CMD.OPEN_FILE, (p_uri?: vscode.Uri) => w_leo.openLeoFile(p_uri)],
-        [CMD.IMPORT_ANY_FILE, () => w_leo.importAnyFile()], // No URL passed from the command definition.
 
         [CMD.CLEAR_RECENT_FILES, () => w_leo.clearRecentLeoFiles()],
         [CMD.RECENT_FILES, () => w_leo.showRecentLeoFiles()],

@@ -4755,63 +4755,158 @@ export class LeoIntegration {
     public exportHeadlines(): void {
 
 
-        return ;
+        return;
     }
     /**
      * * Export Jupyter Notebook
      */
     public exportJupyterNotebook(): void {
+        // """Convert the present outline to a .ipynb file."""
 
+        // c = self.c
+        // fn = g.app.gui.runSaveFileDialog(
+        //     c,
+        //     defaultextension=".ipynb",
+        //     filetypes=[
+        //         ("Jupyter files", "*.ipynb"),
+        //         ("All files", "*"),
+        //     ],
+        //     title="Export To Jupyter File",
+        // )
 
-        return ;
+        return;
     }
     /**
      * * Flatten Selected Outline
      */
     public flattenOutline(): void {
+        // """
+        // Export the selected outline to an external file.
+        // The outline is represented in MORE format.
+        // """
+        // c = self
+        // filetypes = [("Text files", "*.txt"), ("All files", "*")]
+        // fileName = g.app.gui.runSaveFileDialog(c,
+        //     title="Flatten Selected Outline",
+        //     filetypes=filetypes,
+        //     defaultextension=".txt")
 
-
-        return ;
+        return;
     }
     /**
      * * Outline To CWEB
      */
     public outlineToCweb(): void {
+        // """
+        // Export the selected outline to an external file.
+        // The outline is represented in CWEB format.
+        // """
+        // c = self
+        // filetypes = [
+        //     ("CWEB files", "*.w"),
+        //     ("Text files", "*.txt"),
+        //     ("All files", "*")]
+        // fileName = g.app.gui.runSaveFileDialog(c,
+        //     title="Outline To CWEB",
+        //     filetypes=filetypes,
+        //     defaultextension=".w")
 
-
-        return ;
+        return;
     }
     /**
      * * Outline To Noweb
      */
     public outlineToNoweb(): void {
+        // c = self
+        // filetypes = [
+        //     ("Noweb files", "*.nw"),
+        //     ("Text files", "*.txt"),
+        //     ("All files", "*")]
+        // fileName = g.app.gui.runSaveFileDialog(c,
+        //     title="Outline To Noweb",
+        //     filetypes=filetypes,
+        //     defaultextension=".nw")
 
-
-        return ;
+        return;
     }
     /**
      * * Remove Sentinels
      */
     public removeSentinels(): void {
+        // Import one or more files, removing any sentinels.
 
+        // c = self
+        // types = [
+        //     ("All files", "*"),
+        //     ("C/C++ files", "*.c"),
+        //     ("C/C++ files", "*.cpp"),
+        //     ("C/C++ files", "*.h"),
+        //     ("C/C++ files", "*.hpp"),
+        //     ("Java files", "*.java"),
+        //     ("Lua files", "*.lua"),
+        //     ("Pascal files", "*.pas"),
+        //     ("Python files", "*.py")]
+        // names = g.app.gui.runOpenFileDialog(c,
+        //     title="Remove Sentinels",
+        //     filetypes=types,
+        //     defaultextension=".py",
+        //     multiple=True)
 
-        return ;
+        return;
     }
     /**
      * * Weave
      */
     public weave(): void {
+        // Simulate a literate-programming weave operation by writing the outline to a text file.
 
+        // c = self
+        // fileName = g.app.gui.runSaveFileDialog(c,
+        //     title="Weave",
+        //     filetypes=[("Text files", "*.txt"), ("All files", "*")],
+        //     defaultextension=".txt")
 
-        return ;
+        return;
     }
     /**
      * * Write file from node
      */
     public writeFileFromNode(): void {
 
+        // * If node starts with @read-file-into-node, use the full path name in the headline.
+        // * Otherwise, prompt for a file name.
 
-        return ;
+        // h = p.h.rstrip()
+        // s = p.b
+        // tag = '@read-file-into-node'
+        // if h.startswith(tag):
+        //     fileName = h[len(tag) :].strip()
+        // else:
+        //     fileName = None
+        // if not fileName:
+        //     fileName = g.app.gui.runSaveFileDialog(c,
+        //         title='Write File From Node',
+        //         filetypes=[("All files", "*"), ("Python files", "*.py"), ("Leo files", "*.leo")],
+        //         defaultextension=None)
+        // if fileName:
+
+        return;
+    }
+    /**
+     * * Read file from node
+     */
+    public readFileIntoNode(): void {
+        // """Read a file into a single node."""
+        // c = self
+        // undoType = 'Read File Into Node'
+        // c.endEditing()
+        // filetypes = [("All files", "*"), ("Python files", "*.py"), ("Leo files", "*.leo"),]
+        // fileName = g.app.gui.runOpenFileDialog(c,
+        //     title="Read File Into Node",
+        //     filetypes=filetypes,
+        //     defaultextension=None)
+
+        return;
     }
     /**
      * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
