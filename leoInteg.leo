@@ -329,9 +329,10 @@
 <v t="felix.20200718170429.1"><vh>@clean src/leoFileBrowser.ts</vh>
 <v t="felix.20200718170429.2"><vh>class LeoFilesBrowser</vh>
 <v t="felix.20200718170429.3"><vh>_getBestOpenFolderUri</vh></v>
-<v t="felix.20210602160216.1"><vh>getImportFileUrl</vh></v>
+<v t="felix.20210602160216.1"><vh>getImportFileUrls</vh></v>
 <v t="felix.20200718170429.4"><vh>getLeoFileUrl</vh></v>
 <v t="felix.20210915234252.1"><vh>getLeoJsFileUrl</vh></v>
+<v t="felix.20220810231122.1"><vh>getExportFileUrl</vh></v>
 </v>
 </v>
 <v t="felix.20200719025231.1"><vh>@clean src/leoIntegration.ts</vh>
@@ -7270,7 +7271,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
                 saveLabel: "Save Leo File",
                 defaultUri: this._getBestOpenFolderUri(),
                 filters: { 'Leo Files': ['leo', 'leojs'] },
-                title: "Save Leo File"
+                title: "Save as Leo File"
             })
                 .then(p_chosenLeoFile =&gt; {
                     this._fileBrowserActive = false;
@@ -13639,29 +13640,31 @@ public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
 </t>
 <t tx="felix.20210602160216.1">/**
  * * Open a file browser to let user choose file(s) to import
- * @param p_fileType can be used to restrict to a particular file type
- * @returns a promise of an array of filepath+name strings
+ * @param p_fileTypes can be used to restrict to particular file types
+ * @param p_single can be used to force single file selection
+ * @param p_title to specify a window title
+ * @returns a promise of an array of filepath+name string(s)
  */
-public getImportFileUrls(p_fileType?: string): Promise&lt;string[]&gt; {
+public getImportFileUrls(p_fileTypes?: { [name: string]: string[]; }, p_single?: boolean, p_title?: string): Promise&lt;string[]&gt; {
     if (this._fileBrowserActive) {
         return Promise.resolve([]);
     }
     this._fileBrowserActive = true;
     let w_types: { [name: string]: string[]; };
-    if (p_fileType &amp;&amp; Constants.IMPORT_FILE_TYPES[p_fileType]) {
-        w_types = {};
-        w_types[p_fileType] = Constants.IMPORT_FILE_TYPES[p_fileType];
+    if (p_fileTypes) {
+        w_types = p_fileTypes;
     } else {
         w_types = Constants.IMPORT_FILE_TYPES;
     }
     return new Promise((p_resolve, p_reject) =&gt; {
         vscode.window
             .showOpenDialog({
-                canSelectMany: true,
-                openLabel: "Import File",
+                canSelectMany: p_single ? false : true,
+                openLabel: "Import",
                 canSelectFolders: false,
                 filters: w_types,
-                defaultUri: this._getBestOpenFolderUri()
+                defaultUri: this._getBestOpenFolderUri(),
+                title: p_title ? p_title : "Import File"
             })
             .then(p_chosenLeoFiles =&gt; {
                 this._fileBrowserActive = false;
@@ -14497,9 +14500,10 @@ public getLeoJsFileUrl(): Promise&lt;string&gt; {
     return new Promise((p_resolve, p_reject) =&gt; {
         // Choose file
         vscode.window.showSaveDialog({
-            saveLabel: "Save as leojs File",
+            saveLabel: "Save Leojs File",
             defaultUri: this._getBestOpenFolderUri(),
-            filters: { 'JSON Leo File': ['leojs'] }
+            filters: { 'JSON Leo File': ['leojs'] },
+            title: "Save as LeoJS File"
         })
             .then(p_chosenLeoFile =&gt; {
                 this._fileBrowserActive = false;
@@ -17694,6 +17698,36 @@ public readFileIntoNode(): void {
 
     return;
 }
+</t>
+<t tx="felix.20220810231122.1">/**
+ * * getExportFileUrl
+ */
+public getExportFileUrl(p_title: string, p_fileTypes: { [name: string]: string[]; }): Promise&lt;string&gt; {
+    if (this._fileBrowserActive) {
+        return Promise.resolve("");
+    }
+    this._fileBrowserActive = true;
+    return new Promise((p_resolve, p_reject) =&gt; {
+        // Choose file
+        vscode.window.showSaveDialog({
+            saveLabel: "Export File",
+            defaultUri: this._getBestOpenFolderUri(),
+            filters: p_fileTypes,
+            title: p_title
+        })
+            .then(p_chosenLeoFile =&gt; {
+                this._fileBrowserActive = false;
+                if (p_chosenLeoFile) {
+                    // single string
+                    p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                } else {
+                    p_resolve(""); // not rejection - resolve empty string
+                }
+            });
+
+    });
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
