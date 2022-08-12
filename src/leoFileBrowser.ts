@@ -78,6 +78,7 @@ export class LeoFilesBrowser {
                 });
         });
     }
+
     /**
      * * Open a file browser and let the user choose a Leo file or cancel the operation
      * @param p_saveAsFlag Optional flag that will ask for a 'save' path+filename

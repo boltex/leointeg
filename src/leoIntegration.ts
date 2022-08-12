@@ -4743,96 +4743,241 @@ export class LeoIntegration {
                     }
                 },
                 (p_errorImport) => {
-                    console.log('in .then not imported'); // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
+                    console.log('Rejection for import file');
                     return Promise.reject(p_errorImport);
                 }
             );
     }
 
     /**
-     * Export Outline (export headlines)
+     * * Export Outline
+     * Export all headlines to an external file.
      */
-    public exportHeadlines(): void {
+    public exportHeadlines(p_exportFileUri?: vscode.Uri): Thenable<unknown> {
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
+                    return this._leoFilesBrowser.getExportFileUrl(
+                        "Export Headlines",
+                        {
+                            'Text files': ['txt'],
+                            'All files': ['*'],
+                        },
+                    );
+                } else {
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                    return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                }
+            })
+            .then((p_chosenLeoFile) => {
+                if (p_chosenLeoFile.trim()) {
 
-
-        return;
+                    const q_commandResult = this.nodeCommand({
+                        action: Constants.LEOBRIDGE.EXPORT_HEADLINES,
+                        node: undefined,
+                        refreshType: { tree: true, states: true, documents: true },
+                        fromOutline: this.fromOutline, // use last
+                        name: p_chosenLeoFile,
+                    });
+                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                    this._leoStatusBar.update(true, 0, true);
+                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
+                    if (q_commandResult) {
+                        return q_commandResult;
+                    } else {
+                        return Promise.reject('Export Headlines not added on command stack');
+                    }
+                } else {
+                    // Canceled
+                    return Promise.resolve(undefined);
+                }
+            });
     }
     /**
      * * Export Jupyter Notebook
+     * Convert the present outline to a .ipynb file.
      */
-    public exportJupyterNotebook(): void {
-        // """Convert the present outline to a .ipynb file."""
+    public exportJupyterNotebook(): Thenable<unknown> {
 
-        // c = self.c
-        // fn = g.app.gui.runSaveFileDialog(
-        //     c,
-        //     defaultextension=".ipynb",
-        //     filetypes=[
-        //         ("Jupyter files", "*.ipynb"),
-        //         ("All files", "*"),
-        //     ],
-        //     title="Export To Jupyter File",
-        // )
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
+                    return this._leoFilesBrowser.getExportFileUrl(
+                        "Export To Jupyter File",
+                        {
+                            'Jupyter files': ['ipynb'],
+                            'All files': ['*'],
+                        },
+                    );
+                } else {
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                    return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                }
+            })
+            .then((p_chosenLeoFile) => {
+                if (p_chosenLeoFile.trim()) {
 
-        return;
+                    const q_commandResult = this.nodeCommand({
+                        action: Constants.LEOBRIDGE.EXPORT_JUPYTER_NOTEBOOK,
+                        node: undefined,
+                        refreshType: { tree: true, states: true, documents: true },
+                        fromOutline: this.fromOutline, // use last
+                        name: p_chosenLeoFile,
+                    });
+                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                    this._leoStatusBar.update(true, 0, true);
+                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
+                    if (q_commandResult) {
+                        return q_commandResult;
+                    } else {
+                        return Promise.reject('Export To Jupyter File not added on command stack');
+                    }
+                } else {
+                    // Canceled
+                    return Promise.resolve(undefined);
+                }
+            });
     }
     /**
      * * Flatten Selected Outline
+     * Export the selected outline to an external file.
+     * The outline is represented in MORE format.
      */
-    public flattenOutline(): void {
-        // """
-        // Export the selected outline to an external file.
-        // The outline is represented in MORE format.
-        // """
-        // c = self
-        // filetypes = [("Text files", "*.txt"), ("All files", "*")]
-        // fileName = g.app.gui.runSaveFileDialog(c,
-        //     title="Flatten Selected Outline",
-        //     filetypes=filetypes,
-        //     defaultextension=".txt")
+    public flattenOutline(): Thenable<unknown> {
 
-        return;
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
+                    return this._leoFilesBrowser.getExportFileUrl(
+                        "Flatten Selected Outline",
+                        {
+                            'Text files': ['txt'],
+                            'All files': ['*'],
+                        },
+                    );
+                } else {
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                    return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                }
+            })
+            .then((p_chosenLeoFile) => {
+                if (p_chosenLeoFile.trim()) {
+
+                    const q_commandResult = this.nodeCommand({
+                        action: Constants.LEOBRIDGE.FLATTEN_OUTLINE,
+                        node: undefined,
+                        refreshType: { tree: true, states: true, documents: true },
+                        fromOutline: this.fromOutline, // use last
+                        name: p_chosenLeoFile,
+                    });
+                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                    this._leoStatusBar.update(true, 0, true);
+                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
+                    if (q_commandResult) {
+                        return q_commandResult;
+                    } else {
+                        return Promise.reject('Flatten Selected Outline not added on command stack');
+                    }
+                } else {
+                    // Canceled
+                    return Promise.resolve(undefined);
+                }
+            });
     }
     /**
      * * Outline To CWEB
      */
-    public outlineToCweb(): void {
-        // """
-        // Export the selected outline to an external file.
-        // The outline is represented in CWEB format.
-        // """
-        // c = self
-        // filetypes = [
-        //     ("CWEB files", "*.w"),
-        //     ("Text files", "*.txt"),
-        //     ("All files", "*")]
-        // fileName = g.app.gui.runSaveFileDialog(c,
-        //     title="Outline To CWEB",
-        //     filetypes=filetypes,
-        //     defaultextension=".w")
+    public outlineToCweb(): Thenable<unknown> {
 
-        return;
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
+                    return this._leoFilesBrowser.getExportFileUrl(
+                        "Outline To CWEB",
+                        {
+                            'CWEB files': ['w'],
+                            'Text files': ['txt'],
+                            'All files': ['*'],
+                        },
+                    );
+                } else {
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                    return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                }
+            })
+            .then((p_chosenLeoFile) => {
+                if (p_chosenLeoFile.trim()) {
+
+                    const q_commandResult = this.nodeCommand({
+                        action: Constants.LEOBRIDGE.OUTLINE_TO_CWEB,
+                        node: undefined,
+                        refreshType: { tree: true, states: true, documents: true },
+                        fromOutline: this.fromOutline, // use last
+                        name: p_chosenLeoFile,
+                    });
+                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                    this._leoStatusBar.update(true, 0, true);
+                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
+                    if (q_commandResult) {
+                        return q_commandResult;
+                    } else {
+                        return Promise.reject('Outline To CWEB not added on command stack');
+                    }
+                } else {
+                    // Canceled
+                    return Promise.resolve(undefined);
+                }
+            });
     }
     /**
      * * Outline To Noweb
      */
-    public outlineToNoweb(): void {
-        // c = self
-        // filetypes = [
-        //     ("Noweb files", "*.nw"),
-        //     ("Text files", "*.txt"),
-        //     ("All files", "*")]
-        // fileName = g.app.gui.runSaveFileDialog(c,
-        //     title="Outline To Noweb",
-        //     filetypes=filetypes,
-        //     defaultextension=".nw")
+    public outlineToNoweb(): Thenable<unknown> {
 
-        return;
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
+                    return this._leoFilesBrowser.getExportFileUrl(
+                        "Outline To Noweb",
+                        {
+                            'Noweb files': ['nw'],
+                            'Text files': ['txt'],
+                            'All files': ['*'],
+                        },
+                    );
+                } else {
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                    return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                }
+            })
+            .then((p_chosenLeoFile) => {
+                if (p_chosenLeoFile.trim()) {
+
+                    const q_commandResult = this.nodeCommand({
+                        action: Constants.LEOBRIDGE.OUTLINE_TO_NOWEB,
+                        node: undefined,
+                        refreshType: { tree: true, states: true, documents: true },
+                        fromOutline: this.fromOutline, // use last
+                        name: p_chosenLeoFile,
+                    });
+                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                    this._leoStatusBar.update(true, 0, true);
+                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
+                    if (q_commandResult) {
+                        return q_commandResult;
+                    } else {
+                        return Promise.reject('Outline To Noweb not added on command stack');
+                    }
+                } else {
+                    // Canceled
+                    return Promise.resolve(undefined);
+                }
+            });
     }
     /**
      * * Remove Sentinels
      */
-    public removeSentinels(): void {
+    public removeSentinels(): Thenable<unknown> {
         // Import one or more files, removing any sentinels.
 
         // c = self
@@ -4851,51 +4996,126 @@ export class LeoIntegration {
         //     filetypes=types,
         //     defaultextension=".py",
         //     multiple=True)
+        return Promise.resolve(undefined);
 
-        return;
     }
     /**
      * * Weave
+     * Simulate a literate-programming weave operation by writing the outline to a text file.
      */
-    public weave(): void {
-        // Simulate a literate-programming weave operation by writing the outline to a text file.
+    public weave(): Thenable<unknown> {
 
-        // c = self
-        // fileName = g.app.gui.runSaveFileDialog(c,
-        //     title="Weave",
-        //     filetypes=[("Text files", "*.txt"), ("All files", "*")],
-        //     defaultextension=".txt")
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
+                    return this._leoFilesBrowser.getExportFileUrl(
+                        "Weave",
+                        {
+                            'Text files': ['txt'],
+                            'All files': ['*'],
+                        },
+                    );
+                } else {
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                    return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                }
+            })
+            .then((p_chosenLeoFile) => {
+                if (p_chosenLeoFile.trim()) {
 
-        return;
+                    const q_commandResult = this.nodeCommand({
+                        action: Constants.LEOBRIDGE.WEAVE,
+                        node: undefined,
+                        refreshType: { tree: true, states: true, documents: true },
+                        fromOutline: this.fromOutline, // use last
+                        name: p_chosenLeoFile,
+                    });
+                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                    this._leoStatusBar.update(true, 0, true);
+                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
+                    if (q_commandResult) {
+                        return q_commandResult;
+                    } else {
+                        return Promise.reject('Weave not added on command stack');
+                    }
+                } else {
+                    // Canceled
+                    return Promise.resolve(undefined);
+                }
+            });
     }
     /**
      * * Write file from node
      */
-    public writeFileFromNode(): void {
+    public writeFileFromNode(): Thenable<unknown> {
 
         // * If node starts with @read-file-into-node, use the full path name in the headline.
         // * Otherwise, prompt for a file name.
 
-        // h = p.h.rstrip()
-        // s = p.b
-        // tag = '@read-file-into-node'
-        // if h.startswith(tag):
-        //     fileName = h[len(tag) :].strip()
-        // else:
-        //     fileName = None
-        // if not fileName:
-        //     fileName = g.app.gui.runSaveFileDialog(c,
-        //         title='Write File From Node',
-        //         filetypes=[("All files", "*"), ("Python files", "*.py"), ("Leo files", "*.leo")],
-        //         defaultextension=None)
-        // if fileName:
+        if (!this.leoStates.fileOpenedReady || !this.lastSelectedNode) {
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+            return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+        }
 
-        return;
+        // h = p.h.rstrip()
+        const h = this.lastSelectedNode.headline.trimEnd();
+        const tag = '@read-file-into-node';
+
+        let fileName = '';
+        if (h.startsWith(tag)) {
+            fileName = h.substring(tag.length).trim();
+        }
+
+        let q_fileName: Thenable<string>;
+        if (fileName) {
+            q_fileName = Promise.resolve(fileName);
+        } else {
+            q_fileName = this._isBusyTriggerSave(true, true)
+                .then((p_saveResult) => {
+                    if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
+                        return this._leoFilesBrowser.getExportFileUrl(
+                            "Write file from node",
+                            {
+                                'All files': ['*'],
+                                'Python files': ['py'],
+                                'Leo files': ['leo'],
+                            },
+                        );
+                    } else {
+                        vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                        return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                    }
+                });
+        }
+
+        return q_fileName.then((p_chosenLeoFile) => {
+            if (p_chosenLeoFile.trim()) {
+
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.EXPORT_HEADLINES,
+                    node: undefined,
+                    refreshType: { tree: true, states: true, documents: true },
+                    fromOutline: this.fromOutline, // use last
+                    name: p_chosenLeoFile,
+                });
+                this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                this._leoStatusBar.update(true, 0, true);
+                this._addRecentAndLastFile(p_chosenLeoFile.trim());
+                if (q_commandResult) {
+                    return q_commandResult;
+                } else {
+                    return Promise.reject('Write File From Node not added on command stack');
+                }
+            } else {
+                // Canceled
+                return Promise.resolve(undefined);
+            }
+        });
     }
     /**
      * * Read file from node
      */
-    public readFileIntoNode(): void {
+    public readFileIntoNode(): Thenable<unknown> {
         // """Read a file into a single node."""
         // c = self
         // undoType = 'Read File Into Node'
@@ -4906,7 +5126,7 @@ export class LeoIntegration {
         //     filetypes=filetypes,
         //     defaultextension=None)
 
-        return;
+        return Promise.resolve(undefined);
     }
     /**
      * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
