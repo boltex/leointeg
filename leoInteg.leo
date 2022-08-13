@@ -13513,6 +13513,16 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'import-todo-text-files': Constants.COMMANDS.IMPORT_ANY_FILE,
     'import-zim-folder': Constants.COMMANDS.IMPORT_ANY_FILE,
 
+    'export-headlines': Constants.COMMANDS.EXPORT_HEADLINES,
+    'export-jupyter-notebook': Constants.COMMANDS.EXPORT_JUPYTER_NOTEBOOK,
+    'flatten-outline': Constants.COMMANDS.FLATTEN_OUTLINE,
+    'outline-to-cweb': Constants.COMMANDS.OUTLINE_TO_CWEB,
+    'outline-to-noweb': Constants.COMMANDS.OUTLINE_TO_NOWEB,
+    'remove-sentinels': Constants.COMMANDS.REMOVE_SENTINELS,
+    'weave': Constants.COMMANDS.WEAVE,
+    'read-file-into-node': Constants.COMMANDS.READ_FILE_INTO_NODE,
+    'write-file-from-node': Constants.COMMANDS.WRITE_FILE_FROM_NODE,
+
     'file-new': Constants.COMMANDS.NEW_FILE,
     'file-open-by-name': Constants.COMMANDS.OPEN_FILE,
     'new': Constants.COMMANDS.NEW_FILE,
@@ -16173,6 +16183,21 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
     { "label": "marked-list", "detail": "List all marked nodes." },
     { "label": "tag-node", "detail": "Tag the selected node." },
+
+    { "label": "export-headlines", "detail": "Export all headlines to an external file." },
+
+    // ! Maybe removed from Leo !
+    { "label": "export-jupyter-notebook", "detail": "Convert the present outline to a .ipynb file." },
+    { "label": "flatten-outline", "detail": "Export the selected outline to an external file. The outline is represented in MORE format." },
+
+    { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file.        The outline is represented in CWEB format." },
+    { "label": "outline-to-noweb", "detail": "Export the selected outline to an external file.        The outline is represented in noweb format." },
+    { "label": "remove-sentinels", "detail": "Import one or more files, removing any sentinels." },
+    { "label": "weave", "detail": "Simulate a literate-programming weave operation by writing the outline to a text file." },
+
+    { "label": "read-file-into-node", "detail": "Read a file into a single node." },
+    { "label": "write-file-from-node", "detail": "If node starts with @read-file-into-node, use the full path name in the headline.        Otherwise, prompt for a file name." },
+
 ];
 
 </t>
@@ -17767,26 +17792,71 @@ public outlineToNoweb(): Thenable&lt;unknown&gt; {
 <t tx="felix.20220808233838.7">/**
  * * Remove Sentinels
  */
-public removeSentinels(): Thenable&lt;unknown&gt; {
-    // Import one or more files, removing any sentinels.
+public removeSentinels(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
+    // Convert one or more files, replacing the original files while removing any sentinels they contain.
 
-    // c = self
-    // types = [
-    //     ("All files", "*"),
-    //     ("C/C++ files", "*.c"),
-    //     ("C/C++ files", "*.cpp"),
-    //     ("C/C++ files", "*.h"),
-    //     ("C/C++ files", "*.hpp"),
-    //     ("Java files", "*.java"),
-    //     ("Lua files", "*.lua"),
-    //     ("Pascal files", "*.pas"),
-    //     ("Python files", "*.py")]
-    // names = g.app.gui.runOpenFileDialog(c,
-    //     title="Remove Sentinels",
-    //     filetypes=types,
-    //     defaultextension=".py",
-    //     multiple=True)
-    return Promise.resolve(undefined);
+    return this._isBusyTriggerSave(true, true)
+        .then((p_saveResult) =&gt; {
+            let q_importFiles: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
+            if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
+                const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
+                q_importFiles = this.sendAction(
+                    Constants.LEOBRIDGE.REMOVE_SENTINELS,
+                    JSON.stringify({ names: [w_fixedFilePath] })
+                );
+            } else {
+                q_importFiles = this._leoFilesBrowser.getImportFileUrls(
+                    {
+                        'Python files': ['py'],
+                        'All files': ['*'],
+                        'C/C++ files': ['c', 'cpp', 'h', 'hpp'],
+                        'Java files': ['java'],
+                        'Lua files': ['lua'],
+                        'Pascal files': ['pas'],
+                    },
+                    false,
+                    "Remove Sentinels"
+                ).then(
+                    (p_chosenLeoFiles) =&gt; {
+                        if (p_chosenLeoFiles.length) {
+                            return this.sendAction(
+                                Constants.LEOBRIDGE.REMOVE_SENTINELS,
+                                JSON.stringify({ names: p_chosenLeoFiles })
+                            );
+                        } else {
+                            return Promise.resolve(undefined);
+                        }
+                    },
+                    (p_errorGetFile) =&gt; {
+                        return Promise.reject(p_errorGetFile);
+                    }
+                );
+            }
+            return q_importFiles;
+        })
+        .then(
+            (p_importFileResult: LeoBridgePackage | undefined) =&gt; {
+                if (p_importFileResult) {
+                    this.setupRefresh(
+                        false,
+                        {
+                            tree: true,
+                            body: true,
+                            documents: true,
+                            // buttons: false,
+                            states: true,
+                        }
+                    );
+                    return this.launchRefresh();
+                } else {
+                    return Promise.resolve(undefined);
+                }
+            },
+            (p_errorImport) =&gt; {
+                console.log('Rejection for Read a file into a single node file');
+                return Promise.reject(p_errorImport);
+            }
+        );
 
 }
 </t>
@@ -17849,7 +17919,6 @@ public writeFileFromNode(): Thenable&lt;unknown&gt; {
         return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
     }
 
-    // h = p.h.rstrip()
     const h = this.lastSelectedNode.headline.trimEnd();
     const tag = '@read-file-into-node';
 

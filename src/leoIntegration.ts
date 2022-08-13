@@ -4979,26 +4979,71 @@ export class LeoIntegration {
     /**
      * * Remove Sentinels
      */
-    public removeSentinels(): Thenable<unknown> {
-        // Import one or more files, removing any sentinels.
+    public removeSentinels(p_leoFileUri?: vscode.Uri): Thenable<unknown> {
+        // Convert one or more files, replacing the original files while removing any sentinels they contain.
 
-        // c = self
-        // types = [
-        //     ("All files", "*"),
-        //     ("C/C++ files", "*.c"),
-        //     ("C/C++ files", "*.cpp"),
-        //     ("C/C++ files", "*.h"),
-        //     ("C/C++ files", "*.hpp"),
-        //     ("Java files", "*.java"),
-        //     ("Lua files", "*.lua"),
-        //     ("Pascal files", "*.pas"),
-        //     ("Python files", "*.py")]
-        // names = g.app.gui.runOpenFileDialog(c,
-        //     title="Remove Sentinels",
-        //     filetypes=types,
-        //     defaultextension=".py",
-        //     multiple=True)
-        return Promise.resolve(undefined);
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                let q_importFiles: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
+                if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
+                    const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
+                    q_importFiles = this.sendAction(
+                        Constants.LEOBRIDGE.REMOVE_SENTINELS,
+                        JSON.stringify({ names: [w_fixedFilePath] })
+                    );
+                } else {
+                    q_importFiles = this._leoFilesBrowser.getImportFileUrls(
+                        {
+                            'Python files': ['py'],
+                            'All files': ['*'],
+                            'C/C++ files': ['c', 'cpp', 'h', 'hpp'],
+                            'Java files': ['java'],
+                            'Lua files': ['lua'],
+                            'Pascal files': ['pas'],
+                        },
+                        false,
+                        "Remove Sentinels"
+                    ).then(
+                        (p_chosenLeoFiles) => {
+                            if (p_chosenLeoFiles.length) {
+                                return this.sendAction(
+                                    Constants.LEOBRIDGE.REMOVE_SENTINELS,
+                                    JSON.stringify({ names: p_chosenLeoFiles })
+                                );
+                            } else {
+                                return Promise.resolve(undefined);
+                            }
+                        },
+                        (p_errorGetFile) => {
+                            return Promise.reject(p_errorGetFile);
+                        }
+                    );
+                }
+                return q_importFiles;
+            })
+            .then(
+                (p_importFileResult: LeoBridgePackage | undefined) => {
+                    if (p_importFileResult) {
+                        this.setupRefresh(
+                            false,
+                            {
+                                tree: true,
+                                body: true,
+                                documents: true,
+                                // buttons: false,
+                                states: true,
+                            }
+                        );
+                        return this.launchRefresh();
+                    } else {
+                        return Promise.resolve(undefined);
+                    }
+                },
+                (p_errorImport) => {
+                    console.log('Rejection for Read a file into a single node file');
+                    return Promise.reject(p_errorImport);
+                }
+            );
 
     }
     /**
@@ -5059,7 +5104,6 @@ export class LeoIntegration {
             return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
         }
 
-        // h = p.h.rstrip()
         const h = this.lastSelectedNode.headline.trimEnd();
         const tag = '@read-file-into-node';
 

@@ -847,6 +847,21 @@ export class Constants {
         { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
         { "label": "marked-list", "detail": "List all marked nodes." },
         { "label": "tag-node", "detail": "Tag the selected node." },
+
+        { "label": "export-headlines", "detail": "Export all headlines to an external file." },
+
+        // ! Maybe removed from Leo !
+        { "label": "export-jupyter-notebook", "detail": "Convert the present outline to a .ipynb file." },
+        { "label": "flatten-outline", "detail": "Export the selected outline to an external file. The outline is represented in MORE format." },
+
+        { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file.        The outline is represented in CWEB format." },
+        { "label": "outline-to-noweb", "detail": "Export the selected outline to an external file.        The outline is represented in noweb format." },
+        { "label": "remove-sentinels", "detail": "Import one or more files, removing any sentinels." },
+        { "label": "weave", "detail": "Simulate a literate-programming weave operation by writing the outline to a text file." },
+
+        { "label": "read-file-into-node", "detail": "Read a file into a single node." },
+        { "label": "write-file-from-node", "detail": "If node starts with @read-file-into-node, use the full path name in the headline.        Otherwise, prompt for a file name." },
+
     ];
 
     public static unsupportedMinibufferCommands: string[] = [
@@ -891,6 +906,16 @@ export class Constants {
         'import-tabbed-files': Constants.COMMANDS.IMPORT_ANY_FILE,
         'import-todo-text-files': Constants.COMMANDS.IMPORT_ANY_FILE,
         'import-zim-folder': Constants.COMMANDS.IMPORT_ANY_FILE,
+
+        'export-headlines': Constants.COMMANDS.EXPORT_HEADLINES,
+        'export-jupyter-notebook': Constants.COMMANDS.EXPORT_JUPYTER_NOTEBOOK,
+        'flatten-outline': Constants.COMMANDS.FLATTEN_OUTLINE,
+        'outline-to-cweb': Constants.COMMANDS.OUTLINE_TO_CWEB,
+        'outline-to-noweb': Constants.COMMANDS.OUTLINE_TO_NOWEB,
+        'remove-sentinels': Constants.COMMANDS.REMOVE_SENTINELS,
+        'weave': Constants.COMMANDS.WEAVE,
+        'read-file-into-node': Constants.COMMANDS.READ_FILE_INTO_NODE,
+        'write-file-from-node': Constants.COMMANDS.WRITE_FILE_FROM_NODE,
 
         'file-new': Constants.COMMANDS.NEW_FILE,
         'file-open-by-name': Constants.COMMANDS.OPEN_FILE,
