@@ -13589,14 +13589,16 @@ public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
             let q_importFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
             if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
+                // Array of a single filename
                 q_importFile = this.sendAction(
                     Constants.LEOBRIDGE.IMPORT_ANY_FILE,
-                    JSON.stringify({ filenames: w_fixedFilePath })
+                    JSON.stringify({ filenames: [w_fixedFilePath] })
                 );
             } else {
                 q_importFile = this._leoFilesBrowser.getImportFileUrls().then(
                     (p_chosenLeoFiles) =&gt; {
                         if (p_chosenLeoFiles.length) {
+                            // Can be multiple files, so array of string is sent
                             return this.sendAction(
                                 Constants.LEOBRIDGE.IMPORT_ANY_FILE,
                                 JSON.stringify({ filenames: p_chosenLeoFiles })
@@ -17882,7 +17884,7 @@ public writeFileFromNode(): Thenable&lt;unknown&gt; {
         if (p_chosenLeoFile.trim()) {
 
             const q_commandResult = this.nodeCommand({
-                action: Constants.LEOBRIDGE.EXPORT_HEADLINES,
+                action: Constants.LEOBRIDGE.WRITE_FILE_FROM_NODE,
                 node: undefined,
                 refreshType: { tree: true, states: true, documents: true },
                 fromOutline: this.fromOutline, // use last
@@ -17906,18 +17908,68 @@ public writeFileFromNode(): Thenable&lt;unknown&gt; {
 <t tx="felix.20220809232939.1">/**
  * * Read file from node
  */
-public readFileIntoNode(): Thenable&lt;unknown&gt; {
-    // """Read a file into a single node."""
-    // c = self
-    // undoType = 'Read File Into Node'
-    // c.endEditing()
-    // filetypes = [("All files", "*"), ("Python files", "*.py"), ("Leo files", "*.leo"),]
-    // fileName = g.app.gui.runOpenFileDialog(c,
-    //     title="Read File Into Node",
-    //     filetypes=filetypes,
-    //     defaultextension=None)
+public readFileIntoNode(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
 
-    return Promise.resolve(undefined);
+    return this._isBusyTriggerSave(true, true)
+        .then((p_saveResult) =&gt; {
+            let q_importFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
+            if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
+                const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
+                q_importFile = this.sendAction(
+                    Constants.LEOBRIDGE.READ_FILE_INTO_NODE,
+                    JSON.stringify({ name: w_fixedFilePath })
+                );
+            } else {
+                q_importFile = this._leoFilesBrowser.getImportFileUrls(
+                    {
+                        'All files': ['*'],
+                        'Python files': ['py'],
+                        'Leo files': ['leo'],
+                    },
+                    true,
+                    "Read File Into Node"
+                ).then(
+                    (p_chosenLeoFiles) =&gt; {
+                        if (p_chosenLeoFiles.length) {
+                            return this.sendAction(
+                                Constants.LEOBRIDGE.READ_FILE_INTO_NODE,
+                                JSON.stringify({ name: p_chosenLeoFiles[0] })
+                            );
+                        } else {
+                            return Promise.resolve(undefined);
+                        }
+                    },
+                    (p_errorGetFile) =&gt; {
+                        return Promise.reject(p_errorGetFile);
+                    }
+                );
+            }
+            return q_importFile;
+        })
+        .then(
+            (p_importFileResult: LeoBridgePackage | undefined) =&gt; {
+                if (p_importFileResult) {
+                    this.setupRefresh(
+                        false,
+                        {
+                            tree: true,
+                            body: true,
+                            documents: true,
+                            // buttons: false,
+                            states: true,
+                        }
+                    );
+                    return this.launchRefresh();
+                } else {
+                    return Promise.resolve(undefined);
+                }
+            },
+            (p_errorImport) =&gt; {
+                console.log('Rejection for Read a file into a single node file');
+                return Promise.reject(p_errorImport);
+            }
+        );
+
 }
 </t>
 <t tx="felix.20220810231122.1">/**

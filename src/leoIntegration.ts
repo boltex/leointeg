@@ -4701,14 +4701,16 @@ export class LeoIntegration {
                 let q_importFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
                 if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
+                    // Array of a single filename
                     q_importFile = this.sendAction(
                         Constants.LEOBRIDGE.IMPORT_ANY_FILE,
-                        JSON.stringify({ filenames: w_fixedFilePath })
+                        JSON.stringify({ filenames: [w_fixedFilePath] })
                     );
                 } else {
                     q_importFile = this._leoFilesBrowser.getImportFileUrls().then(
                         (p_chosenLeoFiles) => {
                             if (p_chosenLeoFiles.length) {
+                                // Can be multiple files, so array of string is sent
                                 return this.sendAction(
                                     Constants.LEOBRIDGE.IMPORT_ANY_FILE,
                                     JSON.stringify({ filenames: p_chosenLeoFiles })
@@ -5092,7 +5094,7 @@ export class LeoIntegration {
             if (p_chosenLeoFile.trim()) {
 
                 const q_commandResult = this.nodeCommand({
-                    action: Constants.LEOBRIDGE.EXPORT_HEADLINES,
+                    action: Constants.LEOBRIDGE.WRITE_FILE_FROM_NODE,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
                     fromOutline: this.fromOutline, // use last
@@ -5115,18 +5117,68 @@ export class LeoIntegration {
     /**
      * * Read file from node
      */
-    public readFileIntoNode(): Thenable<unknown> {
-        // """Read a file into a single node."""
-        // c = self
-        // undoType = 'Read File Into Node'
-        // c.endEditing()
-        // filetypes = [("All files", "*"), ("Python files", "*.py"), ("Leo files", "*.leo"),]
-        // fileName = g.app.gui.runOpenFileDialog(c,
-        //     title="Read File Into Node",
-        //     filetypes=filetypes,
-        //     defaultextension=None)
+    public readFileIntoNode(p_leoFileUri?: vscode.Uri): Thenable<unknown> {
 
-        return Promise.resolve(undefined);
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                let q_importFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
+                if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
+                    const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
+                    q_importFile = this.sendAction(
+                        Constants.LEOBRIDGE.READ_FILE_INTO_NODE,
+                        JSON.stringify({ name: w_fixedFilePath })
+                    );
+                } else {
+                    q_importFile = this._leoFilesBrowser.getImportFileUrls(
+                        {
+                            'All files': ['*'],
+                            'Python files': ['py'],
+                            'Leo files': ['leo'],
+                        },
+                        true,
+                        "Read File Into Node"
+                    ).then(
+                        (p_chosenLeoFiles) => {
+                            if (p_chosenLeoFiles.length) {
+                                return this.sendAction(
+                                    Constants.LEOBRIDGE.READ_FILE_INTO_NODE,
+                                    JSON.stringify({ name: p_chosenLeoFiles[0] })
+                                );
+                            } else {
+                                return Promise.resolve(undefined);
+                            }
+                        },
+                        (p_errorGetFile) => {
+                            return Promise.reject(p_errorGetFile);
+                        }
+                    );
+                }
+                return q_importFile;
+            })
+            .then(
+                (p_importFileResult: LeoBridgePackage | undefined) => {
+                    if (p_importFileResult) {
+                        this.setupRefresh(
+                            false,
+                            {
+                                tree: true,
+                                body: true,
+                                documents: true,
+                                // buttons: false,
+                                states: true,
+                            }
+                        );
+                        return this.launchRefresh();
+                    } else {
+                        return Promise.resolve(undefined);
+                    }
+                },
+                (p_errorImport) => {
+                    console.log('Rejection for Read a file into a single node file');
+                    return Promise.reject(p_errorImport);
+                }
+            );
+
     }
     /**
      * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
