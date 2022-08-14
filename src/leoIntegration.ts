@@ -2787,6 +2787,10 @@ export class LeoIntegration {
                 }
                 // Add some commands traditionally from plugins or other sources
                 p_result.commands.push(...Constants.addMinibufferCommands);
+
+                // all commands shown to user
+                // console.log('p_result.commands', p_result.commands);
+
                 return p_result.commands;
             } else {
                 return [];

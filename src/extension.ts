@@ -72,7 +72,7 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [CMD.IMPORT_ANY_FILE, () => w_leo.importAnyFile()], // No URL passed from the command definition.
         [CMD.READ_FILE_INTO_NODE, () => w_leo.readFileIntoNode()],
-        [CMD.EXPORT_HEADLINES, () => w_leo.exportHeadlines()],
+
         [CMD.EXPORT_HEADLINES, () => w_leo.exportHeadlines()],
         [CMD.EXPORT_JUPYTER_NOTEBOOK, () => w_leo.exportJupyterNotebook()],
         [CMD.FLATTEN_OUTLINE, () => w_leo.flattenOutline()],

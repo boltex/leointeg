@@ -1523,7 +1523,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.IMPORT_ANY_FILE, () =&gt; w_leo.importAnyFile()], // No URL passed from the command definition.
 [CMD.READ_FILE_INTO_NODE, () =&gt; w_leo.readFileIntoNode()],
-[CMD.EXPORT_HEADLINES, () =&gt; w_leo.exportHeadlines()],
+
 [CMD.EXPORT_HEADLINES, () =&gt; w_leo.exportHeadlines()],
 [CMD.EXPORT_JUPYTER_NOTEBOOK, () =&gt; w_leo.exportJupyterNotebook()],
 [CMD.FLATTEN_OUTLINE, () =&gt; w_leo.flattenOutline()],
@@ -11855,6 +11855,10 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
             }
             // Add some commands traditionally from plugins or other sources
             p_result.commands.push(...Constants.addMinibufferCommands);
+
+            // all commands shown to user
+            // console.log('p_result.commands', p_result.commands);
+
             return p_result.commands;
         } else {
             return [];
