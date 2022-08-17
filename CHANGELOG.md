@@ -2,6 +2,7 @@
 
 ## 1.0.8
 
+- Added an 'undo panel' that shows actions history and supports right-clicking to go to any undo point.
 - Added and improved icons sets for disabled icon-buttons and common actions.
 - Tooltips and description do not contain the whole u.a. when listing positions.
   (Hovering the mouse triggers the retrieval of this info for a single node.)
@@ -11,6 +12,9 @@
 - Disabled commands created with enablement clauses instead of extraneous commands.
 - Replaced the page-up/page-down Outline keyboard shortcut commands with goto-first-sibling and goto-last-sibling
 - 'new leo document' CTRL+N and 'open leo file' CTRL+O keybindings can now also be used with focus in the body pane
+- Start position selected upon opening is now fixed, and not forced as the first one
+- Many minibuffer-only commands are now fixed and available through the minibuffer itself, and for some, the vscode command palette.
+- Removed 'close on delete' setting requirement because of the new vscode API to control individual tabs as needed.
 
 ## 1.0.7
 

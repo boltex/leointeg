@@ -1204,7 +1204,6 @@ export class LeoIntegration {
         // Check For "workbench.editor.enablePreview" to be true.
         this.config.checkEnablePreview();
         this.config.checkCloseEmptyGroups();
-        this.config.checkCloseOnFileDelete();
     }
 
     /**
@@ -3101,6 +3100,62 @@ export class LeoIntegration {
     }
 
     /**
+     * * Place the XML or JSON Leo outline tree on the clipboard for the given node.
+     */
+    public async copyNodeAsJson(): Promise<LeoBridgePackage> {
+
+        await this._isBusyTriggerSave(false, true);
+
+        const w_commandResult = this.nodeCommand({
+            action: Constants.LEOBRIDGE.COPY_PNODE_AS_JSON,
+            node: undefined,
+            refreshType: {},
+            fromOutline: !!this.fromOutline,
+        });
+
+        if (w_commandResult) {
+            return w_commandResult.then(p_package => {
+                if (p_package.string) {
+                    this.replaceClipboardWith(p_package.string);
+                } else {
+                }
+                return p_package;
+            });
+
+        } else {
+            return Promise.reject('Copy Node As JSON not added on command stack');
+        }
+    }
+
+    /**
+     * * Place the XML or JSON Leo outline tree on the clipboard for the given node.
+     */
+    public async copyGnx(): Promise<unknown> {
+
+        await this._isBusyTriggerSave(false, true);
+
+        const w_commandResult = this.nodeCommand({
+            action: Constants.LEOBRIDGE.DO_NOTHING,
+            node: undefined,
+            refreshType: {},
+            fromOutline: !!this.fromOutline,
+        });
+
+        if (w_commandResult) {
+            return w_commandResult.then(p_package => {
+                if (p_package.node) {
+                    this.replaceClipboardWith(p_package.node.gnx);
+                } else {
+                }
+                return p_package;
+            });
+
+        } else {
+            return Promise.reject('Copy Gnx not added on command stack');
+        }
+    }
+
+    /**
      * * Place the XML or JSON Leo outline tree on the clipboard for the given node, and removes it.
      */
     public async cutNode(
@@ -3174,6 +3229,33 @@ export class LeoIntegration {
 
         const w_commandResult = this.nodeCommand({
             action: Constants.LEOBRIDGE.PASTE_CLONE_PNODE,
+            node: p_node,
+            refreshType: { tree: true, body: true, states: true },
+            name: text,
+            fromOutline: !!p_fromOutline,
+        });
+
+        if (w_commandResult) {
+            return w_commandResult;
+        } else {
+            return Promise.reject('Cut Node not added on command stack');
+        }
+    }
+
+    /**
+     * * Creates, while preserving the top gnx of a section of tree outline, from the clipboard content.
+     */
+    public async pasteAsTemplate(
+        p_node?: ArchivedPosition,
+        p_fromOutline?: boolean
+    ): Promise<LeoBridgePackage> {
+
+        await this._isBusyTriggerSave(false, true);
+
+        const text = await this.asyncGetTextFromClipboard();
+
+        const w_commandResult = this.nodeCommand({
+            action: Constants.LEOBRIDGE.PASTE_AS_TEMPLATE,
             node: p_node,
             refreshType: { tree: true, body: true, states: true },
             name: text,
@@ -4803,51 +4885,7 @@ export class LeoIntegration {
                 }
             });
     }
-    /**
-     * * Export Jupyter Notebook
-     * Convert the present outline to a .ipynb file.
-     */
-    public exportJupyterNotebook(): Thenable<unknown> {
 
-        return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
-                if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
-                    return this._leoFilesBrowser.getExportFileUrl(
-                        "Export To Jupyter File",
-                        {
-                            'Jupyter files': ['ipynb'],
-                            'All files': ['*'],
-                        },
-                    );
-                } else {
-                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
-                    return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
-                }
-            })
-            .then((p_chosenLeoFile) => {
-                if (p_chosenLeoFile.trim()) {
-
-                    const q_commandResult = this.nodeCommand({
-                        action: Constants.LEOBRIDGE.EXPORT_JUPYTER_NOTEBOOK,
-                        node: undefined,
-                        refreshType: { tree: true, states: true, documents: true },
-                        fromOutline: this.fromOutline, // use last
-                        name: p_chosenLeoFile,
-                    });
-                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                    this._leoStatusBar.update(true, 0, true);
-                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
-                    if (q_commandResult) {
-                        return q_commandResult;
-                    } else {
-                        return Promise.reject('Export To Jupyter File not added on command stack');
-                    }
-                } else {
-                    // Canceled
-                    return Promise.resolve(undefined);
-                }
-            });
-    }
     /**
      * * Flatten Selected Outline
      * Export the selected outline to an external file.

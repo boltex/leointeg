@@ -211,10 +211,8 @@
 <v t="felix.20210727224135.1"><vh>setFontConfig</vh></v>
 <v t="felix.20210818223534.1"><vh>setEnablePreview</vh></v>
 <v t="felix.20210821203119.1"><vh>clearCloseEmptyGroups</vh></v>
-<v t="felix.20210904235707.1"><vh>setCloseOnFileDelete</vh></v>
 <v t="felix.20210818225820.1"><vh>checkEnablePreview</vh></v>
 <v t="felix.20210821202347.1"><vh>checkCloseEmptyGroups</vh></v>
-<v t="felix.20210904235646.1"><vh>checkCloseOnFileDelete</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
 </v>
@@ -435,9 +433,12 @@
 <v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
 <v t="felix.20200719025231.56"><vh>insertNode</vh></v>
 <v t="felix.20220222012540.1"><vh>copyNode</vh></v>
+<v t="felix.20220815210705.1"><vh>copyNodeAsJson</vh></v>
+<v t="felix.20220815210715.1"><vh>copyGnx</vh></v>
 <v t="felix.20220222012528.1"><vh>cutNode</vh></v>
 <v t="felix.20220222012552.1"><vh>pasteNode</vh></v>
 <v t="felix.20220222012602.1"><vh>pasteAsCloneNode</vh></v>
+<v t="felix.20220815221536.1"><vh>pasteAsTemplate</vh></v>
 <v t="felix.20220714224733.1"><vh>setUa</vh></v>
 </v>
 <v t="felix.20220222014050.1"><vh>Clipboard</vh>
@@ -491,7 +492,6 @@
 </v>
 <v t="felix.20220808233838.1"><vh>Export/Import Commands</vh>
 <v t="felix.20220808233838.2"><vh>exportHeadlines</vh></v>
-<v t="felix.20220808233838.3"><vh>exportJupyterNotebook</vh></v>
 <v t="felix.20220808233838.4"><vh>flattenOutline</vh></v>
 <v t="felix.20220808233838.5"><vh>outlineToCweb</vh></v>
 <v t="felix.20220808233838.6"><vh>outlineToNoweb</vh></v>
@@ -1525,7 +1525,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.READ_FILE_INTO_NODE, () =&gt; w_leo.readFileIntoNode()],
 
 [CMD.EXPORT_HEADLINES, () =&gt; w_leo.exportHeadlines()],
-[CMD.EXPORT_JUPYTER_NOTEBOOK, () =&gt; w_leo.exportJupyterNotebook()],
 [CMD.FLATTEN_OUTLINE, () =&gt; w_leo.flattenOutline()],
 [CMD.OUTLINE_TO_CWEB, () =&gt; w_leo.outlineToCweb()],
 [CMD.OUTLINE_TO_NOWEB, () =&gt; w_leo.outlineToNoweb()],
@@ -1624,8 +1623,14 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.PASTE, (p_ap: ArchivedPosition) =&gt; w_leo.pasteNode(p_ap, true)],
 [CMD.PASTE_CLONE, (p_ap: ArchivedPosition) =&gt; w_leo.pasteAsCloneNode(p_ap, true)],
 
+// PASTE_AS_TEMPLATE used without ap position but supports ap given as parameter
+[CMD.PASTE_AS_TEMPLATE, (p_ap: ArchivedPosition) =&gt; w_leo.pasteAsTemplate(p_ap, true)],
+
 // cut/copy/paste/delete current selection (self.commander.p)
 [CMD.COPY_SELECTION, () =&gt; w_leo.copyNode(U, false)],
+[CMD.COPY_AS_JSON, () =&gt; w_leo.copyNodeAsJson()],
+[CMD.COPY_GNX, () =&gt; w_leo.copyGnx()], // Not exposed in package.json
+
 [CMD.CUT_SELECTION, () =&gt; w_leo.cutNode(U, false)],
 [CMD.CUT_SELECTION_FO, () =&gt; w_leo.cutNode(U, true)],
 
@@ -2159,7 +2164,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
-[CMD.SET_CLOSE_ON_FILE_DELETE, () =&gt; w_leo.config.setCloseOnFileDelete()],
 </t>
 <t tx="ekr.20200815113508.1">@language python
 g.cls()
@@ -2612,11 +2616,6 @@ print('done')
   "title": "Clear Close-Empty-Groups"
 },
 {
-  "command": "leointeg.setCloseOnFileDelete",
-  "category": "Leo",
-  "title": "Set Close-On-File-Delete"
-},
-{
   "command": "leointeg.showSettingsPage",
   "title": "Open Settings",
   "category": "Leo",
@@ -2959,6 +2958,15 @@ print('done')
   }
 },
 {
+  "command": "leointeg.copyNodeAsJson",
+  "category": "Leo",
+  "title": "Copy Node As JSON",
+  "icon": {
+    "light": "resources/light/clipboard.svg",
+    "dark": "resources/dark/clipboard.svg"
+  }
+},
+{
   "command": "leointeg.copyNodeSelection",
   "category": "Leo",
   "title": "Copy Node",
@@ -3023,6 +3031,11 @@ print('done')
   "command": "leointeg.pasteNodeAsCloneAtSelectionFromOutline",
   "category": "Leo",
   "title": "Paste Node as Clone"
+},
+{
+  "command": "leointeg.pasteAsTemplate",
+  "category": "Leo",
+  "title": "Paste Node as template"
 },
 {
   "command": "leointeg.delete",
@@ -3798,6 +3811,10 @@ print('done')
   "when": "leoTreeOpened"
 },
 {
+  "command": "leointeg.copyNodeAsJson",
+  "when": "leoTreeOpened"
+},
+{
   "command": "leointeg.cutNodeSelection",
   "when": "leoTreeOpened"
 },
@@ -3807,6 +3824,10 @@ print('done')
 },
 {
   "command": "leointeg.pasteNodeAsCloneAtSelection",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.pasteAsTemplate",
   "when": "leoTreeOpened"
 },
 {
@@ -3921,10 +3942,6 @@ print('done')
 },
 {
   "command": "leointeg.clearCloseEmptyGroups",
-  "when": "false"
-},
-{
-  "command": "leointeg.setCloseOnFileDelete",
   "when": "false"
 },
 </t>
@@ -5068,7 +5085,6 @@ public static LEOBRIDGE = {
     IMPORT_ANY_FILE: "!import_any_file", // "importAnyFile",
     READ_FILE_INTO_NODE: "!read_file_into_node",
     EXPORT_HEADLINES: "!export_headlines",
-    EXPORT_JUPYTER_NOTEBOOK: "!export_jupyter_notebook",
     FLATTEN_OUTLINE: "!flatten_outline",
     OUTLINE_TO_CWEB: "!outline_to_cweb",
     OUTLINE_TO_NOWEB: "!outline_to_noweb",
@@ -5080,9 +5096,11 @@ public static LEOBRIDGE = {
     MARK_PNODE: "!mark_node", // "markPNode",
     UNMARK_PNODE: "!unmark_node", // "unmarkPNode",
     COPY_PNODE: "!copy_node",
+    COPY_PNODE_AS_JSON: "!copy_node_as_json",
     CUT_PNODE: "!cut_node", // "cutPNode",
     PASTE_PNODE: "!paste_node",
     PASTE_CLONE_PNODE: "!paste_as_clone_node",
+    PASTE_AS_TEMPLATE: "!paste_as_template",
     DELETE_PNODE: "!delete_node", // "deletePNode",
     MOVE_PNODE_DOWN: "moveOutlineDown",
     MOVE_PNODE_LEFT: "moveOutlineLeft",
@@ -5215,7 +5233,6 @@ public static COMMANDS = {
     IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
     READ_FILE_INTO_NODE: Constants.NAME + ".readFileIntoNode",
     EXPORT_HEADLINES: Constants.NAME + "exportHeadlines",
-    EXPORT_JUPYTER_NOTEBOOK: Constants.NAME + "exportJupyterNotebook",
     FLATTEN_OUTLINE: Constants.NAME + "flattenOutline",
     OUTLINE_TO_CWEB: Constants.NAME + "outlineToCweb",
     OUTLINE_TO_NOWEB: Constants.NAME + "outlineToNoweb",
@@ -5246,9 +5263,12 @@ public static COMMANDS = {
     MARK: Constants.NAME + ".mark",
     UNMARK: Constants.NAME + ".unmark",
     COPY: Constants.NAME + ".copyNode",
+    COPY_AS_JSON: Constants.NAME + ".copyNodeAsJson",
+    COPY_GNX: Constants.NAME + ".copyGnx", // Not exposed in commands, only for minibuffer override
     CUT: Constants.NAME + ".cutNode",
     PASTE: Constants.NAME + ".pasteNode",
     PASTE_CLONE: Constants.NAME + ".pasteNodeAsClone",
+    PASTE_AS_TEMPLATE: Constants.NAME + ".pasteAsTemplate",
     DELETE: Constants.NAME + ".delete",
     HEADLINE: Constants.NAME + ".editHeadline",
     MOVE_DOWN: Constants.NAME + ".moveOutlineDown",
@@ -5372,7 +5392,6 @@ public static COMMANDS = {
     TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
     SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
     CLEAR_CLOSE_EMPTY_GROUPS: Constants.NAME + ".clearCloseEmptyGroups",
-    SET_CLOSE_ON_FILE_DELETE: Constants.NAME + ".setCloseOnFileDelete",
 };
 
 </t>
@@ -5411,6 +5430,7 @@ public static UNDOS_EXPLORER_ID: string = "leoUndosExplorer";
 public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
 public static FILE_EXTENSION: string = "leo";
+public static DB_FILE_EXTENSION: string = "db";
 public static JS_FILE_EXTENSION: string = "leojs";
 
 public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
@@ -6219,7 +6239,6 @@ export function activate(p_context: vscode.ExtensionContext) {
                 // and not to try to see if they're set too soon
                 w_leo.config.checkEnablePreview();
                 w_leo.config.checkCloseEmptyGroups();
-                w_leo.config.checkCloseOnFileDelete();
             }, 1500);
 
             // Start server and/or connect to it, as per user settings
@@ -6272,7 +6291,6 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
         // Force-Set/Clear leointeg's required configuration settings
         p_leoInteg.config.setEnablePreview();
         p_leoInteg.config.clearCloseEmptyGroups();
-        p_leoInteg.config.setCloseOnFileDelete();
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {
@@ -6280,7 +6298,6 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
             // Force-Set/Clear leointeg's required configuration settings but show info messages
             p_leoInteg.config.checkEnablePreview(true);
             p_leoInteg.config.checkCloseEmptyGroups(true);
-            p_leoInteg.config.checkCloseOnFileDelete(true);
         }
         const [w_major, w_minor] = p_version.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
         const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
@@ -7262,7 +7279,8 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
         const w_filters: { [name: string]: string[] } = {};
         w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [
             Constants.FILE_EXTENSION,
-            Constants.JS_FILE_EXTENSION
+            Constants.JS_FILE_EXTENSION,
+            Constants.DB_FILE_EXTENSION
         ];
 
         if (p_saveAsFlag) {
@@ -7270,7 +7288,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
             vscode.window.showSaveDialog({
                 saveLabel: "Save Leo File",
                 defaultUri: this._getBestOpenFolderUri(),
-                filters: { 'Leo Files': ['leo', 'leojs'] },
+                filters: w_filters,
                 title: "Save as Leo File"
             })
                 .then(p_chosenLeoFile =&gt; {
@@ -9595,7 +9613,6 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
     // Check For "workbench.editor.enablePreview" to be true.
     this.config.checkEnablePreview();
     this.config.checkCloseEmptyGroups();
-    this.config.checkCloseOnFileDelete();
 }
 
 </t>
@@ -13503,6 +13520,15 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     "goto-prev-history-node": Constants.COMMANDS.PREV_NODE_FO,
     "goto-next-history-node": Constants.COMMANDS.NEXT_NODE_FO,
 
+    "chapter-select": Constants.COMMANDS.CHAPTER_SELECT,
+    "copy-node": Constants.COMMANDS.COPY_SELECTION,
+    "copy-node-as-json": Constants.COMMANDS.COPY_AS_JSON,
+    "copy-gnx": Constants.COMMANDS.COPY_GNX,
+    "cut-node": Constants.COMMANDS.CUT_SELECTION,
+    "paste-node": Constants.COMMANDS.PASTE_SELECTION_FO,
+    "paste-retaining-clones": Constants.COMMANDS.PASTE_CLONE_SELECTION_FO,
+    "paste-as-template": Constants.COMMANDS.PASTE_AS_TEMPLATE,
+
     "tag-children": Constants.COMMANDS.TAG_CHILDREN,
     "tag-node": Constants.COMMANDS.TAG_NODE,
     "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
@@ -13514,7 +13540,6 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
 
     'import-MORE-files': Constants.COMMANDS.IMPORT_ANY_FILE,
     'import-free-mind-files': Constants.COMMANDS.IMPORT_ANY_FILE,
-    'import-jupyter-notebook': Constants.COMMANDS.IMPORT_ANY_FILE,
     'import-legacy-external-files': Constants.COMMANDS.IMPORT_ANY_FILE,
     'import-mind-jet-files': Constants.COMMANDS.IMPORT_ANY_FILE,
     'import-tabbed-files': Constants.COMMANDS.IMPORT_ANY_FILE,
@@ -13522,12 +13547,12 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'import-zim-folder': Constants.COMMANDS.IMPORT_ANY_FILE,
 
     'export-headlines': Constants.COMMANDS.EXPORT_HEADLINES,
-    'export-jupyter-notebook': Constants.COMMANDS.EXPORT_JUPYTER_NOTEBOOK,
     'flatten-outline': Constants.COMMANDS.FLATTEN_OUTLINE,
     'outline-to-cweb': Constants.COMMANDS.OUTLINE_TO_CWEB,
     'outline-to-noweb': Constants.COMMANDS.OUTLINE_TO_NOWEB,
     'remove-sentinels': Constants.COMMANDS.REMOVE_SENTINELS,
     'weave': Constants.COMMANDS.WEAVE,
+
     'read-file-into-node': Constants.COMMANDS.READ_FILE_INTO_NODE,
     'write-file-from-node': Constants.COMMANDS.WRITE_FILE_FROM_NODE,
 
@@ -13538,7 +13563,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'file-save': Constants.COMMANDS.SAVE_FILE,
     'file-save-as': Constants.COMMANDS.SAVE_AS_FILE,
     'file-save-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
-    'file-save-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
+    'file-save-as-zipped': Constants.COMMANDS.SAVE_AS_FILE,
     'file-save-by-name': Constants.COMMANDS.SAVE_AS_FILE,
     'file-save-to': Constants.COMMANDS.SAVE_AS_FILE,
     'save': Constants.COMMANDS.SAVE_FILE,
@@ -13546,7 +13571,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'save-file': Constants.COMMANDS.SAVE_FILE,
     'save-file-as': Constants.COMMANDS.SAVE_AS_FILE,
     'save-file-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
-    'save-file-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
+    'save-file-as-zipped': Constants.COMMANDS.SAVE_AS_FILE,
     'save-file-by-name': Constants.COMMANDS.SAVE_AS_FILE,
     'save-file-to': Constants.COMMANDS.SAVE_AS_FILE,
     'save-to': Constants.COMMANDS.SAVE_AS_FILE,
@@ -14411,47 +14436,6 @@ For more information about the Leo server see [Using leoserver.py](https://leoed
 - Added icon for the 'show Log Pane' command and made it available, along with the 'Show Leointeg Settings', on title bar of documents and buttons views.
 - Automatic detection of VSCode's workbench.editor.closeOnFileDelete if its missing/disabled.
 - Fixed pressing shift+insert while in terminal, which triggered the 'insert node' command instead of letting the usual vscode 'paste in terminal' command take effect.
-
-</t>
-<t tx="felix.20210904235646.1">/**
- * * Check if the workbench.editor.closeOnFileDelete flag is set
- * @param p_forced Forces the setting instead of just suggesting with a message
- */
-public checkCloseOnFileDelete(p_forced?: boolean): void {
-    let w_result: any = true;
-    const w_setting = vscode.workspace.getConfiguration("workbench.editor");
-    if (w_setting.inspect("closeOnFileDelete")!.globalValue === undefined) {
-        w_result = w_setting.inspect("closeOnFileDelete")!.defaultValue;
-    } else {
-        w_result = w_setting.inspect("closeOnFileDelete")!.globalValue;
-    }
-    if (w_result === false) {
-        if (p_forced) {
-            this.setCloseOnFileDelete();
-            vscode.window.showInformationMessage("'Close on File Delete' setting was set");
-
-        } else {
-            if (!this._leoIntegration.leoStates.leoStartupFinished) {
-                return;
-            }
-            vscode.window.showWarningMessage("'Close on File Delete' setting is recommended (currently disabled)", "Fix it")
-                .then(p_chosenButton =&gt; {
-                    if (p_chosenButton === "Fix it") {
-                        vscode.commands.executeCommand(Constants.COMMANDS.SET_CLOSE_ON_FILE_DELETE);
-                    }
-                });
-        }
-    }
-}
-
-</t>
-<t tx="felix.20210904235707.1">/**
- * * Set the "workbench.editor.closeOnFileDelete" vscode setting
- */
-public setCloseOnFileDelete(): Thenable&lt;void&gt; {
-    return vscode.workspace.getConfiguration("workbench.editor")
-        .update("closeOnFileDelete", true, true);
-}
 
 </t>
 <t tx="felix.20210915233602.1">/**
@@ -16194,8 +16178,6 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 
     { "label": "export-headlines", "detail": "Export all headlines to an external file." },
 
-    // ! Maybe removed from Leo !
-    { "label": "export-jupyter-notebook", "detail": "Convert the present outline to a .ipynb file." },
     { "label": "flatten-outline", "detail": "Export the selected outline to an external file. The outline is represented in MORE format." },
 
     { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file.        The outline is represented in CWEB format." },
@@ -16414,6 +16396,7 @@ export function cleanLeoID(id_: string): string {
 </t>
 <t tx="felix.20220702153409.1">## 1.0.8
 
+- Added an 'undo panel' that shows actions history and supports right-clicking to go to any undo point.
 - Added and improved icons sets for disabled icon-buttons and common actions.
 - Tooltips and description do not contain the whole u.a. when listing positions.
   (Hovering the mouse triggers the retrieval of this info for a single node.)
@@ -16423,6 +16406,9 @@ export function cleanLeoID(id_: string): string {
 - Disabled commands created with enablement clauses instead of extraneous commands.
 - Replaced the page-up/page-down Outline keyboard shortcut commands with goto-first-sibling and goto-last-sibling
 - 'new leo document' CTRL+N and 'open leo file' CTRL+O keybindings can now also be used with focus in the body pane
+- Start position selected upon opening is now fixed, and not forced as the first one
+- Many minibuffer-only commands are now fixed and available through the minibuffer itself, and for some, the vscode command palette.
+- Removed 'close on delete' setting requirement because of the new vscode API to control individual tabs as needed.
 
 </t>
 <t tx="felix.20220704004247.1">private _leoCanGoBack: boolean = false;
@@ -17490,11 +17476,6 @@ public setFindPanel(p_panel: vscode.WebviewView): void {
   "title": "Export Outline..."
 },
 {
-  "command": "leointeg.exportJupyterNotebook",
-  "category": "Leo",
-  "title": "Export Jupyter Notebook..."
-},
-{
   "command": "leointeg.flattenOutline",
   "category": "Leo",
   "title": "Flatten Selected Outline..."
@@ -17535,10 +17516,6 @@ public setFindPanel(p_panel: vscode.WebviewView): void {
 },
 {
   "command": "leointeg.exportHeadlines",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.exportJupyterNotebook",
   "when": "leoTreeOpened"
 },
 {
@@ -17611,52 +17588,7 @@ public exportHeadlines(p_exportFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
             }
         });
 }
-</t>
-<t tx="felix.20220808233838.3">/**
- * * Export Jupyter Notebook
- * Convert the present outline to a .ipynb file.
- */
-public exportJupyterNotebook(): Thenable&lt;unknown&gt; {
 
-    return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
-            if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
-                return this._leoFilesBrowser.getExportFileUrl(
-                    "Export To Jupyter File",
-                    {
-                        'Jupyter files': ['ipynb'],
-                        'All files': ['*'],
-                    },
-                );
-            } else {
-                vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
-                return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
-            }
-        })
-        .then((p_chosenLeoFile) =&gt; {
-            if (p_chosenLeoFile.trim()) {
-
-                const q_commandResult = this.nodeCommand({
-                    action: Constants.LEOBRIDGE.EXPORT_JUPYTER_NOTEBOOK,
-                    node: undefined,
-                    refreshType: { tree: true, states: true, documents: true },
-                    fromOutline: this.fromOutline, // use last
-                    name: p_chosenLeoFile,
-                });
-                this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                this._leoStatusBar.update(true, 0, true);
-                this._addRecentAndLastFile(p_chosenLeoFile.trim());
-                if (q_commandResult) {
-                    return q_commandResult;
-                } else {
-                    return Promise.reject('Export To Jupyter File not added on command stack');
-                }
-            } else {
-                // Canceled
-                return Promise.resolve(undefined);
-            }
-        });
-}
 </t>
 <t tx="felix.20220808233838.4">/**
  * * Flatten Selected Outline
@@ -18076,6 +18008,92 @@ public getExportFileUrl(p_title: string, p_fileTypes: { [name: string]: string[]
             });
 
     });
+}
+
+</t>
+<t tx="felix.20220815210705.1">/**
+ * * Place the XML or JSON Leo outline tree on the clipboard for the given node.
+ */
+public async copyNodeAsJson(): Promise&lt;LeoBridgePackage&gt; {
+
+    await this._isBusyTriggerSave(false, true);
+
+    const w_commandResult = this.nodeCommand({
+        action: Constants.LEOBRIDGE.COPY_PNODE_AS_JSON,
+        node: undefined,
+        refreshType: {},
+        fromOutline: !!this.fromOutline,
+    });
+
+    if (w_commandResult) {
+        return w_commandResult.then(p_package =&gt; {
+            if (p_package.string) {
+                this.replaceClipboardWith(p_package.string);
+            } else {
+            }
+            return p_package;
+        });
+
+    } else {
+        return Promise.reject('Copy Node As JSON not added on command stack');
+    }
+}
+
+</t>
+<t tx="felix.20220815210715.1">/**
+ * * Place the XML or JSON Leo outline tree on the clipboard for the given node.
+ */
+public async copyGnx(): Promise&lt;unknown&gt; {
+
+    await this._isBusyTriggerSave(false, true);
+
+    const w_commandResult = this.nodeCommand({
+        action: Constants.LEOBRIDGE.DO_NOTHING,
+        node: undefined,
+        refreshType: {},
+        fromOutline: !!this.fromOutline,
+    });
+
+    if (w_commandResult) {
+        return w_commandResult.then(p_package =&gt; {
+            if (p_package.node) {
+                this.replaceClipboardWith(p_package.node.gnx);
+            } else {
+            }
+            return p_package;
+        });
+
+    } else {
+        return Promise.reject('Copy Gnx not added on command stack');
+    }
+}
+
+</t>
+<t tx="felix.20220815221536.1">/**
+ * * Creates, while preserving the top gnx of a section of tree outline, from the clipboard content.
+ */
+public async pasteAsTemplate(
+    p_node?: ArchivedPosition,
+    p_fromOutline?: boolean
+): Promise&lt;LeoBridgePackage&gt; {
+
+    await this._isBusyTriggerSave(false, true);
+
+    const text = await this.asyncGetTextFromClipboard();
+
+    const w_commandResult = this.nodeCommand({
+        action: Constants.LEOBRIDGE.PASTE_AS_TEMPLATE,
+        node: p_node,
+        refreshType: { tree: true, body: true, states: true },
+        name: text,
+        fromOutline: !!p_fromOutline,
+    });
+
+    if (w_commandResult) {
+        return w_commandResult;
+    } else {
+        return Promise.reject('Cut Node not added on command stack');
+    }
 }
 
 </t>

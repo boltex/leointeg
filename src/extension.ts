@@ -74,7 +74,6 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.READ_FILE_INTO_NODE, () => w_leo.readFileIntoNode()],
 
         [CMD.EXPORT_HEADLINES, () => w_leo.exportHeadlines()],
-        [CMD.EXPORT_JUPYTER_NOTEBOOK, () => w_leo.exportJupyterNotebook()],
         [CMD.FLATTEN_OUTLINE, () => w_leo.flattenOutline()],
         [CMD.OUTLINE_TO_CWEB, () => w_leo.outlineToCweb()],
         [CMD.OUTLINE_TO_NOWEB, () => w_leo.outlineToNoweb()],
@@ -173,8 +172,14 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.PASTE, (p_ap: ArchivedPosition) => w_leo.pasteNode(p_ap, true)],
         [CMD.PASTE_CLONE, (p_ap: ArchivedPosition) => w_leo.pasteAsCloneNode(p_ap, true)],
 
+        // PASTE_AS_TEMPLATE used without ap position but supports ap given as parameter
+        [CMD.PASTE_AS_TEMPLATE, (p_ap: ArchivedPosition) => w_leo.pasteAsTemplate(p_ap, true)],
+
         // cut/copy/paste/delete current selection (self.commander.p)
         [CMD.COPY_SELECTION, () => w_leo.copyNode(U, false)],
+        [CMD.COPY_AS_JSON, () => w_leo.copyNodeAsJson()],
+        [CMD.COPY_GNX, () => w_leo.copyGnx()], // Not exposed in package.json
+
         [CMD.CUT_SELECTION, () => w_leo.cutNode(U, false)],
         [CMD.CUT_SELECTION_FO, () => w_leo.cutNode(U, true)],
 
@@ -708,7 +713,6 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [CMD.SET_ENABLE_PREVIEW, () => w_leo.config.setEnablePreview()],
         [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () => w_leo.config.clearCloseEmptyGroups()],
-        [CMD.SET_CLOSE_ON_FILE_DELETE, () => w_leo.config.setCloseOnFileDelete()],
     ];
 
     w_commands.map(function (p_command) {
@@ -727,7 +731,6 @@ export function activate(p_context: vscode.ExtensionContext) {
                 // and not to try to see if they're set too soon
                 w_leo.config.checkEnablePreview();
                 w_leo.config.checkCloseEmptyGroups();
-                w_leo.config.checkCloseOnFileDelete();
             }, 1500);
 
             // Start server and/or connect to it, as per user settings
@@ -815,7 +818,6 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
         // Force-Set/Clear leointeg's required configuration settings
         p_leoInteg.config.setEnablePreview();
         p_leoInteg.config.clearCloseEmptyGroups();
-        p_leoInteg.config.setCloseOnFileDelete();
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {
@@ -823,7 +825,6 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
             // Force-Set/Clear leointeg's required configuration settings but show info messages
             p_leoInteg.config.checkEnablePreview(true);
             p_leoInteg.config.checkCloseEmptyGroups(true);
-            p_leoInteg.config.checkCloseOnFileDelete(true);
         }
         const [w_major, w_minor] = p_version.split('.').map(p_stringVal => parseInt(p_stringVal, 10));
         const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal => parseInt(p_stringVal, 10));

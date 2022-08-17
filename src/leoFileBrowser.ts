@@ -93,7 +93,8 @@ export class LeoFilesBrowser {
             const w_filters: { [name: string]: string[] } = {};
             w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [
                 Constants.FILE_EXTENSION,
-                Constants.JS_FILE_EXTENSION
+                Constants.JS_FILE_EXTENSION,
+                Constants.DB_FILE_EXTENSION
             ];
 
             if (p_saveAsFlag) {
@@ -101,7 +102,7 @@ export class LeoFilesBrowser {
                 vscode.window.showSaveDialog({
                     saveLabel: "Save Leo File",
                     defaultUri: this._getBestOpenFolderUri(),
-                    filters: { 'Leo Files': ['leo', 'leojs'] },
+                    filters: w_filters,
                     title: "Save as Leo File"
                 })
                     .then(p_chosenLeoFile => {

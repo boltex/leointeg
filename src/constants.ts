@@ -32,6 +32,7 @@ export class Constants {
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
+    public static DB_FILE_EXTENSION: string = "db";
     public static JS_FILE_EXTENSION: string = "leojs";
 
     public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
@@ -532,7 +533,6 @@ export class Constants {
         IMPORT_ANY_FILE: "!import_any_file", // "importAnyFile",
         READ_FILE_INTO_NODE: "!read_file_into_node",
         EXPORT_HEADLINES: "!export_headlines",
-        EXPORT_JUPYTER_NOTEBOOK: "!export_jupyter_notebook",
         FLATTEN_OUTLINE: "!flatten_outline",
         OUTLINE_TO_CWEB: "!outline_to_cweb",
         OUTLINE_TO_NOWEB: "!outline_to_noweb",
@@ -544,9 +544,11 @@ export class Constants {
         MARK_PNODE: "!mark_node", // "markPNode",
         UNMARK_PNODE: "!unmark_node", // "unmarkPNode",
         COPY_PNODE: "!copy_node",
+        COPY_PNODE_AS_JSON: "!copy_node_as_json",
         CUT_PNODE: "!cut_node", // "cutPNode",
         PASTE_PNODE: "!paste_node",
         PASTE_CLONE_PNODE: "!paste_as_clone_node",
+        PASTE_AS_TEMPLATE: "!paste_as_template",
         DELETE_PNODE: "!delete_node", // "deletePNode",
         MOVE_PNODE_DOWN: "moveOutlineDown",
         MOVE_PNODE_LEFT: "moveOutlineLeft",
@@ -677,14 +679,13 @@ export class Constants {
         // * Import Export Commands
         IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
         READ_FILE_INTO_NODE: Constants.NAME + ".readFileIntoNode",
-        EXPORT_HEADLINES: Constants.NAME + "exportHeadlines",
-        EXPORT_JUPYTER_NOTEBOOK: Constants.NAME + "exportJupyterNotebook",
-        FLATTEN_OUTLINE: Constants.NAME + "flattenOutline",
-        OUTLINE_TO_CWEB: Constants.NAME + "outlineToCweb",
-        OUTLINE_TO_NOWEB: Constants.NAME + "outlineToNoweb",
-        REMOVE_SENTINELS: Constants.NAME + "removeSentinels",
-        WEAVE: Constants.NAME + "weave",
-        WRITE_FILE_FROM_NODE: Constants.NAME + "writeFileFromNode",
+        EXPORT_HEADLINES: Constants.NAME + ".exportHeadlines",
+        FLATTEN_OUTLINE: Constants.NAME + ".flattenOutline",
+        OUTLINE_TO_CWEB: Constants.NAME + ".outlineToCweb",
+        OUTLINE_TO_NOWEB: Constants.NAME + ".outlineToNoweb",
+        REMOVE_SENTINELS: Constants.NAME + ".removeSentinels",
+        WEAVE: Constants.NAME + ".weave",
+        WRITE_FILE_FROM_NODE: Constants.NAME + ".writeFileFromNode",
         // * Leo Operations
         UNDO: Constants.NAME + ".undo", // From command Palette
         UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
@@ -709,9 +710,12 @@ export class Constants {
         MARK: Constants.NAME + ".mark",
         UNMARK: Constants.NAME + ".unmark",
         COPY: Constants.NAME + ".copyNode",
+        COPY_AS_JSON: Constants.NAME + ".copyNodeAsJson",
+        COPY_GNX: Constants.NAME + ".copyGnx", // Not exposed in commands, only for minibuffer override
         CUT: Constants.NAME + ".cutNode",
         PASTE: Constants.NAME + ".pasteNode",
         PASTE_CLONE: Constants.NAME + ".pasteNodeAsClone",
+        PASTE_AS_TEMPLATE: Constants.NAME + ".pasteAsTemplate",
         DELETE: Constants.NAME + ".delete",
         HEADLINE: Constants.NAME + ".editHeadline",
         MOVE_DOWN: Constants.NAME + ".moveOutlineDown",
@@ -835,7 +839,6 @@ export class Constants {
         TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
         SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
         CLEAR_CLOSE_EMPTY_GROUPS: Constants.NAME + ".clearCloseEmptyGroups",
-        SET_CLOSE_ON_FILE_DELETE: Constants.NAME + ".setCloseOnFileDelete",
     };
 
     public static addMinibufferCommands: { label: string, detail: string }[] = [
@@ -850,8 +853,6 @@ export class Constants {
 
         { "label": "export-headlines", "detail": "Export all headlines to an external file." },
 
-        // ! Maybe removed from Leo !
-        { "label": "export-jupyter-notebook", "detail": "Convert the present outline to a .ipynb file." },
         { "label": "flatten-outline", "detail": "Export the selected outline to an external file. The outline is represented in MORE format." },
 
         { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file.        The outline is represented in CWEB format." },
@@ -889,6 +890,15 @@ export class Constants {
         "goto-prev-history-node": Constants.COMMANDS.PREV_NODE_FO,
         "goto-next-history-node": Constants.COMMANDS.NEXT_NODE_FO,
 
+        "chapter-select": Constants.COMMANDS.CHAPTER_SELECT,
+        "copy-node": Constants.COMMANDS.COPY_SELECTION,
+        "copy-node-as-json": Constants.COMMANDS.COPY_AS_JSON,
+        "copy-gnx": Constants.COMMANDS.COPY_GNX,
+        "cut-node": Constants.COMMANDS.CUT_SELECTION,
+        "paste-node": Constants.COMMANDS.PASTE_SELECTION_FO,
+        "paste-retaining-clones": Constants.COMMANDS.PASTE_CLONE_SELECTION_FO,
+        "paste-as-template": Constants.COMMANDS.PASTE_AS_TEMPLATE,
+
         "tag-children": Constants.COMMANDS.TAG_CHILDREN,
         "tag-node": Constants.COMMANDS.TAG_NODE,
         "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
@@ -900,7 +910,6 @@ export class Constants {
 
         'import-MORE-files': Constants.COMMANDS.IMPORT_ANY_FILE,
         'import-free-mind-files': Constants.COMMANDS.IMPORT_ANY_FILE,
-        'import-jupyter-notebook': Constants.COMMANDS.IMPORT_ANY_FILE,
         'import-legacy-external-files': Constants.COMMANDS.IMPORT_ANY_FILE,
         'import-mind-jet-files': Constants.COMMANDS.IMPORT_ANY_FILE,
         'import-tabbed-files': Constants.COMMANDS.IMPORT_ANY_FILE,
@@ -908,12 +917,12 @@ export class Constants {
         'import-zim-folder': Constants.COMMANDS.IMPORT_ANY_FILE,
 
         'export-headlines': Constants.COMMANDS.EXPORT_HEADLINES,
-        'export-jupyter-notebook': Constants.COMMANDS.EXPORT_JUPYTER_NOTEBOOK,
         'flatten-outline': Constants.COMMANDS.FLATTEN_OUTLINE,
         'outline-to-cweb': Constants.COMMANDS.OUTLINE_TO_CWEB,
         'outline-to-noweb': Constants.COMMANDS.OUTLINE_TO_NOWEB,
         'remove-sentinels': Constants.COMMANDS.REMOVE_SENTINELS,
         'weave': Constants.COMMANDS.WEAVE,
+
         'read-file-into-node': Constants.COMMANDS.READ_FILE_INTO_NODE,
         'write-file-from-node': Constants.COMMANDS.WRITE_FILE_FROM_NODE,
 
@@ -924,7 +933,7 @@ export class Constants {
         'file-save': Constants.COMMANDS.SAVE_FILE,
         'file-save-as': Constants.COMMANDS.SAVE_AS_FILE,
         'file-save-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
-        'file-save-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
+        'file-save-as-zipped': Constants.COMMANDS.SAVE_AS_FILE,
         'file-save-by-name': Constants.COMMANDS.SAVE_AS_FILE,
         'file-save-to': Constants.COMMANDS.SAVE_AS_FILE,
         'save': Constants.COMMANDS.SAVE_FILE,
@@ -932,7 +941,7 @@ export class Constants {
         'save-file': Constants.COMMANDS.SAVE_FILE,
         'save-file-as': Constants.COMMANDS.SAVE_AS_FILE,
         'save-file-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
-        'save-file-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-file-as-zipped': Constants.COMMANDS.SAVE_AS_FILE,
         'save-file-by-name': Constants.COMMANDS.SAVE_AS_FILE,
         'save-file-to': Constants.COMMANDS.SAVE_AS_FILE,
         'save-to': Constants.COMMANDS.SAVE_AS_FILE,
