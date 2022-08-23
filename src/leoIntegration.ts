@@ -55,7 +55,10 @@ export class LeoIntegration {
     private _startingServer: boolean = false; // Used to prevent re-starting while starting until success of fail
     public verbose: boolean = false;
     public trace: boolean = false;
-    public clipboardContent: string = "";
+
+    // * General integration usage variables
+    private _clipboardContent: string = "";
+    private _minibufferHistory: string[] = [];
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -231,6 +234,7 @@ export class LeoIntegration {
 
     // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
     public getStates: (() => void);
+
     // * Debounced method used to get opened Leo Files for the documents pane
     public refreshDocumentsPane: (() => void);
 
@@ -2787,15 +2791,43 @@ export class LeoIntegration {
                 // Add some commands traditionally from plugins or other sources
                 p_result.commands.push(...Constants.addMinibufferCommands);
 
-                const w_noDetails = p_result.commands.filter(p_command => !p_command.detail);
+                // Keep only without details and remove @buttons and delete-@buttons
+                // (keeps the minibuffer list cleaner)
+                const w_noDetails = p_result.commands
+                    .filter(
+                        p_command => !p_command.detail && !(
+                            p_command.label.startsWith("@button-") ||
+                            p_command.label.startsWith("delete-@button-") ||
+                            p_command.label.startsWith("@command-")
+                        )
+                    );
+                for (const p_command of w_noDetails) {
+                    p_command.description = "$(run) User defined command.";
+                }
+
                 const w_withDetails = p_result.commands.filter(p_command => !!p_command.detail);
 
-                // Only sort 'regular' Leo commands, leaving custom @commands and @buttons at the top
+                // Only sort 'regular' Leo commands, leaving custom commands at the top
                 w_withDetails.sort((a, b) => {
                     return a.label < b.label ? -1 : (a.label === b.label ? 0 : 1);
                 });
 
-                const w_result = [...w_noDetails, ...w_withDetails];
+
+                const w_result: vscode.QuickPickItem[] = [];
+
+                if (this._minibufferHistory.length) {
+                    w_result.push({
+                        label: this._minibufferHistory[this._minibufferHistory.length - 1],
+                        description: "$(history) Redo last command"
+                    });
+                }
+
+                // Finish minibuffer list
+                w_result.push(
+                    ...w_noDetails,
+                    { label: "", kind: vscode.QuickPickItemKind.Separator },
+                    ...w_withDetails
+                );
 
                 // all commands shown to user
                 // console.log('minibuffer commands', w_result);
@@ -2822,6 +2854,7 @@ export class LeoIntegration {
         }
         // * Ok, it was really a minibuffer command
         if (w_picked && w_picked.label) {
+            this._minibufferHistory.push(w_picked.label);
             const w_commandResult = this.nodeCommand({
                 action: "-" + w_picked.label,
                 node: undefined,
@@ -3331,7 +3364,7 @@ export class LeoIntegration {
      * @returns a promise that resolves when the string is put on the clipboard
      */
     public replaceClipboardWith(s: string): Thenable<void> {
-        this.clipboardContent = s; // also set immediate clipboard string
+        this._clipboardContent = s; // also set immediate clipboard string
         return vscode.env.clipboard.writeText(s);
     }
 
@@ -3344,7 +3377,7 @@ export class LeoIntegration {
     public async asyncGetTextFromClipboard(): Promise<string> {
         const s = await vscode.env.clipboard.readText();
         // Set immediate clipboard string for future read
-        this.clipboardContent = s;
+        this._clipboardContent = s;
         // Return from synchronous clipboards getter
         return this.getTextFromClipboard();
     }
@@ -3354,7 +3387,7 @@ export class LeoIntegration {
      * @returns the global variable 'clipboardContent' that was set by asyncGetTextFromClipboard
      */
     public getTextFromClipboard(): string {
-        return this.clipboardContent;
+        return this._clipboardContent;
     }
 
     /**
