@@ -10815,7 +10815,8 @@ public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | und
                 if (
                     !w_hasDot ||
                     ((p_chosenLeoFile.split('.').pop() !== Constants.FILE_EXTENSION) &amp;&amp;
-                        (p_chosenLeoFile.split('.').pop() !== Constants.JS_FILE_EXTENSION))
+                        (p_chosenLeoFile.split('.').pop() !== Constants.JS_FILE_EXTENSION) &amp;&amp;
+                        (p_chosenLeoFile.split('.').pop() !== Constants.DB_FILE_EXTENSION))
                 ) {
                     if (!p_chosenLeoFile.endsWith('.')) {
                         p_chosenLeoFile += '.'; // Add dot if needed
