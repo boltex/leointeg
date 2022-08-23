@@ -2823,11 +2823,13 @@ export class LeoIntegration {
                 }
 
                 // Finish minibuffer list
-                w_result.push(
-                    ...w_noDetails,
-                    { label: "", kind: vscode.QuickPickItemKind.Separator },
-                    ...w_withDetails
-                );
+                if (w_noDetails.length) {
+                    w_result.push(...w_noDetails);
+                    w_result.push({
+                        label: "", kind: vscode.QuickPickItemKind.Separator
+                    });
+                }
+                w_result.push(...w_withDetails);
 
                 // all commands shown to user
                 // console.log('minibuffer commands', w_result);
