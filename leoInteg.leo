@@ -16416,6 +16416,7 @@ export function cleanLeoID(id_: string): string {
 - Start position selected upon opening is now fixed, and not forced as the first one
 - Many minibuffer-only commands are now fixed and available through the minibuffer itself, and for some, the vscode command palette.
 - Removed 'close on delete' setting requirement because of the new vscode API to control individual tabs as needed.
+- db file extensions support: Load / Save-as now supports .db file extension.
 
 </t>
 <t tx="felix.20220704004247.1">private _leoCanGoBack: boolean = false;
