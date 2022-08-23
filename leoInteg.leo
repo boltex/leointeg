@@ -5232,13 +5232,13 @@ public static COMMANDS = {
     // * Import Export Commands
     IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
     READ_FILE_INTO_NODE: Constants.NAME + ".readFileIntoNode",
-    EXPORT_HEADLINES: Constants.NAME + "exportHeadlines",
-    FLATTEN_OUTLINE: Constants.NAME + "flattenOutline",
-    OUTLINE_TO_CWEB: Constants.NAME + "outlineToCweb",
-    OUTLINE_TO_NOWEB: Constants.NAME + "outlineToNoweb",
-    REMOVE_SENTINELS: Constants.NAME + "removeSentinels",
-    WEAVE: Constants.NAME + "weave",
-    WRITE_FILE_FROM_NODE: Constants.NAME + "writeFileFromNode",
+    EXPORT_HEADLINES: Constants.NAME + ".exportHeadlines",
+    FLATTEN_OUTLINE: Constants.NAME + ".flattenOutline",
+    OUTLINE_TO_CWEB: Constants.NAME + ".outlineToCweb",
+    OUTLINE_TO_NOWEB: Constants.NAME + ".outlineToNoweb",
+    REMOVE_SENTINELS: Constants.NAME + ".removeSentinels",
+    WEAVE: Constants.NAME + ".weave",
+    WRITE_FILE_FROM_NODE: Constants.NAME + ".writeFileFromNode",
     // * Leo Operations
     UNDO: Constants.NAME + ".undo", // From command Palette
     UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
@@ -6705,8 +6705,8 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
             return;
         }
         this._rejectAction(`Websocket closed, code: ${p_event.code}`);
-        // TODO : Implement a better connection error handling
-        if (this._leoIntegration.leoStates.leoBridgeReady) {
+        // TODO : Implement a better connection error handling (optional fileOpenedReady check may be overkill, etc.)
+        if (this._leoIntegration.leoStates.leoBridgeReady || this._leoIntegration.leoStates.fileOpenedReady) {
             this._leoIntegration.cancelConnect(`Websocket closed, code: ${p_event.code}`);
         }
     };
@@ -11873,14 +11873,20 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
             // Add some commands traditionally from plugins or other sources
             p_result.commands.push(...Constants.addMinibufferCommands);
 
-            p_result.commands.sort((a, b) =&gt; {
+            const w_noDetails = p_result.commands.filter(p_command =&gt; !p_command.detail);
+            const w_withDetails = p_result.commands.filter(p_command =&gt; !!p_command.detail);
+
+            // Only sort 'regular' Leo commands, leaving custom @commands and @buttons at the top
+            w_withDetails.sort((a, b) =&gt; {
                 return a.label &lt; b.label ? -1 : (a.label === b.label ? 0 : 1);
             });
 
-            // all commands shown to user
-            // console.log('p_result.commands', p_result.commands);
+            const w_result = [...w_noDetails, ...w_withDetails];
 
-            return p_result.commands;
+            // all commands shown to user
+            // console.log('minibuffer commands', w_result);
+
+            return w_result;
         } else {
             return [];
         }
@@ -17574,9 +17580,6 @@ public exportHeadlines(p_exportFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                     fromOutline: this.fromOutline, // use last
                     name: p_chosenLeoFile,
                 });
-                this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                this._leoStatusBar.update(true, 0, true);
-                this._addRecentAndLastFile(p_chosenLeoFile.trim());
                 if (q_commandResult) {
                     return q_commandResult;
                 } else {
@@ -17622,9 +17625,6 @@ public flattenOutline(): Thenable&lt;unknown&gt; {
                     fromOutline: this.fromOutline, // use last
                     name: p_chosenLeoFile,
                 });
-                this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                this._leoStatusBar.update(true, 0, true);
-                this._addRecentAndLastFile(p_chosenLeoFile.trim());
                 if (q_commandResult) {
                     return q_commandResult;
                 } else {
@@ -17668,9 +17668,6 @@ public outlineToCweb(): Thenable&lt;unknown&gt; {
                     fromOutline: this.fromOutline, // use last
                     name: p_chosenLeoFile,
                 });
-                this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                this._leoStatusBar.update(true, 0, true);
-                this._addRecentAndLastFile(p_chosenLeoFile.trim());
                 if (q_commandResult) {
                     return q_commandResult;
                 } else {
@@ -17714,9 +17711,6 @@ public outlineToNoweb(): Thenable&lt;unknown&gt; {
                     fromOutline: this.fromOutline, // use last
                     name: p_chosenLeoFile,
                 });
-                this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                this._leoStatusBar.update(true, 0, true);
-                this._addRecentAndLastFile(p_chosenLeoFile.trim());
                 if (q_commandResult) {
                     return q_commandResult;
                 } else {
@@ -17831,9 +17825,6 @@ public weave(): Thenable&lt;unknown&gt; {
                     fromOutline: this.fromOutline, // use last
                     name: p_chosenLeoFile,
                 });
-                this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                this._leoStatusBar.update(true, 0, true);
-                this._addRecentAndLastFile(p_chosenLeoFile.trim());
                 if (q_commandResult) {
                     return q_commandResult;
                 } else {

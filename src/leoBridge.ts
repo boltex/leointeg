@@ -253,8 +253,8 @@ export class LeoBridge {
                 return;
             }
             this._rejectAction(`Websocket closed, code: ${p_event.code}`);
-            // TODO : Implement a better connection error handling
-            if (this._leoIntegration.leoStates.leoBridgeReady) {
+            // TODO : Implement a better connection error handling (optional fileOpenedReady check may be overkill, etc.)
+            if (this._leoIntegration.leoStates.leoBridgeReady || this._leoIntegration.leoStates.fileOpenedReady) {
                 this._leoIntegration.cancelConnect(`Websocket closed, code: ${p_event.code}`);
             }
         };

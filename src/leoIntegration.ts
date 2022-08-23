@@ -2787,14 +2787,20 @@ export class LeoIntegration {
                 // Add some commands traditionally from plugins or other sources
                 p_result.commands.push(...Constants.addMinibufferCommands);
 
-                p_result.commands.sort((a, b) => {
+                const w_noDetails = p_result.commands.filter(p_command => !p_command.detail);
+                const w_withDetails = p_result.commands.filter(p_command => !!p_command.detail);
+
+                // Only sort 'regular' Leo commands, leaving custom @commands and @buttons at the top
+                w_withDetails.sort((a, b) => {
                     return a.label < b.label ? -1 : (a.label === b.label ? 0 : 1);
                 });
 
-                // all commands shown to user
-                // console.log('p_result.commands', p_result.commands);
+                const w_result = [...w_noDetails, ...w_withDetails];
 
-                return p_result.commands;
+                // all commands shown to user
+                // console.log('minibuffer commands', w_result);
+
+                return w_result;
             } else {
                 return [];
             }
@@ -4871,9 +4877,6 @@ export class LeoIntegration {
                         fromOutline: this.fromOutline, // use last
                         name: p_chosenLeoFile,
                     });
-                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                    this._leoStatusBar.update(true, 0, true);
-                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
                     if (q_commandResult) {
                         return q_commandResult;
                     } else {
@@ -4918,9 +4921,6 @@ export class LeoIntegration {
                         fromOutline: this.fromOutline, // use last
                         name: p_chosenLeoFile,
                     });
-                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                    this._leoStatusBar.update(true, 0, true);
-                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
                     if (q_commandResult) {
                         return q_commandResult;
                     } else {
@@ -4963,9 +4963,6 @@ export class LeoIntegration {
                         fromOutline: this.fromOutline, // use last
                         name: p_chosenLeoFile,
                     });
-                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                    this._leoStatusBar.update(true, 0, true);
-                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
                     if (q_commandResult) {
                         return q_commandResult;
                     } else {
@@ -5008,9 +5005,6 @@ export class LeoIntegration {
                         fromOutline: this.fromOutline, // use last
                         name: p_chosenLeoFile,
                     });
-                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                    this._leoStatusBar.update(true, 0, true);
-                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
                     if (q_commandResult) {
                         return q_commandResult;
                     } else {
@@ -5123,9 +5117,6 @@ export class LeoIntegration {
                         fromOutline: this.fromOutline, // use last
                         name: p_chosenLeoFile,
                     });
-                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                    this._leoStatusBar.update(true, 0, true);
-                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
                     if (q_commandResult) {
                         return q_commandResult;
                     } else {
