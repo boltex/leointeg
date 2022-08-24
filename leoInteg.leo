@@ -400,6 +400,7 @@
 <v t="felix.20220724224959.1"><vh>setupRefresh</vh></v>
 <v t="ekr.20200815085830.3"><vh>launchRefresh</vh></v>
 <v t="felix.20220804203041.1"><vh>fullRefresh</vh></v>
+<v t="felix.20220824014747.1"><vh>isTsStillValid</vh></v>
 <v t="felix.20220804203829.1"><vh>isGnxStillValid</vh></v>
 <v t="felix.20220805212936.1"><vh>isGnxReselected</vh></v>
 <v t="ekr.20200815085830.1"><vh>_refreshOutline</vh></v>
@@ -5576,7 +5577,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_VERSION: "Please update: Leo 6.6.3 required.",
+    MINIMUM_VERSION: "Please update: Leo 6.6.4 required.",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
 };
@@ -17385,7 +17386,8 @@ public fullRefresh(): Promise&lt;LeoBridgePackage&gt; | undefined {
 
 </t>
 <t tx="felix.20220804203829.1">/**
- * * Checks if gnx for body is still the latest body
+ * * Checks if gnx for body is still the latest lastReceivedNode gnx
+ * TODO : MAYBE NOT REQUIRED ?
  * @param gnx node identity to check
  * @param ts timestamp of last time that this gnx was set as the body
  */
@@ -18123,6 +18125,43 @@ public async pasteAsTemplate(
     } else {
         return Promise.reject('Cut Node not added on command stack');
     }
+}
+
+</t>
+<t tx="felix.20220824014747.1">/**
+ * * Checks timestamp only, if is still the latest lastReceivedNode
+  * @param ts timestamp of last time
+ */
+public isTsStillValid(ts: number): boolean {
+
+    if (
+        this._commandStack.lastReceivedNode &amp;&amp;
+        this._commandStack.lastReceivedNodeTS &gt; ts &amp;&amp;
+        (this._commandStack._finalRefreshType.tree || this._commandStack._finalRefreshType.node)
+    ) {
+        // new commandStack lastReceivedNode, is different and newer and tree/node has to refresh
+        return false;
+    }
+    // also test other sources ,and check if command also not started to go back to original gnx
+    // by checking if the test above only failed for gnx being the same
+    if (
+        this._refreshNode &amp;&amp;
+        this._lastRefreshNodeTS &gt; ts &amp;&amp;
+        this._lastRefreshNodeTS &lt; this._lastSelectedNodeTS
+    ) {
+        // new _refreshNode is different and newer
+        return false;
+    }
+    if (
+        this.lastSelectedNode &amp;&amp;
+        this._lastSelectedNodeTS &gt; ts &amp;&amp;
+        this._lastRefreshNodeTS &lt; this._lastSelectedNodeTS &amp;&amp;
+        this._commandStack.lastReceivedNodeTS &lt; this._lastSelectedNodeTS
+    ) {
+        // new lastSelectedNode is different and newer
+        return false;
+    }
+    return true;
 }
 
 </t>

@@ -1823,7 +1823,44 @@ export class LeoIntegration {
     }
 
     /**
-     * * Checks if gnx for body is still the latest body
+     * * Checks timestamp only, if is still the latest lastReceivedNode
+      * @param ts timestamp of last time
+     */
+    public isTsStillValid(ts: number): boolean {
+
+        if (
+            this._commandStack.lastReceivedNode &&
+            this._commandStack.lastReceivedNodeTS > ts &&
+            (this._commandStack._finalRefreshType.tree || this._commandStack._finalRefreshType.node)
+        ) {
+            // new commandStack lastReceivedNode, is different and newer and tree/node has to refresh
+            return false;
+        }
+        // also test other sources ,and check if command also not started to go back to original gnx
+        // by checking if the test above only failed for gnx being the same
+        if (
+            this._refreshNode &&
+            this._lastRefreshNodeTS > ts &&
+            this._lastRefreshNodeTS < this._lastSelectedNodeTS
+        ) {
+            // new _refreshNode is different and newer
+            return false;
+        }
+        if (
+            this.lastSelectedNode &&
+            this._lastSelectedNodeTS > ts &&
+            this._lastRefreshNodeTS < this._lastSelectedNodeTS &&
+            this._commandStack.lastReceivedNodeTS < this._lastSelectedNodeTS
+        ) {
+            // new lastSelectedNode is different and newer
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * * Checks if gnx for body is still the latest lastReceivedNode gnx
+     * TODO : MAYBE NOT REQUIRED ?
      * @param gnx node identity to check
      * @param ts timestamp of last time that this gnx was set as the body
      */
