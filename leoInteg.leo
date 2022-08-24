@@ -5512,7 +5512,7 @@ public static GUI = {
 
 </t>
 <t tx="felix.20200718020912.6">/**
- * * Basic user messages strings for messages and dialogs
+ * * Basic user messages strings: for messages and dialogs
  */
 public static USER_MESSAGES = {
     SCRIPT_BUTTON: "from selected node",
@@ -5580,7 +5580,13 @@ public static USER_MESSAGES = {
     TOO_FAST: "leoInteg is busy! ", // with trailing space
     MINIMUM_VERSION: "Please update: Leo 6.6.4 required.",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
-    LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
+    LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
+    MINIBUFFER_BUTTON_START: "@button-",
+    MINIBUFFER_DEL_BUTTON_START: "delete-@button-",
+    MINIBUFFER_COMMAND_START: "@command-",
+    MINIBUFFER_USER_DEFINED: "$(run) User defined command.",
+    MINIBUFFER_HISTORY_LABEL: "Minibuffer History",
+    MINIBUFFER_HISTORY_DESC: "$(history) Choose from last run commands..."
 };
 
 </t>
@@ -9431,7 +9437,6 @@ export class LeoIntegration {
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(
         Constants.GUI.LOG_PANE_TITLE
     );
-    // private _leoTerminalPane: vscode.OutputChannel | undefined; // ! local server output should be in log pane #
 
     // * Status Bar
     private _leoStatusBar: LeoStatusBar;
@@ -11885,13 +11890,13 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
             const w_noDetails = p_result.commands
                 .filter(
                     p_command =&gt; !p_command.detail &amp;&amp; !(
-                        p_command.label.startsWith("@button-") ||
-                        p_command.label.startsWith("delete-@button-") ||
-                        p_command.label.startsWith("@command-")
+                        p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START) ||
+                        p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_DEL_BUTTON_START) ||
+                        p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START)
                     )
                 );
             for (const p_command of w_noDetails) {
-                p_command.description = "$(run) User defined command.";
+                p_command.description = Constants.USER_MESSAGES.MINIBUFFER_USER_DEFINED;
             }
 
             const w_withDetails = p_result.commands.filter(p_command =&gt; !!p_command.detail);
@@ -11906,21 +11911,25 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
 
             if (this._minibufferHistory.length) {
                 w_result.push({
-                    label: "Minibuffer History",
-                    description: "$(history) Choose from last run commands..."
+                    label: Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL,
+                    description: Constants.USER_MESSAGES.MINIBUFFER_HISTORY_DESC
                 });
             }
 
             // Finish minibuffer list
             if (w_noDetails.length) {
                 w_result.push(...w_noDetails);
+            }
+
+            // Separator above real commands, if needed...
+            if (w_noDetails.length || this._minibufferHistory.length) {
                 w_result.push({
                     label: "", kind: vscode.QuickPickItemKind.Separator
                 });
             }
+
             w_result.push(...w_withDetails);
 
-            // all commands shown to user
             // console.log('minibuffer commands', w_result);
 
             return w_result;
@@ -11936,7 +11945,7 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
 
     const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
     // * First, check for undo-history list being requested
-    if (w_picked &amp;&amp; w_picked.label === "Minibuffer History") {
+    if (w_picked &amp;&amp; w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
         return this.minibufferHistory();
     }
 

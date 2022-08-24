@@ -129,7 +129,7 @@ export class Constants {
     };
 
     /**
-     * * Basic user messages strings for messages and dialogs
+     * * Basic user messages strings: for messages and dialogs
      */
     public static USER_MESSAGES = {
         SCRIPT_BUTTON: "from selected node",
@@ -197,7 +197,13 @@ export class Constants {
         TOO_FAST: "leoInteg is busy! ", // with trailing space
         MINIMUM_VERSION: "Please update: Leo 6.6.4 required.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
-        LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
+        LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
+        MINIBUFFER_BUTTON_START: "@button-",
+        MINIBUFFER_DEL_BUTTON_START: "delete-@button-",
+        MINIBUFFER_COMMAND_START: "@command-",
+        MINIBUFFER_USER_DEFINED: "$(run) User defined command.",
+        MINIBUFFER_HISTORY_LABEL: "Minibuffer History",
+        MINIBUFFER_HISTORY_DESC: "$(history) Choose from last run commands..."
     };
 
     /**

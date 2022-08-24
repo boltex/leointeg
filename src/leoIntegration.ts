@@ -211,7 +211,6 @@ export class LeoIntegration {
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(
         Constants.GUI.LOG_PANE_TITLE
     );
-    // private _leoTerminalPane: vscode.OutputChannel | undefined; // ! local server output should be in log pane #
 
     // * Status Bar
     private _leoStatusBar: LeoStatusBar;
@@ -2833,13 +2832,13 @@ export class LeoIntegration {
                 const w_noDetails = p_result.commands
                     .filter(
                         p_command => !p_command.detail && !(
-                            p_command.label.startsWith("@button-") ||
-                            p_command.label.startsWith("delete-@button-") ||
-                            p_command.label.startsWith("@command-")
+                            p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START) ||
+                            p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_DEL_BUTTON_START) ||
+                            p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START)
                         )
                     );
                 for (const p_command of w_noDetails) {
-                    p_command.description = "$(run) User defined command.";
+                    p_command.description = Constants.USER_MESSAGES.MINIBUFFER_USER_DEFINED;
                 }
 
                 const w_withDetails = p_result.commands.filter(p_command => !!p_command.detail);
@@ -2854,21 +2853,25 @@ export class LeoIntegration {
 
                 if (this._minibufferHistory.length) {
                     w_result.push({
-                        label: "Minibuffer History",
-                        description: "$(history) Choose from last run commands..."
+                        label: Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL,
+                        description: Constants.USER_MESSAGES.MINIBUFFER_HISTORY_DESC
                     });
                 }
 
                 // Finish minibuffer list
                 if (w_noDetails.length) {
                     w_result.push(...w_noDetails);
+                }
+
+                // Separator above real commands, if needed...
+                if (w_noDetails.length || this._minibufferHistory.length) {
                     w_result.push({
                         label: "", kind: vscode.QuickPickItemKind.Separator
                     });
                 }
+
                 w_result.push(...w_withDetails);
 
-                // all commands shown to user
                 // console.log('minibuffer commands', w_result);
 
                 return w_result;
@@ -2884,7 +2887,7 @@ export class LeoIntegration {
 
         const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
         // * First, check for undo-history list being requested
-        if (w_picked && w_picked.label === "Minibuffer History") {
+        if (w_picked && w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
             return this.minibufferHistory();
         }
 
