@@ -16,7 +16,7 @@
 - Many minibuffer-only commands are now fixed and available through the minibuffer itself, and for some, the vscode command palette.
 - Removed 'close on delete' setting requirement because of the new vscode API to control individual tabs as needed.
 - db file extensions support: Load / Save-as now supports .db file extension.
-- Added minibuffer history and 'redo' last command (as top choice).
+- Added 'minibuffer history' as top choice of minibuffer entries.
 
 ## 1.0.7
 

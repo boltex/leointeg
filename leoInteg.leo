@@ -11905,12 +11905,9 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
             const w_result: vscode.QuickPickItem[] = [];
 
             if (this._minibufferHistory.length) {
-
-                // TODO : INSTEAD MAKE FIRST ONE OPEN COMMANDS HISTORY ! ! !
-
                 w_result.push({
-                    label: this._minibufferHistory[this._minibufferHistory.length - 1],
-                    description: "$(history) Redo last command"
+                    label: "Minibuffer History",
+                    description: "$(history) Choose from last run commands..."
                 });
             }
 
@@ -11938,7 +11935,12 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
     };
 
     const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
-    // * First check for overridden command: Exit by doing the overridden command
+    // * First, check for undo-history list being requested
+    if (w_picked &amp;&amp; w_picked.label === "Minibuffer History") {
+        return this.minibufferHistory();
+    }
+
+    // * Then, check for overridden command: Exit by doing the overridden command
     if (w_picked &amp;&amp;
         w_picked.label &amp;&amp;
         Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]) {
@@ -16458,7 +16460,7 @@ export function cleanLeoID(id_: string): string {
 - Many minibuffer-only commands are now fixed and available through the minibuffer itself, and for some, the vscode command palette.
 - Removed 'close on delete' setting requirement because of the new vscode API to control individual tabs as needed.
 - db file extensions support: Load / Save-as now supports .db file extension.
-- Added minibuffer history and 'redo' last command (as top choice).
+- Added 'minibuffer history' as top choice of minibuffer entries.
 
 </t>
 <t tx="felix.20220704004247.1">private _leoCanGoBack: boolean = false;
@@ -18179,10 +18181,12 @@ public async minibufferHistory(): Promise&lt;LeoBridgePackage | undefined&gt; {
     // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
     await this._isBusyTriggerSave(false);
 
+    if (!this._minibufferHistory.length) {
+        return Promise.resolve(undefined);
+    }
+
     const w_commandList: vscode.QuickPickItem[] = this._minibufferHistory.map(
-        p_command =&gt; {
-            label: p_command
-        }
+        p_command =&gt; { return { label: p_command }; }
     );
 
     // Add Nav tab special commands
