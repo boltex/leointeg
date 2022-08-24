@@ -2854,8 +2854,8 @@ export class LeoIntegration {
 
                 if (this._minibufferHistory.length) {
                     w_result.push({
-                        label: this._minibufferHistory[this._minibufferHistory.length - 1],
-                        description: "$(history) Redo last command"
+                        label: "Minibuffer History",
+                        description: "$(history) Choose from last run commands..."
                     });
                 }
 
@@ -2883,17 +2883,78 @@ export class LeoIntegration {
         };
 
         const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
-        // * First check for overridden command: Exit by doing the overridden command
+        // * First, check for undo-history list being requested
+        if (w_picked && w_picked.label === "Minibuffer History") {
+            return this.minibufferHistory();
+        }
+
+        // * Then, check for overridden command: Exit by doing the overridden command
         if (w_picked &&
             w_picked.label &&
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]) {
+            this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
             return vscode.commands.executeCommand(
                 Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]
             );
         }
         // * Ok, it was really a minibuffer command
         if (w_picked && w_picked.label) {
-            this._minibufferHistory.push(w_picked.label);
+            this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
+            const w_commandResult = this.nodeCommand({
+                action: "-" + w_picked.label,
+                node: undefined,
+                refreshType: {
+                    tree: true,
+                    body: true,
+                    documents: true,
+                    buttons: true,
+                    states: true,
+                },
+                fromOutline: false, // true // TODO : Differentiate from outline?
+            });
+            return w_commandResult ? w_commandResult : Promise.reject('Command not added');
+        } else {
+            // Canceled
+            return Promise.resolve(undefined);
+        }
+    }
+
+    /**
+     * * Opens quickPick minibuffer pallette to choose from all commands in this file's commander
+     * @returns Promise that resolves when the chosen command is placed on the front-end command stack
+     */
+    public async minibufferHistory(): Promise<LeoBridgePackage | undefined> {
+
+        // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
+        await this._isBusyTriggerSave(false);
+
+        if (!this._minibufferHistory.length) {
+            return Promise.resolve(undefined);
+        }
+
+        const w_commandList: vscode.QuickPickItem[] = this._minibufferHistory.map(
+            p_command => { return { label: p_command }; }
+        );
+
+        // Add Nav tab special commands
+        const w_options: vscode.QuickPickOptions = {
+            placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
+            matchOnDetail: true,
+        };
+
+        const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
+        // * First check for overridden command: Exit by doing the overridden command
+        if (w_picked &&
+            w_picked.label &&
+            Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]) {
+            this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
+            return vscode.commands.executeCommand(
+                Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]
+            );
+        }
+        // * Ok, it was really a minibuffer command
+        if (w_picked && w_picked.label) {
+            this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
             const w_commandResult = this.nodeCommand({
                 action: "-" + w_picked.label,
                 node: undefined,

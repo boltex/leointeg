@@ -427,6 +427,7 @@
 </v>
 <v t="felix.20200719025231.51"><vh>Commands</vh>
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
+<v t="felix.20220824144905.1"><vh>minibufferHistory</vh></v>
 <v t="felix.20220806151009.1"><vh>prevNextNode</vh></v>
 <v t="felix.20200719025231.52"><vh>selectTreeNode</vh></v>
 <v t="ekr.20200815090400.1"><vh>nodeCommand</vh></v>
@@ -11904,6 +11905,9 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
             const w_result: vscode.QuickPickItem[] = [];
 
             if (this._minibufferHistory.length) {
+
+                // TODO : INSTEAD MAKE FIRST ONE OPEN COMMANDS HISTORY ! ! !
+
                 w_result.push({
                     label: this._minibufferHistory[this._minibufferHistory.length - 1],
                     description: "$(history) Redo last command"
@@ -11938,13 +11942,14 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
     if (w_picked &amp;&amp;
         w_picked.label &amp;&amp;
         Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]) {
+        this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
         return vscode.commands.executeCommand(
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]
         );
     }
     // * Ok, it was really a minibuffer command
     if (w_picked &amp;&amp; w_picked.label) {
-        this._minibufferHistory.push(w_picked.label);
+        this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
         const w_commandResult = this.nodeCommand({
             action: "-" + w_picked.label,
             node: undefined,
@@ -18162,6 +18167,60 @@ public isTsStillValid(ts: number): boolean {
         return false;
     }
     return true;
+}
+
+</t>
+<t tx="felix.20220824144905.1">/**
+ * * Opens quickPick minibuffer pallette to choose from all commands in this file's commander
+ * @returns Promise that resolves when the chosen command is placed on the front-end command stack
+ */
+public async minibufferHistory(): Promise&lt;LeoBridgePackage | undefined&gt; {
+
+    // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
+    await this._isBusyTriggerSave(false);
+
+    const w_commandList: vscode.QuickPickItem[] = this._minibufferHistory.map(
+        p_command =&gt; {
+            label: p_command
+        }
+    );
+
+    // Add Nav tab special commands
+    const w_options: vscode.QuickPickOptions = {
+        placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
+        matchOnDetail: true,
+    };
+
+    const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
+    // * First check for overridden command: Exit by doing the overridden command
+    if (w_picked &amp;&amp;
+        w_picked.label &amp;&amp;
+        Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]) {
+        this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
+        return vscode.commands.executeCommand(
+            Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]
+        );
+    }
+    // * Ok, it was really a minibuffer command
+    if (w_picked &amp;&amp; w_picked.label) {
+        this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
+        const w_commandResult = this.nodeCommand({
+            action: "-" + w_picked.label,
+            node: undefined,
+            refreshType: {
+                tree: true,
+                body: true,
+                documents: true,
+                buttons: true,
+                states: true,
+            },
+            fromOutline: false, // true // TODO : Differentiate from outline?
+        });
+        return w_commandResult ? w_commandResult : Promise.reject('Command not added');
+    } else {
+        // Canceled
+        return Promise.resolve(undefined);
+    }
 }
 
 </t>
