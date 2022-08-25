@@ -2695,7 +2695,7 @@ export class LeoIntegration {
                         w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED
                     );
                 } else if (!w_langName) {
-                    // Document was closed: refresh
+                    // Document was closed: refresh (should not happen!)
                     console.log('_setBodyLanguage had closed document, so refresh');
 
                     // TODO : TEST IF THOSE REFRESH FLAGS ARE ENOUGH - or- TOO MUCH
@@ -2854,42 +2854,12 @@ export class LeoIntegration {
             placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
             matchOnDetail: true,
         };
-
         const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
-        // * First, check for undo-history list being requested
+        // First, check for undo-history list being requested
         if (w_picked && w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
             return this.minibufferHistory();
         }
-
-        // * Then, check for overridden command: Exit by doing the overridden command
-        if (w_picked &&
-            w_picked.label &&
-            Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]) {
-            this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
-            return vscode.commands.executeCommand(
-                Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]
-            );
-        }
-        // * Ok, it was really a minibuffer command
-        if (w_picked && w_picked.label) {
-            this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
-            const w_commandResult = this.nodeCommand({
-                action: "-" + w_picked.label,
-                node: undefined,
-                refreshType: {
-                    tree: true,
-                    body: true,
-                    documents: true,
-                    buttons: true,
-                    states: true,
-                },
-                fromOutline: false, // true // TODO : Differentiate from outline?
-            });
-            return w_commandResult ? w_commandResult : Promise.reject('Command not added');
-        } else {
-            // Canceled
-            return Promise.resolve(undefined);
-        }
+        return this._doMinibufferCommand(w_picked);
     }
 
     /**
@@ -2900,36 +2870,39 @@ export class LeoIntegration {
 
         // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
         await this._isBusyTriggerSave(false);
-
         if (!this._minibufferHistory.length) {
             return Promise.resolve(undefined);
         }
-
         const w_commandList: vscode.QuickPickItem[] = this._minibufferHistory.map(
             p_command => { return { label: p_command }; }
         );
-
         // Add Nav tab special commands
         const w_options: vscode.QuickPickOptions = {
             placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
             matchOnDetail: true,
         };
-
         const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
+        return this._doMinibufferCommand(w_picked);
+    }
+
+    /**
+     * * Perform chosen minibuffer command
+     */
+    private async _doMinibufferCommand(p_picked: vscode.QuickPickItem | undefined): Promise<LeoBridgePackage | undefined> {
         // * First check for overridden command: Exit by doing the overridden command
-        if (w_picked &&
-            w_picked.label &&
-            Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]) {
-            this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
+        if (p_picked &&
+            p_picked.label &&
+            Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
+            this._minibufferHistory.push(p_picked.label); // Add to minibuffer history
             return vscode.commands.executeCommand(
-                Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[w_picked.label]
+                Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
             );
         }
         // * Ok, it was really a minibuffer command
-        if (w_picked && w_picked.label) {
-            this._minibufferHistory.push(w_picked.label); // Add to minibuffer history
+        if (p_picked && p_picked.label) {
+            this._minibufferHistory.push(p_picked.label); // Add to minibuffer history
             const w_commandResult = this.nodeCommand({
-                action: "-" + w_picked.label,
+                action: "-" + p_picked.label,
                 node: undefined,
                 refreshType: {
                     tree: true,
