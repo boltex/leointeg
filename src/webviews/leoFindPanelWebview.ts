@@ -31,57 +31,59 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        webviewView.webview.onDidReceiveMessage((data) => {
-            switch (data.type) {
-                case 'leoNavEnter': {
-                    this._leoIntegration.navEnter();
-                    break;
+        this._context.subscriptions.push(
+            webviewView.webview.onDidReceiveMessage((data) => {
+                switch (data.type) {
+                    case 'leoNavEnter': {
+                        this._leoIntegration.navEnter();
+                        break;
+                    }
+                    case 'leoNavTextChange': {
+                        this._leoIntegration.navTextChange();
+                        break;
+                    }
+                    case 'gotFocus': {
+                        // utils.setContext("sideBarFocus", true);
+                        // utils.setContext("focusedView", "leoFindPanel");
+                        utils.setContext("leoFindFocus", true);
+                        break;
+                    }
+                    case 'lostFocus': {
+                        // utils.setContext("sideBarFocus", false);
+                        // utils.setContext("focusedView", "");
+                        utils.setContext("leoFindFocus", false);
+                        break;
+                    }
+                    case 'leoFindNext': {
+                        vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
+                        break;
+                    }
+                    case 'leoFindPrevious': {
+                        vscode.commands.executeCommand(Constants.COMMANDS.FIND_PREVIOUS);
+                        break;
+                    }
+                    case 'searchConfig': {
+                        this._leoIntegration.saveSearchSettings(data.value);
+                        break;
+                    }
+                    case 'replace': {
+                        this._leoIntegration.replace(true, false);
+                        break;
+                    }
+                    case 'replaceThenFind': {
+                        this._leoIntegration.replace(true, true);
+                        break;
+                    }
+                    case 'refreshSearchConfig': {
+                        // Leave a cycle before getting settings
+                        setTimeout(() => {
+                            this._leoIntegration.loadSearchSettings();
+                        }, 0);
+                        break;
+                    }
                 }
-                case 'leoNavTextChange': {
-                    this._leoIntegration.navTextChange();
-                    break;
-                }
-                case 'gotFocus': {
-                    // utils.setContext("sideBarFocus", true);
-                    // utils.setContext("focusedView", "leoFindPanel");
-                    utils.setContext("leoFindFocus", true);
-                    break;
-                }
-                case 'lostFocus': {
-                    // utils.setContext("sideBarFocus", false);
-                    // utils.setContext("focusedView", "");
-                    utils.setContext("leoFindFocus", false);
-                    break;
-                }
-                case 'leoFindNext': {
-                    vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
-                    break;
-                }
-                case 'leoFindPrevious': {
-                    vscode.commands.executeCommand(Constants.COMMANDS.FIND_PREVIOUS);
-                    break;
-                }
-                case 'searchConfig': {
-                    this._leoIntegration.saveSearchSettings(data.value);
-                    break;
-                }
-                case 'replace': {
-                    this._leoIntegration.replace(true, false);
-                    break;
-                }
-                case 'replaceThenFind': {
-                    this._leoIntegration.replace(true, true);
-                    break;
-                }
-                case 'refreshSearchConfig': {
-                    // Leave a cycle before getting settings
-                    setTimeout(() => {
-                        this._leoIntegration.loadSearchSettings();
-                    }, 0);
-                    break;
-                }
-            }
-        });
+            })
+        );
         this._leoIntegration.setFindPanel(this._view);
     }
 

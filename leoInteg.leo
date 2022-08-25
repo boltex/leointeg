@@ -9435,9 +9435,7 @@ export class LeoIntegration {
     public leoSettingsWebview: LeoSettingsProvider;
 
     // * Log and terminal Panes
-    private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(
-        Constants.GUI.LOG_PANE_TITLE
-    );
+    private _leoLogPane: vscode.OutputChannel;
 
     // * Status Bar
     private _leoStatusBar: LeoStatusBar;
@@ -9685,6 +9683,13 @@ private _onActiveEditorChanged(
 
 </t>
 <t tx="felix.20200719025231.3">constructor(private _context: vscode.ExtensionContext) {
+
+    // * output channel instantiation
+    this._leoLogPane = vscode.window.createOutputChannel(
+        Constants.GUI.LOG_PANE_TITLE
+    );
+    this._context.subscriptions.push(this._leoLogPane);
+
     // * Setup States
     this.leoStates = new LeoStates(_context, this);
 
@@ -9721,28 +9726,36 @@ private _onActiveEditorChanged(
         showCollapseAll: false,
         treeDataProvider: this._leoTreeProvider,
     });
-    this._leoTreeView.onDidExpandElement((p_event) =&gt;
-        this._onChangeCollapsedState(p_event, true, this._leoTreeView)
+    this._context.subscriptions.push(
+        this._leoTreeView,
+        this._leoTreeView.onDidExpandElement((p_event) =&gt;
+            this._onChangeCollapsedState(p_event, true, this._leoTreeView)
+        ),
+        this._leoTreeView.onDidCollapseElement((p_event) =&gt;
+            this._onChangeCollapsedState(p_event, false, this._leoTreeView)
+        ),
+        this._leoTreeView.onDidChangeVisibility((p_event) =&gt;
+            this._onTreeViewVisibilityChanged(p_event, false)
+        )
     );
-    this._leoTreeView.onDidCollapseElement((p_event) =&gt;
-        this._onChangeCollapsedState(p_event, false, this._leoTreeView)
-    );
-    this._leoTreeView.onDidChangeVisibility((p_event) =&gt;
-        this._onTreeViewVisibilityChanged(p_event, false)
-    );
+
     this._leoTreeExView = vscode.window.createTreeView(Constants.TREEVIEW_EXPLORER_ID, {
         showCollapseAll: false,
         treeDataProvider: this._leoTreeProvider,
     });
-    this._leoTreeExView.onDidExpandElement((p_event) =&gt;
-        this._onChangeCollapsedState(p_event, true, this._leoTreeExView)
+    this._context.subscriptions.push(
+        this._leoTreeExView,
+        this._leoTreeExView.onDidExpandElement((p_event) =&gt;
+            this._onChangeCollapsedState(p_event, true, this._leoTreeExView)
+        ),
+        this._leoTreeExView.onDidCollapseElement((p_event) =&gt;
+            this._onChangeCollapsedState(p_event, false, this._leoTreeExView)
+        ),
+        this._leoTreeExView.onDidChangeVisibility((p_event) =&gt;
+            this._onTreeViewVisibilityChanged(p_event, true)
+        )
     );
-    this._leoTreeExView.onDidCollapseElement((p_event) =&gt;
-        this._onChangeCollapsedState(p_event, false, this._leoTreeExView)
-    );
-    this._leoTreeExView.onDidChangeVisibility((p_event) =&gt;
-        this._onTreeViewVisibilityChanged(p_event, true)
-    );
+
     // * Init this._lastTreeView based on config only assuming explorer is default sidebar view
     this._lastTreeView = this.config.treeInExplorer ? this._leoTreeExView : this._leoTreeView;
 
@@ -9752,15 +9765,21 @@ private _onActiveEditorChanged(
         showCollapseAll: false,
         treeDataProvider: this._leoDocumentsProvider,
     });
-    this._leoDocuments.onDidChangeVisibility((p_event) =&gt;
-        this._onDocTreeViewVisibilityChanged(p_event, false)
+    this._context.subscriptions.push(
+        this._leoDocuments,
+        this._leoDocuments.onDidChangeVisibility((p_event) =&gt;
+            this._onDocTreeViewVisibilityChanged(p_event, false)
+        )
     );
     this._leoDocumentsExplorer = vscode.window.createTreeView(Constants.DOCUMENTS_EXPLORER_ID, {
         showCollapseAll: false,
         treeDataProvider: this._leoDocumentsProvider,
     });
-    this._leoDocumentsExplorer.onDidChangeVisibility((p_event) =&gt;
-        this._onDocTreeViewVisibilityChanged(p_event, true)
+    this._context.subscriptions.push(
+        this._leoDocumentsExplorer,
+        this._leoDocumentsExplorer.onDidChangeVisibility((p_event) =&gt;
+            this._onDocTreeViewVisibilityChanged(p_event, true)
+        )
     );
 
     // * Create '@buttons' Treeview Providers and tree views
@@ -9769,15 +9788,21 @@ private _onActiveEditorChanged(
         showCollapseAll: false,
         treeDataProvider: this._leoButtonsProvider,
     });
-    this._leoButtons.onDidChangeVisibility((p_event) =&gt;
-        this._onButtonsTreeViewVisibilityChanged(p_event, false)
+    this._context.subscriptions.push(
+        this._leoButtons,
+        this._leoButtons.onDidChangeVisibility((p_event) =&gt;
+            this._onButtonsTreeViewVisibilityChanged(p_event, false)
+        )
     );
     this._leoButtonsExplorer = vscode.window.createTreeView(Constants.BUTTONS_EXPLORER_ID, {
         showCollapseAll: false,
         treeDataProvider: this._leoButtonsProvider,
     });
-    this._leoButtonsExplorer.onDidChangeVisibility((p_event) =&gt;
-        this._onButtonsTreeViewVisibilityChanged(p_event, true)
+    this._context.subscriptions.push(
+        this._leoButtonsExplorer,
+        this._leoButtonsExplorer.onDidChangeVisibility((p_event) =&gt;
+            this._onButtonsTreeViewVisibilityChanged(p_event, true)
+        )
     );
 
     // * Create goto Treeview Providers and tree views
@@ -9786,34 +9811,46 @@ private _onActiveEditorChanged(
         showCollapseAll: false,
         treeDataProvider: this._leoGotoProvider,
     });
-    this._leoGoto.onDidChangeVisibility((p_event) =&gt;
-        this._onGotoTreeViewVisibilityChanged(p_event, false)
+    this._context.subscriptions.push(
+        this._leoGoto,
+        this._leoGoto.onDidChangeVisibility((p_event) =&gt;
+            this._onGotoTreeViewVisibilityChanged(p_event, false)
+        )
     );
     this._leoGotoExplorer = vscode.window.createTreeView(Constants.GOTO_EXPLORER_ID, {
         showCollapseAll: false,
         treeDataProvider: this._leoGotoProvider,
     });
-    this._leoGotoExplorer.onDidChangeVisibility((p_event) =&gt;
-        this._onGotoTreeViewVisibilityChanged(p_event, true)
+    this._context.subscriptions.push(
+        this._leoGotoExplorer,
+        this._leoGotoExplorer.onDidChangeVisibility((p_event) =&gt;
+            this._onGotoTreeViewVisibilityChanged(p_event, true)
+        )
     );
     // * Set 'last' goto tree view visible
     this._leoGotoProvider.setLastGotoView(this.config.treeInExplorer ? this._leoGotoExplorer : this._leoGoto);
 
     // * Create 'Undo History' Treeview Providers and tree views
     this._leoUndosProvider = new LeoUndosProvider(this);
-    this._leoUndos = vscode.window.createTreeView(Constants.UNDOS_ID, {
-        showCollapseAll: false,
-        treeDataProvider: this._leoUndosProvider,
-    });
-    this._leoUndos.onDidChangeVisibility((p_event) =&gt;
-        this._onUndosTreeViewVisibilityChanged(p_event, false)
+    this._context.subscriptions.push(
+        this._leoUndos,
+        this._leoUndos = vscode.window.createTreeView(Constants.UNDOS_ID, {
+            showCollapseAll: false,
+            treeDataProvider: this._leoUndosProvider,
+        }),
+        this._leoUndos.onDidChangeVisibility((p_event) =&gt;
+            this._onUndosTreeViewVisibilityChanged(p_event, false)
+        )
     );
-    this._leoUndosExplorer = vscode.window.createTreeView(Constants.UNDOS_EXPLORER_ID, {
-        showCollapseAll: false,
-        treeDataProvider: this._leoUndosProvider,
-    });
-    this._leoUndosExplorer.onDidChangeVisibility((p_event) =&gt;
-        this._onUndosTreeViewVisibilityChanged(p_event, true)
+    this._context.subscriptions.push(
+        this._leoUndosExplorer,
+        this._leoUndosExplorer = vscode.window.createTreeView(Constants.UNDOS_EXPLORER_ID, {
+            showCollapseAll: false,
+            treeDataProvider: this._leoUndosProvider,
+        }),
+        this._leoUndosExplorer.onDidChangeVisibility((p_event) =&gt;
+            this._onUndosTreeViewVisibilityChanged(p_event, true)
+        )
     );
 
     // * Create Body Pane
@@ -9850,46 +9887,49 @@ private _onActiveEditorChanged(
     // * Configuration / Welcome webview
     this.leoSettingsWebview = new LeoSettingsProvider(_context, this);
 
-    // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
-    vscode.window.onDidChangeActiveTextEditor((p_editor) =&gt;
-        this._onActiveEditorChanged(p_editor)
-    );
+    // * 'onDid' event detections all pushed as disposables in context.subscription
+    this._context.subscriptions.push(
 
-    // * React to change in selection, cursor position and scroll position
-    vscode.window.onDidChangeTextEditorSelection((p_event) =&gt;
-        this._onChangeEditorSelection(p_event)
-    );
-    vscode.window.onDidChangeTextEditorVisibleRanges((p_event) =&gt;
-        this._onChangeEditorScroll(p_event)
-    );
+        // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
+        vscode.window.onDidChangeActiveTextEditor((p_editor) =&gt;
+            this._onActiveEditorChanged(p_editor)
+        ),
 
-    // * Triggers when a different text editor/vscode window changed focus or visibility, or dragged
-    // This is also what triggers after drag and drop, see '_onChangeEditorViewColumn'
-    vscode.window.onDidChangeTextEditorViewColumn((p_columnChangeEvent) =&gt;
-        this._changedTextEditorViewColumn(p_columnChangeEvent)
-    ); // Also triggers after drag and drop
-    vscode.window.onDidChangeVisibleTextEditors((p_editors) =&gt;
-        this._changedVisibleTextEditors(p_editors)
-    ); // Window.visibleTextEditors changed
-    vscode.window.onDidChangeWindowState((p_windowState) =&gt;
-        this._changedWindowState(p_windowState)
-    ); // Focus state of the current window changes
+        // * React to change in selection, cursor position and scroll position
+        vscode.window.onDidChangeTextEditorSelection((p_event) =&gt;
+            this._onChangeEditorSelection(p_event)
+        ),
+        vscode.window.onDidChangeTextEditorVisibleRanges((p_event) =&gt;
+            this._onChangeEditorScroll(p_event)
+        ),
 
-    // * React when typing and changing body pane
-    vscode.workspace.onDidChangeTextDocument((p_textDocumentChange) =&gt;
-        this._onDocumentChanged(p_textDocumentChange)
+        // * Triggers when a different text editor/vscode window changed focus or visibility, or dragged
+        // This is also what triggers after drag and drop, see '_onChangeEditorViewColumn'
+        vscode.window.onDidChangeTextEditorViewColumn((p_columnChangeEvent) =&gt;
+            this._changedTextEditorViewColumn(p_columnChangeEvent)
+        ), // Also triggers after drag and drop
+        vscode.window.onDidChangeVisibleTextEditors((p_editors) =&gt;
+            this._changedVisibleTextEditors(p_editors)
+        ), // Window.visibleTextEditors changed
+        vscode.window.onDidChangeWindowState((p_windowState) =&gt;
+            this._changedWindowState(p_windowState)
+        ), // Focus state of the current window changes
+
+        // * React when typing and changing body pane
+        vscode.workspace.onDidChangeTextDocument((p_textDocumentChange) =&gt;
+            this._onDocumentChanged(p_textDocumentChange)
+        ),
+
+        // * React to configuration settings events
+        vscode.workspace.onDidChangeConfiguration((p_configChange) =&gt;
+            this._onChangeConfiguration(p_configChange)
+        ),
+
+        // * React to opening of any file in vscode
+        vscode.workspace.onDidOpenTextDocument((p_document) =&gt;
+            this._onDidOpenTextDocument(p_document)
+        )
     );
-
-    // * React to configuration settings events
-    vscode.workspace.onDidChangeConfiguration((p_configChange) =&gt;
-        this._onChangeConfiguration(p_configChange)
-    );
-
-    // * React to opening of any file in vscode
-    vscode.workspace.onDidOpenTextDocument((p_document) =&gt;
-        this._onDidOpenTextDocument(p_document)
-    );
-
     // * Debounced refresh flags and UI parts, other than the tree and body
     this.getStates = debounce(
         this._triggerGetStates,
@@ -18212,7 +18252,9 @@ import * as utils from "../utils";
         private _leoIntegration: LeoIntegration
     ) {
         this._extensionPath = _context.extensionPath;
-        vscode.workspace.onDidChangeConfiguration(p_event =&gt; this.changedConfiguration(p_event));
+        _context.subscriptions.push(
+            vscode.workspace.onDidChangeConfiguration(p_event =&gt; this.changedConfiguration(p_event))
+        );
     }
 
     @others
@@ -18242,6 +18284,7 @@ import * as utils from "../utils";
                     enableScripts: true
                 }
             );
+            this._context.subscriptions.push(this._panel);
             let w_baseUri = this._panel.webview.asWebviewUri(vscode.Uri.file(
                 path.join(this._extensionPath)
             ));
@@ -18355,57 +18398,59 @@ import * as utils from "../utils";
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-    webviewView.webview.onDidReceiveMessage((data) =&gt; {
-        switch (data.type) {
-            case 'leoNavEnter': {
-                this._leoIntegration.navEnter();
-                break;
+    this._context.subscriptions.push(
+        webviewView.webview.onDidReceiveMessage((data) =&gt; {
+            switch (data.type) {
+                case 'leoNavEnter': {
+                    this._leoIntegration.navEnter();
+                    break;
+                }
+                case 'leoNavTextChange': {
+                    this._leoIntegration.navTextChange();
+                    break;
+                }
+                case 'gotFocus': {
+                    // utils.setContext("sideBarFocus", true);
+                    // utils.setContext("focusedView", "leoFindPanel");
+                    utils.setContext("leoFindFocus", true);
+                    break;
+                }
+                case 'lostFocus': {
+                    // utils.setContext("sideBarFocus", false);
+                    // utils.setContext("focusedView", "");
+                    utils.setContext("leoFindFocus", false);
+                    break;
+                }
+                case 'leoFindNext': {
+                    vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
+                    break;
+                }
+                case 'leoFindPrevious': {
+                    vscode.commands.executeCommand(Constants.COMMANDS.FIND_PREVIOUS);
+                    break;
+                }
+                case 'searchConfig': {
+                    this._leoIntegration.saveSearchSettings(data.value);
+                    break;
+                }
+                case 'replace': {
+                    this._leoIntegration.replace(true, false);
+                    break;
+                }
+                case 'replaceThenFind': {
+                    this._leoIntegration.replace(true, true);
+                    break;
+                }
+                case 'refreshSearchConfig': {
+                    // Leave a cycle before getting settings
+                    setTimeout(() =&gt; {
+                        this._leoIntegration.loadSearchSettings();
+                    }, 0);
+                    break;
+                }
             }
-            case 'leoNavTextChange': {
-                this._leoIntegration.navTextChange();
-                break;
-            }
-            case 'gotFocus': {
-                // utils.setContext("sideBarFocus", true);
-                // utils.setContext("focusedView", "leoFindPanel");
-                utils.setContext("leoFindFocus", true);
-                break;
-            }
-            case 'lostFocus': {
-                // utils.setContext("sideBarFocus", false);
-                // utils.setContext("focusedView", "");
-                utils.setContext("leoFindFocus", false);
-                break;
-            }
-            case 'leoFindNext': {
-                vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
-                break;
-            }
-            case 'leoFindPrevious': {
-                vscode.commands.executeCommand(Constants.COMMANDS.FIND_PREVIOUS);
-                break;
-            }
-            case 'searchConfig': {
-                this._leoIntegration.saveSearchSettings(data.value);
-                break;
-            }
-            case 'replace': {
-                this._leoIntegration.replace(true, false);
-                break;
-            }
-            case 'replaceThenFind': {
-                this._leoIntegration.replace(true, true);
-                break;
-            }
-            case 'refreshSearchConfig': {
-                // Leave a cycle before getting settings
-                setTimeout(() =&gt; {
-                    this._leoIntegration.loadSearchSettings();
-                }, 0);
-                break;
-            }
-        }
-    });
+        })
+    );
     this._leoIntegration.setFindPanel(this._view);
 }
 
