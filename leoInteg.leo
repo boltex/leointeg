@@ -1240,16 +1240,17 @@ public async _launchRefresh(): Promise&lt;unknown&gt; {
         if (
             this._refreshNode.gnx !== w_lastChangedDocGnx &amp;&amp; !this._bodyLastChangedDocumentSaved
         ) {
+            // console.log("refresh is launched with 'refresh body' requested! ", this.lastSelectedNode?.gnx);
 
-            console.log("refresh is launched with 'refresh body' requested! ", this.lastSelectedNode?.gnx);
-
+            // NOt same gnx, no need to wait
             this._bodyLastChangedDocument.save(); // Voluntarily save to 'clean' any pending body
             this._bodyLastChangedDocumentSaved = true;
         }
 
         if (this._refreshNode.gnx === w_lastChangedDocGnx) {
             this._leoFileSystem.preventSaveToLeo = true;
-            this._bodyLastChangedDocument.save();
+            // SAME GNX : wait for it!
+            await this._bodyLastChangedDocument.save();
         }
     }
 
@@ -1277,8 +1278,9 @@ public async _launchRefresh(): Promise&lt;unknown&gt; {
         );
         if (this._refreshType.body) {
             // TODO : **********************************************************************
-            // TODO : CHECK IF NEEDED ******************************************************
+            // TODO : CHECK IF FAKE_SAVE NEEDED HERE OR IN showBody ************************
             // TODO : **********************************************************************
+            // ! Have to 'FAKE_SAVE' first if needed - HERE OR IN showBody !!
             // this._refreshType.body = false;
             // this._tryApplyNodeToBody(this._refreshNode, false, true); // ! NEEDS STACK AND THROTTLE!
         }
@@ -9551,52 +9553,6 @@ private _setupOpenedLeoDocument(): void {
         this._bodyFileSystemStarted = true;
     }
 
-    // * ALL DONE IN LAUNCH-REFRESH NOW
-    /*
-    let q_switchTextEditor: Promise&lt;vscode.TextEditor&gt; | false = false;
-    // * Could be already opened, so perform 'switch body' as if another node was selected
-    if (this._bodyTextDocument &amp;&amp; this.bodyUri) {
-
-        q_switchTextEditor = new Promise((p_resolve, p_reject) =&gt; {
-            this._switchBody(this.serverOpenedNode!.gnx, false, true).then((p_te) =&gt; {
-                p_resolve(p_te);
-            });
-        });
-
-    } else {
-        this.bodyUri = utils.strToLeoUri(this.serverOpenedNode!.gnx);
-    }
-
-    // * Maybe first valid redraw of tree along with the selected node and its body
-    this._refreshOutline(true, RevealType.RevealSelectFocus); // p_revealSelection flag set
-    this.refreshDocumentsPane();
-    this.refreshButtonsPane();
-    this.refreshUndoPane();
-    // Also refresh global states.
-    this._refreshType.states = true;
-    this.getStates();
-
-
-    // * Maybe first StatusBar appearance
-    this._leoStatusBar.update(true, 0, true);
-    this._leoStatusBar.show(); // Just selected a node
-
-    // * Show leo log pane
-    // this.showLogPane(); // #203 No need to explicitly show the log pane upon opening files
-
-    // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
-    this.sendConfigToServer(this.config.getConfig());
-    // * Refresh Opened tree views
-
-    this.loadSearchSettings();
-    if (q_switchTextEditor) {
-        return q_switchTextEditor;
-    } else {
-        // * Maybe first Body appearance
-        return this.showBody(false);
-    }
-    */
-
     this._leoStatusBar.update(true, 0, true);
     this._leoStatusBar.show(); // Just selected a node
     this.sendConfigToServer(this.config.getConfig());
@@ -10235,7 +10191,8 @@ private _switchBody(
 
             // * CHECK ALL 3 POSSIBLE NEW PLACES FOR BODY SWITCH AFTER q_bodyStates &amp; q_showTextDocument
             if (
-                !this.isGnxStillValid(w_newGnx, w_newTS)
+                // Should the gnx be relevant?  !this.isGnxStillValid(w_newGnx, w_newTS)
+                !this.isTsStillValid(w_newTS)
             ) {
                 return;
             }
@@ -10381,7 +10338,14 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
         this._refreshType.body = false;
         // TODO : CHECK IF TIMEOUT NECESSARY!
         setTimeout(() =&gt; {
+
+
+            // TODO : ******************************************************
+            // TODO : MAKE SURE BODY IS NOT DIRTY  !!
+            // TODO : ******************************************************
             this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
+
+
         }, 0);
     }
     // Handle 'Prevent Show Body flag' and return
@@ -10411,6 +10375,8 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
             let w_wrap: boolean = !!p_bodyStates.wrap;
             let w_tabWidth: number | boolean = p_bodyStates.tabWidth || !!p_bodyStates.tabWidth;
 
+            let w_gnx: string | undefined = p_bodyStates.selection?.gnx; // ? To verify if better than w_openedDocumentGnx ?
+
             // TODO : Apply tabwidth
             // console.log('TABWIDTH: ', w_tabWidth);
             // TODO : Apply Wrap
@@ -10419,65 +10385,58 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
             // Replace language string if in 'exceptions' array
             w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
 
+            let w_debugMessage = "";
+            let w_needRefreshFlag = false;
+
+
             // Apply language if the selected node is still the same after all those events
-            if (
-                !w_openedDocument.isClosed &amp;&amp;
-                this.isGnxStillValid(w_openedDocumentGnx, w_openedDocumentTS)
-            ) {
-                this._showBodyRefreshed = 0;
-                this._setBodyLanguage(w_openedDocument, w_language);
-            } else if (
-                !w_openedDocument.isClosed &amp;&amp;
-                this.lastSelectedNode &amp;&amp;
-                w_openedDocumentGnx !== this.lastSelectedNode.gnx
-            ) {
-                console.log('Didn\'t match! ', w_openedDocument.uri, 'lastSelectedNode', this.lastSelectedNode.gnx);
-                return;
-                // TODO : CHECK IS RETURN IS OK -&gt; NO ADDITIONAL REFRESH LAUNCHES HERE
+            if (!w_openedDocument.isClosed) {
+                // w_openedDocument still OPEN
+                if (this.isTsStillValid(w_openedDocumentTS)) { // No need to check gnx of command stack){
+                    // command stack last node is still valid
+                    if (this.lastSelectedNode &amp;&amp; w_openedDocumentGnx === this.lastSelectedNode.gnx) {
+                        // still same gnx as this.bodyUri
+                        this._showBodyRefreshed = 0;
+                        this._setBodyLanguage(w_openedDocument, w_language);
+                    } else {
+                        // NOT SAME GNX!
+                        w_debugMessage = "all good but not same GNX!?!";
+                        w_needRefreshFlag = true;
+                    }
 
-                /*
-                // * check X times and retry.
-                // IF FLAG ALREADY SET ERROR MESSAGE &amp; RETURN
-                if (this._showBodyRefreshed &gt; 10) {
-                    vscode.window.showInformationMessage("LeoInteg: Refresh Failed 10 sequential attempts!");
-                    this._showBodyRefreshed = 0; // reset flag
                 } else {
-                    // SET FLAG AND LAUNCH FULL REFRESH
-                    this._showBodyRefreshed += 1;
+                    // NOT VALID : NEW NODE SELECTED SINCE THIS STARTED!
+                    w_debugMessage = "New node selected since this started!";
+                    w_needRefreshFlag = false;
 
-                    // * SMALL refresh
-                    this.setupRefresh(
-                        !!p_preserveFocus,
-                        {
-                            // tree: true,
-                            body: true,
-                            states: true,
-                            // buttons: true,
-                            // documents: true
-                        }
-                    );
-                    // refresh and reveal selection
-                    this.launchRefresh();
-
-                    // * BIG refresh
-                    // this.sendAction(Constants.LEOBRIDGE.DO_NOTHING).then((p_package) =&gt; {
-                    //     this._setupRefresh(
-                    //         !!p_preserveFocus,
-                    //         {
-                    //             tree: true,
-                    //             body: true,
-                    //             states: true,
-                    //             buttons: true,
-                    //             documents: true
-                    //         },
-                    //         p_package.node
-                    //     );
-                    //     this.launchRefresh(); // refresh and reveal selection
-                    // });
                 }
-                */
+
+            } else {
+                w_debugMessage = "w_openedDocument is CLOSED " + w_openedDocument.uri.fsPath;
+                w_needRefreshFlag = false;
+            }
+
+            // * Debug Info
+            // if (w_debugMessage) {
+            //     console.log(w_debugMessage);
+            //     console.log("w_openedDocumentGnx", w_openedDocumentGnx);
+            //     console.log("this.lastSelectedNode.gnx", this.lastSelectedNode!.gnx);
+            //     console.log("w_gnx", w_gnx);
+            //     console.log("this._showBodyRefreshed", this._showBodyRefreshed);
+            // }
+
+            if (w_needRefreshFlag) {
+
+                // redo apply to body!
+                setTimeout(() =&gt; {
+                    if (this.lastSelectedNode) {
+                        this._showBodyRefreshed += 1;
+                        this._switchBody(false, p_preserveFocus);
+                    }
+                }, 0);
 
             }
+            return p_bodyStates;
         });
     }
 
@@ -10514,7 +10473,10 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
     // * CHECK ALL 3 POSSIBLE NEW PLACES FOR BODY SWITCH AFTER "await vscode.workspace.openTextDocument"
     if (
         w_openedDocument.isClosed ||
-        !this.isGnxStillValid(w_openedDocumentGnx, w_openedDocumentTS)
+        !this.isTsStillValid(w_openedDocumentTS) // No need to check gnx
+
+        // Should the gnx be relevant? -&gt; !this.isGnxStillValid(w_openedDocumentGnx, w_openedDocumentTS)
+
     ) {
         return;
     }
@@ -10537,14 +10499,9 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
         Promise.all([q_bodyStates, q_showTextDocument]).then(
             (p_values: [LeoBridgePackage, vscode.TextEditor]) =&gt; {
 
-                // * CHECK ALL 3 POSSIBLE NEW PLACES FOR BODY SWITCH AFTER q_bodyStates &amp; q_showTextDocument
-                if (
-                    w_openedDocument.isClosed ||
-                    !this.isGnxStillValid(w_openedDocumentGnx, w_openedDocumentTS)
-                ) {
-                    return;
-                }
 
+
+                // * Set text selection range
                 const w_resultBodyStates = p_values[0];
                 const w_bodyTextEditor = p_values[1];
                 if (!w_resultBodyStates.selection) {
@@ -10552,6 +10509,19 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
                 }
 
                 const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
+
+
+                // * CHECK ALL 3 POSSIBLE NEW PLACES FOR BODY SWITCH AFTER q_bodyStates &amp; q_showTextDocument
+                if (
+                    w_openedDocument.isClosed ||
+                    !this.isTsStillValid(w_openedDocumentTS) ||
+                    (this.lastSelectedNode &amp;&amp; w_leoBodySel.gnx !== this.lastSelectedNode.gnx)
+                    // Should the gnx be relevant? -&gt; !this.isGnxStillValid(w_openedDocumentGnx, w_openedDocumentTS)
+
+                ) {
+                    return;
+                }
+
 
                 // Cursor position and selection range
                 const w_activeRow: number = w_leoBodySel.insert.line;
