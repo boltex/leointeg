@@ -10338,16 +10338,28 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
     if (this._refreshType.body) {
         this._refreshType.body = false;
         // TODO : CHECK IF TIMEOUT NECESSARY!
-        setTimeout(() =&gt; {
+        //setTimeout(() =&gt; {
 
+        let q_saved: Thenable&lt;unknown&gt;;
+        if (this._bodyLastChangedDocument &amp;&amp;
+            !this._bodyLastChangedDocument.isClosed &amp;&amp;
+            (this._bodyLastChangedDocument.isDirty || this._editorTouched) &amp;&amp;
+            w_openedDocumentGnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)
+        ) {
+            console.log('had to save');
 
-            // TODO : ******************************************************
-            // TODO : MAKE SURE BODY IS NOT DIRTY  !!
-            // TODO : ******************************************************
+            // MAKE SURE BODY IS NOT DIRTY  !!
+            this._leoFileSystem.preventSaveToLeo = true;
+            this._editorTouched = false;
+            q_saved = this._bodyLastChangedDocument.save();
+        } else {
+            q_saved = Promise.resolve();
+        }
+        q_saved.then(() =&gt; {
             this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
+        });
 
-
-        }, 0);
+        // }, 0);
     }
     // Handle 'Prevent Show Body flag' and return
     if (this._preventShowBody) {

@@ -2437,16 +2437,28 @@ export class LeoIntegration {
         if (this._refreshType.body) {
             this._refreshType.body = false;
             // TODO : CHECK IF TIMEOUT NECESSARY!
-            setTimeout(() => {
+            //setTimeout(() => {
 
+            let q_saved: Thenable<unknown>;
+            if (this._bodyLastChangedDocument &&
+                !this._bodyLastChangedDocument.isClosed &&
+                (this._bodyLastChangedDocument.isDirty || this._editorTouched) &&
+                w_openedDocumentGnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)
+            ) {
+                console.log('had to save');
 
-                // TODO : ******************************************************
-                // TODO : MAKE SURE BODY IS NOT DIRTY  !!
-                // TODO : ******************************************************
+                // MAKE SURE BODY IS NOT DIRTY  !!
+                this._leoFileSystem.preventSaveToLeo = true;
+                this._editorTouched = false;
+                q_saved = this._bodyLastChangedDocument.save();
+            } else {
+                q_saved = Promise.resolve();
+            }
+            q_saved.then(() => {
                 this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
+            });
 
-
-            }, 0);
+            // }, 0);
         }
         // Handle 'Prevent Show Body flag' and return
         if (this._preventShowBody) {
