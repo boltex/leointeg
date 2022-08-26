@@ -130,7 +130,9 @@ export class LeoIntegration {
     // * Undos pane
     private _leoUndosProvider!: LeoUndosProvider;
     private _leoUndos!: vscode.TreeView<LeoUndoNode>;
+    private _leoUndosShown = false;
     private _leoUndosExplorer!: vscode.TreeView<LeoUndoNode>;
+    private _leoUndosExplorerShown = false;
     private _lastLeoUndos: vscode.TreeView<LeoUndoNode> | undefined;
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
@@ -243,6 +245,9 @@ export class LeoIntegration {
 
     // * Debounced method used to get content of the undos pane
     public refreshUndoPane: (() => void);
+
+    // * Debounced method used to set focused element of the undos pane
+    public setUndoSelection: ((p_node: LeoUndoNode) => void);
 
     // * Debounced method for refreshing the UI
     public launchRefresh: (() => void);
@@ -519,6 +524,11 @@ export class LeoIntegration {
         this.refreshUndoPane = debounce(
             this._refreshUndoPane,
             Constants.UNDOS_DEBOUNCE_DELAY,
+            { leading: false, trailing: true }
+        );
+        this.setUndoSelection = debounce(
+            this._setUndoSelection,
+            Constants.UNDOS_REVEAL_DEBOUNCE_DELAY,
             { leading: false, trailing: true }
         );
         this.launchRefresh = debounce(
@@ -1328,9 +1338,19 @@ export class LeoIntegration {
     private _onUndosTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
         if (p_explorerView) { } // (Facultative/unused) Do something different if explorer view is used
         if (p_event.visible) {
-            this._lastLeoUndos = p_explorerView ? this._leoUndosExplorer : this._leoUndos;
-            // TODO: Check if needed
-            // this._leoUndosProvider.refreshTreeRoot(); // May not need to set selection...?
+            if (p_explorerView) {
+                this._lastLeoUndos = this._leoUndosExplorer;
+                if (this._leoUndosExplorerShown) {
+                    this._leoUndosProvider.refreshTreeRoot(); // Already shown, will redraw but not re-select
+                }
+                this._leoUndosExplorerShown = true; // either way set it
+            } else {
+                this._lastLeoUndos = this._leoUndos;
+                if (this._leoUndosShown) {
+                    this._leoUndosProvider.refreshTreeRoot(); // Already shown, will redraw but not re-select
+                }
+                this._leoUndosShown = true; // either way set it
+            }
         }
     }
 
@@ -5579,17 +5599,15 @@ export class LeoIntegration {
     /**
      * * highlights the current undo state without disturbing focus
      */
-    public setUndoSelection(p_node: LeoUndoNode): void {
-        setTimeout(() => {
-            if (this._lastLeoUndos && this._lastLeoUndos.visible) {
-                this._lastLeoUndos.reveal(p_node, { select: true, focus: false }).then(
-                    () => { }, // Ok - do nothing
-                    (p_error) => {
-                        console.log('setUndoSelection could not reveal');
-                    }
-                );
-            }
-        }, 100);
+    private _setUndoSelection(p_node: LeoUndoNode): void {
+        if (this._lastLeoUndos && this._lastLeoUndos.visible) {
+            this._lastLeoUndos.reveal(p_node, { select: true, focus: false }).then(
+                () => { }, // Ok - do nothing
+                (p_error) => {
+                    console.log('setUndoSelection could not reveal');
+                }
+            );
+        }
     }
 
     /**

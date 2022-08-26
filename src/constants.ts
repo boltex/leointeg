@@ -58,11 +58,11 @@ export class Constants {
     public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
     public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
     public static BUTTONS_DEBOUNCE_DELAY: number = 80;
-    public static UNDOS_DEBOUNCE_DELAY: number = 250;
+    public static UNDOS_DEBOUNCE_DELAY: number = 180;
+    public static UNDOS_REVEAL_DEBOUNCE_DELAY: number = 50;
     public static REFRESH_DEBOUNCE_DELAY: number = 50;
-    public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
     public static STATES_DEBOUNCE_DELAY: number = 100;
-    public static BODY_STATES_DEBOUNCE_DELAY: number = 200;
+    public static BODY_STATES_DEBOUNCE_DELAY: number = 140;
     public static GOTO_DEBOUNCE_DELAY: number = 50;
 
     public static LOG_ALERT_COLOR: string = 'red';

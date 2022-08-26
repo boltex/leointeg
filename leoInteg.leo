@@ -511,7 +511,7 @@
 </v>
 <v t="felix.20220706223903.1"><vh>Undos</vh>
 <v t="felix.20220706233403.1"><vh>revertToUndo</vh></v>
-<v t="felix.20220706223907.1"><vh>setUndoSelection</vh></v>
+<v t="felix.20220706223907.1"><vh>_setUndoSelection</vh></v>
 </v>
 <v t="felix.20200719033511.1"><vh>Status Bar</vh>
 <v t="felix.20200719025231.69"><vh>statusBarOnClick</vh></v>
@@ -5461,11 +5461,11 @@ public static STARTING_PACKAGE_ID: number = 1;
 public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
 public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
 public static BUTTONS_DEBOUNCE_DELAY: number = 80;
-public static UNDOS_DEBOUNCE_DELAY: number = 250;
+public static UNDOS_DEBOUNCE_DELAY: number = 180;
+public static UNDOS_REVEAL_DEBOUNCE_DELAY: number = 50;
 public static REFRESH_DEBOUNCE_DELAY: number = 50;
-public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
 public static STATES_DEBOUNCE_DELAY: number = 100;
-public static BODY_STATES_DEBOUNCE_DELAY: number = 200;
+public static BODY_STATES_DEBOUNCE_DELAY: number = 140;
 public static GOTO_DEBOUNCE_DELAY: number = 50;
 
 public static LOG_ALERT_COLOR: string = 'red';
@@ -9357,7 +9357,9 @@ export class LeoIntegration {
     // * Undos pane
     private _leoUndosProvider!: LeoUndosProvider;
     private _leoUndos!: vscode.TreeView&lt;LeoUndoNode&gt;;
+    private _leoUndosShown = false;
     private _leoUndosExplorer!: vscode.TreeView&lt;LeoUndoNode&gt;;
+    private _leoUndosExplorerShown = false;
     private _lastLeoUndos: vscode.TreeView&lt;LeoUndoNode&gt; | undefined;
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
@@ -9470,6 +9472,9 @@ export class LeoIntegration {
 
     // * Debounced method used to get content of the undos pane
     public refreshUndoPane: (() =&gt; void);
+
+    // * Debounced method used to set focused element of the undos pane
+    public setUndoSelection: ((p_node: LeoUndoNode) =&gt; void);
 
     // * Debounced method for refreshing the UI
     public launchRefresh: (() =&gt; void);
@@ -9954,6 +9959,11 @@ private _onActiveEditorChanged(
     this.refreshUndoPane = debounce(
         this._refreshUndoPane,
         Constants.UNDOS_DEBOUNCE_DELAY,
+        { leading: false, trailing: true }
+    );
+    this.setUndoSelection = debounce(
+        this._setUndoSelection,
+        Constants.UNDOS_REVEAL_DEBOUNCE_DELAY,
         { leading: false, trailing: true }
     );
     this.launchRefresh = debounce(
@@ -16564,6 +16574,7 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
                     const bead = p_package.bead || 0;
 
                     if (beads.length) {
+                        let w_foundNode: LeoUndoNode | undefined;
                         let i: number = 0;
                         beads.forEach(p_bead =&gt; {
                             let w_description: string = "";
@@ -16574,6 +16585,9 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
                             }
                             if (i === bead + 1) {
                                 w_description = "Redo";
+                                if (!w_foundNode) {
+                                    w_undoFlag = true; // Passed all nodes until 'redo', no undo found.
+                                }
                             }
                             const w_node = new LeoUndoNode(
                                 p_bead || "unknown",
@@ -16584,10 +16598,13 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
                             );
                             w_children.push(w_node);
                             if (w_undoFlag) {
-                                this._leoIntegration.setUndoSelection(w_node);
+                                w_foundNode = w_node;
                             }
                             i++;
                         });
+                        if (w_foundNode) {
+                            this._leoIntegration.setUndoSelection(w_foundNode);
+                        }
                     } else {
                         const w_node = new LeoUndoNode(
                             "Unchanged",
@@ -16709,9 +16726,19 @@ public checkVersion(): void {
 private _onUndosTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
     if (p_explorerView) { } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
-        this._lastLeoUndos = p_explorerView ? this._leoUndosExplorer : this._leoUndos;
-        // TODO: Check if needed
-        // this._leoUndosProvider.refreshTreeRoot(); // May not need to set selection...?
+        if (p_explorerView) {
+            this._lastLeoUndos = this._leoUndosExplorer;
+            if (this._leoUndosExplorerShown) {
+                this._leoUndosProvider.refreshTreeRoot(); // Already shown, will redraw but not re-select
+            }
+            this._leoUndosExplorerShown = true; // either way set it
+        } else {
+            this._lastLeoUndos = this._leoUndos;
+            if (this._leoUndosShown) {
+                this._leoUndosProvider.refreshTreeRoot(); // Already shown, will redraw but not re-select
+            }
+            this._leoUndosShown = true; // either way set it
+        }
     }
 }
 
@@ -16743,17 +16770,15 @@ private _onUndosTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChan
 <t tx="felix.20220706223907.1">/**
  * * highlights the current undo state without disturbing focus
  */
-public setUndoSelection(p_node: LeoUndoNode): void {
-    setTimeout(() =&gt; {
-        if (this._lastLeoUndos &amp;&amp; this._lastLeoUndos.visible) {
-            this._lastLeoUndos.reveal(p_node, { select: true, focus: false }).then(
-                () =&gt; { }, // Ok - do nothing
-                (p_error) =&gt; {
-                    console.log('setUndoSelection could not reveal');
-                }
-            );
-        }
-    }, 100);
+private _setUndoSelection(p_node: LeoUndoNode): void {
+    if (this._lastLeoUndos &amp;&amp; this._lastLeoUndos.visible) {
+        this._lastLeoUndos.reveal(p_node, { select: true, focus: false }).then(
+            () =&gt; { }, // Ok - do nothing
+            (p_error) =&gt; {
+                console.log('setUndoSelection could not reveal');
+            }
+        );
+    }
 }
 
 </t>

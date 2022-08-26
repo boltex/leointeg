@@ -45,6 +45,7 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
                     const bead = p_package.bead || 0;
 
                     if (beads.length) {
+                        let w_foundNode: LeoUndoNode | undefined;
                         let i: number = 0;
                         beads.forEach(p_bead => {
                             let w_description: string = "";
@@ -55,6 +56,9 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
                             }
                             if (i === bead + 1) {
                                 w_description = "Redo";
+                                if (!w_foundNode) {
+                                    w_undoFlag = true; // Passed all nodes until 'redo', no undo found.
+                                }
                             }
                             const w_node = new LeoUndoNode(
                                 p_bead || "unknown",
@@ -65,10 +69,13 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
                             );
                             w_children.push(w_node);
                             if (w_undoFlag) {
-                                this._leoIntegration.setUndoSelection(w_node);
+                                w_foundNode = w_node;
                             }
                             i++;
                         });
+                        if (w_foundNode) {
+                            this._leoIntegration.setUndoSelection(w_foundNode);
+                        }
                     } else {
                         const w_node = new LeoUndoNode(
                             "Unchanged",
