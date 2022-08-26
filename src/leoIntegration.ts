@@ -178,6 +178,8 @@ export class LeoIntegration {
     // * Find panel
     private _findPanelWebviewView: vscode.WebviewView | undefined;
     private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
+    private _lastFindView: vscode.WebviewView | undefined;  // ? Maybe unused ?
+    private _findNeedsFocus: boolean = false;
     private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
 
     // * Selection & scroll
@@ -1355,6 +1357,27 @@ export class LeoIntegration {
     }
 
     /**
+     * * Handle the change of visibility of either find panel
+     * @param p_event The visibility-changed event passed by vscode
+     * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
+     */
+    private _onFindViewVisibilityChanged(p_explorerView: boolean): void {
+        if (p_explorerView) {
+            if (this._findPanelWebviewExplorerView?.visible) {
+                this._lastFindView = this._findPanelWebviewExplorerView;
+                this.checkForceFindFocus(false);
+            }
+
+        } else {
+            if (this._findPanelWebviewView?.visible) {
+                this._lastFindView = this._findPanelWebviewView;
+                this.checkForceFindFocus(false);
+
+            }
+        }
+    }
+
+    /**
      * * Handles detection of the active editor having changed from one to another, or closed
      * @param p_editor The editor itself that is now active
      * @param p_internalCall Flag used to signify the it was called voluntarily by leoInteg itself
@@ -1527,11 +1550,24 @@ export class LeoIntegration {
      * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
      */
     public setFindPanel(p_panel: vscode.WebviewView): void {
-        if (this._lastTreeView === this._leoTreeExView) {
+        if (p_panel.viewType === "leoFindPanelExplorer") {
+            // Explorer find panel
+            this._lastFindView = this._findPanelWebviewExplorerView;
             this._findPanelWebviewExplorerView = p_panel;
+            this._context.subscriptions.push(
+                p_panel.onDidChangeVisibility(() =>
+                    this._onFindViewVisibilityChanged(true)
+                ));
         } else {
+            // Leo Pane find panel
             this._findPanelWebviewView = p_panel;
+            this._lastFindView = this._findPanelWebviewView;
+            this._context.subscriptions.push(
+                p_panel.onDidChangeVisibility(() =>
+                    this._onFindViewVisibilityChanged(false)
+                ));
         }
+        this.checkForceFindFocus(true);
     }
 
     /**
@@ -3764,33 +3800,54 @@ export class LeoIntegration {
      * * Opens the find panel and focuses on the "find/replace" field, selecting all it's content.
      */
     public startSearch(): void {
+
+        // already instantiated & shown ?
+        let w_panel: vscode.WebviewView | undefined;
+
+        if (this._findPanelWebviewView && this._findPanelWebviewView.visible) {
+            w_panel = this._findPanelWebviewView;
+        } else if (this._findPanelWebviewExplorerView && this._findPanelWebviewExplorerView.visible) {
+            w_panel = this._findPanelWebviewExplorerView;
+        }
+
+        if (w_panel) {
+            // ALREADY VISIBLE FIND PANEL
+            this._findNeedsFocus = false;
+            w_panel.webview.postMessage({ type: 'selectFind' });
+            return;
+        }
+
+        this._findNeedsFocus = true;
         let w_panelID = '';
         if (this._lastTreeView === this._leoTreeExView) {
             w_panelID = Constants.FIND_EXPLORER_ID;
         } else {
             w_panelID = Constants.FIND_ID;
         }
-        vscode.commands.executeCommand(w_panelID + '.focus').then((p_result) => {
-            let w_panel: vscode.WebviewView | undefined;
-            if (this._lastTreeView === this._leoTreeExView) {
-                w_panel = this._findPanelWebviewExplorerView;
-            } else {
-                w_panel = this._findPanelWebviewView;
-            }
-            let w_delay = 0;
-            if (w_panel && w_panel.show && !w_panel.visible) {
-                w_panel.show(false);
-                w_delay = 100;
-            }
+        vscode.commands.executeCommand(w_panelID + '.focus');
+        return;
+    }
 
+    /**
+     * Check if search input should be forced-focused again
+     */
+    public checkForceFindFocus(p_fromInit: boolean): void {
+        if (this._findNeedsFocus) {
             setTimeout(() => {
-                if (this._lastTreeView === this._leoTreeExView) {
-                    this._findPanelWebviewExplorerView?.webview.postMessage({ type: 'selectFind' });
-                } else {
-                    this._findPanelWebviewView?.webview.postMessage({ type: 'selectFind' });
+                let w_panel: vscode.WebviewView | undefined;
+                if (this._findPanelWebviewView && this._findPanelWebviewView.visible) {
+                    w_panel = this._findPanelWebviewView;
+                } else if (this._findPanelWebviewExplorerView && this._findPanelWebviewExplorerView.visible) {
+                    w_panel = this._findPanelWebviewExplorerView;
                 }
-            }, w_delay); // small delay
-        });
+                if (w_panel) {
+                    this._findNeedsFocus = false;
+                    w_panel.webview.postMessage({ type: 'selectFind' });
+                    return;
+                }
+            }, 60);
+
+        }
     }
 
     /**

@@ -378,6 +378,7 @@
 <v t="ekr.20200815085705.1"><vh>_onButtonsTreeViewVisibilityChanged</vh></v>
 <v t="felix.20220310224330.1"><vh>_onGotoTreeViewVisibilityChanged</vh></v>
 <v t="felix.20220706000811.1"><vh>_onUndosTreeViewVisibilityChanged</vh></v>
+<v t="felix.20220826004334.1"><vh>_onFindViewVisibilityChanged</vh></v>
 <v t="felix.20200719025231.29"><vh>_onActiveEditorChanged</vh></v>
 <v t="felix.20210418014039.1"><vh>_changedTextEditorViewColumn</vh></v>
 <v t="felix.20210418014040.1"><vh>_changedVisibleTextEditors</vh></v>
@@ -464,6 +465,7 @@
 <v t="felix.20220305225942.1"><vh>navEnter</vh></v>
 <v t="felix.20220305231404.1"><vh>navTextChange</vh></v>
 <v t="felix.20210516233931.1"><vh>startSearch</vh></v>
+<v t="felix.20220825224916.1"><vh>checkForceFindFocus</vh></v>
 <v t="felix.20210613205741.1"><vh>_inputFindPattern</vh></v>
 <v t="felix.20210516234059.1"><vh>find</vh></v>
 <v t="felix.20210713000442.1"><vh>findSymbol</vh></v>
@@ -9405,6 +9407,8 @@ export class LeoIntegration {
     // * Find panel
     private _findPanelWebviewView: vscode.WebviewView | undefined;
     private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
+    private _lastFindView: vscode.WebviewView | undefined;  // ? Maybe unused ?
+    private _findNeedsFocus: boolean = false;
     private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
 
     // * Selection &amp; scroll
@@ -12446,33 +12450,32 @@ private _checkPreviewMode(p_editor: vscode.TextEditor): void {
  * * Opens the find panel and focuses on the "find/replace" field, selecting all it's content.
  */
 public startSearch(): void {
+
+    // already instantiated &amp; shown ?
+    let w_panel: vscode.WebviewView | undefined;
+
+    if (this._findPanelWebviewView &amp;&amp; this._findPanelWebviewView.visible) {
+        w_panel = this._findPanelWebviewView;
+    } else if (this._findPanelWebviewExplorerView &amp;&amp; this._findPanelWebviewExplorerView.visible) {
+        w_panel = this._findPanelWebviewExplorerView;
+    }
+
+    if (w_panel) {
+        // ALREADY VISIBLE FIND PANEL
+        this._findNeedsFocus = false;
+        w_panel.webview.postMessage({ type: 'selectFind' });
+        return;
+    }
+
+    this._findNeedsFocus = true;
     let w_panelID = '';
     if (this._lastTreeView === this._leoTreeExView) {
         w_panelID = Constants.FIND_EXPLORER_ID;
     } else {
         w_panelID = Constants.FIND_ID;
     }
-    vscode.commands.executeCommand(w_panelID + '.focus').then((p_result) =&gt; {
-        let w_panel: vscode.WebviewView | undefined;
-        if (this._lastTreeView === this._leoTreeExView) {
-            w_panel = this._findPanelWebviewExplorerView;
-        } else {
-            w_panel = this._findPanelWebviewView;
-        }
-        let w_delay = 0;
-        if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
-            w_panel.show(false);
-            w_delay = 100;
-        }
-
-        setTimeout(() =&gt; {
-            if (this._lastTreeView === this._leoTreeExView) {
-                this._findPanelWebviewExplorerView?.webview.postMessage({ type: 'selectFind' });
-            } else {
-                this._findPanelWebviewView?.webview.postMessage({ type: 'selectFind' });
-            }
-        }, w_delay); // small delay
-    });
+    vscode.commands.executeCommand(w_panelID + '.focus');
+    return;
 }
 
 </t>
@@ -17525,11 +17528,24 @@ public async prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise&lt;
  * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
  */
 public setFindPanel(p_panel: vscode.WebviewView): void {
-    if (this._lastTreeView === this._leoTreeExView) {
+    if (p_panel.viewType === "leoFindPanelExplorer") {
+        // Explorer find panel
+        this._lastFindView = this._findPanelWebviewExplorerView;
         this._findPanelWebviewExplorerView = p_panel;
+        this._context.subscriptions.push(
+            p_panel.onDidChangeVisibility(() =&gt;
+                this._onFindViewVisibilityChanged(true)
+            ));
     } else {
+        // Leo Pane find panel
         this._findPanelWebviewView = p_panel;
+        this._lastFindView = this._findPanelWebviewView;
+        this._context.subscriptions.push(
+            p_panel.onDidChangeVisibility(() =&gt;
+                this._onFindViewVisibilityChanged(false)
+            ));
     }
+    this.checkForceFindFocus(true);
 }
 
 </t>
@@ -18252,6 +18268,51 @@ private async _doMinibufferCommand(p_picked: vscode.QuickPickItem | undefined): 
     } else {
         // Canceled
         return Promise.resolve(undefined);
+    }
+}
+
+</t>
+<t tx="felix.20220825224916.1">/**
+ * Check if search input should be forced-focused again
+ */
+public checkForceFindFocus(p_fromInit: boolean): void {
+    if (this._findNeedsFocus) {
+        setTimeout(() =&gt; {
+            let w_panel: vscode.WebviewView | undefined;
+            if (this._findPanelWebviewView &amp;&amp; this._findPanelWebviewView.visible) {
+                w_panel = this._findPanelWebviewView;
+            } else if (this._findPanelWebviewExplorerView &amp;&amp; this._findPanelWebviewExplorerView.visible) {
+                w_panel = this._findPanelWebviewExplorerView;
+            }
+            if (w_panel) {
+                this._findNeedsFocus = false;
+                w_panel.webview.postMessage({ type: 'selectFind' });
+                return;
+            }
+        }, 60);
+
+    }
+}
+
+</t>
+<t tx="felix.20220826004334.1">/**
+ * * Handle the change of visibility of either find panel
+ * @param p_event The visibility-changed event passed by vscode
+ * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
+ */
+private _onFindViewVisibilityChanged(p_explorerView: boolean): void {
+    if (p_explorerView) {
+        if (this._findPanelWebviewExplorerView?.visible) {
+            this._lastFindView = this._findPanelWebviewExplorerView;
+            this.checkForceFindFocus(false);
+        }
+
+    } else {
+        if (this._findPanelWebviewView?.visible) {
+            this._lastFindView = this._findPanelWebviewView;
+            this.checkForceFindFocus(false);
+
+        }
     }
 }
 
