@@ -5980,7 +5980,7 @@ export class Config implements ConfigMembers {
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
-    public uAsNumber: boolean = true;
+    // public uAsNumber: boolean = true;
 
     private _isBusySettingConfig: boolean = false;
     private _needsTreeRefresh: boolean = false;
@@ -6037,7 +6037,7 @@ public getConfig(): ConfigMembers {
         setDetached: this.setDetached,
         limitUsers: this.limitUsers,
 
-        uAsNumber: true
+        // uAsNumber: true
     };
 }
 
@@ -8346,17 +8346,6 @@ export interface ConfigMembers {
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
 
-    // showEditionOnBody: boolean; // clone delete insert(s)
-    // showClipboardOnBody: boolean; // cut copy paste(s)
-    // showPromoteOnBody: boolean; // promote demote
-    // showExecuteOnBody: boolean; // extract(s)
-    // showExtractOnBody: boolean;
-    // showImportOnBody: boolean;
-    // showRefreshOnBody: boolean;
-    // showHoistOnBody: boolean;
-    // showMarkOnBody: boolean;
-    // showSortOnBody: boolean;
-
     invertNodeContrast: boolean;
     leoEditorPath: string;
     leoPythonCommand: string;
@@ -8368,7 +8357,7 @@ export interface ConfigMembers {
     setDetached: boolean;
     limitUsers: number
 
-    uAsNumber: boolean; // 'true' flag starting at leoInteg 1.0.8
+    uAsNumber?: boolean; // 'true' flag starting at leoInteg 1.0.8
 }
 
 </t>
@@ -11660,6 +11649,7 @@ public cancelConnect(p_message?: string): void {
  */
 public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&gt; {
     if (this.leoStates.leoBridgeReady) {
+        p_config.uAsNumber = true; // Force uAsNumber to be true starting at leoInteg 1.0.8
         return this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, JSON.stringify(p_config));
     } else {
         return Promise.reject('Leo Bridge Not Ready');
@@ -19015,24 +19005,16 @@ body &gt; div &gt; div &gt; label:active {
         &lt;/div&gt;
       &lt;/a&gt;
       &lt;p class="header__blurb"&gt;
-        Use &lt;b&gt;Leo&lt;/b&gt;, the Literate Editor with Outlines, to program with &lt;b&gt;directed acyclic graphs&lt;/b&gt;,
-        along with section-references, '@others', and clones.
+        Use &lt;b&gt;Leo&lt;/b&gt;, the &lt;b&gt;Literate Editor with Outlines&lt;/b&gt;, to program with &lt;b&gt;directed acyclic graphs&lt;/b&gt;,
+        along with &lt;b&gt;section-references&lt;/b&gt;, '&lt;b&gt;@others&lt;/b&gt;', and &lt;b&gt;clones&lt;/b&gt;.
       &lt;/p&gt;
     &lt;/header&gt;
 
-    &lt;div class="hero__area"&gt;
+    &lt;!-- &lt;div class="hero__area"&gt;
       &lt;p&gt;
-        &lt;a class="bold"
-           title="Learn more about LeoInteg"
-           href="https://github.com/boltex/leointeg#-leo-editor-integration-with-visual-studio-code"&gt;LeoInteg&lt;/a&gt;
-        is an open-source extension created by
-        &lt;a class="bold"
-           title="My github user page"
-           href="https://boltex.github.io/"&gt;Félix&lt;/a&gt; that integrates &lt;a class="bold"
-           title="Learn more about Leo"
-           href="https://leoeditor.com/"&gt;Leo&lt;/a&gt; into VS Code.
+
       &lt;/p&gt;
-    &lt;/div&gt;
+    &lt;/div&gt; --&gt;
 
     &lt;div class="content__area"&gt;
       &lt;section id="welcome"
@@ -19053,18 +19035,32 @@ body &gt; div &gt; div &gt; label:active {
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
+          &lt;!--
+          &lt;a class="bold"
+             title="Learn more about LeoInteg"
+             href="https://github.com/boltex/leointeg#-leo-editor-integration-with-visual-studio-code"&gt;LeoInteg&lt;/a&gt; --&gt;
+
+          &lt;strong&gt;LeoInteg&lt;/strong&gt;
+          is an open-source extension created by
+          &lt;a class="bold"
+             title="My github user page"
+             href="https://boltex.github.io/"&gt;Félix&lt;/a&gt; that integrates &lt;a class="bold"
+             title="Learn more about Leo"
+             href="https://leoeditor.com/"&gt;Leo&lt;/a&gt; into VS Code.
+          &lt;!--
           LeoInteg is designed to &lt;b&gt;provide Leo's functionality&lt;/b&gt;
           and can be &lt;b&gt;customized&lt;/b&gt; to meet your needs.
+           --&gt;
         &lt;/p&gt;
         &lt;h2 class="section__title section__title--break"&gt;&lt;/h2&gt;
         &lt;p class="section__hint mt-0 center"&gt;
           Automate the &lt;a href="#leobridge-options"
-             title="Setup server options"&gt;Leo server startup&lt;/a&gt;,
-          auto-refresh when &lt;a href="#external-files"
-             title="Setup file-change detection"&gt;external files change&lt;/a&gt;,
+             title="Setup server options"&gt;server startup&lt;/a&gt;,
+          auto-refresh for &lt;a href="#external-files"
+             title="Setup file-change detection"&gt;external files changes&lt;/a&gt;,
           or choose which &lt;a href="#node-commands"
-             title="Fine-tune interface"&gt;node icons&lt;/a&gt;
-          are shown and more with the options below.
+             title="Fine-tune interface"&gt;icons&lt;/a&gt;
+          are shown, and more!
         &lt;/p&gt;
       &lt;/section&gt;
 

@@ -10,7 +10,6 @@ const CspHtmlPlugin = require('csp-html-webpack-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const HtmlExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 const HtmlPlugin = require('html-webpack-plugin');
-const ImageminPlugin = require('imagemin-webpack-plugin').default;
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = function (env, argv) {
@@ -104,42 +103,21 @@ function getWebviewsConfig(env) {
             },
             minify: env.production
                 ? {
-                      removeComments: true,
-                      collapseWhitespace: true,
-                      removeRedundantAttributes: false,
-                      useShortDoctype: true,
-                      removeEmptyAttributes: true,
-                      removeStyleLinkTypeAttributes: true,
-                      keepClosingSlash: true,
-                      minifyCSS: true,
-                  }
+                    removeComments: true,
+                    collapseWhitespace: true,
+                    removeRedundantAttributes: false,
+                    useShortDoctype: true,
+                    removeEmptyAttributes: true,
+                    removeStyleLinkTypeAttributes: true,
+                    keepClosingSlash: true,
+                    minifyCSS: true,
+                }
                 : false,
         }),
         // @ts-ignore
         new HtmlExcludeAssetsPlugin(),
         new CspHtmlPlugin(),
-        new ImageminPlugin({
-            disable: true, // disabled -were just going to put images for webview in resources anyways
-            externalImages: {
-                context: path.resolve(__dirname, 'src/webviews/settingsPanel/images'),
-                sources: glob.sync('src/webviews/settingsPanel/images/*.png'),
-                destination: path.resolve(__dirname, 'resources'),
-            },
-            cacheFolder: path.resolve(
-                __dirname,
-                'node_modules',
-                '.cache',
-                'imagemin-webpack-plugin'
-            ),
-            gifsicle: null,
-            jpegtran: null,
-            optipng: null,
-            pngquant: {
-                quality: '85-100',
-                speed: true ? 1 : 10, // 1 is prod
-            },
-            svgo: null,
-        }),
+
     ];
 
     /**@type {import('webpack').Configuration}*/
@@ -178,14 +156,14 @@ function getWebviewsConfig(env) {
                         {
                             loader: 'css-loader',
                             options: {
-                                sourceMap: true,
+                                sourceMap: false,
                                 url: false,
                             },
                         },
                         {
                             loader: 'sass-loader',
                             options: {
-                                sourceMap: true,
+                                sourceMap: false,
                             },
                         },
                     ],

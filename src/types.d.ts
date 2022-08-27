@@ -29,17 +29,6 @@ export interface ConfigMembers {
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
 
-    // showEditionOnBody: boolean; // clone delete insert(s)
-    // showClipboardOnBody: boolean; // cut copy paste(s)
-    // showPromoteOnBody: boolean; // promote demote
-    // showExecuteOnBody: boolean; // extract(s)
-    // showExtractOnBody: boolean;
-    // showImportOnBody: boolean;
-    // showRefreshOnBody: boolean;
-    // showHoistOnBody: boolean;
-    // showMarkOnBody: boolean;
-    // showSortOnBody: boolean;
-
     invertNodeContrast: boolean;
     leoEditorPath: string;
     leoPythonCommand: string;
@@ -51,7 +40,7 @@ export interface ConfigMembers {
     setDetached: boolean;
     limitUsers: number
 
-    uAsNumber: boolean; // 'true' flag starting at leoInteg 1.0.8
+    uAsNumber?: boolean; // 'true' flag starting at leoInteg 1.0.8
 }
 
 /**

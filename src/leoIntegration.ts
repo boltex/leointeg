@@ -926,6 +926,7 @@ export class LeoIntegration {
      */
     public sendConfigToServer(p_config: ConfigMembers): Promise<LeoBridgePackage> {
         if (this.leoStates.leoBridgeReady) {
+            p_config.uAsNumber = true; // Force uAsNumber to be true starting at leoInteg 1.0.8
             return this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, JSON.stringify(p_config));
         } else {
             return Promise.reject('Leo Bridge Not Ready');
