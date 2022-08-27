@@ -19006,7 +19006,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;/a&gt;
       &lt;p class="header__blurb"&gt;
         Use &lt;b&gt;Leo&lt;/b&gt;, the &lt;b&gt;Literate Editor with Outlines&lt;/b&gt;, to program with &lt;b&gt;directed acyclic graphs&lt;/b&gt;,
-        along with &lt;b&gt;section-references&lt;/b&gt;, '&lt;b&gt;@others&lt;/b&gt;', and &lt;b&gt;clones&lt;/b&gt;.
+        along with &lt;b&gt;section-references&lt;/b&gt;, &lt;b&gt;@others&lt;/b&gt;, and &lt;b&gt;clones&lt;/b&gt;.
       &lt;/p&gt;
     &lt;/header&gt;
 
