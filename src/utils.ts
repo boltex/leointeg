@@ -234,6 +234,31 @@ export function getFileFromPath(p_path: string): string {
 }
 
 /**
+ * * Checks if an archived position is equivalent to another
+ * @param p_a
+ * @param p_b
+ * @returns True if equivalent, false otherwise
+ */
+export function isApEqual(p_a: ArchivedPosition, p_b: ArchivedPosition): boolean {
+
+    if (p_a === p_b) {
+        return true; // well duh...
+    }
+
+    if (p_a.gnx !== p_b.gnx) {
+        return false; // Same v node?
+    }
+    if (p_a.childIndex !== p_b.childIndex) {
+        return false; // At same child-rank to it's parent?
+    }
+    if (JSON.stringify(p_a.stack) !== JSON.stringify(p_b.stack)) {
+        return false; // and same parent positions chain up to the root?
+    }
+    // Well up to here it should be the same position!
+    return true;
+}
+
+/**
  * * Checks if a node would become dirty if it were to now have body content at all
  * @param p_node LeoNode from vscode's outline
  * @param p_newHasBody Flag to signify presence of body content, to be compared with its current state

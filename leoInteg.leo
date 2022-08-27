@@ -638,6 +638,7 @@
 <v t="felix.20210614235023.1"><vh>chooseLeoFolderDialog</vh></v>
 <v t="felix.20201018163510.1"><vh>getDurationMilliseconds</vh></v>
 <v t="felix.20200718195558.7"><vh>getFileFromPath</vh></v>
+<v t="felix.20220826200039.1"><vh>isApEqual</vh></v>
 <v t="felix.20200718195558.8"><vh>isIconChangedByEdit</vh></v>
 <v t="felix.20200718195558.9"><vh>isHexColor</vh></v>
 <v t="felix.20220327230102.1"><vh>isAlphaNum</vh></v>
@@ -1122,6 +1123,7 @@ public configTreeRefresh(): void {
  * @param p_revealType Facultative reveal type to specify type of reveal when the 'selected node' is encountered
  */
 private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): void {
+
     if (p_incrementTreeID) {
         // this._treeId++;
         this._leoTreeProvider.incTreeId();
@@ -1131,9 +1133,17 @@ private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): 
         this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
     }
     try {
-        if (this.lastSelectedNode &amp;&amp; !(this._leoTreeExView.visible || this._leoTreeView.visible)) {
+        if (!(this._leoTreeExView.visible || this._leoTreeView.visible)) {
             // Force showing last used Leo outline first
-            this._lastTreeView.reveal(this.lastSelectedNode).then(
+            let w_viewName: string;
+            if (this._lastTreeView === this._leoTreeExView) {
+                w_viewName = Constants.TREEVIEW_EXPLORER_ID;
+            } else {
+                w_viewName = Constants.TREEVIEW_ID;
+            }
+            // console.log('_refreshOutline HAS TO FORCE TREEVIEW SHOW - UP !');
+
+            vscode.commands.executeCommand(w_viewName + ".focus").then(
                 () =&gt; {
                     this._revealNodeRetriedRefreshOutline = false;
                     this._leoTreeProvider.refreshTreeRoot();
@@ -1167,7 +1177,7 @@ private _revealNode(
     p_leoNode: ArchivedPosition,
     p_options?: { select?: boolean; focus?: boolean; expand?: boolean | number }
 ): Thenable&lt;void&gt; {
-    let w_treeview: vscode.TreeView&lt;ArchivedPosition&gt; | false = false;
+    let w_treeview: vscode.TreeView&lt;ArchivedPosition&gt; | undefined;
     if (this._leoTreeView.visible) {
         w_treeview = this._leoTreeView;
     }
@@ -1284,8 +1294,12 @@ public async _launchRefresh(): Promise&lt;unknown&gt; {
             // TODO : CHECK IF FAKE_SAVE NEEDED HERE OR IN showBody ************************
             // TODO : **********************************************************************
             // ! Have to 'FAKE_SAVE' first if needed - HERE OR IN showBody !!
-            // this._refreshType.body = false;
-            // this._tryApplyNodeToBody(this._refreshNode, false, true); // ! NEEDS STACK AND THROTTLE!
+
+            // * if no outline visible, just update body pane as needed
+            if (!(this._leoTreeExView.visible || this._leoTreeView.visible)) {
+                this._refreshType.body = false;
+                this._tryApplyNodeToBody(this._refreshNode, false, false);
+            }
         }
     }
     return this.getStates();
@@ -1297,17 +1311,14 @@ public async _launchRefresh(): Promise&lt;unknown&gt; {
  * This is called after 'selectTreeNode', or after '_gotSelection' when refreshing.
  * @param p_node Node that was just selected
  * @param p_aside Flag to indicate opening 'Aside' was required
- * @param p_showBodyKeepFocus Flag used to keep focus where it was instead of forcing in body
- * @param p_force_open Flag to force opening the body pane editor
+ * @param p_preventTakingFocus Flag used to keep focus where it was instead of forcing in body
  * @returns a text editor of the p_node parameter's gnx (As 'leo' file scheme). Or rejects if interrupted.
  */
 private async _tryApplyNodeToBody(
     p_node: ArchivedPosition,
     p_aside: boolean,
-    p_showBodyKeepFocus: boolean,
-    p_force_open?: boolean
+    p_preventTakingFocus: boolean,
 ): Promise&lt;void | vscode.TextEditor&gt; {
-    // console.log('try to apply node -&gt; ', p_node.gnx);
 
     this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
     this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
@@ -1326,7 +1337,7 @@ private async _tryApplyNodeToBody(
 
                 // Make sure any pending changes in old body are applied before switching
                 return this._bodyTextDocument.save().then(() =&gt; {
-                    return this._switchBody(p_aside, p_showBodyKeepFocus);
+                    return this._switchBody(p_aside, p_preventTakingFocus);
                 });
             }
         }
@@ -1334,7 +1345,7 @@ private async _tryApplyNodeToBody(
         // first time?
         this.bodyUri = utils.strToLeoUri(p_node.gnx);
     }
-    return this.showBody(p_aside, p_showBodyKeepFocus);
+    return this.showBody(p_aside, p_preventTakingFocus);
 }
 
 </t>
@@ -10126,21 +10137,44 @@ private async _bodySaveDocument(
  * * Show the outline, with Leo's selected node also selected, and optionally focussed
  * @param p_focusOutline Flag for focus to be placed in outline
  */
-public async showOutline(p_focusOutline?: boolean): Promise&lt;void&gt; {
-    if (this.lastSelectedNode) {
-        return this._lastTreeView.reveal(this.lastSelectedNode, {
-            select: true,
-            focus: !!p_focusOutline,
-        }).then(
-            () =&gt; {
-                // ok
-            },
-            (p_reason) =&gt; {
-                console.log('showOutline could not reveal. Reason: ', p_reason);
-            }
-        );
+public async showOutline(p_focusOutline?: boolean): Promise&lt;unknown&gt; {
+
+    this._revealType = RevealType.RevealSelectFocus;
+    let q_outline: Thenable&lt;unknown&gt;;
+
+    if (!(this._leoTreeExView.visible || this._leoTreeView.visible)) {
+        // No outline visible!
+        let w_viewName: string;
+        if (this._lastTreeView === this._leoTreeExView) {
+            w_viewName = Constants.TREEVIEW_EXPLORER_ID;
+        } else {
+            w_viewName = Constants.TREEVIEW_ID;
+        }
+
+        q_outline = vscode.commands.executeCommand(w_viewName + ".focus");
+    } else {
+        q_outline = Promise.resolve();
     }
-    return Promise.resolve();
+
+    q_outline.then(() =&gt; {
+        if (this.lastSelectedNode) {
+            return this._lastTreeView.reveal(this.lastSelectedNode, {
+                select: true,
+                focus: !!p_focusOutline,
+            }).then(
+                () =&gt; {
+                    // ok
+                },
+                (p_reason) =&gt; {
+                    console.log('showOutline could not reveal. Reason: ', p_reason);
+                }
+            );
+        }
+        return Promise.resolve();
+    });
+
+    return q_outline;
+
 }
 
 </t>
@@ -10149,14 +10183,13 @@ public async showOutline(p_focusOutline?: boolean): Promise&lt;void&gt; {
  * * Close body pane document and change the bodyUri to this.lastSelectedNode's gnx
  * This blocks 'undos' from crossing over
  * @param p_aside From 'Open Aside'.
- * @param p_preserveFocus prevents forcing focus on text body.
+ * @param p_preventTakingFocus prevents forcing focus on text body.
  */
 private _switchBody(
     p_aside: boolean,
-    p_preserveFocus?: boolean
+    p_preventTakingFocus?: boolean
 ): Thenable&lt;void | vscode.TextEditor&gt; {
     const w_oldUri: vscode.Uri = this.bodyUri;
-    const w_newGnx: string = this.lastSelectedNode!.gnx;
     const w_newUri: vscode.Uri = utils.strToLeoUri(this.lastSelectedNode!.gnx);
     const w_newTS = performance.now();
 
@@ -10178,7 +10211,7 @@ private _switchBody(
     if (this.lastSelectedNode &amp;&amp; this._bodyPreviewMode &amp;&amp; this._bodyEnablePreview &amp;&amp; w_visibleCount &lt; 2) {
         // just show in same column and delete after
         this.bodyUri = utils.strToLeoUri(this.lastSelectedNode.gnx);
-        const q_showBody = this.showBody(p_aside, p_preserveFocus);
+        const q_showBody = this.showBody(p_aside, p_preventTakingFocus);
 
         if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
 
@@ -10197,11 +10230,6 @@ private _switchBody(
             if (w_tabsToClose.length) {
                 vscode.window.tabGroups.close(w_tabsToClose, true);
             }
-            // If old different: delete virtual LeoBody file
-            // TODO : TEST IF DELETE EDIT IS NEEDED
-            // const w_edit = new vscode.WorkspaceEdit();
-            // w_edit.deleteFile(w_oldUri, { ignoreIfNotExists: true });
-            // vscode.workspace.applyEdit(w_edit); // delete old document
 
             // Remove from potential 'recently opened'
             vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri);
@@ -10219,13 +10247,6 @@ private _switchBody(
                 }
             });
         });
-
-        // Gotta delete to close all oldUri and re-open, so:
-        // Promise to Delete first, synchronously (as thenable),
-        // tagged along with automatically removeFromRecentlyOpened in parallel
-        // TODO : is delete edit needed ?
-        // const w_edit = new vscode.WorkspaceEdit();
-        // w_edit.deleteFile(w_oldUri, { ignoreIfNotExists: true });
 
         let q_closeAll: Thenable&lt;unknown&gt;;
         if (w_tabsToClose.length) {
@@ -10252,17 +10273,12 @@ private _switchBody(
                 return;
             }
 
-            // const q_delete = vscode.workspace.applyEdit(w_edit); // delete old document
-            // Set new uri and remove from 'Recently opened'
             this._bodyPreviewMode = true;
 
             this.bodyUri = w_newUri;
 
-            return this.showBody(p_aside, p_preserveFocus);
+            return this.showBody(p_aside, p_preventTakingFocus);
 
-            // return q_delete.then(() =&gt; {
-            //     return this.showBody(p_aside, p_preserveFocus);
-            // });
         });
     }
 }
@@ -10380,10 +10396,10 @@ public sendAction(
 <t tx="felix.20200719025231.50">/**
  * * Opens an an editor for the currently selected node: "this.bodyUri". If already opened, this just 'reveals' it
  * @param p_aside Flag for opening the editor beside any currently opened and focused editor
- * @param p_preserveFocus flag that when true will stop the editor from taking focus once opened
+ * @param p_preventTakingFocus flag that when true will stop the editor from taking focus once opened
  * @returns a promise of an editor, or void if body had been changed again in the meantime.
  */
-public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.TextEditor | void&gt; {
+public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise&lt;vscode.TextEditor | void&gt; {
 
     const w_openedDocumentTS = performance.now();
     const w_openedDocumentGnx = utils.leoUriToStr(this.bodyUri);
@@ -10400,7 +10416,7 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
             (this._bodyLastChangedDocument.isDirty || this._editorTouched) &amp;&amp;
             w_openedDocumentGnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)
         ) {
-            console.log('had to save');
+            console.log('had to save'); // TODO : CLEANUP !                                     &lt;===================
 
             // MAKE SURE BODY IS NOT DIRTY  !!
             this._leoFileSystem.preventSaveToLeo = true;
@@ -10498,7 +10514,7 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
                 setTimeout(() =&gt; {
                     if (this.lastSelectedNode) {
                         this._showBodyRefreshed += 1;
-                        this._switchBody(false, p_preserveFocus);
+                        this._switchBody(false, p_preventTakingFocus);
                     }
                 }, 0);
 
@@ -10526,14 +10542,14 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
     const w_showOptions: vscode.TextDocumentShowOptions = p_aside
         ? {
             viewColumn: vscode.ViewColumn.Beside,
-            preserveFocus: p_preserveFocus,
+            preserveFocus: p_preventTakingFocus,
             preview: true, // should text document be in preview only? set false for fully opened
         }
         : {
             viewColumn: this._bodyMainSelectionColumn
                 ? this._bodyMainSelectionColumn
                 : 1,
-            preserveFocus: p_preserveFocus,
+            preserveFocus: p_preventTakingFocus,
             preview: true, // should text document be in preview only? set false for fully opened
         };
 
@@ -10566,8 +10582,6 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
         Promise.all([q_bodyStates, q_showTextDocument]).then(
             (p_values: [LeoBridgePackage, vscode.TextEditor]) =&gt; {
 
-
-
                 // * Set text selection range
                 const w_resultBodyStates = p_values[0];
                 const w_bodyTextEditor = p_values[1];
@@ -10577,18 +10591,15 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
 
                 const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
 
-
                 // * CHECK ALL 3 POSSIBLE NEW PLACES FOR BODY SWITCH AFTER q_bodyStates &amp; q_showTextDocument
                 if (
                     w_openedDocument.isClosed ||
                     !this.isTsStillValid(w_openedDocumentTS) ||
                     (this.lastSelectedNode &amp;&amp; w_leoBodySel.gnx !== this.lastSelectedNode.gnx)
                     // Should the gnx be relevant? -&gt; !this.isGnxStillValid(w_openedDocumentGnx, w_openedDocumentTS)
-
                 ) {
                     return;
                 }
-
 
                 // Cursor position and selection range
                 const w_activeRow: number = w_leoBodySel.insert.line;
@@ -10620,6 +10631,8 @@ public async showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;v
                 );
 
                 if (w_bodyTextEditor) {
+                    // this._revealType = RevealType.NoReveal; // ! IN CASE THIS WAS STILL UP FROM SHOW_OUTLINE
+
                     w_bodyTextEditor.selection = w_selection; // set cursor insertion point &amp; selection range
                     if (!w_scrollRange) {
                         w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
@@ -10694,7 +10707,7 @@ public selectTreeNode(
     });
 
     // * Apply the node to the body text without waiting for the selection promise to resolve
-    this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
+    this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus);
     return q_setSelectedNode;
 }
 
@@ -16085,7 +16098,6 @@ public tagNode(): void {
  * * Remove single Tag on selected node
  */
 public removeTag(): void {
-    console.log('removeTag', this.lastSelectedNode?.nodeTags);
 
     if (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.nodeTags) {
         this.triggerBodySave(false)
@@ -16098,7 +16110,6 @@ public removeTag(): void {
             })
             .then((p_package: LeoBridgePackage) =&gt; {
                 if (p_package.ua &amp;&amp; p_package.ua !== null) {
-                    console.log('got ua',);
 
                     let uaQty = Object.keys(p_package.ua).length;
                     let tagQty = 0;
@@ -17260,37 +17271,57 @@ public resolveTreeItem(item: LeoApOutlineNode, element: ArchivedPosition, token:
  * @param p_element The "selected" ArchivedPosition element reached.
  */
 public gotSelectedNode(p_element: ArchivedPosition): void {
-    if (this._revealType) {
+
+    const w_focusTree = (this._revealType.valueOf() &gt;= RevealType.RevealSelectFocus.valueOf());
+
+    const w_last = this.lastSelectedNode;
+    if (
+        !w_focusTree &amp;&amp;
+        this._refreshType.scroll &amp;&amp;
+        w_last &amp;&amp;
+        utils.isApEqual(w_last, p_element) &amp;&amp;
+        this._lastTreeView &amp;&amp;
+        this._lastTreeView.visible
+
+    ) {
+        // SAME
         setTimeout(() =&gt; {
-            this._lastTreeView.reveal(p_element, {
-                select: true,
-                focus: (this._revealType.valueOf() &gt;= RevealType.RevealSelectFocus.valueOf())
-            }).then(() =&gt; {
-                // ok
-            }, (p_reason) =&gt; {
-                console.log('gotSelectedNode could not reveal. Reason: ', p_reason);
-                // Reveal failed. Retry refreshOutline once
-                this._refreshOutline(true, RevealType.RevealSelect);
-            });
-            // Done, so reset reveal type 'flag'
-            this._revealType = RevealType.NoReveal;
+            this.showBody(false, w_focusTree);
         }, 0);
+    } else {
+
+        if (this._revealType) {
+            setTimeout(() =&gt; {
+                this._lastTreeView.reveal(p_element, {
+                    select: true,
+                    focus: w_focusTree
+                }).then(() =&gt; {
+                    // ok
+                }, (p_reason) =&gt; {
+                    console.log('gotSelectedNode could not reveal. Reason: ', p_reason);
+                    // Reveal failed. Retry refreshOutline once
+                    this._refreshOutline(true, RevealType.RevealSelect);
+                });
+                // Done, so reset reveal type 'flag'
+                this._revealType = RevealType.NoReveal;
+            }, 0);
+        }
+
+        // Apply node to body pane
+        let w_showBodyKeepFocus: boolean = this.fromOutline; // Will preserve focus where it is without forcing into the body pane if true
+        if (this._focusInterrupt) {
+            this._focusInterrupt = false;
+            w_showBodyKeepFocus = true;
+        }
+        if (!w_last || this._needLastSelectedRefresh) {
+            // lastSelectedNode will be set in _tryApplyNodeToBody !
+            this._needLastSelectedRefresh = false;
+        }
+        this._tryApplyNodeToBody(p_element, false, w_showBodyKeepFocus);
+        // Set context flags
+        this.leoStates.setSelectedNodeFlags(p_element);
     }
 
-    // Apply node to body pane
-    let w_showBodyKeepFocus: boolean = this.fromOutline; // Will preserve focus where it is without forcing into the body pane if true
-    if (this._focusInterrupt) {
-        this._focusInterrupt = false;
-        w_showBodyKeepFocus = true;
-    }
-    if (!this.lastSelectedNode || this._needLastSelectedRefresh) {
-        // lastSelectedNode will be set in _tryApplyNodeToBody !
-        this._needLastSelectedRefresh = false;
-    }
-    this._tryApplyNodeToBody(p_element, false, w_showBodyKeepFocus);
-
-    // Set context flags
-    this.leoStates.setSelectedNodeFlags(p_element);
 }
 
 </t>
@@ -18314,6 +18345,32 @@ private _onFindViewVisibilityChanged(p_explorerView: boolean): void {
 
         }
     }
+}
+
+</t>
+<t tx="felix.20220826200039.1">/**
+ * * Checks if an archived position is equivalent to another
+ * @param p_a
+ * @param p_b
+ * @returns True if equivalent, false otherwise
+ */
+export function isApEqual(p_a: ArchivedPosition, p_b: ArchivedPosition): boolean {
+
+    if (p_a === p_b) {
+        return true; // well duh...
+    }
+
+    if (p_a.gnx !== p_b.gnx) {
+        return false; // Same v node?
+    }
+    if (p_a.childIndex !== p_b.childIndex) {
+        return false; // At same child-rank to it's parent?
+    }
+    if (JSON.stringify(p_a.stack) !== JSON.stringify(p_b.stack)) {
+        return false; // and same parent positions chain up to the root?
+    }
+    // Well up to here it should be the same position!
+    return true;
 }
 
 </t>
