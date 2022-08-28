@@ -1290,10 +1290,9 @@ public async _launchRefresh(): Promise&lt;unknown&gt; {
             }
         );
         if (this._refreshType.body) {
-            // TODO : **********************************************************************
-            // TODO : CHECK IF FAKE_SAVE NEEDED HERE OR IN showBody ************************
-            // TODO : **********************************************************************
-            // ! Have to 'FAKE_SAVE' first if needed - HERE OR IN showBody !!
+            // TODO : ******************************************************
+            // TODO : CHECK IF FAKE_SAVE NEEDED HERE OR IN showBody ********
+            // TODO : ******************************************************
 
             // * if no outline visible, just update body pane as needed
             if (!(this._leoTreeExView.visible || this._leoTreeView.visible)) {
@@ -1327,7 +1326,7 @@ private async _tryApplyNodeToBody(
         // if not first time and still opened - also not somewhat exactly opened somewhere.
         if (
             !this._bodyTextDocument.isClosed &amp;&amp;
-            !this._locateOpenedBody(p_node.gnx) // LOCATE NEW GNX
+            !this._locateOpenedBody(p_node.gnx) // COULD NOT LOCATE NEW GNX
         ) {
             // if needs switching by actually having different gnx
             if (utils.leoUriToStr(this.bodyUri) !== p_node.gnx) {
@@ -17288,6 +17287,7 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
     const w_focusTree = (this._revealType.valueOf() &gt;= RevealType.RevealSelectFocus.valueOf());
 
     const w_last = this.lastSelectedNode;
+
     if (
         !w_focusTree &amp;&amp;
         this._refreshType.scroll &amp;&amp;
@@ -17330,7 +17330,21 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
             // lastSelectedNode will be set in _tryApplyNodeToBody !
             this._needLastSelectedRefresh = false;
         }
-        this._tryApplyNodeToBody(p_element, false, w_showBodyKeepFocus);
+
+        if (this._bodyTextDocument &amp;&amp;
+            !this._bodyTextDocument.isClosed &amp;&amp; // IS OPENED
+            !this._refreshType.body &amp;&amp; // NO NEED TO REFRESH BODY !
+            this._locateOpenedBody(p_element.gnx) // DID LOCATE NEW GNX =&gt; ALREADY SHOWN!
+        ) {
+            // * Just make sure body selection is considered done.
+            this.lastSelectedNode = p_element; // Set the 'lastSelectedNode' this will also set the 'marked' node context
+            this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
+
+        } else {
+            // * Actually run the normal 'APPLY NODE TO BODY' to show or switch
+            this._tryApplyNodeToBody(p_element, false, w_showBodyKeepFocus);
+        }
+
         // Set context flags
         this.leoStates.setSelectedNodeFlags(p_element);
     }
