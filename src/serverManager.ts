@@ -161,16 +161,27 @@ export class ServerService {
             // Capture the ERROR channel and set flags on server errors
             if (this._serverProcess && this._serverProcess.stderr) {
                 this._serverProcess.stderr.on("data", (p_data: string) => {
+                    if (p_data.toLocaleLowerCase().includes('warning:')) {
+                        vscode.window.showInformationMessage(
+                            "leoserver issued warning: ",
+                            p_data
+                        );
+                        return;
+                    }
                     console.log(`stderr: ${p_data}`);
+
                     this._isStarted = false;
                     if (!this._leoIntegration.activated) {
                         return;
                     }
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
-                    this._serverProcess = undefined;
+
+                    this.killServer();
+
                     if (this._rejectPromise) {
                         this._rejectPromise(`stderr: ${p_data}`);
                     }
+
                 });
             } else {
                 console.error("No stderr");
