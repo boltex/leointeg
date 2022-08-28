@@ -2909,12 +2909,12 @@
         },
         {
           "command": "leointeg.showSettingsPage",
-          "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ && leoBridgeReady",
+          "when": "view =~ /^leoDocuments|^leoButtons/ && leoBridgeReady",
           "group": "navigation@9"
         },
         {
           "command": "leointeg.showLogPane",
-          "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ && leoBridgeReady",
+          "when": "view =~ /^leoDocuments|^leoButtons/ && leoBridgeReady",
           "group": "navigation@9"
         },
         {

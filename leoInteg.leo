@@ -12045,12 +12045,12 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.showSettingsPage",
-    "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ &amp;&amp; leoBridgeReady",
+    "when": "view =~ /^leoDocuments|^leoButtons/ &amp;&amp; leoBridgeReady",
     "group": "navigation@9"
   },
   {
     "command": "leointeg.showLogPane",
-    "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ &amp;&amp; leoBridgeReady",
+    "when": "view =~ /^leoDocuments|^leoButtons/ &amp;&amp; leoBridgeReady",
     "group": "navigation@9"
   },
   {
