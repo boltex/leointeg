@@ -13588,7 +13588,13 @@ public gotoGlobalLine(): void {
 public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     "find-quick": Constants.COMMANDS.FIND_QUICK,
     "find-quick-selected": Constants.COMMANDS.FIND_QUICK,
+
+    "focus-to-body": Constants.COMMANDS.SHOW_BODY,
+    "focus-to-find": Constants.COMMANDS.START_SEARCH,
+    "focus-to-log": Constants.COMMANDS.SHOW_LOG,
     "focus-to-nav": Constants.COMMANDS.FIND_QUICK,
+    "focus-to-tree": Constants.COMMANDS.SHOW_OUTLINE,
+
     "find-quick-timeline": Constants.COMMANDS.FIND_QUICK_TIMELINE,
     "find-quick-changed": Constants.COMMANDS.FIND_QUICK_CHANGED,
     "history": Constants.COMMANDS.FIND_QUICK_HISTORY,
@@ -16243,7 +16249,13 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 <t tx="felix.20220321211021.1">public static addMinibufferCommands: { label: string, detail: string }[] = [
     { "label": "find-quick", "detail": "Opens the Nav tab." },
     { "label": "find-quick-selected", "detail": "Opens the Nav tab with the selected text as the search string." },
-    { "label": "focus-to-nav", "detail": "Puts focus in Nav tab." },
+
+    { "label": "focus-to-body", "detail": "Put the keyboard focus in Leo's body pane." },
+    { "label": "focus-to-find", "detail": "Put the keyboard focus in Leo's find input." },
+    { "label": "focus-to-log", "detail": "Reveals Leo's log pane." },
+    { "label": "focus-to-nav", "detail": "Put the keyboard focus in Leo's nav search input." },
+    { "label": "focus-to-tree", "detail": "Put the keyboard focus in Leo's body pane." },
+
     { "label": "find-quick-timeline", "detail": "Lists all nodes in reversed gnx order, newest to oldest." },
     { "label": "find-quick-changed", "detail": "Lists all nodes that are changed (aka \"dirty\") since last save." },
     { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
