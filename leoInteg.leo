@@ -12115,12 +12115,12 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.prevFromOutline",
-    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
     "group": "navigation@3"
   },
   {
     "command": "leointeg.nextFromOutline",
-    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
     "group": "navigation@4"
   },
   {

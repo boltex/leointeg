@@ -2979,12 +2979,12 @@
         },
         {
           "command": "leointeg.prevFromOutline",
-          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
           "group": "navigation@3"
         },
         {
           "command": "leointeg.nextFromOutline",
-          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
           "group": "navigation@4"
         },
         {
