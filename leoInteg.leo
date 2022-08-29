@@ -12546,7 +12546,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
         this.setupRefresh(
             w_focusOnOutline,
             {
-                tree: true,
+                tree: true, // HAVE to refresh tree because find folds/unfolds only result outline paths
                 body: true,
                 scroll: p_findResult.found &amp;&amp; !w_focusOnOutline,
                 // documents: false,
@@ -17326,10 +17326,10 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
     ) {
         // SAME
         // console.log('gotSelectedNode SAME!');
-
+        // ! MINIMAL TIMEOUT REQUIRED ! WHY ?? (works so leave)
         setTimeout(() =&gt; {
-            this.showBody(false, w_focusTree);
-        }, 0);
+            this.showBody(false, false);
+        }, 20);
     } else {
 
         if (this._revealType) {

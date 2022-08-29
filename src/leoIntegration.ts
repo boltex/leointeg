@@ -2132,10 +2132,10 @@ export class LeoIntegration {
         ) {
             // SAME
             // console.log('gotSelectedNode SAME!');
-
+            // ! MINIMAL TIMEOUT REQUIRED ! WHY ?? (works so leave)
             setTimeout(() => {
-                this.showBody(false, w_focusTree);
-            }, 0);
+                this.showBody(false, false);
+            }, 20);
         } else {
 
             if (this._revealType) {
@@ -3970,7 +3970,7 @@ export class LeoIntegration {
             this.setupRefresh(
                 w_focusOnOutline,
                 {
-                    tree: true,
+                    tree: true, // HAVE to refresh tree because find folds/unfolds only result outline paths
                     body: true,
                     scroll: p_findResult.found && !w_focusOnOutline,
                     // documents: false,
