@@ -2131,6 +2131,8 @@ export class LeoIntegration {
 
         ) {
             // SAME
+            // console.log('gotSelectedNode SAME!');
+
             setTimeout(() => {
                 this.showBody(false, w_focusTree);
             }, 0);
@@ -2144,7 +2146,7 @@ export class LeoIntegration {
                     }).then(() => {
                         // ok
                     }, (p_reason) => {
-                        console.log('gotSelectedNode could not reveal. Reason: ', p_reason);
+                        // console.log('gotSelectedNode could not reveal. Reason: ', p_reason);
                         // Reveal failed. Retry refreshOutline once
                         this._refreshOutline(true, RevealType.RevealSelect);
                     });
@@ -2169,11 +2171,15 @@ export class LeoIntegration {
                 !this._refreshType.body && // NO NEED TO REFRESH BODY !
                 this._locateOpenedBody(p_element.gnx) // DID LOCATE NEW GNX => ALREADY SHOWN!
             ) {
+                // console.log('gotSelectedNode located body!');
+
                 // * Just make sure body selection is considered done.
                 this.lastSelectedNode = p_element; // Set the 'lastSelectedNode' this will also set the 'marked' node context
                 this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
 
             } else {
+                // console.log('gotSelectedNode doing _tryApplyNodeToBody!');
+
                 // * Actually run the normal 'APPLY NODE TO BODY' to show or switch
                 this._tryApplyNodeToBody(p_element, false, w_showBodyKeepFocus);
             }
@@ -2317,8 +2323,8 @@ export class LeoIntegration {
                             (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
                             (p_tab.input as vscode.TabInputText).uri.fsPath === w_oldUri.fsPath
                         ) {
+                            // Make sure it's saved AGAIN!!
                             w_tabsToClose.push(p_tab);
-
                         }
                     });
                 });
@@ -2332,12 +2338,28 @@ export class LeoIntegration {
             return q_showBody;
         } else {
             // Close ALL LEO EDITORS
+            let q_lastSecondSave: Thenable<boolean> | undefined;
+
             vscode.window.tabGroups.all.forEach((p_tabGroup) => {
                 p_tabGroup.tabs.forEach((p_tab) => {
                     if (
                         (p_tab.input as vscode.TabInputText).uri &&
-                        (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
+                        (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
+                        w_newUri.fsPath !== (p_tab.input as vscode.TabInputText).uri.fsPath // Maybe useless to check if different!
                     ) {
+
+                        if (
+                            p_tab.isDirty &&
+                            this._bodyLastChangedDocument &&
+                            (p_tab.input as vscode.TabInputText).uri.fsPath === this._bodyLastChangedDocument.uri.fsPath
+                        ) {
+                            console.log('LAST SECOND SAVE!'); // TODO : CLEANUP !                                     <===================
+
+                            this._leoFileSystem.preventSaveToLeo = true;
+                            this._editorTouched = false;
+                            q_lastSecondSave = this._bodyLastChangedDocument.save();
+                        }
+
                         w_tabsToClose.push(p_tab);
                     }
                 });
@@ -2345,7 +2367,18 @@ export class LeoIntegration {
 
             let q_closeAll: Thenable<unknown>;
             if (w_tabsToClose.length) {
-                q_closeAll = vscode.window.tabGroups.close(w_tabsToClose, true);
+
+                if (q_lastSecondSave) {
+                    q_closeAll = q_lastSecondSave.then(() => {
+                        return vscode.window.tabGroups.close(w_tabsToClose, true);
+                    });
+
+                } else {
+
+                    q_closeAll = vscode.window.tabGroups.close(w_tabsToClose, true);
+
+                }
+
             } else {
                 q_closeAll = Promise.resolve();
             }
