@@ -9217,11 +9217,6 @@ export class LeoIntegration {
         // Needs undefined type because it cannot be set in the constructor
         this._lastSelectedNode = p_ap;
         this._lastSelectedNodeTS = performance.now();
-
-        // if (p_ap) {
-        //     // TODO :SET OTHER CONTEXT FOR NODE ? ? ? OR NOT NEEDED ???
-        //     utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_ap.marked); // Global context to 'flag' the selected node's marked state
-        // }
     }
 
     // * Outline Pane redraw/refresh flags. Also set when calling refreshTreeRoot
@@ -9230,9 +9225,6 @@ export class LeoIntegration {
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
 
     private _preventShowBody = false; // Used when refreshing treeview from config: It requires not to open the body pane when refreshing
-
-    // TODO : REFRESH HELPER NEEDED ???
-    private _showBodyRefreshed: number = 0; // Used at the end of refresh process, when a setLanguage checks if gnx is same as lastSelectedNode
 
     // * Documents Pane
     private _leoDocumentsProvider: LeoDocumentsProvider;
@@ -9266,11 +9258,6 @@ export class LeoIntegration {
         // Needs undefined type because it cannot be set in the constructor
         this.__refreshNode = p_ap;
         this._lastRefreshNodeTS = performance.now();
-
-        // if (p_ap) {
-        //     // TODO :SET OTHER CONTEXT FOR NODE ? ? ? OR NOT NEEDED ???
-        //     utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_ap.marked); // Global context to 'flag' the selected node's marked state
-        // }
     }
 
     public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
@@ -10338,7 +10325,6 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
     }
     // Handle 'Prevent Show Body flag' and return
     if (this._preventShowBody) {
-        this._showBodyRefreshed = 0;
         this._preventShowBody = false;
         return Promise.resolve(vscode.window.activeTextEditor!);
     }
@@ -10384,7 +10370,6 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
                     // command stack last node is still valid
                     if (this.lastSelectedNode &amp;&amp; w_openedDocumentGnx === this.lastSelectedNode.gnx) {
                         // still same gnx as this.bodyUri
-                        this._showBodyRefreshed = 0;
                         this._setBodyLanguage(w_openedDocument, w_language);
                     } else {
                         // NOT SAME GNX!
@@ -10410,7 +10395,6 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
             //     console.log("w_openedDocumentGnx", w_openedDocumentGnx);
             //     console.log("this.lastSelectedNode.gnx", this.lastSelectedNode!.gnx);
             //     console.log("w_gnx", w_gnx);
-            //     console.log("this._showBodyRefreshed", this._showBodyRefreshed);
             // }
 
             if (w_needRefreshFlag) {
@@ -10418,7 +10402,6 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
                 // redo apply to body!
                 setTimeout(() =&gt; {
                     if (this.lastSelectedNode) {
-                        this._showBodyRefreshed += 1;
                         this._switchBody(false, p_preventTakingFocus);
                     }
                 }, 0);
@@ -14168,7 +14151,10 @@ public setFontConfig(p_settings: FontSettings): void {
 }
 
 </t>
-<t tx="felix.20210727224655.1">export interface FontSettings {
+<t tx="felix.20210727224655.1">/**
+ * * Structure for user settings, used when changing vscode's UI zoom and font size
+ */
+export interface FontSettings {
     zoomLevel: number;
     fontSize: number;
 }

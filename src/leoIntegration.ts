@@ -99,22 +99,13 @@ export class LeoIntegration {
         // Needs undefined type because it cannot be set in the constructor
         this._lastSelectedNode = p_ap;
         this._lastSelectedNodeTS = performance.now();
-
-        // if (p_ap) {
-        //     // TODO :SET OTHER CONTEXT FOR NODE ? ? ? OR NOT NEEDED ???
-        //     utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_ap.marked); // Global context to 'flag' the selected node's marked state
-        // }
     }
 
     // * Outline Pane redraw/refresh flags. Also set when calling refreshTreeRoot
-
     // If there's no reveal and its the selected node, the old id will be re-used for the node. (see _id property in LeoNode)
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
 
     private _preventShowBody = false; // Used when refreshing treeview from config: It requires not to open the body pane when refreshing
-
-    // TODO : REFRESH HELPER NEEDED ???
-    private _showBodyRefreshed: number = 0; // Used at the end of refresh process, when a setLanguage checks if gnx is same as lastSelectedNode
 
     // * Documents Pane
     private _leoDocumentsProvider: LeoDocumentsProvider;
@@ -148,11 +139,6 @@ export class LeoIntegration {
         // Needs undefined type because it cannot be set in the constructor
         this.__refreshNode = p_ap;
         this._lastRefreshNodeTS = performance.now();
-
-        // if (p_ap) {
-        //     // TODO :SET OTHER CONTEXT FOR NODE ? ? ? OR NOT NEEDED ???
-        //     utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_ap.marked); // Global context to 'flag' the selected node's marked state
-        // }
     }
 
     public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
@@ -2641,7 +2627,6 @@ export class LeoIntegration {
         }
         // Handle 'Prevent Show Body flag' and return
         if (this._preventShowBody) {
-            this._showBodyRefreshed = 0;
             this._preventShowBody = false;
             return Promise.resolve(vscode.window.activeTextEditor!);
         }
@@ -2687,7 +2672,6 @@ export class LeoIntegration {
                         // command stack last node is still valid
                         if (this.lastSelectedNode && w_openedDocumentGnx === this.lastSelectedNode.gnx) {
                             // still same gnx as this.bodyUri
-                            this._showBodyRefreshed = 0;
                             this._setBodyLanguage(w_openedDocument, w_language);
                         } else {
                             // NOT SAME GNX!
@@ -2713,7 +2697,6 @@ export class LeoIntegration {
                 //     console.log("w_openedDocumentGnx", w_openedDocumentGnx);
                 //     console.log("this.lastSelectedNode.gnx", this.lastSelectedNode!.gnx);
                 //     console.log("w_gnx", w_gnx);
-                //     console.log("this._showBodyRefreshed", this._showBodyRefreshed);
                 // }
 
                 if (w_needRefreshFlag) {
@@ -2721,7 +2704,6 @@ export class LeoIntegration {
                     // redo apply to body!
                     setTimeout(() => {
                         if (this.lastSelectedNode) {
-                            this._showBodyRefreshed += 1;
                             this._switchBody(false, p_preventTakingFocus);
                         }
                     }, 0);

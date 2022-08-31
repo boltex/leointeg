@@ -51,6 +51,9 @@ export interface ConfigSetting {
     value: any;
 }
 
+/**
+ * * Structure for user settings, used when changing vscode's UI zoom and font size
+ */
 export interface FontSettings {
     zoomLevel: number;
     fontSize: number;
