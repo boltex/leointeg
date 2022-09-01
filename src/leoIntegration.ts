@@ -7,6 +7,7 @@ import { Constants } from './constants';
 import {
     LeoBridgePackage,
     RevealType,
+    Focus,
     ArchivedPosition,
     Icon,
     ConfigMembers,
@@ -22,7 +23,7 @@ import {
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
-import { LeoApOutlineProvider, LeoApOutlineNode } from './leoApOutline';
+import { LeoApOutlineProvider } from './leoApOutline';
 import { LeoBodyProvider } from './leoBody';
 import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
@@ -128,6 +129,9 @@ export class LeoIntegration {
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     public fromOutline: boolean = false; // Set in _setupRefresh : Last command issued had focus on outline, as opposed to the body
+
+    // ! fromOutline should be 'finalFocus' of type enum 'Focus'
+
     private _refreshType: ReqRefresh = {}; // Set in _setupRefresh : Flags for commands to require parts of UI to refresh
 
     private __refreshNode: ArchivedPosition | undefined; // Set in _setupRefresh : Last command issued a specific node to reveal
@@ -2174,22 +2178,6 @@ export class LeoIntegration {
             this.leoStates.setSelectedNodeFlags(p_element);
         }
 
-    }
-
-    /**
-     * * Check if Leo should be focused on outline
-     */
-    public async getBridgeFocus(): Promise<LeoBridgePackage> {
-        const w_resultFocus = await this.sendAction(Constants.LEOBRIDGE.GET_FOCUS);
-        if (w_resultFocus.focus) {
-            const w_focus = w_resultFocus.focus.toLowerCase();
-            if (w_focus.includes('tree') || w_focus.includes('head')) {
-                this.fromOutline = true;
-            } else {
-                this.fromOutline = false;
-            }
-        }
-        return w_resultFocus;
     }
 
     /**

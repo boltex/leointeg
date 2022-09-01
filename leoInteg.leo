@@ -389,7 +389,6 @@
 <v t="ekr.20200815085830.1"><vh>_refreshOutline</vh></v>
 <v t="ekr.20200815085830.2"><vh>_revealNode</vh></v>
 <v t="felix.20220721225622.1"><vh>gotSelectedNode</vh></v>
-<v t="felix.20210528012836.1"><vh>getBridgeFocus</vh></v>
 <v t="felix.20220726144945.1"><vh>_refreshDocumentsPane</vh></v>
 <v t="felix.20220726145121.1"><vh>_refreshButtonsPane</vh></v>
 <v t="felix.20220726145220.1"><vh>_refreshGotoPane</vh></v>
@@ -575,6 +574,7 @@
 <v t="felix.20200718194857.2"><vh>ConfigMembers</vh></v>
 <v t="felix.20201017224340.1"><vh>ConfigSetting</vh></v>
 <v t="felix.20210727224655.1"><vh>FontSettings</vh></v>
+<v t="felix.20220901003642.1"><vh>Focus</vh></v>
 <v t="felix.20200718194857.3"><vh>RevealType</vh></v>
 <v t="felix.20200718194857.4"><vh>RefreshType</vh></v>
 <v t="felix.20200718194857.5"><vh>UserCommand</vh></v>
@@ -8964,6 +8964,7 @@ import { Constants } from './constants';
 import {
     LeoBridgePackage,
     RevealType,
+    Focus,
     ArchivedPosition,
     Icon,
     ConfigMembers,
@@ -8979,7 +8980,7 @@ import {
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
-import { LeoApOutlineProvider, LeoApOutlineNode } from './leoApOutline';
+import { LeoApOutlineProvider } from './leoApOutline';
 import { LeoBodyProvider } from './leoBody';
 import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
@@ -9220,7 +9221,6 @@ export class LeoIntegration {
     }
 
     // * Outline Pane redraw/refresh flags. Also set when calling refreshTreeRoot
-
     // If there's no reveal and its the selected node, the old id will be re-used for the node. (see _id property in LeoNode)
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
 
@@ -9247,6 +9247,9 @@ export class LeoIntegration {
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     public fromOutline: boolean = false; // Set in _setupRefresh : Last command issued had focus on outline, as opposed to the body
+
+    // ! fromOutline should be 'finalFocus' of type enum 'Focus'
+
     private _refreshType: ReqRefresh = {}; // Set in _setupRefresh : Flags for commands to require parts of UI to refresh
 
     private __refreshNode: ArchivedPosition | undefined; // Set in _setupRefresh : Last command issued a specific node to reveal
@@ -13085,23 +13088,6 @@ public loadSearchSettings(): void {
 }
 
 </t>
-<t tx="felix.20210528012836.1">/**
- * * Check if Leo should be focused on outline
- */
-public async getBridgeFocus(): Promise&lt;LeoBridgePackage&gt; {
-    const w_resultFocus = await this.sendAction(Constants.LEOBRIDGE.GET_FOCUS);
-    if (w_resultFocus.focus) {
-        const w_focus = w_resultFocus.focus.toLowerCase();
-        if (w_focus.includes('tree') || w_focus.includes('head')) {
-            this.fromOutline = true;
-        } else {
-            this.fromOutline = false;
-        }
-    }
-    return w_resultFocus;
-}
-
-</t>
 <t tx="felix.20210530161800.1">{
   "command": "leointeg.findNextFromOutline",
   "when": "false"
@@ -14200,7 +14186,7 @@ public closeLeoProcess(): void {
 public refresh(p_serverPackage: any): Promise&lt;unknown&gt; {
     // setup refresh 'all' by default for now.
     this._leoIntegration.setupRefresh(
-        this._leoIntegration.fromOutline,
+        this._leoIntegration.fromOutline, // ! SHOULD BE KEPT AS CURRENT FOCUS !
         {
             tree: true,
             body: true,
@@ -18235,6 +18221,16 @@ export function isApEqual(p_a: ArchivedPosition, p_b: ArchivedPosition): boolean
     }
     // Well up to here it should be the same position!
     return true;
+}
+
+</t>
+<t tx="felix.20220901003642.1">/**
+ * * Location of focus to be set when current/last command is resolved
+ */
+export const enum Focus {
+    NoChange = 0, // Stays on goto pane, or other current panel.
+    Body, // Forces body to appear, refresh leaves focus on body.
+    Outline // Forces outline to appear, refresh leaves focus on body.
 }
 
 </t>

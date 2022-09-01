@@ -42,7 +42,7 @@ export class LeoAsync {
     public refresh(p_serverPackage: any): Promise<unknown> {
         // setup refresh 'all' by default for now.
         this._leoIntegration.setupRefresh(
-            this._leoIntegration.fromOutline,
+            this._leoIntegration.fromOutline, // ! SHOULD BE KEPT AS CURRENT FOCUS !
             {
                 tree: true,
                 body: true,

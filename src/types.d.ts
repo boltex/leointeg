@@ -60,6 +60,15 @@ export interface FontSettings {
 }
 
 /**
+ * * Location of focus to be set when current/last command is resolved
+ */
+export const enum Focus {
+    NoChange = 0, // Stays on goto pane, or other current panel.
+    Body, // Forces body to appear, refresh leaves focus on body.
+    Outline // Forces outline to appear, refresh leaves focus on body.
+}
+
+/**
  * * When refreshing the outline and getting to Leo's selected node
  */
 export const enum RevealType {
