@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { Constants } from "./constants";
 import {
     AskMessageItem,
+    Focus,
     runAskYesNoDialogParameters,
     runWarnMessageDialogParameters,
     runInfoMessageDialogParameters,
@@ -42,7 +43,7 @@ export class LeoAsync {
     public refresh(p_serverPackage: any): Promise<unknown> {
         // setup refresh 'all' by default for now.
         this._leoIntegration.setupRefresh(
-            this._leoIntegration.fromOutline, // ! SHOULD BE KEPT AS CURRENT FOCUS !
+            Focus.NoChange, // ! SHOULD BE KEPT AS CURRENT FOCUS !
             {
                 tree: true,
                 body: true,
@@ -135,7 +136,7 @@ export class LeoAsync {
                 }).then((p_package) => {
                     // refresh and reveal selection
                     this._leoIntegration.setupRefresh(
-                        false,
+                        Focus.NoChange,
                         {
                             tree: true,
                             body: true,
@@ -181,7 +182,7 @@ export class LeoAsync {
                     .then((p_package) => {
                         // refresh and reveal selection
                         this._leoIntegration.setupRefresh(
-                            false,
+                            Focus.NoChange,
                             { tree: true, body: true, states: true, buttons: true, documents: true },
                             p_package.node
                         );

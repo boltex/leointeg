@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
-import { UserCommand, LeoBridgePackage, ReqRefresh, ArchivedPosition } from "./types";
+import { UserCommand, LeoBridgePackage, ReqRefresh, ArchivedPosition, Focus } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
@@ -18,7 +18,7 @@ export class CommandStack {
     public _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
 
     // Flag used to set focus on outline instead of body when done resolving (From last pushed)
-    private _finalFromOutline: boolean = false;
+    private _finalFocus: Focus = Focus.NoChange;
 
     // Received selection from the last command that finished
     // It will be re-sent as 'target node' instead of lastSelectedNode if present
@@ -63,7 +63,7 @@ export class CommandStack {
                 p_command.rejectFn = p_reject;
             });
             this._stack.push(p_command);
-            this._finalFromOutline = p_command.fromOutline; // Set final "focus-placement"
+            this._finalFocus = p_command.finalFocus; // Set final "focus-placement"
             this._tryStart();
             return q_promise;
         }
@@ -147,7 +147,7 @@ export class CommandStack {
             if (Object.keys(this._finalRefreshType).length) {
                 // At least some type of refresh
                 this._leoIntegration.setupRefresh(
-                    this._finalFromOutline,
+                    this._finalFocus,
                     this._finalRefreshType,
                     p_package.node
                 );

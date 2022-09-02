@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { ArchivedPosition, ReqRefresh } from "./types";
+import { ArchivedPosition, Focus, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
@@ -67,7 +67,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.EXECUTE_SCRIPT,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false
+            finalFocus: Focus.NoChange
         })],
 
         [CMD.IMPORT_ANY_FILE, () => w_leo.importAnyFile()], // No URL passed from the command definition.
@@ -106,52 +106,52 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.REFRESH_FROM_DISK_PNODE,
             node: p_ap,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true,
+            finalFocus: Focus.Outline,
             keepSelection: false
         })],
         [CMD.REFRESH_FROM_DISK_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.REFRESH_FROM_DISK_PNODE,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.REFRESH_FROM_DISK_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.REFRESH_FROM_DISK_PNODE,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.WRITE_AT_FILE_NODES, () => w_leo.nodeCommand({
             action: BRIDGE.WRITE_AT_FILE_NODES,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.WRITE_AT_FILE_NODES_FO, () => w_leo.nodeCommand({
             action: BRIDGE.WRITE_AT_FILE_NODES,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.WRITE_DIRTY_AT_FILE_NODES, () => w_leo.nodeCommand({
             action: BRIDGE.WRITE_DIRTY_AT_FILE_NODES,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.WRITE_DIRTY_AT_FILE_NODES_FO, () => w_leo.nodeCommand({
             action: BRIDGE.WRITE_DIRTY_AT_FILE_NODES,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.GIT_DIFF, () => w_leo.nodeCommand({
             action: BRIDGE.GIT_DIFF,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
 
         [CMD.HEADLINE, (p_ap: ArchivedPosition) => w_leo.editHeadline(p_ap, true)],
@@ -166,7 +166,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.DELETE_PNODE,
             node: p_ap,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true,
+            finalFocus: Focus.Outline,
             keepSelection: true
         })],
         [CMD.PASTE, (p_ap: ArchivedPosition) => w_leo.pasteNode(p_ap, true)],
@@ -187,13 +187,13 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.DELETE_PNODE,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.DELETE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.DELETE_PNODE,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.PASTE_SELECTION, () => w_leo.pasteNode(U, false)],
@@ -205,164 +205,164 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.CONTRACT_ALL,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.CONTRACT_ALL_FO, () => w_leo.nodeCommand({
             action: BRIDGE.CONTRACT_ALL,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.CONTRACT_OR_GO_LEFT, () => w_leo.nodeCommand({
             action: BRIDGE.CONTRACT_OR_GO_LEFT,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.EXPAND_AND_GO_RIGHT, () => w_leo.nodeCommand({
             action: BRIDGE.EXPAND_AND_GO_RIGHT,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.GOTO_NEXT_CLONE, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: p_ap,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.GOTO_NEXT_CLONE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: U,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: U,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.GOTO_NEXT_MARKED, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_MARKED,
             node: U,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.GOTO_FIRST_SIBLING, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_FIRST_SIBLING,
             node: U,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.GOTO_LAST_SIBLING, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_LAST_SIBLING,
             node: U,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.GOTO_FIRST_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_FIRST_VISIBLE,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.GOTO_LAST_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_LAST_VISIBLE,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.GOTO_NEXT_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_VISIBLE,
             node: U,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.GOTO_PREV_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_PREV_VISIBLE,
             node: U,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.PAGE_UP, () => w_leo.nodeCommand({
             action: BRIDGE.PAGE_UP,
             node: U,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.PAGE_DOWN, () => w_leo.nodeCommand({
             action: BRIDGE.PAGE_DOWN,
             node: U,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.SCROLL_TOP, () => w_leo.nodeCommand({
             action: BRIDGE.SCROLL_TOP,
             node: U,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.SCROLL_BOTTOM, () => w_leo.nodeCommand({
             action: BRIDGE.SCROLL_BOTTOM,
             node: U,
             refreshType: REFRESH_NODE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.DEHOIST, () => w_leo.nodeCommand({
             action: BRIDGE.DEHOIST,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.DEHOIST_FO, () => w_leo.nodeCommand({
             action: BRIDGE.DEHOIST,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.HOIST, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.HOIST_PNODE,
             node: p_ap,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.HOIST_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.HOIST_PNODE,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.HOIST_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.HOIST_PNODE,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.CHAPTER_NEXT, () => w_leo.nodeCommand({
             action: BRIDGE.CHAPTER_NEXT,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.CHAPTER_BACK, () => w_leo.nodeCommand({
             action: BRIDGE.CHAPTER_BACK,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.CHAPTER_MAIN, () => w_leo.nodeCommand({
             action: BRIDGE.CHAPTER_MAIN,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.CHAPTER_SELECT, () => w_leo.chapterSelect()],
 
@@ -370,19 +370,19 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.CLONE_PNODE,
             node: p_ap,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.CLONE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.CLONE_PNODE,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.CLONE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.CLONE_PNODE,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.INSERT, (p_ap: ArchivedPosition) => w_leo.insertNode(p_ap, true, false)],
@@ -409,160 +409,160 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.EXTRACT,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.EXTRACT_NAMES, () => w_leo.nodeCommand({
             action: BRIDGE.EXTRACT_NAMES,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
 
         [CMD.MOVE_DOWN, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_DOWN,
             node: p_ap,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true,
+            finalFocus: Focus.Outline,
             keepSelection: true
         })],
         [CMD.MOVE_DOWN_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_DOWN,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.MOVE_DOWN_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_DOWN,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.MOVE_LEFT, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_LEFT,
             node: p_ap,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true,
+            finalFocus: Focus.Outline,
             keepSelection: true
         })],
         [CMD.MOVE_LEFT_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_LEFT,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.MOVE_LEFT_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_LEFT,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.MOVE_RIGHT, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_RIGHT,
             node: p_ap,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true,
+            finalFocus: Focus.Outline,
             keepSelection: true
         })],
         [CMD.MOVE_RIGHT_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_RIGHT,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.MOVE_RIGHT_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_RIGHT,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.MOVE_UP, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_UP,
             node: p_ap,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true,
+            finalFocus: Focus.Outline,
             keepSelection: true
         })],
         [CMD.MOVE_UP_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_UP,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.MOVE_UP_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_UP,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.DEMOTE, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.DEMOTE_PNODE,
             node: p_ap,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true,
+            finalFocus: Focus.Outline,
             keepSelection: true
         })],
         [CMD.DEMOTE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.DEMOTE_PNODE,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.DEMOTE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.DEMOTE_PNODE,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.PROMOTE, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.PROMOTE_PNODE,
             node: p_ap,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true,
+            finalFocus: Focus.Outline,
             keepSelection: true
         })],
         [CMD.PROMOTE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.PROMOTE_PNODE,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.PROMOTE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.PROMOTE_PNODE,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.SORT_CHILDREN, () => w_leo.nodeCommand({
             action: BRIDGE.SORT_CHILDREN,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false,
+            finalFocus: Focus.Body,
             keepSelection: true
         })],
         [CMD.SORT_CHILDREN_FO, () => w_leo.nodeCommand({
             action: BRIDGE.SORT_CHILDREN,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true,
+            finalFocus: Focus.Outline,
             keepSelection: true
         })],
         [CMD.SORT_SIBLING, () => w_leo.nodeCommand({
             action: BRIDGE.SORT_SIBLINGS,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: false,
+            finalFocus: Focus.Body,
             keepSelection: true
         })],
         [CMD.SORT_SIBLING_FO, () => w_leo.nodeCommand({
             action: BRIDGE.SORT_SIBLINGS,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true,
+            finalFocus: Focus.Outline,
             keepSelection: true
         })],
 
@@ -570,25 +570,25 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.REDO,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.REDO_FO, () => w_leo.nodeCommand({
             action: BRIDGE.REDO,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.UNDO, () => w_leo.nodeCommand({
             action: BRIDGE.UNDO,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false
+            finalFocus: Focus.Body
         })],
         [CMD.UNDO_FO, () => w_leo.nodeCommand({
             action: BRIDGE.UNDO,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.REVERT_TO_UNDO, (p_undo: LeoUndoNode) => w_leo.revertToUndo(p_undo)],
 
@@ -614,49 +614,49 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.COPY_MARKED,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.DIFF_MARKED_NODES, () => w_leo.nodeCommand({
             action: BRIDGE.DIFF_MARKED_NODES,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.MARK_CHANGED_ITEMS, () => w_leo.nodeCommand({
             action: BRIDGE.MARK_CHANGED_ITEMS,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.MARK_SUBHEADS, () => w_leo.nodeCommand({
             action: BRIDGE.MARK_SUBHEADS,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.UNMARK_ALL, () => w_leo.nodeCommand({
             action: BRIDGE.UNMARK_ALL,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.CLONE_MARKED_NODES, () => w_leo.nodeCommand({
             action: BRIDGE.CLONE_MARKED_NODES,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.DELETE_MARKED_NODES, () => w_leo.nodeCommand({
             action: BRIDGE.DELETE_MARKED_NODES,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
         [CMD.MOVE_MARKED_NODES, () => w_leo.nodeCommand({
             action: BRIDGE.MOVE_MARKED_NODES,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            finalFocus: Focus.Outline
         })],
 
         [CMD.PREV_NODE, () => w_leo.prevNextNode(false)],

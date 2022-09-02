@@ -854,7 +854,7 @@ public showAskModalDialog(p_askArg: runAskYesNoDialogParameters): void {
             }).then((p_package) =&gt; {
                 // refresh and reveal selection
                 this._leoIntegration.setupRefresh(
-                    false,
+                    Focus.NoChange,
                     {
                         tree: true,
                         body: true,
@@ -902,7 +902,7 @@ public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters)
                 .then((p_package) =&gt; {
                     // refresh and reveal selection
                     this._leoIntegration.setupRefresh(
-                        false,
+                        Focus.NoChange,
                         { tree: true, body: true, states: true, buttons: true, documents: true },
                         p_package.node
                     );
@@ -1217,7 +1217,7 @@ public async _launchRefresh(): Promise&lt;unknown&gt; {
 
     let w_revealType: RevealType;
 
-    if (this.fromOutline) {
+    if (this.finalFocus) {
         w_revealType = RevealType.RevealSelectFocus;
     } else {
         w_revealType = RevealType.RevealSelect;
@@ -1403,7 +1403,7 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
         .then((p_package) =&gt; {
             // refresh and reveal selection
             this.setupRefresh(
-                false,
+                Focus.NoChange,
                 {
                     tree: true,
                     body: true,
@@ -1431,7 +1431,7 @@ public async removeAtButton(p_node: LeoButtonNode): Promise&lt;any&gt; {
         JSON.stringify({ index: p_node.button.index })
     );
     this.setupRefresh(
-        false,
+        Focus.NoChange,
         {
             buttons: true
         }
@@ -1517,7 +1517,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     action: BRIDGE.EXECUTE_SCRIPT,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
+    finalFocus: Focus.NoChange
 })],
 
 [CMD.IMPORT_ANY_FILE, () =&gt; w_leo.importAnyFile()], // No URL passed from the command definition.
@@ -1556,52 +1556,52 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: p_ap,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    finalFocus: Focus.Outline,
     keepSelection: false
 })],
 [CMD.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.WRITE_AT_FILE_NODES, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.WRITE_AT_FILE_NODES,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.WRITE_AT_FILE_NODES_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.WRITE_AT_FILE_NODES,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.WRITE_DIRTY_AT_FILE_NODES, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.WRITE_DIRTY_AT_FILE_NODES,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.WRITE_DIRTY_AT_FILE_NODES_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.WRITE_DIRTY_AT_FILE_NODES,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.GIT_DIFF, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GIT_DIFF,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 
 [CMD.HEADLINE, (p_ap: ArchivedPosition) =&gt; w_leo.editHeadline(p_ap, true)],
@@ -1616,7 +1616,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     action: BRIDGE.DELETE_PNODE,
     node: p_ap,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    finalFocus: Focus.Outline,
     keepSelection: true
 })],
 [CMD.PASTE, (p_ap: ArchivedPosition) =&gt; w_leo.pasteNode(p_ap, true)],
@@ -1637,13 +1637,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     action: BRIDGE.DELETE_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.DELETE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.PASTE_SELECTION, () =&gt; w_leo.pasteNode(U, false)],
@@ -1655,164 +1655,164 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     action: BRIDGE.CONTRACT_ALL,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.CONTRACT_ALL_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_ALL,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.CONTRACT_OR_GO_LEFT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_OR_GO_LEFT,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.EXPAND_AND_GO_RIGHT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.EXPAND_AND_GO_RIGHT,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.GOTO_NEXT_CLONE, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: p_ap,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.GOTO_NEXT_MARKED, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_MARKED,
     node: U,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.GOTO_FIRST_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_FIRST_SIBLING,
     node: U,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.GOTO_LAST_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_SIBLING,
     node: U,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.GOTO_FIRST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_FIRST_VISIBLE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.GOTO_LAST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_VISIBLE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.GOTO_NEXT_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_VISIBLE,
     node: U,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.GOTO_PREV_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_PREV_VISIBLE,
     node: U,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.PAGE_UP, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PAGE_UP,
     node: U,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.PAGE_DOWN, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PAGE_DOWN,
     node: U,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.SCROLL_TOP, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SCROLL_TOP,
     node: U,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.SCROLL_BOTTOM, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SCROLL_BOTTOM,
     node: U,
     refreshType: REFRESH_NODE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.DEHOIST, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEHOIST,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.DEHOIST_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEHOIST,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.HOIST, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: p_ap,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.HOIST_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.HOIST_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.CHAPTER_NEXT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CHAPTER_NEXT,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.CHAPTER_BACK, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CHAPTER_BACK,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.CHAPTER_MAIN, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CHAPTER_MAIN,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.CHAPTER_SELECT, () =&gt; w_leo.chapterSelect()],
 
@@ -1820,19 +1820,19 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     action: BRIDGE.CLONE_PNODE,
     node: p_ap,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.INSERT, (p_ap: ArchivedPosition) =&gt; w_leo.insertNode(p_ap, true, false)],
@@ -1859,160 +1859,160 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     action: BRIDGE.EXTRACT,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.EXTRACT_NAMES, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.EXTRACT_NAMES,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 
 [CMD.MOVE_DOWN, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: p_ap,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    finalFocus: Focus.Outline,
     keepSelection: true
 })],
 [CMD.MOVE_DOWN_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.MOVE_DOWN_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.MOVE_LEFT, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: p_ap,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    finalFocus: Focus.Outline,
     keepSelection: true
 })],
 [CMD.MOVE_LEFT_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.MOVE_LEFT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.MOVE_RIGHT, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: p_ap,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    finalFocus: Focus.Outline,
     keepSelection: true
 })],
 [CMD.MOVE_RIGHT_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.MOVE_RIGHT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.MOVE_UP, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_UP,
     node: p_ap,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    finalFocus: Focus.Outline,
     keepSelection: true
 })],
 [CMD.MOVE_UP_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_UP,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.MOVE_UP_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_UP,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.DEMOTE, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: p_ap,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    finalFocus: Focus.Outline,
     keepSelection: true
 })],
 [CMD.DEMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.DEMOTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.PROMOTE, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: p_ap,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    finalFocus: Focus.Outline,
     keepSelection: true
 })],
 [CMD.PROMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.PROMOTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.SORT_CHILDREN, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_CHILDREN,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false,
+    finalFocus: Focus.Body,
     keepSelection: true
 })],
 [CMD.SORT_CHILDREN_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_CHILDREN,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true,
+    finalFocus: Focus.Outline,
     keepSelection: true
 })],
 [CMD.SORT_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_SIBLINGS,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false,
+    finalFocus: Focus.Body,
     keepSelection: true
 })],
 [CMD.SORT_SIBLING_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_SIBLINGS,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true,
+    finalFocus: Focus.Outline,
     keepSelection: true
 })],
 
@@ -2020,25 +2020,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     action: BRIDGE.REDO,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.REDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REDO,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.UNDO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.UNDO,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
+    finalFocus: Focus.Body
 })],
 [CMD.UNDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.UNDO,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.REVERT_TO_UNDO, (p_undo: LeoUndoNode) =&gt; w_leo.revertToUndo(p_undo)],
 
@@ -2064,49 +2064,49 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     action: BRIDGE.COPY_MARKED,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.DIFF_MARKED_NODES, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DIFF_MARKED_NODES,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.MARK_CHANGED_ITEMS, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MARK_CHANGED_ITEMS,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.MARK_SUBHEADS, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MARK_SUBHEADS,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.UNMARK_ALL, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.UNMARK_ALL,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.CLONE_MARKED_NODES, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_MARKED_NODES,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.DELETE_MARKED_NODES, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_MARKED_NODES,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 [CMD.MOVE_MARKED_NODES, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_MARKED_NODES,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    finalFocus: Focus.Outline
 })],
 
 [CMD.PREV_NODE, () =&gt; w_leo.prevNextNode(false)],
@@ -5627,7 +5627,7 @@ public static CONTEXT_FLAGS = {
 </t>
 <t tx="felix.20200718024635.1">import * as vscode from "vscode";
 import * as utils from "./utils";
-import { UserCommand, LeoBridgePackage, ReqRefresh, ArchivedPosition } from "./types";
+import { UserCommand, LeoBridgePackage, ReqRefresh, ArchivedPosition, Focus } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 @language typescript
@@ -5649,7 +5649,7 @@ export class CommandStack {
     public _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
 
     // Flag used to set focus on outline instead of body when done resolving (From last pushed)
-    private _finalFromOutline: boolean = false;
+    private _finalFocus: Focus = Focus.NoChange;
 
     // Received selection from the last command that finished
     // It will be re-sent as 'target node' instead of lastSelectedNode if present
@@ -5699,7 +5699,7 @@ public add(p_command: UserCommand): Promise&lt;LeoBridgePackage&gt; | undefined 
             p_command.rejectFn = p_reject;
         });
         this._stack.push(p_command);
-        this._finalFromOutline = p_command.fromOutline; // Set final "focus-placement"
+        this._finalFocus = p_command.finalFocus; // Set final "focus-placement"
         this._tryStart();
         return q_promise;
     }
@@ -5786,7 +5786,7 @@ private _resolveResult(p_package: LeoBridgePackage): void {
         if (Object.keys(this._finalRefreshType).length) {
             // At least some type of refresh
             this._leoIntegration.setupRefresh(
-                this._finalFromOutline,
+                this._finalFocus,
                 this._finalRefreshType,
                 p_package.node
             );
@@ -6057,7 +6057,7 @@ public buildFromSavedSettings(): void {
 <t tx="felix.20200718031424.1">import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { ArchivedPosition, ReqRefresh } from "./types";
+import { ArchivedPosition, Focus, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
@@ -6223,6 +6223,7 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
 import { Constants } from "./constants";
 import {
     AskMessageItem,
+    Focus,
     runAskYesNoDialogParameters,
     runWarnMessageDialogParameters,
     runInfoMessageDialogParameters,
@@ -8292,7 +8293,7 @@ export interface UserCommand {
     node?: ArchivedPosition | undefined;  // We can START a stack with a targeted command
     name?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command
-    fromOutline: boolean; // Focus back on outline instead of body
+    finalFocus: Focus; // Focus back on outline instead of body
     keepSelection?: boolean; // Should bring back selection on node prior to command
     resolveFn?: (result: any) =&gt; void; // call that with an answer from python's (or other) side
     rejectFn?: (reason: any) =&gt; void; // call if problem is encountered
@@ -9028,7 +9029,7 @@ private _openLastFiles(): Promise&lt;LeoBridgePackage&gt; {
 
                     this.loadSearchSettings();
                     this.setupRefresh(
-                        this.fromOutline,
+                        this.finalFocus,
                         {
                             tree: true,
                             body: true,
@@ -9246,7 +9247,7 @@ export class LeoIntegration {
     private _lastLeoUndos: vscode.TreeView&lt;LeoUndoNode&gt; | undefined;
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
-    public fromOutline: boolean = false; // Set in _setupRefresh : Last command issued had focus on outline, as opposed to the body
+    public finalFocus: Focus = Focus.NoChange; // Set in _setupRefresh : Last command issued had focus on outline, as opposed to the body
 
     // ! fromOutline should be 'finalFocus' of type enum 'Focus'
 
@@ -9418,7 +9419,7 @@ private _setupOpenedLeoDocument(): void {
         this.leoStates.fileOpenedReady = true;
     }
     this.setupRefresh(
-        false,
+        Focus.Body, // Original Leo seems to open itself with focus in body.
         {
             tree: true,
             body: true,
@@ -9873,9 +9874,10 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
         // * There was an actual change on a Leo Body by the user
         this._bodyLastChangedDocument = p_textDocumentChange.document;
         this._bodyLastChangedDocumentSaved = false;
-        this._bodyPreviewMode = false;
-        this.fromOutline = false; // Focus is on body pane
         this._editorTouched = true; // To make sure to transfer content to Leo even if all undone
+        this._bodyPreviewMode = false;
+
+        // this.finalFocus = Focus.Body; // Focus is on body pane // ? NOT NEEDED TO CHANGE finalFocus ?
 
         // * If icon should change then do it now (if there's no document edit pending)
         if (
@@ -10620,7 +10622,7 @@ public changeMark(
         action: p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE,
         node: p_node,
         refreshType: { tree: true, states: true },
-        fromOutline: !!p_fromOutline,
+        finalFocus: p_fromOutline ? Focus.Outline : Focus.Body
     });
     if (q_commandResult) {
         if (!p_node || p_node === this.lastSelectedNode) {
@@ -10665,7 +10667,7 @@ public async editHeadline(
             action: Constants.LEOBRIDGE.SET_HEADLINE,
             node: p_node,
             refreshType: { tree: true, states: true },
-            fromOutline: !!p_fromOutline,
+            finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
             name: w_newHeadline,
         });
         if (q_commandResult) {
@@ -10693,10 +10695,10 @@ public insertNode(
     p_asChild?: boolean,
     p_interrupt?: boolean
 ): Promise&lt;LeoBridgePackage&gt; {
-    let w_fromOutline: boolean = !!p_fromOutline; // Use w_fromOutline for where we intend to leave focus when done with the insert
+    let w_finalFocus: Focus = p_fromOutline ? Focus.Outline : Focus.Body; // Use w_fromOutline for where we intend to leave focus when done with the insert
     if (p_interrupt) {
         this._focusInterrupt = true;
-        w_fromOutline = this.fromOutline; // Going to use last state
+        w_finalFocus = this.finalFocus; // Going to use last state
     }
     // if no node parameter, the front command stack CAN be busy, but if a node is passed, stack must be free
     if (!p_node || !this._isBusy()) {
@@ -10726,7 +10728,7 @@ public insertNode(
                     action: w_action,
                     node: p_node,
                     refreshType: { tree: true, states: true },
-                    fromOutline: w_fromOutline,
+                    finalFocus: w_finalFocus,
                     name: p_newHeadline,
                 });
                 if (q_commandResult) {
@@ -10781,7 +10783,7 @@ public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | und
                     action: Constants.LEOBRIDGE.SAVE_FILE,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    fromOutline: !!p_fromOutline,
+                    finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
                     name: p_chosenLeoFile,
                 });
                 this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
@@ -10815,7 +10817,7 @@ public async saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage |
                 action: Constants.LEOBRIDGE.SAVE_FILE,
                 node: undefined,
                 refreshType: { tree: true, states: true, documents: true },
-                fromOutline: !!p_fromOutline,
+                finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
                 name: '',
             });
             return q_commandResult
@@ -10928,7 +10930,7 @@ public async selectOpenedLeoDocument(p_index: number): Promise&lt;LeoBridgePacka
 
         this.loadSearchSettings();
         this.setupRefresh(
-            this.fromOutline,
+            this.finalFocus,
             {
                 tree: true,
                 body: true,
@@ -10978,7 +10980,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                     // Still has opened Leo document(s)
                     this.loadSearchSettings();
                     this.setupRefresh(
-                        false,
+                        Focus.Body,
                         {
                             tree: true,
                             body: true,
@@ -11065,7 +11067,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                                 // Still has opened Leo document(s)
                                 this.loadSearchSettings();
                                 this.setupRefresh(
-                                    false,
+                                    Focus.Body,
                                     {
                                         tree: true,
                                         body: true,
@@ -11107,7 +11109,7 @@ public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
 
         this.loadSearchSettings();
         this.setupRefresh(
-            this.fromOutline,
+            Focus.NoChange,
             {
                 tree: true,
                 body: true,
@@ -11130,7 +11132,7 @@ public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
 </t>
 <t tx="felix.20200719025231.66">/**
  * * Shows an 'Open Leo File' dialog window and opens the chosen file
- * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
+ * * If not shown already, it also shows the outline, body and log panes
  * @param p_leoFileUri optional uri for specifying a file, if missing, a dialog will open
  * @returns A promise that resolves with a textEditor of the chosen file
  */
@@ -11174,7 +11176,7 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
 
                         this.loadSearchSettings();
                         this.setupRefresh(
-                            this.fromOutline,
+                            this.finalFocus,
                             {
                                 tree: true,
                                 body: true,
@@ -11481,7 +11483,7 @@ public connect(): void {
                         // will provoke _setupOpenedLeoDocument
                         this.loadSearchSettings();
                         this.setupRefresh(
-                            this.fromOutline,
+                            this.finalFocus,
                             {
                                 tree: true,
                                 body: true,
@@ -12404,18 +12406,18 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
     if (!p_findResult.found || !p_findResult.focus) {
         vscode.window.showInformationMessage('Not found');
     } else {
-        let w_focusOnOutline = false;
+        let w_finalFocus = Focus.Body;
         const w_focus = p_findResult.focus.toLowerCase();
         if (w_focus.includes('tree') || w_focus.includes('head')) {
             // tree
-            w_focusOnOutline = true;
+            w_finalFocus = Focus.Outline;
         }
         this.setupRefresh(
-            w_focusOnOutline,
+            w_finalFocus,
             {
                 tree: true, // HAVE to refresh tree because find folds/unfolds only result outline paths
                 body: true,
-                scroll: p_findResult.found &amp;&amp; !w_focusOnOutline,
+                scroll: p_findResult.found &amp;&amp; !w_finalFocus,
                 // documents: false,
                 // buttons: false,
                 states: true,
@@ -13123,14 +13125,14 @@ public async replace(p_fromOutline: boolean, p_thenFind: boolean): Promise&lt;an
     if (!w_replaceResult.found || !w_replaceResult.focus) {
         vscode.window.showInformationMessage('Not found');
     } else {
-        let w_focusOnOutline = false;
+        let w_finalFocus = Focus.Body;
         const w_focus = w_replaceResult.focus.toLowerCase();
         if (w_focus.includes('tree') || w_focus.includes('head')) {
             // tree
-            w_focusOnOutline = true;
+            w_finalFocus = Focus.Outline;
         }
         this.setupRefresh(
-            w_focusOnOutline,
+            w_finalFocus,
             {
                 tree: true,
                 body: true,
@@ -13200,15 +13202,15 @@ public findAll(p_replace: boolean): Promise&lt;any&gt; {
                 this.saveSearchSettings(this._lastSettingsUsed); // No need to wait, will be stacked.
                 return this.sendAction(w_action)
                     .then((p_findResult: LeoBridgePackage) =&gt; {
-                        let w_focusOnOutline = false;
+                        let w_finalFocus = Focus.Body;
                         const w_focus = p_findResult.focus!.toLowerCase();
                         if (w_focus.includes('tree') || w_focus.includes('head')) {
                             // tree
-                            w_focusOnOutline = true;
+                            w_finalFocus = Focus.Outline;
                         }
                         this.loadSearchSettings();
                         this.setupRefresh(
-                            w_focusOnOutline,
+                            w_finalFocus,
                             {
                                 tree: true,
                                 body: true,
@@ -13249,7 +13251,7 @@ public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
             action: w_action,
             node: undefined,
             refreshType: { tree: true, body: true, states: true },
-            fromOutline: false,
+            finalFocus: Focus.NoChange,
         }) || Promise.resolve();
     }
 
@@ -13270,15 +13272,15 @@ public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
                 this.saveSearchSettings(this._lastSettingsUsed); // No need to wait, will be stacked.
                 return this.sendAction(w_action)
                     .then((p_cloneFindResult: LeoBridgePackage) =&gt; {
-                        let w_focusOnOutline = false;
+                        let w_finalFocus = Focus.Body;
                         const w_focus = p_cloneFindResult.focus!.toLowerCase();
                         if (w_focus.includes('tree') || w_focus.includes('head')) {
                             // tree
-                            w_focusOnOutline = true;
+                            w_finalFocus = Focus.Outline;
                         }
                         this.loadSearchSettings();
                         this.setupRefresh(
-                            w_focusOnOutline,
+                            w_finalFocus,
                             {
                                 tree: true,
                                 body: true,
@@ -13338,7 +13340,7 @@ public gotoGlobalLine(): void {
                             // Not found
                         }
                         this.setupRefresh(
-                            false,
+                            Focus.Body,
                             {
                                 tree: true,
                                 body: true,
@@ -13517,7 +13519,7 @@ public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
             (p_importFileResult: LeoBridgePackage | undefined) =&gt; {
                 if (p_importFileResult) {
                     this.setupRefresh(
-                        false,
+                        Focus.NoChange,
                         {
                             tree: true,
                             body: true,
@@ -13837,7 +13839,7 @@ public tagChildren(): void {
                     JSON.stringify({ tag: p_inputResult })
                 ).then((p_resultTag: LeoBridgePackage) =&gt; {
                     this.setupRefresh(
-                        false,
+                        Focus.NoChange,
                         {
                             tree: true,
                             // body: false,
@@ -13875,7 +13877,7 @@ public cloneFindTag(): void {
                         // Not found
                     }
                     this.setupRefresh(
-                        false,
+                        Focus.NoChange,
                         {
                             tree: true,
                             body: true,
@@ -13928,19 +13930,19 @@ public async findSymbol(p_def: boolean): Promise&lt;any&gt; {
     if (!p_findResult.found || !p_findResult.focus) {
         vscode.window.showInformationMessage('Not found');
     } else {
-        let w_focusOnOutline = false;
+        let w_finalFocus = Focus.Body;
         const w_focus = p_findResult.focus.toLowerCase();
         if (w_focus.includes('tree') || w_focus.includes('head')) {
             // tree
-            w_focusOnOutline = true;
+            w_finalFocus = Focus.Outline;
         }
         this.loadSearchSettings();
         this.setupRefresh(
-            w_focusOnOutline,
+            w_finalFocus,
             {
                 tree: true,
                 body: true,
-                scroll: p_findResult.found &amp;&amp; !w_focusOnOutline,
+                scroll: p_findResult.found &amp;&amp; !w_finalFocus,
                 // documents: false,
                 // buttons: false,
                 states: true,
@@ -14186,7 +14188,7 @@ public closeLeoProcess(): void {
 public refresh(p_serverPackage: any): Promise&lt;unknown&gt; {
     // setup refresh 'all' by default for now.
     this._leoIntegration.setupRefresh(
-        this._leoIntegration.fromOutline, // ! SHOULD BE KEPT AS CURRENT FOCUS !
+        Focus.NoChange, // ! SHOULD BE KEPT AS CURRENT FOCUS !
         {
             tree: true,
             body: true,
@@ -14422,7 +14424,7 @@ public saveAsLeoJsFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | u
                     action: Constants.LEOBRIDGE.SAVE_FILE,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    fromOutline: !!p_fromOutline,
+                    finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
                     name: p_chosenLeoFile,
                 });
                 this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
@@ -14567,7 +14569,7 @@ public async gotoScript(p_node: LeoButtonNode): Promise&lt;any&gt; {
 
     // refresh and reveal selection
     this.setupRefresh(
-        false,
+        Focus.Body,
         {
             tree: true,
             body: true,
@@ -14687,7 +14689,7 @@ private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): T
 
                 // TODO : TEST IF THOSE REFRESH FLAGS ARE ENOUGH - or- TOO MUCH
                 this.setupRefresh(
-                    this.fromOutline,
+                    this.finalFocus,
                     {
                         // tree: true,
                         body: true,
@@ -14784,7 +14786,7 @@ public async cutNode(
         action: Constants.LEOBRIDGE.CUT_PNODE,
         node: p_node,
         refreshType: { tree: true, body: true, states: true },
-        fromOutline: !!p_fromOutline,
+        finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
     });
 
     if (w_commandResult) {
@@ -14817,7 +14819,7 @@ public async copyNode(
         action: Constants.LEOBRIDGE.COPY_PNODE,
         node: p_node,
         refreshType: {},
-        fromOutline: !!p_fromOutline,
+        finalFocus: p_fromOutline ? Focus.Outline : Focus.Body
     });
 
     if (w_commandResult) {
@@ -14852,7 +14854,7 @@ public async pasteNode(
         node: p_node,
         refreshType: { tree: true, body: true, states: true },
         name: text,
-        fromOutline: !!p_fromOutline,
+        finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
     });
 
     if (w_commandResult) {
@@ -14881,7 +14883,7 @@ public async pasteAsCloneNode(
         node: p_node,
         refreshType: { tree: true, body: true, states: true },
         name: text,
-        fromOutline: !!p_fromOutline,
+        finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
     });
 
     if (w_commandResult) {
@@ -14895,12 +14897,12 @@ public async pasteAsCloneNode(
 <t tx="felix.20220222014050.1"></t>
 <t tx="felix.20220222014050.2">/**
  * * Replaces the system's clipboard with the given string
- * @param s actual string content to go onto the clipboard
+ * @param p_string actual string content to go onto the clipboard
  * @returns a promise that resolves when the string is put on the clipboard
  */
-public replaceClipboardWith(s: string): Thenable&lt;void&gt; {
-    this._clipboardContent = s; // also set immediate clipboard string
-    return vscode.env.clipboard.writeText(s);
+public replaceClipboardWith(p_string: string): Thenable&lt;void&gt; {
+    this._clipboardContent = p_string; // also set immediate clipboard string
+    return vscode.env.clipboard.writeText(p_string);
 }
 
 </t>
@@ -15859,12 +15861,12 @@ public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
         if (!p_navEntryResult.focus) {
             return vscode.window.showInformationMessage('Not found');
         } else {
-            let w_focusOnOutline = false;
+            let w_focusOnOutline = Focus.Body;
             const w_focus = p_navEntryResult.focus.toLowerCase();
 
             if (w_focus.includes('tree') || w_focus.includes('head')) {
                 // tree
-                w_focusOnOutline = true;
+                w_focusOnOutline = Focus.Outline;
             }
 
             this.setupRefresh(
@@ -15929,7 +15931,7 @@ public tagNode(): void {
                     JSON.stringify({ tag: p_inputResult })
                 ).then((p_resultTag: LeoBridgePackage) =&gt; {
                     this.setupRefresh(
-                        false,
+                        Focus.NoChange,
                         {
                             tree: true,
                             // body: false,
@@ -15993,7 +15995,7 @@ public removeTag(): void {
                         JSON.stringify({ tag: p_inputResult.trim() })
                     ).then((p_resultTag: LeoBridgePackage) =&gt; {
                         this.setupRefresh(
-                            false,
+                            Focus.NoChange,
                             {
                                 tree: true,
                                 // body: false,
@@ -16026,7 +16028,7 @@ public removeTags(): void {
                     Constants.LEOBRIDGE.REMOVE_TAGS
                 ).then((p_resultTag: LeoBridgePackage) =&gt; {
                     this.setupRefresh(
-                        false,
+                        Focus.NoChange,
                         {
                             tree: true,
                             // body: false,
@@ -16671,7 +16673,7 @@ public async revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
         JSON.stringify({ repeat: repeat })
     );
     this.setupRefresh(
-        true,
+        Focus.Outline,
         {
             tree: true,
             body: true,
@@ -16737,7 +16739,7 @@ public async chapterSelect(): Promise&lt;unknown&gt; {
             JSON.stringify({ name: p_picked.label })
         ).then((p_resultTag: LeoBridgePackage) =&gt; {
             this.setupRefresh(
-                false,
+                Focus.NoChange,
                 {
                     tree: true,
                     body: true,
@@ -16786,7 +16788,7 @@ public async setUa(): Promise&lt;unknown&gt; {
                 JSON.stringify({ name: w_name, value: w_uaVal })
             ).then((p_resultTag: LeoBridgePackage) =&gt; {
                 this.setupRefresh(
-                    false,
+                    Focus.NoChange,
                     {
                         tree: true,
                         // body: false,
@@ -17142,12 +17144,10 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
         this._lastTreeView.visible
 
     ) {
-        // SAME
-        // console.log('gotSelectedNode SAME!');
         // ! MINIMAL TIMEOUT REQUIRED ! WHY ?? (works so leave)
         setTimeout(() =&gt; {
-            this.showBody(false, false);
-        }, 20);
+            this.showBody(false, false); // SAME with scroll information specified
+        }, 25);
     } else {
 
         if (this._revealType) {
@@ -17158,7 +17158,6 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
                 }).then(() =&gt; {
                     // ok
                 }, (p_reason) =&gt; {
-                    // console.log('gotSelectedNode could not reveal. Reason: ', p_reason);
                     // Reveal failed. Retry refreshOutline once
                     this._refreshOutline(true, RevealType.RevealSelect);
                 });
@@ -17168,10 +17167,10 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
         }
 
         // Apply node to body pane
-        let w_showBodyKeepFocus: boolean = this.fromOutline; // Will preserve focus where it is without forcing into the body pane if true
+        let w_showBodyNoFocus: boolean = this.finalFocus.valueOf() !== Focus.Body; // Will preserve focus where it is without forcing into the body pane if true
         if (this._focusInterrupt) {
             this._focusInterrupt = false;
-            w_showBodyKeepFocus = true;
+            w_showBodyNoFocus = true;
         }
         if (!w_last || this._needLastSelectedRefresh) {
             // lastSelectedNode will be set in _tryApplyNodeToBody !
@@ -17183,17 +17182,13 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
             !this._refreshType.body &amp;&amp; // NO NEED TO REFRESH BODY !
             this._locateOpenedBody(p_element.gnx) // DID LOCATE NEW GNX =&gt; ALREADY SHOWN!
         ) {
-            // console.log('gotSelectedNode located body!');
-
             // * Just make sure body selection is considered done.
             this.lastSelectedNode = p_element; // Set the 'lastSelectedNode' this will also set the 'marked' node context
             this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
 
         } else {
-            // console.log('gotSelectedNode doing _tryApplyNodeToBody!');
-
             // * Actually run the normal 'APPLY NODE TO BODY' to show or switch
-            this._tryApplyNodeToBody(p_element, false, w_showBodyKeepFocus);
+            this._tryApplyNodeToBody(p_element, false, w_showBodyNoFocus);
         }
 
         // Set context flags
@@ -17246,13 +17241,13 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
 </t>
 <t tx="felix.20220724224959.1">/**
  * * Setup global refresh options
- * @param p_focusOutline Flag for focus to be placed in outline
+ * @param p_finalFocus Flag for focus to be placed in outline
  * @param p_refreshType Refresh flags for each UI part
  * @param p_node The AP node to be refreshed if refresh type 'node' only is set
  */
-public setupRefresh(p_focusOutline: boolean, p_refreshType: ReqRefresh, p_node?: ArchivedPosition): void {
+public setupRefresh(p_finalFocus: Focus, p_refreshType: ReqRefresh, p_node?: ArchivedPosition): void {
     // Set final "focus-placement" EITHER true or false
-    this.fromOutline = p_focusOutline;
+    this.finalFocus = p_finalFocus;
     // Set all properties WITHOUT clearing others.
     Object.assign(this._refreshType, p_refreshType);
     if (p_node) {
@@ -17314,7 +17309,7 @@ export function buildApId(p: ArchivedPosition): string {
 public fullRefresh(): Promise&lt;LeoBridgePackage&gt; | undefined {
     const w_command: UserCommand = {
         action: Constants.LEOBRIDGE.DO_NOTHING,
-        fromOutline: this.fromOutline,
+        finalFocus: this.finalFocus,
         refreshType: {
             tree: true,
             body: true,
@@ -17427,7 +17422,7 @@ public async prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise&lt;
         action: w_command,
         node: undefined,
         refreshType: { tree: true, states: true, body: true },
-        fromOutline: !!p_fromOutline,
+        finalFocus: p_fromOutline ? Focus.Outline : Focus.Body
     });
 }
 
@@ -17545,7 +17540,7 @@ public exportHeadlines(p_exportFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                     action: Constants.LEOBRIDGE.EXPORT_HEADLINES,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    fromOutline: this.fromOutline, // use last
+                    finalFocus: this.finalFocus, // use last
                     name: p_chosenLeoFile,
                 });
                 if (q_commandResult) {
@@ -17590,7 +17585,7 @@ public flattenOutline(): Thenable&lt;unknown&gt; {
                     action: Constants.LEOBRIDGE.FLATTEN_OUTLINE,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    fromOutline: this.fromOutline, // use last
+                    finalFocus: this.finalFocus, // use last
                     name: p_chosenLeoFile,
                 });
                 if (q_commandResult) {
@@ -17633,7 +17628,7 @@ public outlineToCweb(): Thenable&lt;unknown&gt; {
                     action: Constants.LEOBRIDGE.OUTLINE_TO_CWEB,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    fromOutline: this.fromOutline, // use last
+                    finalFocus: this.finalFocus, // use last
                     name: p_chosenLeoFile,
                 });
                 if (q_commandResult) {
@@ -17676,7 +17671,7 @@ public outlineToNoweb(): Thenable&lt;unknown&gt; {
                     action: Constants.LEOBRIDGE.OUTLINE_TO_NOWEB,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    fromOutline: this.fromOutline, // use last
+                    finalFocus: this.finalFocus, // use last
                     name: p_chosenLeoFile,
                 });
                 if (q_commandResult) {
@@ -17740,7 +17735,7 @@ public removeSentinels(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
             (p_importFileResult: LeoBridgePackage | undefined) =&gt; {
                 if (p_importFileResult) {
                     this.setupRefresh(
-                        false,
+                        Focus.NoChange,
                         {
                             tree: true,
                             body: true,
@@ -17790,7 +17785,7 @@ public weave(): Thenable&lt;unknown&gt; {
                     action: Constants.LEOBRIDGE.WEAVE,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    fromOutline: this.fromOutline, // use last
+                    finalFocus: this.finalFocus, // use last
                     name: p_chosenLeoFile,
                 });
                 if (q_commandResult) {
@@ -17855,7 +17850,7 @@ public writeFileFromNode(): Thenable&lt;unknown&gt; {
                 action: Constants.LEOBRIDGE.WRITE_FILE_FROM_NODE,
                 node: undefined,
                 refreshType: { tree: true, states: true, documents: true },
-                fromOutline: this.fromOutline, // use last
+                finalFocus: this.finalFocus, // use last
                 name: p_chosenLeoFile,
             });
             this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
@@ -17918,7 +17913,7 @@ public readFileIntoNode(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
             (p_importFileResult: LeoBridgePackage | undefined) =&gt; {
                 if (p_importFileResult) {
                     this.setupRefresh(
-                        false,
+                        Focus.NoChange,
                         {
                             tree: true,
                             body: true,
@@ -17981,7 +17976,7 @@ public async copyNodeAsJson(): Promise&lt;LeoBridgePackage&gt; {
         action: Constants.LEOBRIDGE.COPY_PNODE_AS_JSON,
         node: undefined,
         refreshType: {},
-        fromOutline: !!this.fromOutline,
+        finalFocus: Focus.NoChange,
     });
 
     if (w_commandResult) {
@@ -18010,7 +18005,7 @@ public async copyGnx(): Promise&lt;unknown&gt; {
         action: Constants.LEOBRIDGE.DO_NOTHING,
         node: undefined,
         refreshType: {},
-        fromOutline: !!this.fromOutline,
+        finalFocus: Focus.NoChange,
     });
 
     if (w_commandResult) {
@@ -18045,7 +18040,7 @@ public async pasteAsTemplate(
         node: p_node,
         refreshType: { tree: true, body: true, states: true },
         name: text,
-        fromOutline: !!p_fromOutline,
+        finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
     });
 
     if (w_commandResult) {
@@ -18143,7 +18138,7 @@ private async _doMinibufferCommand(p_picked: vscode.QuickPickItem | undefined): 
                 buttons: true,
                 states: true,
             },
-            fromOutline: false, // true // TODO : Differentiate from outline?
+            finalFocus: Focus.NoChange, // TODO: Fetch focus location from Leo?
         });
         return w_commandResult ? w_commandResult : Promise.reject('Command not added');
     } else {
