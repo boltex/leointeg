@@ -1802,7 +1802,7 @@ export class LeoIntegration {
 
         let w_revealType: RevealType;
 
-        if (this.finalFocus) {
+        if (this.finalFocus.valueOf() === Focus.Outline) {
             w_revealType = RevealType.RevealSelectFocus;
         } else {
             w_revealType = RevealType.RevealSelect;
@@ -3260,7 +3260,7 @@ export class LeoIntegration {
         let w_finalFocus: Focus = p_fromOutline ? Focus.Outline : Focus.Body; // Use w_fromOutline for where we intend to leave focus when done with the insert
         if (p_interrupt) {
             this._focusInterrupt = true;
-            w_finalFocus = this.finalFocus; // Going to use last state
+            w_finalFocus = Focus.NoChange; // Going to use last state
         }
         // if no node parameter, the front command stack CAN be busy, but if a node is passed, stack must be free
         if (!p_node || !this._isBusy()) {
@@ -5125,7 +5125,7 @@ export class LeoIntegration {
                         action: Constants.LEOBRIDGE.EXPORT_HEADLINES,
                         node: undefined,
                         refreshType: { tree: true, states: true, documents: true },
-                        finalFocus: this.finalFocus, // use last
+                        finalFocus: Focus.NoChange, // use last
                         name: p_chosenLeoFile,
                     });
                     if (q_commandResult) {
@@ -5169,7 +5169,7 @@ export class LeoIntegration {
                         action: Constants.LEOBRIDGE.FLATTEN_OUTLINE,
                         node: undefined,
                         refreshType: { tree: true, states: true, documents: true },
-                        finalFocus: this.finalFocus, // use last
+                        finalFocus: Focus.NoChange, // use last
                         name: p_chosenLeoFile,
                     });
                     if (q_commandResult) {
@@ -5211,7 +5211,7 @@ export class LeoIntegration {
                         action: Constants.LEOBRIDGE.OUTLINE_TO_CWEB,
                         node: undefined,
                         refreshType: { tree: true, states: true, documents: true },
-                        finalFocus: this.finalFocus, // use last
+                        finalFocus: Focus.NoChange, // use last
                         name: p_chosenLeoFile,
                     });
                     if (q_commandResult) {
@@ -5253,7 +5253,7 @@ export class LeoIntegration {
                         action: Constants.LEOBRIDGE.OUTLINE_TO_NOWEB,
                         node: undefined,
                         refreshType: { tree: true, states: true, documents: true },
-                        finalFocus: this.finalFocus, // use last
+                        finalFocus: Focus.NoChange, // use last
                         name: p_chosenLeoFile,
                     });
                     if (q_commandResult) {
@@ -5365,7 +5365,7 @@ export class LeoIntegration {
                         action: Constants.LEOBRIDGE.WEAVE,
                         node: undefined,
                         refreshType: { tree: true, states: true, documents: true },
-                        finalFocus: this.finalFocus, // use last
+                        finalFocus: Focus.NoChange, // use last
                         name: p_chosenLeoFile,
                     });
                     if (q_commandResult) {
@@ -5429,7 +5429,7 @@ export class LeoIntegration {
                     action: Constants.LEOBRIDGE.WRITE_FILE_FROM_NODE,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    finalFocus: this.finalFocus, // use last
+                    finalFocus: Focus.NoChange, // use last
                     name: p_chosenLeoFile,
                 });
                 this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
