@@ -247,16 +247,6 @@ export interface LeoButton {
     index: string; // STRING KEY
 }
 
-/**
- * * Undo structure
- */
-export interface LeoUndo {
-
-    // undo from server
-    name: string;
-
-}
-
 export type TGotoTypes = "tag" | "headline" | "body" | "parent" | "generic";
 
 export interface LeoGoto {

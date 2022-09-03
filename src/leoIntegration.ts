@@ -29,17 +29,13 @@ import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
 import { LeoStatusBar } from './leoStatusBar';
 import { CommandStack } from './commandStack';
-import { LeoDocumentsProvider } from './leoDocuments';
-import { LeoDocumentNode } from './leoDocumentNode';
+import { LeoDocumentsProvider, LeoDocumentNode } from './leoDocuments';
 import { LeoStates } from './leoStates';
-import { LeoButtonsProvider } from './leoButtons';
-import { LeoButtonNode } from './leoButtonNode';
+import { LeoButtonsProvider, LeoButtonNode } from './leoButtons';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
 import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
-import { LeoGotoNode } from './leoGotoNode';
-import { LeoGotoProvider } from './leoGoto';
-import { LeoUndosProvider } from './leoUndo';
-import { LeoUndoNode } from './leoUndoNode';
+import { LeoGotoProvider, LeoGotoNode } from './leoGoto';
+import { LeoUndosProvider, LeoUndoNode } from './leoUndos';
 
 /**
  * * Orchestrates Leo integration into vscode

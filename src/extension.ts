@@ -4,9 +4,9 @@ import { Constants } from "./constants";
 import { ArchivedPosition, Focus, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
-import { LeoButtonNode } from "./leoButtonNode";
-import { LeoGotoNode } from "./leoGotoNode";
-import { LeoUndoNode } from "./leoUndoNode";
+import { LeoButtonNode } from "./leoButtons";
+import { LeoGotoNode } from "./leoGoto";
+import { LeoUndoNode } from "./leoUndos";
 import { LeoApOutlineNode } from "./leoApOutline";
 
 var LeoInteg: LeoIntegration | undefined = undefined;
@@ -37,8 +37,8 @@ export function activate(p_context: vscode.ExtensionContext) {
     const U = undefined;
     const BRIDGE = Constants.LEOBRIDGE;
     const CMD = Constants.COMMANDS;
+
     // * Refresh helper variables: 'states' refresh will also refresh documents pane.
-    const NO_REFRESH: ReqRefresh = {};
     const REFRESH_NODE_BODY: ReqRefresh = {
         node: true, // Reveal the returned 'selected position' without changes to the tree
         body: true, // Goto/select another node needs the body pane refreshed

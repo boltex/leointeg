@@ -274,15 +274,9 @@
 <v t="felix.20200718153505.13"><vh>_send</vh></v>
 </v>
 </v>
-<v t="felix.20220307233825.1"><vh>@clean src/leoGoto.ts</vh></v>
-<v t="felix.20220307233828.1"><vh>@clean src/leoGotoNode.ts</vh></v>
-<v t="felix.20200718162303.1"><vh>@clean src/leoButtonNode.ts</vh>
-<v t="felix.20200718162303.2"><vh>class LeoButtonNode</vh>
-<v t="felix.20200718162435.1"><vh>iconPath</vh></v>
-<v t="felix.20200718162442.1"><vh>id</vh></v>
-<v t="felix.20200718162452.1"><vh>tooltip</vh></v>
-<v t="felix.20200718162459.1"><vh>description</vh></v>
-</v>
+<v t="felix.20220307233825.1"><vh>@clean src/leoGoto.ts</vh>
+<v t="felix.20220903004804.1"><vh>class LeoGotoProvider</vh></v>
+<v t="felix.20220903004914.1"><vh>class LeoGotoNode</vh></v>
 </v>
 <v t="felix.20200718164130.1"><vh>@clean src/leoButtons.ts</vh>
 <v t="felix.20200718164130.2"><vh>class LeoButtonsProvider</vh>
@@ -291,11 +285,11 @@
 <v t="felix.20200718164130.5"><vh>getChildren</vh></v>
 <v t="felix.20200718164130.6"><vh>getParent</vh></v>
 </v>
-</v>
-<v t="felix.20200718164509.1"><vh>@clean src/leoDocumentNode.ts</vh>
-<v t="felix.20200718164509.2"><vh>class LeoDocumentNode</vh>
-<v t="felix.20200718164635.1"><vh>iconPath</vh></v>
-<v t="felix.20200718164638.1"><vh>id</vh></v>
+<v t="felix.20200718162303.2"><vh>class LeoButtonNode</vh>
+<v t="felix.20200718162435.1"><vh>iconPath</vh></v>
+<v t="felix.20200718162442.1"><vh>id</vh></v>
+<v t="felix.20200718162452.1"><vh>tooltip</vh></v>
+<v t="felix.20200718162459.1"><vh>description</vh></v>
 </v>
 </v>
 <v t="felix.20200718165108.1"><vh>@clean src/leoDocuments.ts</vh>
@@ -304,6 +298,10 @@
 <v t="felix.20200718165108.4"><vh>getTreeItem</vh></v>
 <v t="felix.20200718165108.5"><vh>getChildren</vh></v>
 <v t="felix.20200718165108.6"><vh>getParent</vh></v>
+</v>
+<v t="felix.20200718164509.2"><vh>class LeoDocumentNode</vh>
+<v t="felix.20200718164635.1"><vh>iconPath</vh></v>
+<v t="felix.20200718164638.1"><vh>id</vh></v>
 </v>
 </v>
 <v t="felix.20200718170429.1"><vh>@clean src/leoFileBrowser.ts</vh>
@@ -556,10 +554,8 @@
 <v t="felix.20200718185403.8"><vh>_updateLeoObjectIndicator</vh></v>
 </v>
 </v>
-<v t="felix.20220705000805.1"><vh>@clean src/leoUndo.ts</vh>
+<v t="felix.20220705000805.1"><vh>@clean src/leoUndos.ts</vh>
 <v t="felix.20220705001810.1"><vh>class LeoUndoProvider</vh></v>
-</v>
-<v t="felix.20220705000807.1"><vh>@clean src/leoUndoNode.ts</vh>
 <v t="felix.20220705001820.1"><vh>class LeoUndoNode</vh></v>
 </v>
 <v t="felix.20200718191946.1"><vh>@clean src/serverManager.ts</vh>
@@ -585,7 +581,6 @@
 <v t="felix.20200718194857.10"><vh>LeoBridgePackage</vh></v>
 <v t="felix.20200718194857.11"><vh>LeoDocument</vh></v>
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
-<v t="felix.20220705001508.1"><vh>LeoUndo</vh></v>
 <v t="felix.20220319202027.1"><vh>TGotoTypes</vh></v>
 <v t="felix.20220308203528.1"><vh>LeoGoto</vh></v>
 <v t="felix.20210522152922.1"><vh>LeoSearchScope</vh></v>
@@ -700,6 +695,8 @@
 <v t="felix.20200718153505.2"></v>
 <v t="felix.20200718162303.2"></v>
 <v t="felix.20200718164130.2"></v>
+<v t="felix.20220903004914.1"></v>
+<v t="felix.20220903004804.1"></v>
 <v t="felix.20200718164509.2"></v>
 <v t="felix.20200718165108.2"></v>
 <v t="felix.20220705001820.1"></v>
@@ -1217,7 +1214,7 @@ public async _launchRefresh(): Promise&lt;unknown&gt; {
 
     let w_revealType: RevealType;
 
-    if (this.finalFocus) {
+    if (this.finalFocus.valueOf() === Focus.Outline) {
         w_revealType = RevealType.RevealSelectFocus;
     } else {
         w_revealType = RevealType.RevealSelect;
@@ -6060,9 +6057,9 @@ import { Constants } from "./constants";
 import { ArchivedPosition, Focus, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
-import { LeoButtonNode } from "./leoButtonNode";
-import { LeoGotoNode } from "./leoGotoNode";
-import { LeoUndoNode } from "./leoUndoNode";
+import { LeoButtonNode } from "./leoButtons";
+import { LeoGotoNode } from "./leoGoto";
+import { LeoUndoNode } from "./leoUndos";
 import { LeoApOutlineNode } from "./leoApOutline";
 
 var LeoInteg: LeoIntegration | undefined = undefined;
@@ -6097,8 +6094,8 @@ export function activate(p_context: vscode.ExtensionContext) {
     const U = undefined;
     const BRIDGE = Constants.LEOBRIDGE;
     const CMD = Constants.COMMANDS;
+
     // * Refresh helper variables: 'states' refresh will also refresh documents pane.
-    const NO_REFRESH: ReqRefresh = {};
     const REFRESH_NODE_BODY: ReqRefresh = {
         node: true, // Reveal the returned 'selected position' without changes to the tree
         body: true, // Goto/select another node needs the body pane refreshed
@@ -6825,16 +6822,6 @@ public isBusy(): boolean {
 }
 
 </t>
-<t tx="felix.20200718162303.1">import * as vscode from "vscode";
-import { Constants } from "./constants";
-import { LeoButton, Icon, RClick } from "./types";
-import * as utils from "./utils";
-import { LeoIntegration } from "./leoIntegration";
-
-@language typescript
-@tabwidth -4
-@others
-</t>
 <t tx="felix.20200718162303.2">/**
  * * Leo @buttons tree view node item implementation, for usage in a TreeDataProvider.
  */
@@ -6877,6 +6864,7 @@ export class LeoButtonNode extends vscode.TreeItem {
 
     @others
 }
+
 </t>
 <t tx="felix.20200718162435.1">// @ts-ignore
 public get iconPath(): Icon {
@@ -6914,10 +6902,10 @@ public get description(): string | boolean {
 </t>
 <t tx="felix.20200718164130.1">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoButtonNode } from "./leoButtonNode";
 import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
-import { LeoButton } from "./types";
+import * as utils from "./utils";
+import { LeoButton, RClick } from "./types";
 
 @language typescript
 @tabwidth -4
@@ -6936,6 +6924,7 @@ export class LeoButtonsProvider implements vscode.TreeDataProvider&lt;LeoButtonN
 
     @others
 }
+
 </t>
 <t tx="felix.20200718164130.3">/**
  * * Refresh the whole outline
@@ -6980,16 +6969,6 @@ public refreshTreeRoot(): void {
     return null;
 }
 
-</t>
-<t tx="felix.20200718164509.1">import * as vscode from "vscode";
-import { Constants } from "./constants";
-import { LeoDocument, Icon } from "./types";
-import * as utils from "./utils";
-import { LeoIntegration } from "./leoIntegration";
-
-@language typescript
-@tabwidth -4
-@others
 </t>
 <t tx="felix.20200718164509.2">/**
  * * Opened Leo documents tree view node item implementation for usage in a TreeDataProvider
@@ -7045,8 +7024,8 @@ public get id(): string {
 
 </t>
 <t tx="felix.20200718165108.1">import * as vscode from "vscode";
+import * as utils from './utils';
 import { LeoIntegration } from "./leoIntegration";
-import { LeoDocumentNode } from "./leoDocumentNode";
 import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
 import { LeoDocument } from "./types";
@@ -7068,6 +7047,7 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider&lt;LeoDocum
 
     @others
 }
+
 </t>
 <t tx="felix.20200718165108.3">/**
  * * Refresh the whole outline
@@ -8987,17 +8967,13 @@ import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
 import { LeoStatusBar } from './leoStatusBar';
 import { CommandStack } from './commandStack';
-import { LeoDocumentsProvider } from './leoDocuments';
-import { LeoDocumentNode } from './leoDocumentNode';
+import { LeoDocumentsProvider, LeoDocumentNode } from './leoDocuments';
 import { LeoStates } from './leoStates';
-import { LeoButtonsProvider } from './leoButtons';
-import { LeoButtonNode } from './leoButtonNode';
+import { LeoButtonsProvider, LeoButtonNode } from './leoButtons';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
 import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
-import { LeoGotoNode } from './leoGotoNode';
-import { LeoGotoProvider } from './leoGoto';
-import { LeoUndosProvider } from './leoUndo';
-import { LeoUndoNode } from './leoUndoNode';
+import { LeoGotoProvider, LeoGotoNode } from './leoGoto';
+import { LeoUndosProvider, LeoUndoNode } from './leoUndos';
 
 @others
 @language typescript
@@ -10698,7 +10674,7 @@ public insertNode(
     let w_finalFocus: Focus = p_fromOutline ? Focus.Outline : Focus.Body; // Use w_fromOutline for where we intend to leave focus when done with the insert
     if (p_interrupt) {
         this._focusInterrupt = true;
-        w_finalFocus = this.finalFocus; // Going to use last state
+        w_finalFocus = Focus.NoChange; // Going to use last state
     }
     // if no node parameter, the front command stack CAN be busy, but if a node is passed, stack must be free
     if (!p_node || !this._isBusy()) {
@@ -15454,189 +15430,15 @@ public async navTextChange(): Promise&lt;LeoBridgePackage&gt; {
 <t tx="felix.20220307233825.1">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { ProviderResult } from "vscode";
-import { LeoGotoNode } from "./leoGotoNode";
 import { Constants } from "./constants";
-import { LeoGoto } from "./types";
-
-/**
- * * Opened Leo documents shown as a list with this TreeDataProvider implementation
- */
-export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&gt; {
-
-    private _onDidChangeTreeData: vscode.EventEmitter&lt;LeoGotoNode | undefined&gt; = new vscode.EventEmitter&lt;LeoGotoNode | undefined&gt;();
-
-    readonly onDidChangeTreeData: vscode.Event&lt;LeoGotoNode | undefined&gt; = this._onDidChangeTreeData.event;
-
-    private _lastGotoView: vscode.TreeView&lt;LeoGotoNode&gt; | undefined;
-
-    private _topNode: LeoGotoNode | undefined;
-
-    constructor(private _leoIntegration: LeoIntegration) { }
-
-    public showGotoPanel(): Thenable&lt;void&gt; {
-        if (this._lastGotoView &amp;&amp; this._topNode) {
-            return this._lastGotoView.reveal(this._topNode, { select: false, focus: false });
-        }
-        return Promise.resolve();
-    }
-
-    public setLastGotoView(p_view: vscode.TreeView&lt;LeoGotoNode&gt;): void {
-        this._lastGotoView = p_view;
-    }
-
-    /**
-     * * Refresh the whole outline
-     */
-    public refreshTreeRoot(): void {
-        this._onDidChangeTreeData.fire(undefined);
-    }
-
-    public getTreeItem(element: LeoGotoNode): Thenable&lt;LeoGotoNode&gt; | LeoGotoNode {
-        return element;
-    }
-
-    public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; {
-
-        // if called with element, or not ready, give back empty array as there won't be any children
-        if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
-
-
-            // call action to get get list, and convert to LeoButtonNode(s) array
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package =&gt; {
-                if (p_package &amp;&amp; p_package.navList) {
-
-                    const w_list: LeoGotoNode[] = [];
-                    this._topNode = undefined;
-                    const w_navList: LeoGoto[] = p_package.navList;
-                    if (w_navList &amp;&amp; w_navList.length) {
-                        w_navList.forEach((p_goto: LeoGoto) =&gt; {
-                            const w_newNode = new LeoGotoNode(this._leoIntegration, p_goto, p_package.navOptions!);
-                            if (!this._topNode) {
-                                this._topNode = w_newNode;
-                            }
-                            w_list.push(w_newNode);
-                        });
-                    }
-                    return w_list;
-                } else {
-                    return [];
-                }
-            });
-
-
-        } else {
-            return Promise.resolve([]); // Defaults to an empty list of children
-        }
-    }
-
-    public getParent(element: LeoGotoNode): ProviderResult&lt;LeoGotoNode&gt; | null {
-        // Leo documents are just a list, as such, entries are always child of root, so return null
-        return null;
-    }
-
-}
-</t>
-<t tx="felix.20220307233828.1">import * as vscode from "vscode";
-import { Constants } from "./constants";
-import { LeoIntegration } from "./leoIntegration";
 import { LeoGoto, TGotoTypes } from "./types";
 import * as utils from "./utils";
 
-/**
- * * Opened Leo documents tree view node item implementation for usage in a TreeDataProvider
- */
-export class LeoGotoNode extends vscode.TreeItem {
+@language typescript
+@tabwidth -4
+@others
 
-    // Context string is checked in package.json with 'when' clauses
-    public entryType: TGotoTypes;
-    private _id: string;
-    private _description: string | boolean;
-    private _headline: string;
-    private _iconIndex: number; // default to tag
-    private _leoIntegration: LeoIntegration;
-    public key: number; // id from python
 
-    constructor(
-        p_leoIntegration: LeoIntegration,
-        p_gotoEntry: LeoGoto,
-        p_navOptions: { isTag: boolean, showParents: boolean },
-
-    ) {
-        let w_spacing = "";
-        if (p_navOptions.showParents &amp;&amp; !p_navOptions.isTag) {
-            w_spacing = "    ";
-        }
-        let w_label = "";
-        if (["tag", "headline"].includes(p_gotoEntry.t)) {
-            w_label = w_spacing + p_gotoEntry.h;
-        }
-        super(w_label);
-
-        // Setup this instance
-        this._leoIntegration = p_leoIntegration;
-        this._id = utils.getUniqueId();
-        this.entryType = p_gotoEntry.t;
-        this.key = p_gotoEntry.key;
-        this._headline = p_gotoEntry.h.trim();
-
-        this._description = false;
-        if (this.entryType === 'body') {
-            this._iconIndex = 2;
-            if (p_navOptions.showParents) {
-                this._description = "    " + this._headline;
-            } else {
-                this._description = "  " + this._headline;
-            }
-        } else if (this.entryType === 'parent') {
-            this._iconIndex = 0;
-            this._description = this._headline.trim();
-        } else if (this.entryType === 'generic') {
-            this._iconIndex = 4;
-            this._description = this._headline;
-        } else if (this.entryType === 'headline') {
-            this._iconIndex = 1;
-        } else {
-            this._iconIndex = 3; // tag
-        }
-
-        this.command = {
-            command: Constants.COMMANDS.GOTO_NAV_ENTRY,
-            title: '',
-            arguments: [this]
-        };
-
-    }
-
-    // @ts-ignore
-    public get tooltip(): string {
-        if (this.entryType !== "generic") {
-            return this.entryType.charAt(0).toUpperCase() + this.entryType.slice(1);
-        }
-        return this._headline;
-    }
-
-    // @ts-ignore
-    public get description(): string | boolean {
-        return this._description;
-    }
-
-    // @ts-ignore
-    public get iconPath(): Icon | vscode.ThemeIcon | string {
-        if (this._iconIndex &lt; 4) {
-            return this._leoIntegration.gotoIcons[this._iconIndex];
-        }
-        // else return undefined for generic text without icon
-        return undefined;
-    }
-
-    // @ts-ignore
-    public get id(): string {
-        // Add prefix and suffix salt to numeric index to prevent accidental duplicates
-        // Should be unique when refreshed
-        return "g" + this._id + "o";
-    }
-
-}
 </t>
 <t tx="felix.20220307235733.1">{
   "command": "leointeg.findQuick",
@@ -16377,35 +16179,11 @@ set leoCanHoist(p_value: boolean) {
 </t>
 <t tx="felix.20220705000805.1">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoUndoNode } from "./leoUndoNode";
-import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
-import { LeoUndo } from "./types";
 
 @language typescript
 @tabwidth -4
 @others
-</t>
-<t tx="felix.20220705000807.1">import * as vscode from "vscode";
-import { LeoIntegration } from "./leoIntegration";
-import { ProviderResult } from "vscode";
-import { Constants } from "./constants";
-import { LeoUndo } from "./types";
-
-@language typescript
-@tabwidth -4
-@others
-</t>
-<t tx="felix.20220705001508.1">/**
- * * Undo structure
- */
-export interface LeoUndo {
-
-    // undo from server
-    name: string;
-
-}
-
 </t>
 <t tx="felix.20220705001810.1">// leo undo provider class
 export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&gt; {
@@ -16546,6 +16324,7 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
         return item;
     }
 }
+
 </t>
 <t tx="felix.20220705001820.1">/**
  * * Opened Leo documents tree view node item implementation for usage in a TreeDataProvider
@@ -17540,7 +17319,7 @@ public exportHeadlines(p_exportFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                     action: Constants.LEOBRIDGE.EXPORT_HEADLINES,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    finalFocus: this.finalFocus, // use last
+                    finalFocus: Focus.NoChange, // use last
                     name: p_chosenLeoFile,
                 });
                 if (q_commandResult) {
@@ -17585,7 +17364,7 @@ public flattenOutline(): Thenable&lt;unknown&gt; {
                     action: Constants.LEOBRIDGE.FLATTEN_OUTLINE,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    finalFocus: this.finalFocus, // use last
+                    finalFocus: Focus.NoChange, // use last
                     name: p_chosenLeoFile,
                 });
                 if (q_commandResult) {
@@ -17628,7 +17407,7 @@ public outlineToCweb(): Thenable&lt;unknown&gt; {
                     action: Constants.LEOBRIDGE.OUTLINE_TO_CWEB,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    finalFocus: this.finalFocus, // use last
+                    finalFocus: Focus.NoChange, // use last
                     name: p_chosenLeoFile,
                 });
                 if (q_commandResult) {
@@ -17671,7 +17450,7 @@ public outlineToNoweb(): Thenable&lt;unknown&gt; {
                     action: Constants.LEOBRIDGE.OUTLINE_TO_NOWEB,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    finalFocus: this.finalFocus, // use last
+                    finalFocus: Focus.NoChange, // use last
                     name: p_chosenLeoFile,
                 });
                 if (q_commandResult) {
@@ -17785,7 +17564,7 @@ public weave(): Thenable&lt;unknown&gt; {
                     action: Constants.LEOBRIDGE.WEAVE,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
-                    finalFocus: this.finalFocus, // use last
+                    finalFocus: Focus.NoChange, // use last
                     name: p_chosenLeoFile,
                 });
                 if (q_commandResult) {
@@ -17850,7 +17629,7 @@ public writeFileFromNode(): Thenable&lt;unknown&gt; {
                 action: Constants.LEOBRIDGE.WRITE_FILE_FROM_NODE,
                 node: undefined,
                 refreshType: { tree: true, states: true, documents: true },
-                finalFocus: this.finalFocus, // use last
+                finalFocus: Focus.NoChange, // use last
                 name: p_chosenLeoFile,
             });
             this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
@@ -18228,6 +18007,180 @@ export const enum Focus {
     Outline // Forces outline to appear, refresh leaves focus on body.
 }
 
+</t>
+<t tx="felix.20220903004804.1">/**
+ * * Opened Leo documents shown as a list with this TreeDataProvider implementation
+ */
+export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&gt; {
+
+    private _onDidChangeTreeData: vscode.EventEmitter&lt;LeoGotoNode | undefined&gt; = new vscode.EventEmitter&lt;LeoGotoNode | undefined&gt;();
+
+    readonly onDidChangeTreeData: vscode.Event&lt;LeoGotoNode | undefined&gt; = this._onDidChangeTreeData.event;
+
+    private _lastGotoView: vscode.TreeView&lt;LeoGotoNode&gt; | undefined;
+
+    private _topNode: LeoGotoNode | undefined;
+
+    constructor(private _leoIntegration: LeoIntegration) { }
+
+    public showGotoPanel(): Thenable&lt;void&gt; {
+        if (this._lastGotoView &amp;&amp; this._topNode) {
+            return this._lastGotoView.reveal(this._topNode, { select: false, focus: false });
+        }
+        return Promise.resolve();
+    }
+
+    public setLastGotoView(p_view: vscode.TreeView&lt;LeoGotoNode&gt;): void {
+        this._lastGotoView = p_view;
+    }
+
+    /**
+     * * Refresh the whole outline
+     */
+    public refreshTreeRoot(): void {
+        this._onDidChangeTreeData.fire(undefined);
+    }
+
+    public getTreeItem(element: LeoGotoNode): Thenable&lt;LeoGotoNode&gt; | LeoGotoNode {
+        return element;
+    }
+
+    public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; {
+
+        // if called with element, or not ready, give back empty array as there won't be any children
+        if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
+
+
+            // call action to get get list, and convert to LeoButtonNode(s) array
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package =&gt; {
+                if (p_package &amp;&amp; p_package.navList) {
+
+                    const w_list: LeoGotoNode[] = [];
+                    this._topNode = undefined;
+                    const w_navList: LeoGoto[] = p_package.navList;
+                    if (w_navList &amp;&amp; w_navList.length) {
+                        w_navList.forEach((p_goto: LeoGoto) =&gt; {
+                            const w_newNode = new LeoGotoNode(this._leoIntegration, p_goto, p_package.navOptions!);
+                            if (!this._topNode) {
+                                this._topNode = w_newNode;
+                            }
+                            w_list.push(w_newNode);
+                        });
+                    }
+                    return w_list;
+                } else {
+                    return [];
+                }
+            });
+
+
+        } else {
+            return Promise.resolve([]); // Defaults to an empty list of children
+        }
+    }
+
+    public getParent(element: LeoGotoNode): ProviderResult&lt;LeoGotoNode&gt; | null {
+        // Leo documents are just a list, as such, entries are always child of root, so return null
+        return null;
+    }
+
+}
+</t>
+<t tx="felix.20220903004914.1">/**
+ * * Opened Leo documents tree view node item implementation for usage in a TreeDataProvider
+ */
+export class LeoGotoNode extends vscode.TreeItem {
+
+    // Context string is checked in package.json with 'when' clauses
+    public entryType: TGotoTypes;
+    private _id: string;
+    private _description: string | boolean;
+    private _headline: string;
+    private _iconIndex: number; // default to tag
+    private _leoIntegration: LeoIntegration;
+    public key: number; // id from python
+
+    constructor(
+        p_leoIntegration: LeoIntegration,
+        p_gotoEntry: LeoGoto,
+        p_navOptions: { isTag: boolean, showParents: boolean },
+
+    ) {
+        let w_spacing = "";
+        if (p_navOptions.showParents &amp;&amp; !p_navOptions.isTag) {
+            w_spacing = "    ";
+        }
+        let w_label = "";
+        if (["tag", "headline"].includes(p_gotoEntry.t)) {
+            w_label = w_spacing + p_gotoEntry.h;
+        }
+        super(w_label);
+
+        // Setup this instance
+        this._leoIntegration = p_leoIntegration;
+        this._id = utils.getUniqueId();
+        this.entryType = p_gotoEntry.t;
+        this.key = p_gotoEntry.key;
+        this._headline = p_gotoEntry.h.trim();
+
+        this._description = false;
+        if (this.entryType === 'body') {
+            this._iconIndex = 2;
+            if (p_navOptions.showParents) {
+                this._description = "    " + this._headline;
+            } else {
+                this._description = "  " + this._headline;
+            }
+        } else if (this.entryType === 'parent') {
+            this._iconIndex = 0;
+            this._description = this._headline.trim();
+        } else if (this.entryType === 'generic') {
+            this._iconIndex = 4;
+            this._description = this._headline;
+        } else if (this.entryType === 'headline') {
+            this._iconIndex = 1;
+        } else {
+            this._iconIndex = 3; // tag
+        }
+
+        this.command = {
+            command: Constants.COMMANDS.GOTO_NAV_ENTRY,
+            title: '',
+            arguments: [this]
+        };
+
+    }
+
+    // @ts-ignore
+    public get tooltip(): string {
+        if (this.entryType !== "generic") {
+            return this.entryType.charAt(0).toUpperCase() + this.entryType.slice(1);
+        }
+        return this._headline;
+    }
+
+    // @ts-ignore
+    public get description(): string | boolean {
+        return this._description;
+    }
+
+    // @ts-ignore
+    public get iconPath(): Icon | vscode.ThemeIcon | string {
+        if (this._iconIndex &lt; 4) {
+            return this._leoIntegration.gotoIcons[this._iconIndex];
+        }
+        // else return undefined for generic text without icon
+        return undefined;
+    }
+
+    // @ts-ignore
+    public get id(): string {
+        // Add prefix and suffix salt to numeric index to prevent accidental duplicates
+        // Should be unique when refreshed
+        return "g" + this._id + "o";
+    }
+
+}
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
