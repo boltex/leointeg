@@ -804,6 +804,11 @@ export class Constants {
         FIND_QUICK_GO_ANYWHERE: Constants.NAME + ".goAnywhere",
         GOTO_NAV_ENTRY: Constants.NAME + ".gotoNav",
 
+        GOTO_NAV_PREV: Constants.NAME + ".gotoNavPrev",
+        GOTO_NAV_NEXT: Constants.NAME + ".gotoNavNext",
+        GOTO_NAV_FIRST: Constants.NAME + ".gotoNavFirst",
+        GOTO_NAV_LAST: Constants.NAME + ".gotoNavLast",
+
         START_SEARCH: Constants.NAME + ".startSearch",
         FIND_ALL: Constants.NAME + ".findAll",
         FIND_NEXT: Constants.NAME + ".findNext",

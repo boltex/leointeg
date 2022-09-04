@@ -255,6 +255,13 @@ export interface LeoGoto {
     t: TGotoTypes;
 }
 
+export const enum LeoGotoNavKey {
+    prev = 0,
+    next,
+    first,
+    last
+}
+
 /**
  * * LeoInteg's Enum type for the search scope radio buttons of the find panel.
  */

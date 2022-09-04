@@ -1982,6 +1982,30 @@
         "title": "Go Anywhere"
       },
       {
+        "command": "leointeg.gotoNavPrev",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Select Previous Goto Result"
+      },
+      {
+        "command": "leointeg.gotoNavNext",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Select Next Goto Result"
+      },
+      {
+        "command": "leointeg.gotoNavFirst",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Select First Goto Result"
+      },
+      {
+        "command": "leointeg.gotoNavLast",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Select Last Goto Result"
+      },
+      {
         "command": "leointeg.findQuickSelected",
         "category": "Leo",
         "enablement": "leoTreeOpened",
@@ -3514,9 +3538,19 @@
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
+        "command": "leointeg.gotoNavFirst",
+        "key": "home",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
+      },
+      {
         "command": "leointeg.scrollBottom",
         "key": "end",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
+      },
+      {
+        "command": "leointeg.gotoNavLast",
+        "key": "end",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
       },
       {
         "command": "leointeg.gotoFirstSibling",
@@ -3524,9 +3558,19 @@
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
+        "command": "leointeg.gotoNavFirst",
+        "key": "pageup",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
+      },
+      {
         "command": "leointeg.gotoLastSibling",
         "key": "pagedown",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
+      },
+      {
+        "command": "leointeg.gotoNavLast",
+        "key": "pagedown",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
       },
       {
         "command": "leointeg.gotoNextCloneSelectionFromOutline",
@@ -3544,6 +3588,11 @@
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
+        "command": "leointeg.gotoNavNext",
+        "key": "down",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
+      },
+      {
         "command": "leointeg.gotoNextVisible",
         "key": "alt+down",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
@@ -3552,6 +3601,11 @@
         "command": "leointeg.gotoPrevVisible",
         "key": "up",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
+      },
+      {
+        "command": "leointeg.gotoNavPrev",
+        "key": "up",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
       },
       {
         "command": "leointeg.gotoPrevVisible",

@@ -19,7 +19,8 @@ import {
     LeoGuiFindTabManagerSettings,
     LeoSearchSettings,
     ChooseRClickItem,
-    RClick
+    RClick,
+    LeoGotoNavKey
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -125,8 +126,8 @@ export class LeoIntegration {
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     public finalFocus: Focus = Focus.NoChange; // Set in _setupRefresh : Last command issued had focus on outline, as opposed to the body
-
-    // ! fromOutline should be 'finalFocus' of type enum 'Focus'
+    public showBodyIfClosed: boolean = false;
+    public showOutlineIfClosed: boolean = false;
 
     private _refreshType: ReqRefresh = {}; // Set in _setupRefresh : Flags for commands to require parts of UI to refresh
 
@@ -3808,6 +3809,13 @@ export class LeoIntegration {
                 return this.launchRefresh();
             }
         }
+    }
+
+    /**
+     * * Goto the next, previous, first or last nav entry via arrow keys in
+     */
+    public navigateNavEntry(p_nav: LeoGotoNavKey): void {
+
     }
 
     /**

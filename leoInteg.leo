@@ -439,6 +439,7 @@
 <v t="felix.20220308213605.1"><vh>findQuick_marked</vh></v>
 <v t="felix.20220308213619.1"><vh>findQuickGoAnywhere</vh></v>
 <v t="felix.20220309215616.1"><vh>gotoNavEntry</vh></v>
+<v t="felix.20220903192048.1"><vh>navigateNavEntry</vh></v>
 </v>
 <v t="felix.20210530225640.1"><vh>Search</vh>
 <v t="felix.20220305225942.1"><vh>navEnter</vh></v>
@@ -583,6 +584,7 @@
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
 <v t="felix.20220319202027.1"><vh>TGotoTypes</vh></v>
 <v t="felix.20220308203528.1"><vh>LeoGoto</vh></v>
+<v t="felix.20220903201408.1"><vh>LeoGotoNavKey</vh></v>
 <v t="felix.20210522152922.1"><vh>LeoSearchScope</vh></v>
 <v t="felix.20210522152739.1"><vh>LeoSearchSettings</vh></v>
 <v t="felix.20210523162125.1"><vh>LeoGuiFindTabManagerSettings</vh></v>
@@ -2119,6 +2121,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.FIND_QUICK_HISTORY, () =&gt; w_leo.findQuickHistory()],
 [CMD.FIND_QUICK_MARKED, () =&gt; w_leo.findQuickMarked()],
 [CMD.FIND_QUICK_GO_ANYWHERE, () =&gt; w_leo.findQuickGoAnywhere()],
+
+[CMD.GOTO_NAV_PREV, () =&gt; w_leo.navigateNavEntry(LeoGotoNavKey.prev)],
+[CMD.GOTO_NAV_NEXT, () =&gt; w_leo.navigateNavEntry(LeoGotoNavKey.next)],
+[CMD.GOTO_NAV_FIRST, () =&gt; w_leo.navigateNavEntry(LeoGotoNavKey.first)],
+[CMD.GOTO_NAV_LAST, () =&gt; w_leo.navigateNavEntry(LeoGotoNavKey.last)],
+
 [CMD.GOTO_NAV_ENTRY, (p_node: LeoGotoNode) =&gt; w_leo.gotoNavEntry(p_node)],
 
 [CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
@@ -4703,9 +4711,19 @@ print('done')
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
+  "command": "leointeg.gotoNavFirst",
+  "key": "home",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
+},
+{
   "command": "leointeg.scrollBottom",
   "key": "end",
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+},
+{
+  "command": "leointeg.gotoNavLast",
+  "key": "end",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
 },
 {
   "command": "leointeg.gotoFirstSibling",
@@ -4713,9 +4731,19 @@ print('done')
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
+  "command": "leointeg.gotoNavFirst",
+  "key": "pageup",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
+},
+{
   "command": "leointeg.gotoLastSibling",
   "key": "pagedown",
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+},
+{
+  "command": "leointeg.gotoNavLast",
+  "key": "pagedown",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
 },
 {
   "command": "leointeg.gotoNextCloneSelectionFromOutline",
@@ -4733,6 +4761,11 @@ print('done')
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
+  "command": "leointeg.gotoNavNext",
+  "key": "down",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
+},
+{
   "command": "leointeg.gotoNextVisible",
   "key": "alt+down",
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
@@ -4741,6 +4774,11 @@ print('done')
   "command": "leointeg.gotoPrevVisible",
   "key": "up",
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+},
+{
+  "command": "leointeg.gotoNavPrev",
+  "key": "up",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
 },
 {
   "command": "leointeg.gotoPrevVisible",
@@ -5246,6 +5284,11 @@ public static COMMANDS = {
     FIND_QUICK_MARKED: Constants.NAME + ".markedList",
     FIND_QUICK_GO_ANYWHERE: Constants.NAME + ".goAnywhere",
     GOTO_NAV_ENTRY: Constants.NAME + ".gotoNav",
+
+    GOTO_NAV_PREV: Constants.NAME + ".gotoNavPrev",
+    GOTO_NAV_NEXT: Constants.NAME + ".gotoNavNext",
+    GOTO_NAV_FIRST: Constants.NAME + ".gotoNavFirst",
+    GOTO_NAV_LAST: Constants.NAME + ".gotoNavLast",
 
     START_SEARCH: Constants.NAME + ".startSearch",
     FIND_ALL: Constants.NAME + ".findAll",
@@ -6054,7 +6097,7 @@ public buildFromSavedSettings(): void {
 <t tx="felix.20200718031424.1">import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { ArchivedPosition, Focus, ReqRefresh } from "./types";
+import { ArchivedPosition, Focus, LeoGotoNavKey, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtons";
@@ -8957,7 +9000,8 @@ import {
     LeoGuiFindTabManagerSettings,
     LeoSearchSettings,
     ChooseRClickItem,
-    RClick
+    RClick,
+    LeoGotoNavKey
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -9224,8 +9268,8 @@ export class LeoIntegration {
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     public finalFocus: Focus = Focus.NoChange; // Set in _setupRefresh : Last command issued had focus on outline, as opposed to the body
-
-    // ! fromOutline should be 'finalFocus' of type enum 'Focus'
+    public showBodyIfClosed: boolean = false;
+    public showOutlineIfClosed: boolean = false;
 
     private _refreshType: ReqRefresh = {}; // Set in _setupRefresh : Flags for commands to require parts of UI to refresh
 
@@ -15453,6 +15497,30 @@ import * as utils from "./utils";
   "title": "Go Anywhere"
 },
 {
+  "command": "leointeg.gotoNavPrev",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Select Previous Goto Result"
+},
+{
+  "command": "leointeg.gotoNavNext",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Select Next Goto Result"
+},
+{
+  "command": "leointeg.gotoNavFirst",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Select First Goto Result"
+},
+{
+  "command": "leointeg.gotoNavLast",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Select Last Goto Result"
+},
+{
   "command": "leointeg.findQuickSelected",
   "category": "Leo",
   "enablement": "leoTreeOpened",
@@ -18181,6 +18249,22 @@ export class LeoGotoNode extends vscode.TreeItem {
     }
 
 }
+</t>
+<t tx="felix.20220903192048.1">/**
+ * * Goto the next, previous, first or last nav entry via arrow keys in
+ */
+public navigateNavEntry(p_nav: LeoGotoNavKey): void {
+
+}
+
+</t>
+<t tx="felix.20220903201408.1">export const enum LeoGotoNavKey {
+    prev = 0,
+    next,
+    first,
+    last
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

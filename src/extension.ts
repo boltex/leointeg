@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { ArchivedPosition, Focus, ReqRefresh } from "./types";
+import { ArchivedPosition, Focus, LeoGotoNavKey, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtons";
@@ -672,6 +672,12 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.FIND_QUICK_HISTORY, () => w_leo.findQuickHistory()],
         [CMD.FIND_QUICK_MARKED, () => w_leo.findQuickMarked()],
         [CMD.FIND_QUICK_GO_ANYWHERE, () => w_leo.findQuickGoAnywhere()],
+
+        [CMD.GOTO_NAV_PREV, () => w_leo.navigateNavEntry(LeoGotoNavKey.prev)],
+        [CMD.GOTO_NAV_NEXT, () => w_leo.navigateNavEntry(LeoGotoNavKey.next)],
+        [CMD.GOTO_NAV_FIRST, () => w_leo.navigateNavEntry(LeoGotoNavKey.first)],
+        [CMD.GOTO_NAV_LAST, () => w_leo.navigateNavEntry(LeoGotoNavKey.last)],
+
         [CMD.GOTO_NAV_ENTRY, (p_node: LeoGotoNode) => w_leo.gotoNavEntry(p_node)],
 
         [CMD.START_SEARCH, () => w_leo.startSearch()],
