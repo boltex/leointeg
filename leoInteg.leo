@@ -4158,6 +4158,22 @@ print('done')
   "command": "leointeg.pageDown",
   "when": "false"
 },
+{
+  "command": "leointeg.gotoNavPrev",
+  "when": "false"
+},
+{
+  "command": "leointeg.gotoNavNext",
+  "when": "false"
+},
+{
+  "command": "leointeg.gotoNavFirst",
+  "when": "false"
+},
+{
+  "command": "leointeg.gotoNavLast",
+  "when": "false"
+},
 </t>
 <t tx="ekr.20200815123601.66">{
   "command": "leointeg.hoistNode",
