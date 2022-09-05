@@ -122,7 +122,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             } else if (this._openedBodiesGnx.includes(w_gnx)) {
                 return this._leoIntegration.sendAction(
                     Constants.LEOBRIDGE.GET_BODY_LENGTH,
-                    JSON.stringify({ "gnx": w_gnx })
+                    { "gnx": w_gnx }
                 ).then((p_result) => {
                     return Promise.resolve(
                         {
@@ -156,7 +156,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
                 const p_result = await this._leoIntegration.sendAction(
                     Constants.LEOBRIDGE.GET_BODY,
-                    JSON.stringify({ "gnx": w_gnx })
+                    { "gnx": w_gnx }
                 );
                 if (p_result.body) {
                     // console.log('back from read gnx: ', w_gnx, '   - read ok has body');

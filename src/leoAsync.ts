@@ -127,7 +127,7 @@ export class LeoAsync {
             }
             const w_sendResultPromise = this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.ASK_RESULT,
-                JSON.stringify({ "result": this._askResult })
+                { "result": this._askResult }
             );
             if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
                 w_sendResultPromise.then(() => {
@@ -163,7 +163,7 @@ export class LeoAsync {
         ).then(() => {
             this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.ASK_RESULT,
-                JSON.stringify({ "result": Constants.ASYNC_ASK_RETURN_CODES.OK })
+                { "result": Constants.ASYNC_ASK_RETURN_CODES.OK }
             );
         });
     }

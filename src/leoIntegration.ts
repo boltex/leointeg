@@ -531,18 +531,18 @@ export class LeoIntegration {
     /**
      * * Core of the integration of Leo into vscode: Sends an action to the leoBridge in leoserver.py.
      * @param p_action is the action string constant, from Constants.LEOBRIDGE
-     * @param p_jsonParam (optional) JSON string to be given to the python script action call
+     * @param p_param (optional) JSON string to be given to the python script action call
      * @param p_deferredPayload (optional) a pre-made package that will be given back as the response, instead of package coming back from python
      * @param p_preventCall (optional) Flag for special case, only used at startup
      * @returns a Promise that will contain the JSON package answered back by the leoBridge in leoserver.py
      */
     public sendAction(
         p_action: string,
-        p_jsonParam = 'null',
+        p_param?: { [key: string]: any },
         p_deferredPayload?: LeoBridgePackage,
         p_preventCall?: boolean
     ): Promise<LeoBridgePackage> {
-        return this._leoBridge.action(p_action, p_jsonParam, p_deferredPayload, p_preventCall);
+        return this._leoBridge.action(p_action, p_param, p_deferredPayload, p_preventCall);
     }
 
     /**
@@ -785,7 +785,7 @@ export class LeoIntegration {
             // OK: id valid!
             this.sendAction(
                 Constants.LEOBRIDGE.SET_LEOID,
-                JSON.stringify({ leoID: w_idResult })
+                { leoID: w_idResult }
             );
             this.leoStates.leoIDMissing = false; // At least set for this session
 
@@ -914,7 +914,7 @@ export class LeoIntegration {
     public sendConfigToServer(p_config: ConfigMembers): Promise<LeoBridgePackage> {
         if (this.leoStates.leoBridgeReady) {
             p_config.uAsNumber = true; // Force uAsNumber to be true starting at leoInteg 1.0.8
-            return this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, JSON.stringify(p_config));
+            return this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, p_config);
         } else {
             return Promise.reject('Leo Bridge Not Ready');
         }
@@ -930,7 +930,7 @@ export class LeoIntegration {
         if (w_lastFiles.length) {
             return this.sendAction(
                 Constants.LEOBRIDGE.OPEN_FILES,
-                JSON.stringify({ files: w_lastFiles })
+                { files: w_lastFiles }
             ).then(
                 (p_openFileResult: LeoBridgePackage) => {
                     // set connecting false
@@ -1245,7 +1245,7 @@ export class LeoIntegration {
         // * vscode will update its tree by itself, but we need to change Leo's model of its outline
         this.sendAction(
             p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE,
-            utils.buildNodeCommandJson(p_event.element)
+            utils.buildNodeCommand(p_event.element)
         );
 
     }
@@ -1633,7 +1633,7 @@ export class LeoIntegration {
             this._scrollDirty = false;
             this._selectionDirty = false; // don't wait for return of this call
 
-            await this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param));
+            await this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, w_param);
 
             return Promise.resolve(true);
         } else {
@@ -1658,7 +1658,7 @@ export class LeoIntegration {
                 body: p_document.getText(),
             };
             // Don't wait for promise!
-            this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
+            this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
 
             // await for bodySaveSelection that is placed on the stack right after saving body
             await this._bodySaveSelection();
@@ -1687,7 +1687,7 @@ export class LeoIntegration {
             gnx: utils.leoUriToStr(p_document.uri),
             body: p_document.getText(),
         };
-        return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
+        return this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
     }
 
     /**
@@ -2621,7 +2621,7 @@ export class LeoIntegration {
 
             q_bodyStates = this.sendAction(
                 Constants.LEOBRIDGE.GET_BODY_STATES,
-                utils.buildNodeCommandJson(this.lastSelectedNode!)
+                utils.buildNodeCommand(this.lastSelectedNode!)
             );
 
             q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
@@ -2878,7 +2878,7 @@ export class LeoIntegration {
         let q_bodyStates: Promise<LeoBridgePackage> | undefined;
         q_bodyStates = this.sendAction(
             Constants.LEOBRIDGE.GET_BODY_STATES,
-            utils.buildNodeCommandJson(this.lastSelectedNode!)
+            utils.buildNodeCommand(this.lastSelectedNode!)
         );
         q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
             let w_language: string = p_bodyStates.language!;
@@ -3131,7 +3131,7 @@ export class LeoIntegration {
         // * Set selected node in Leo via leoBridge
         const q_setSelectedNode = this.sendAction(
             Constants.LEOBRIDGE.SET_SELECTED_NODE,
-            utils.buildNodeCommandJson(p_node)
+            utils.buildNodeCommand(p_node)
         ).then((p_setSelectedResult) => {
             if (!p_internalCall) {
                 this._refreshType.states = true;
@@ -3531,7 +3531,7 @@ export class LeoIntegration {
                 // ok got both name and val
                 return this.sendAction(
                     Constants.LEOBRIDGE.SET_UA_MEMBER,
-                    JSON.stringify({ name: w_name, value: w_uaVal })
+                    { name: w_name, value: w_uaVal }
                 ).then((p_resultTag: LeoBridgePackage) => {
                     this.setupRefresh(
                         Focus.NoChange,
@@ -3622,7 +3622,7 @@ export class LeoIntegration {
         if (p_picked && p_picked.label) {
             return this.sendAction(
                 Constants.LEOBRIDGE.CHAPTER_SELECT,
-                JSON.stringify({ name: p_picked.label })
+                { name: p_picked.label }
             ).then((p_resultTag: LeoBridgePackage) => {
                 this.setupRefresh(
                     Focus.NoChange,
@@ -3782,7 +3782,7 @@ export class LeoIntegration {
             // Other and not a tag so just locate the entry in either body or outline
             const p_navEntryResult = await this.sendAction(
                 Constants.LEOBRIDGE.GOTO_NAV_ENTRY,
-                JSON.stringify({ key: p_node.key })
+                { key: p_node.key }
             );
 
             if (!p_navEntryResult.focus) {
@@ -3925,7 +3925,7 @@ export class LeoIntegration {
 
         await this._isBusyTriggerSave(false, true);
 
-        const p_findResult = await this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline }));
+        const p_findResult = await this.sendAction(w_action, { fromOutline: !!p_fromOutline });
 
         if (!p_findResult.found || !p_findResult.focus) {
             vscode.window.showInformationMessage('Not found');
@@ -3962,7 +3962,7 @@ export class LeoIntegration {
 
         await this._isBusyTriggerSave(false, true);
 
-        const p_findResult = await this.sendAction(w_action, JSON.stringify({ fromOutline: false }));
+        const p_findResult = await this.sendAction(w_action, { fromOutline: false });
 
         if (!p_findResult.found || !p_findResult.focus) {
             vscode.window.showInformationMessage('Not found');
@@ -4001,7 +4001,7 @@ export class LeoIntegration {
 
         await this._isBusyTriggerSave(false, true);
 
-        const w_replaceResult = await this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline }));
+        const w_replaceResult = await this.sendAction(w_action, { fromOutline: !!p_fromOutline });
 
         if (!w_replaceResult.found || !w_replaceResult.focus) {
             vscode.window.showInformationMessage('Not found');
@@ -4253,7 +4253,7 @@ export class LeoIntegration {
         };
         return this.sendAction(
             Constants.LEOBRIDGE.SET_SEARCH_SETTINGS,
-            JSON.stringify({ searchSettings: w_settings })
+            { searchSettings: w_settings }
         );
     }
 
@@ -4275,7 +4275,7 @@ export class LeoIntegration {
                     if (!isNaN(w_line)) {
                         this.sendAction(
                             Constants.LEOBRIDGE.GOTO_GLOBAL_LINE,
-                            JSON.stringify({ line: w_line })
+                            { line: w_line }
                         ).then((p_resultGoto: LeoBridgePackage) => {
                             if (!p_resultGoto.found) {
                                 // Not found
@@ -4319,7 +4319,7 @@ export class LeoIntegration {
                     }
                     this.sendAction(
                         Constants.LEOBRIDGE.TAG_CHILDREN,
-                        JSON.stringify({ tag: p_inputResult })
+                        { tag: p_inputResult }
                     ).then((p_resultTag: LeoBridgePackage) => {
                         this.setupRefresh(
                             Focus.NoChange,
@@ -4360,7 +4360,7 @@ export class LeoIntegration {
                     }
                     this.sendAction(
                         Constants.LEOBRIDGE.TAG_NODE,
-                        JSON.stringify({ tag: p_inputResult })
+                        { tag: p_inputResult }
                     ).then((p_resultTag: LeoBridgePackage) => {
                         this.setupRefresh(
                             Focus.NoChange,
@@ -4423,7 +4423,7 @@ export class LeoIntegration {
                     if (p_inputResult && p_inputResult.trim()) {
                         this.sendAction(
                             Constants.LEOBRIDGE.REMOVE_TAG,
-                            JSON.stringify({ tag: p_inputResult.trim() })
+                            { tag: p_inputResult.trim() }
                         ).then((p_resultTag: LeoBridgePackage) => {
                             this.setupRefresh(
                                 Focus.NoChange,
@@ -4493,7 +4493,7 @@ export class LeoIntegration {
                 if (p_inputResult && p_inputResult.trim()) {
                     this.sendAction(
                         Constants.LEOBRIDGE.CLONE_FIND_TAG,
-                        JSON.stringify({ tag: p_inputResult.trim() })
+                        { tag: p_inputResult.trim() }
                     ).then((p_resultFind: LeoBridgePackage) => {
                         if (!p_resultFind.found) {
                             // Not found
@@ -4748,7 +4748,7 @@ export class LeoIntegration {
         await this._isBusyTriggerSave(true, true);
         const w_openFileResult = await this.sendAction(
             Constants.LEOBRIDGE.SET_OPENED_FILE,
-            JSON.stringify({ index: p_index })
+            { index: p_index }
         );
         // Like we just opened or made a new file
         if (w_openFileResult.total) {
@@ -4806,7 +4806,7 @@ export class LeoIntegration {
                 w_removeLastFileName = this.leoStates.leoOpenedFileName;
                 return this.sendAction(
                     Constants.LEOBRIDGE.CLOSE_FILE,
-                    JSON.stringify({ forced: false })
+                    { forced: false }
                 );
             })
             .then((p_tryCloseResult) => {
@@ -4855,7 +4855,7 @@ export class LeoIntegration {
                                 if (this._isCurrentFileNamed()) {
                                     w_savePromise = this.sendAction(
                                         Constants.LEOBRIDGE.SAVE_FILE,
-                                        JSON.stringify({ name: '' })
+                                        { name: '' }
                                     );
                                 } else {
                                     w_savePromise = this._leoFilesBrowser
@@ -4864,9 +4864,7 @@ export class LeoIntegration {
                                             if (p_chosenLeoFile.trim()) {
                                                 return this.sendAction(
                                                     Constants.LEOBRIDGE.SAVE_FILE,
-                                                    JSON.stringify({
-                                                        name: p_chosenLeoFile.trim(),
-                                                    })
+                                                    { name: p_chosenLeoFile.trim() }
                                                 );
                                             } else {
                                                 // Canceled
@@ -4878,7 +4876,7 @@ export class LeoIntegration {
                                     (p_packageAfterSave) => {
                                         return this.sendAction(
                                             Constants.LEOBRIDGE.CLOSE_FILE,
-                                            JSON.stringify({ forced: true })
+                                            { forced: true }
                                         );
                                     },
                                     () => {
@@ -4889,7 +4887,7 @@ export class LeoIntegration {
                                 // Don't want to save so just force-close directly
                                 return this.sendAction(
                                     Constants.LEOBRIDGE.CLOSE_FILE,
-                                    JSON.stringify({ forced: true })
+                                    { forced: true }
                                 );
                             } else {
                                 // Canceled dialog
@@ -4937,7 +4935,7 @@ export class LeoIntegration {
      */
     public async newLeoFile(): Promise<LeoBridgePackage> {
         await this._isBusyTriggerSave(true, true);
-        const w_openFileResult = await this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: "" }));
+        const w_openFileResult = await this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, { filename: "" });
         if (w_openFileResult.total) {
             this.serverHasOpenedFile = true;
             this.serverOpenedFileName = w_openFileResult.filename!;
@@ -4979,7 +4977,7 @@ export class LeoIntegration {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
                     q_openedFile = this.sendAction(
                         Constants.LEOBRIDGE.OPEN_FILE,
-                        JSON.stringify({ filename: w_fixedFilePath })
+                        { filename: w_fixedFilePath }
                     );
                 } else {
                     q_openedFile = this._leoFilesBrowser.getLeoFileUrl().then(
@@ -4987,7 +4985,7 @@ export class LeoIntegration {
                             if (p_chosenLeoFile.trim()) {
                                 return this.sendAction(
                                     Constants.LEOBRIDGE.OPEN_FILE,
-                                    JSON.stringify({ filename: p_chosenLeoFile })
+                                    { filename: p_chosenLeoFile }
                                 );
                             } else {
                                 return Promise.resolve(undefined);
@@ -5056,7 +5054,7 @@ export class LeoIntegration {
                     // Array of a single filename
                     q_importFile = this.sendAction(
                         Constants.LEOBRIDGE.IMPORT_ANY_FILE,
-                        JSON.stringify({ filenames: [w_fixedFilePath] })
+                        { filenames: [w_fixedFilePath] }
                     );
                 } else {
                     q_importFile = this._leoFilesBrowser.getImportFileUrls().then(
@@ -5065,7 +5063,7 @@ export class LeoIntegration {
                                 // Can be multiple files, so array of string is sent
                                 return this.sendAction(
                                     Constants.LEOBRIDGE.IMPORT_ANY_FILE,
-                                    JSON.stringify({ filenames: p_chosenLeoFiles })
+                                    { filenames: p_chosenLeoFiles }
                                 );
                             } else {
                                 return Promise.resolve(undefined);
@@ -5285,7 +5283,7 @@ export class LeoIntegration {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
                     q_importFiles = this.sendAction(
                         Constants.LEOBRIDGE.REMOVE_SENTINELS,
-                        JSON.stringify({ names: [w_fixedFilePath] })
+                        { names: [w_fixedFilePath] }
                     );
                 } else {
                     q_importFiles = this._leoFilesBrowser.getImportFileUrls(
@@ -5304,7 +5302,7 @@ export class LeoIntegration {
                             if (p_chosenLeoFiles.length) {
                                 return this.sendAction(
                                     Constants.LEOBRIDGE.REMOVE_SENTINELS,
-                                    JSON.stringify({ names: p_chosenLeoFiles })
+                                    { names: p_chosenLeoFiles }
                                 );
                             } else {
                                 return Promise.resolve(undefined);
@@ -5463,7 +5461,7 @@ export class LeoIntegration {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
                     q_importFile = this.sendAction(
                         Constants.LEOBRIDGE.READ_FILE_INTO_NODE,
-                        JSON.stringify({ name: w_fixedFilePath })
+                        { name: w_fixedFilePath }
                     );
                 } else {
                     q_importFile = this._leoFilesBrowser.getImportFileUrls(
@@ -5479,7 +5477,7 @@ export class LeoIntegration {
                             if (p_chosenLeoFiles.length) {
                                 return this.sendAction(
                                     Constants.LEOBRIDGE.READ_FILE_INTO_NODE,
-                                    JSON.stringify({ name: p_chosenLeoFiles[0] })
+                                    { name: p_chosenLeoFiles[0] }
                                 );
                             } else {
                                 return Promise.resolve(undefined);
@@ -5539,14 +5537,14 @@ export class LeoIntegration {
                                 // Normal button
                                 return this.sendAction(
                                     Constants.LEOBRIDGE.CLICK_BUTTON,
-                                    JSON.stringify({ index: p_node.button.index })
+                                    { index: p_node.button.index }
                                 );
                             }
                             // if not decrement first one, and send this._rclickSelected as array of choices
                             this._rclickSelected[0] = this._rclickSelected[0] - 1;
                             return this.sendAction(
                                 Constants.LEOBRIDGE.CLICK_BUTTON,
-                                JSON.stringify({ index: p_node.button.index, rclick: this._rclickSelected })
+                                { index: p_node.button.index, rclick: this._rclickSelected }
                             );
                         }
                         // Escaped
@@ -5558,7 +5556,7 @@ export class LeoIntegration {
                     // Normal button
                     return this.sendAction(
                         Constants.LEOBRIDGE.CLICK_BUTTON,
-                        JSON.stringify({ index: p_node.button.index })
+                        { index: p_node.button.index }
                     );
                 }
             })
@@ -5627,7 +5625,7 @@ export class LeoIntegration {
         await this._isBusyTriggerSave(false);
         await this.sendAction(
             Constants.LEOBRIDGE.GOTO_SCRIPT,
-            JSON.stringify({ index: p_node.button.index })
+            { index: p_node.button.index }
         );
 
         const w_package = await this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
@@ -5656,7 +5654,7 @@ export class LeoIntegration {
         await this._isBusyTriggerSave(false);
         const w_package = await this.sendAction(
             Constants.LEOBRIDGE.REMOVE_BUTTON,
-            JSON.stringify({ index: p_node.button.index })
+            { index: p_node.button.index }
         );
         this.setupRefresh(
             Focus.NoChange,
@@ -5683,7 +5681,7 @@ export class LeoIntegration {
         }
         const w_package = await this.sendAction(
             action,
-            JSON.stringify({ repeat: repeat })
+            { repeat: repeat }
         );
         this.setupRefresh(
             Focus.Outline,

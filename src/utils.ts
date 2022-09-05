@@ -93,7 +93,7 @@ export function removeFileFromWorkspace(p_context: vscode.ExtensionContext, p_fi
 }
 
 /**
- * unique string from AP's gnx, childIndex, and its stack's gnx and childIndex pairs.
+ * * unique string from AP's gnx, childIndex, and its stack's gnx and childIndex pairs.
  */
 export function buildApId(p: ArchivedPosition): string {
     return p.gnx + p.childIndex + p.stack.map(s => s.gnx + s.childIndex).join("");
@@ -193,12 +193,12 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 }
 
 /**
- * * Builds and returns a JSON string with 'node' and 'name' members
+ * * Builds and returns object with 'node' and 'name' members
  * @param p_node Targeted tree node
  * @param p_command from which to extract possible name and 'keep selection' flag
- * @returns JSON string suitable for being a parameter of a leoBridge action
+ * @returns object suitable for being a parameter of a leoBridge action
  */
-export function buildNodeCommandJson(p_node: ArchivedPosition, p_command?: UserCommand): string {
+export function buildNodeCommand(p_node: ArchivedPosition, p_command?: UserCommand): { [key: string]: any } {
     const w_result: any = {
         ap: {
             childIndex: p_node.childIndex,
@@ -206,15 +206,13 @@ export function buildNodeCommandJson(p_node: ArchivedPosition, p_command?: UserC
             stack: p_node.stack,
         }
     };
-
     if (p_command && p_command.name) {
         w_result.name = p_command.name;
     }
     if (p_command && p_command.keepSelection) {
         w_result.keep = true;
     }
-
-    return JSON.stringify(w_result);
+    return w_result;
 }
 
 /**

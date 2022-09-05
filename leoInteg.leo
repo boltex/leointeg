@@ -263,7 +263,6 @@
 <v t="felix.20200718153505.3"><vh>action</vh></v>
 <v t="felix.20200718155251.1"><vh>isBusy</vh></v>
 <v t="felix.20200718153505.4"><vh>_asyncAction</vh></v>
-<v t="felix.20200718153505.5"><vh>_buildActionParameter</vh></v>
 <v t="felix.20200718153505.6"><vh>_resolveBridgeReady</vh></v>
 <v t="felix.20200718153505.7"><vh>_rejectAction</vh></v>
 <v t="felix.20200718153505.8"><vh>_callAction</vh></v>
@@ -614,7 +613,7 @@
 <v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
 <v t="ekr.20200815091945.1"><vh>buildButtonsIconPaths</vh></v>
 <v t="felix.20220320172705.1"><vh>buildGotoIconPaths</vh></v>
-<v t="felix.20200718195558.6"><vh>buildNodeAndTextJson</vh></v>
+<v t="felix.20220904222510.1"><vh>buildNodeCommand</vh></v>
 <v t="felix.20210614235023.1"><vh>chooseLeoFolderDialog</vh></v>
 <v t="felix.20201018163510.1"><vh>getDurationMilliseconds</vh></v>
 <v t="felix.20200718195558.7"><vh>getFileFromPath</vh></v>
@@ -845,7 +844,7 @@ public showAskModalDialog(p_askArg: runAskYesNoDialogParameters): void {
         }
         const w_sendResultPromise = this._leoIntegration.sendAction(
             Constants.LEOBRIDGE.ASK_RESULT,
-            JSON.stringify({ "result": this._askResult })
+            { "result": this._askResult }
         );
         if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
             w_sendResultPromise.then(() =&gt; {
@@ -882,7 +881,7 @@ public showWarnModalMessage(p_waitArg: runWarnMessageDialogParameters): void {
     ).then(() =&gt; {
         this._leoIntegration.sendAction(
             Constants.LEOBRIDGE.ASK_RESULT,
-            JSON.stringify({ "result": Constants.ASYNC_ASK_RETURN_CODES.OK })
+            { "result": Constants.ASYNC_ASK_RETURN_CODES.OK }
         );
     });
 }
@@ -1374,14 +1373,14 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
                             // Normal button
                             return this.sendAction(
                                 Constants.LEOBRIDGE.CLICK_BUTTON,
-                                JSON.stringify({ index: p_node.button.index })
+                                { index: p_node.button.index }
                             );
                         }
                         // if not decrement first one, and send this._rclickSelected as array of choices
                         this._rclickSelected[0] = this._rclickSelected[0] - 1;
                         return this.sendAction(
                             Constants.LEOBRIDGE.CLICK_BUTTON,
-                            JSON.stringify({ index: p_node.button.index, rclick: this._rclickSelected })
+                            { index: p_node.button.index, rclick: this._rclickSelected }
                         );
                     }
                     // Escaped
@@ -1393,7 +1392,7 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
                 // Normal button
                 return this.sendAction(
                     Constants.LEOBRIDGE.CLICK_BUTTON,
-                    JSON.stringify({ index: p_node.button.index })
+                    { index: p_node.button.index }
                 );
             }
         })
@@ -1428,7 +1427,7 @@ public async removeAtButton(p_node: LeoButtonNode): Promise&lt;any&gt; {
     await this._isBusyTriggerSave(false);
     const w_package = await this.sendAction(
         Constants.LEOBRIDGE.REMOVE_BUTTON,
-        JSON.stringify({ index: p_node.button.index })
+        { index: p_node.button.index }
     );
     this.setupRefresh(
         Focus.NoChange,
@@ -5785,7 +5784,6 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
     const w_command: UserCommand = this._stack[0];
 
     let w_node: ArchivedPosition | undefined; // ap json used in building w_jsonParam
-    let w_jsonParam: string = ""; // Finished parameter that is sent
 
     // First command uses given node or last selected node.
     // Other subsequent commands on stack will use _receivedSelection regardless.
@@ -5805,7 +5803,7 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
             throw new Error("ERROR NO ARCHIVED POSITION JSON");
         }
     }
-    w_jsonParam = utils.buildNodeCommandJson(w_node!, w_command); // 'Insert Named Node' or 'Edit Headline'
+    const w_jsonParam = utils.buildNodeCommand(w_node!, w_command); // 'Insert Named Node' or 'Edit Headline'
 
     // Setup _finalRefreshType, if command requires higher than the one setup so far
     Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
@@ -6318,7 +6316,7 @@ import { BodyTimeInfo } from "./types";
         } else if (this._openedBodiesGnx.includes(w_gnx)) {
             return this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.GET_BODY_LENGTH,
-                JSON.stringify({ "gnx": w_gnx })
+                { "gnx": w_gnx }
             ).then((p_result) =&gt; {
                 return Promise.resolve(
                     {
@@ -6353,7 +6351,7 @@ import { BodyTimeInfo } from "./types";
 
             const p_result = await this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.GET_BODY,
-                JSON.stringify({ "gnx": w_gnx })
+                { "gnx": w_gnx }
             );
             if (p_result.body) {
                 // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
@@ -6670,7 +6668,7 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
         }
     };
     // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
-    this._readyPromise = this.action("", "", { id: Constants.STARTING_PACKAGE_ID }, true);
+    this._readyPromise = this.action("", undefined, { id: Constants.STARTING_PACKAGE_ID }, true);
     return this._readyPromise; // This promise will resolve when the started python process starts
 }
 
@@ -6727,15 +6725,21 @@ export class LeoBridge {
 <t tx="felix.20200718153505.3">/**
  * * Places an action on top of a stack, to be resolved from the bottom
  * @param p_action Command string to be performed by Leo via leoserver.py
- * @param p_jsonParam Optional JSON parameter for the specified action
+ * @param p_param Optional JSON parameter for the specified action
  * @param p_deferredPayload Used to build this._readyPromise that resolves itself at startup
  * @param p_preventCall Flag for special action used to build this._readyPromise that resolves itself at startup
  * @returns a Promise that will contain the JSON package answered back by leoserver.py
  */
-public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise&lt;LeoBridgePackage&gt; {
+public action(p_action: string, p_param?: { [key: string]: any }, p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise&lt;LeoBridgePackage&gt; {
     return new Promise((p_resolve, p_reject) =&gt; {
         const w_action: LeoAction = {
-            parameter: this._buildActionParameter(p_action, p_jsonParam),
+            parameter: JSON.stringify(
+                {
+                    id: ++this._leoBridgeSerialId,
+                    action: p_action,
+                    param: p_param === undefined ? null : p_param
+                }
+            ),
             deferredPayload: p_deferredPayload ? p_deferredPayload : undefined,
             resolveFn: p_resolve,
             rejectFn: p_reject
@@ -6789,20 +6793,6 @@ private _asyncAction(w_parsedData: any): void {
     } else {
         console.error("[leoIntegration] Unknown async command from leoBridge");
     }
-}
-
-</t>
-<t tx="felix.20200718153505.5">/**
- * * Build JSON string for action parameter to the leoBridge
- * @param p_action Action string to be invoked as command by Leo in the leoserver.py script
- * @param p_jsonParam Optional JSON string to be added as a 'param' to the action sent to Leo
- * @returns the JSON string built from the action string and the parameters
- */
-private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
-    return "{\"id\":" + (++this._leoBridgeSerialId) + // no quotes, serial id is a number, pre incremented
-        ", \"action\": \"" + p_action +  // action is string so surround with quotes
-        "\", \"param\":" + p_jsonParam +  // param is already json, no need for added quotes
-        "}";
 }
 
 </t>
@@ -8484,32 +8474,6 @@ export function buildDocumentIconPaths(p_context: vscode.ExtensionContext): Icon
 }
 
 </t>
-<t tx="felix.20200718195558.6">/**
- * * Builds and returns a JSON string with 'node' and 'name' members
- * @param p_node Targeted tree node
- * @param p_command from which to extract possible name and 'keep selection' flag
- * @returns JSON string suitable for being a parameter of a leoBridge action
- */
-export function buildNodeCommandJson(p_node: ArchivedPosition, p_command?: UserCommand): string {
-    const w_result: any = {
-        ap: {
-            childIndex: p_node.childIndex,
-            gnx: p_node.gnx,
-            stack: p_node.stack,
-        }
-    };
-
-    if (p_command &amp;&amp; p_command.name) {
-        w_result.name = p_command.name;
-    }
-    if (p_command &amp;&amp; p_command.keepSelection) {
-        w_result.keep = true;
-    }
-
-    return JSON.stringify(w_result);
-}
-
-</t>
 <t tx="felix.20200718195558.7">/**
  * * Extracts the file name from a full path, such as "foo.bar" from "/abc/def/foo.bar"
  * @param p_path Full path such as "/var/drop/foo/boo/moo.js" or "C:\Documents and Settings\img\recycled log.jpg"
@@ -9058,7 +9022,7 @@ private _openLastFiles(): Promise&lt;LeoBridgePackage&gt; {
     if (w_lastFiles.length) {
         return this.sendAction(
             Constants.LEOBRIDGE.OPEN_FILES,
-            JSON.stringify({ files: w_lastFiles })
+            { files: w_lastFiles }
         ).then(
             (p_openFileResult: LeoBridgePackage) =&gt; {
                 // set connecting false
@@ -9538,7 +9502,7 @@ private _onChangeCollapsedState(
     // * vscode will update its tree by itself, but we need to change Leo's model of its outline
     this.sendAction(
         p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE,
-        utils.buildNodeCommandJson(p_event.element)
+        utils.buildNodeCommand(p_event.element)
     );
 
 }
@@ -10029,7 +9993,7 @@ private async _bodySaveDocument(
             body: p_document.getText(),
         };
         // Don't wait for promise!
-        this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
+        this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
 
         // await for bodySaveSelection that is placed on the stack right after saving body
         await this._bodySaveSelection();
@@ -10319,18 +10283,18 @@ public closeBody(): Thenable&lt;any&gt; {
 <t tx="felix.20200719025231.5">/**
  * * Core of the integration of Leo into vscode: Sends an action to the leoBridge in leoserver.py.
  * @param p_action is the action string constant, from Constants.LEOBRIDGE
- * @param p_jsonParam (optional) JSON string to be given to the python script action call
+ * @param p_param (optional) JSON string to be given to the python script action call
  * @param p_deferredPayload (optional) a pre-made package that will be given back as the response, instead of package coming back from python
  * @param p_preventCall (optional) Flag for special case, only used at startup
  * @returns a Promise that will contain the JSON package answered back by the leoBridge in leoserver.py
  */
 public sendAction(
     p_action: string,
-    p_jsonParam = 'null',
+    p_param?: { [key: string]: any },
     p_deferredPayload?: LeoBridgePackage,
     p_preventCall?: boolean
 ): Promise&lt;LeoBridgePackage&gt; {
-    return this._leoBridge.action(p_action, p_jsonParam, p_deferredPayload, p_preventCall);
+    return this._leoBridge.action(p_action, p_param, p_deferredPayload, p_preventCall);
 }
 
 </t>
@@ -10389,7 +10353,7 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
 
         q_bodyStates = this.sendAction(
             Constants.LEOBRIDGE.GET_BODY_STATES,
-            utils.buildNodeCommandJson(this.lastSelectedNode!)
+            utils.buildNodeCommand(this.lastSelectedNode!)
         );
 
         q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
@@ -10634,7 +10598,7 @@ public selectTreeNode(
     // * Set selected node in Leo via leoBridge
     const q_setSelectedNode = this.sendAction(
         Constants.LEOBRIDGE.SET_SELECTED_NODE,
-        utils.buildNodeCommandJson(p_node)
+        utils.buildNodeCommand(p_node)
     ).then((p_setSelectedResult) =&gt; {
         if (!p_internalCall) {
             this._refreshType.states = true;
@@ -10963,7 +10927,7 @@ public async selectOpenedLeoDocument(p_index: number): Promise&lt;LeoBridgePacka
     await this._isBusyTriggerSave(true, true);
     const w_openFileResult = await this.sendAction(
         Constants.LEOBRIDGE.SET_OPENED_FILE,
-        JSON.stringify({ index: p_index })
+        { index: p_index }
     );
     // Like we just opened or made a new file
     if (w_openFileResult.total) {
@@ -11013,7 +10977,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
             w_removeLastFileName = this.leoStates.leoOpenedFileName;
             return this.sendAction(
                 Constants.LEOBRIDGE.CLOSE_FILE,
-                JSON.stringify({ forced: false })
+                { forced: false }
             );
         })
         .then((p_tryCloseResult) =&gt; {
@@ -11062,7 +11026,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                             if (this._isCurrentFileNamed()) {
                                 w_savePromise = this.sendAction(
                                     Constants.LEOBRIDGE.SAVE_FILE,
-                                    JSON.stringify({ name: '' })
+                                    { name: '' }
                                 );
                             } else {
                                 w_savePromise = this._leoFilesBrowser
@@ -11071,9 +11035,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                                         if (p_chosenLeoFile.trim()) {
                                             return this.sendAction(
                                                 Constants.LEOBRIDGE.SAVE_FILE,
-                                                JSON.stringify({
-                                                    name: p_chosenLeoFile.trim(),
-                                                })
+                                                { name: p_chosenLeoFile.trim() }
                                             );
                                         } else {
                                             // Canceled
@@ -11085,7 +11047,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                                 (p_packageAfterSave) =&gt; {
                                     return this.sendAction(
                                         Constants.LEOBRIDGE.CLOSE_FILE,
-                                        JSON.stringify({ forced: true })
+                                        { forced: true }
                                     );
                                 },
                                 () =&gt; {
@@ -11096,7 +11058,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                             // Don't want to save so just force-close directly
                             return this.sendAction(
                                 Constants.LEOBRIDGE.CLOSE_FILE,
-                                JSON.stringify({ forced: true })
+                                { forced: true }
                             );
                         } else {
                             // Canceled dialog
@@ -11145,7 +11107,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
  */
 public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
     await this._isBusyTriggerSave(true, true);
-    const w_openFileResult = await this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: "" }));
+    const w_openFileResult = await this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, { filename: "" });
     if (w_openFileResult.total) {
         this.serverHasOpenedFile = true;
         this.serverOpenedFileName = w_openFileResult.filename!;
@@ -11188,7 +11150,7 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
                 q_openedFile = this.sendAction(
                     Constants.LEOBRIDGE.OPEN_FILE,
-                    JSON.stringify({ filename: w_fixedFilePath })
+                    { filename: w_fixedFilePath }
                 );
             } else {
                 q_openedFile = this._leoFilesBrowser.getLeoFileUrl().then(
@@ -11196,7 +11158,7 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
                         if (p_chosenLeoFile.trim()) {
                             return this.sendAction(
                                 Constants.LEOBRIDGE.OPEN_FILE,
-                                JSON.stringify({ filename: p_chosenLeoFile })
+                                { filename: p_chosenLeoFile }
                             );
                         } else {
                             return Promise.resolve(undefined);
@@ -11598,7 +11560,7 @@ public cancelConnect(p_message?: string): void {
 public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&gt; {
     if (this.leoStates.leoBridgeReady) {
         p_config.uAsNumber = true; // Force uAsNumber to be true starting at leoInteg 1.0.8
-        return this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, JSON.stringify(p_config));
+        return this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, p_config);
     } else {
         return Promise.reject('Leo Bridge Not Ready');
     }
@@ -11658,7 +11620,7 @@ private async _bodySaveSelection(): Promise&lt;boolean&gt; {
         this._scrollDirty = false;
         this._selectionDirty = false; // don't wait for return of this call
 
-        await this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param));
+        await this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, w_param);
 
         return Promise.resolve(true);
     } else {
@@ -12445,7 +12407,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
 
     await this._isBusyTriggerSave(false, true);
 
-    const p_findResult = await this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline }));
+    const p_findResult = await this.sendAction(w_action, { fromOutline: !!p_fromOutline });
 
     if (!p_findResult.found || !p_findResult.focus) {
         vscode.window.showInformationMessage('Not found');
@@ -13078,7 +13040,7 @@ public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePa
     };
     return this.sendAction(
         Constants.LEOBRIDGE.SET_SEARCH_SETTINGS,
-        JSON.stringify({ searchSettings: w_settings })
+        { searchSettings: w_settings }
     );
 }
 
@@ -13164,7 +13126,7 @@ public async replace(p_fromOutline: boolean, p_thenFind: boolean): Promise&lt;an
 
     await this._isBusyTriggerSave(false, true);
 
-    const w_replaceResult = await this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline }));
+    const w_replaceResult = await this.sendAction(w_action, { fromOutline: !!p_fromOutline });
 
     if (!w_replaceResult.found || !w_replaceResult.focus) {
         vscode.window.showInformationMessage('Not found');
@@ -13378,7 +13340,7 @@ public gotoGlobalLine(): void {
                 if (!isNaN(w_line)) {
                     this.sendAction(
                         Constants.LEOBRIDGE.GOTO_GLOBAL_LINE,
-                        JSON.stringify({ line: w_line })
+                        { line: w_line }
                     ).then((p_resultGoto: LeoBridgePackage) =&gt; {
                         if (!p_resultGoto.found) {
                             // Not found
@@ -13537,7 +13499,7 @@ public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                 // Array of a single filename
                 q_importFile = this.sendAction(
                     Constants.LEOBRIDGE.IMPORT_ANY_FILE,
-                    JSON.stringify({ filenames: [w_fixedFilePath] })
+                    { filenames: [w_fixedFilePath] }
                 );
             } else {
                 q_importFile = this._leoFilesBrowser.getImportFileUrls().then(
@@ -13546,7 +13508,7 @@ public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                             // Can be multiple files, so array of string is sent
                             return this.sendAction(
                                 Constants.LEOBRIDGE.IMPORT_ANY_FILE,
-                                JSON.stringify({ filenames: p_chosenLeoFiles })
+                                { filenames: p_chosenLeoFiles }
                             );
                         } else {
                             return Promise.resolve(undefined);
@@ -13880,7 +13842,7 @@ public tagChildren(): void {
                 }
                 this.sendAction(
                     Constants.LEOBRIDGE.TAG_CHILDREN,
-                    JSON.stringify({ tag: p_inputResult })
+                    { tag: p_inputResult }
                 ).then((p_resultTag: LeoBridgePackage) =&gt; {
                     this.setupRefresh(
                         Focus.NoChange,
@@ -13915,7 +13877,7 @@ public cloneFindTag(): void {
             if (p_inputResult &amp;&amp; p_inputResult.trim()) {
                 this.sendAction(
                     Constants.LEOBRIDGE.CLONE_FIND_TAG,
-                    JSON.stringify({ tag: p_inputResult.trim() })
+                    { tag: p_inputResult.trim() }
                 ).then((p_resultFind: LeoBridgePackage) =&gt; {
                     if (!p_resultFind.found) {
                         // Not found
@@ -13969,7 +13931,7 @@ public async findSymbol(p_def: boolean): Promise&lt;any&gt; {
 
     await this._isBusyTriggerSave(false, true);
 
-    const p_findResult = await this.sendAction(w_action, JSON.stringify({ fromOutline: false }));
+    const p_findResult = await this.sendAction(w_action, { fromOutline: false });
 
     if (!p_findResult.found || !p_findResult.focus) {
         vscode.window.showInformationMessage('Not found');
@@ -14275,7 +14237,7 @@ private _bodySaveDeactivate(
         gnx: utils.leoUriToStr(p_document.uri),
         body: p_document.getText(),
     };
-    return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
+    return this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
 }
 
 </t>
@@ -14606,7 +14568,7 @@ public async gotoScript(p_node: LeoButtonNode): Promise&lt;any&gt; {
     await this._isBusyTriggerSave(false);
     await this.sendAction(
         Constants.LEOBRIDGE.GOTO_SCRIPT,
-        JSON.stringify({ index: p_node.button.index })
+        { index: p_node.button.index }
     );
 
     const w_package = await this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
@@ -14652,7 +14614,7 @@ public refreshBodyStates(): void {
     let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
     q_bodyStates = this.sendAction(
         Constants.LEOBRIDGE.GET_BODY_STATES,
-        utils.buildNodeCommandJson(this.lastSelectedNode!)
+        utils.buildNodeCommand(this.lastSelectedNode!)
     );
     q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
         let w_language: string = p_bodyStates.language!;
@@ -15750,7 +15712,7 @@ public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
         // Other and not a tag so just locate the entry in either body or outline
         const p_navEntryResult = await this.sendAction(
             Constants.LEOBRIDGE.GOTO_NAV_ENTRY,
-            JSON.stringify({ key: p_node.key })
+            { key: p_node.key }
         );
 
         if (!p_navEntryResult.focus) {
@@ -15823,7 +15785,7 @@ public tagNode(): void {
                 }
                 this.sendAction(
                     Constants.LEOBRIDGE.TAG_NODE,
-                    JSON.stringify({ tag: p_inputResult })
+                    { tag: p_inputResult }
                 ).then((p_resultTag: LeoBridgePackage) =&gt; {
                     this.setupRefresh(
                         Focus.NoChange,
@@ -15887,7 +15849,7 @@ public removeTag(): void {
                 if (p_inputResult &amp;&amp; p_inputResult.trim()) {
                     this.sendAction(
                         Constants.LEOBRIDGE.REMOVE_TAG,
-                        JSON.stringify({ tag: p_inputResult.trim() })
+                        { tag: p_inputResult.trim() }
                     ).then((p_resultTag: LeoBridgePackage) =&gt; {
                         this.setupRefresh(
                             Focus.NoChange,
@@ -16060,7 +16022,7 @@ public async setLeoID(): Promise&lt;unknown&gt; {
         // OK: id valid!
         this.sendAction(
             Constants.LEOBRIDGE.SET_LEOID,
-            JSON.stringify({ leoID: w_idResult })
+            { leoID: w_idResult }
         );
         this.leoStates.leoIDMissing = false; // At least set for this session
 
@@ -16289,8 +16251,6 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
 
     constructor(
         private _leoIntegration: LeoIntegration
-        // private _leoStates: LeoStates,
-        // private _leoUI: LeoUI,
     ) { }
 
     /**
@@ -16367,43 +16327,6 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
         } else {
             return Promise.resolve([]); // Defaults to an empty list of children
         }
-
-        // if called with element, or not ready, give back empty array as there won't be any children
-        // if (this._leoStates.fileOpenedReady &amp;&amp; !element &amp;&amp; g.app.windowList.length) {
-        //     const c = g.app.windowList[this._leoUI.frameIndex].c;
-        //     const undoer = c.undoer;
-        //     if (undoer.beads.length) {
-        //         let i: number = 0;
-        //         undoer.beads.forEach(p_bead =&gt; {
-        //             let w_description: string = "";
-        //             let w_undoFlag: boolean = false;
-        //             if (i === undoer.bead) {
-        //                 w_description = "Undo";
-        //                 w_undoFlag = true;
-        //             }
-        //             if (i === undoer.bead + 1) {
-        //                 w_description = "Redo";
-        //             }
-        //             const w_node = new LeoUndoNode(
-        //                 p_bead.undoType || "unknown",
-        //                 w_description,
-        //                 (this._beadId++).toString()
-        //             );
-        //             w_children.push(w_node);
-        //             if (w_undoFlag) {
-        //                 this._leoUI.setUndoSelection(w_node);
-        //             }
-        //             i++;
-        //         });
-        //     } else {
-        //         const w_node = new LeoUndoNode(
-        //             "Unchanged",
-        //             "",
-        //             (this._beadId++).toString()
-        //         );
-        //         w_children.push(w_node);
-        //     }
-        // }
 
     }
 
@@ -16542,7 +16465,7 @@ public async revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
     }
     const w_package = await this.sendAction(
         action,
-        JSON.stringify({ repeat: repeat })
+        { repeat: repeat }
     );
     this.setupRefresh(
         Focus.Outline,
@@ -16608,7 +16531,7 @@ public async chapterSelect(): Promise&lt;unknown&gt; {
     if (p_picked &amp;&amp; p_picked.label) {
         return this.sendAction(
             Constants.LEOBRIDGE.CHAPTER_SELECT,
-            JSON.stringify({ name: p_picked.label })
+            { name: p_picked.label }
         ).then((p_resultTag: LeoBridgePackage) =&gt; {
             this.setupRefresh(
                 Focus.NoChange,
@@ -16657,7 +16580,7 @@ public async setUa(): Promise&lt;unknown&gt; {
             // ok got both name and val
             return this.sendAction(
                 Constants.LEOBRIDGE.SET_UA_MEMBER,
-                JSON.stringify({ name: w_name, value: w_uaVal })
+                { name: w_name, value: w_uaVal }
             ).then((p_resultTag: LeoBridgePackage) =&gt; {
                 this.setupRefresh(
                     Focus.NoChange,
@@ -16720,7 +16643,7 @@ import { ArchivedPosition, Icon, LeoBridgePackage } from './types';
     // Has description, so get uA's from server.
     return this._leoIntegration.sendAction(
         Constants.LEOBRIDGE.GET_UA,
-        utils.buildNodeCommandJson(element)
+        utils.buildNodeCommand(element)
     ).then((p_package: LeoBridgePackage) =&gt; {
         if (p_package.ua &amp;&amp; p_package.ua !== null) {
 
@@ -16890,13 +16813,13 @@ public incTreeId(): void {
     if (element) {
         return this._leoIntegration.sendAction(
             Constants.LEOBRIDGE.GET_CHILDREN,
-            utils.buildNodeCommandJson(element)
+            utils.buildNodeCommand(element)
         ).then((p_package: LeoBridgePackage) =&gt; {
             return p_package.children!;
         });
     } else {
         return this._leoIntegration.sendAction(
-            Constants.LEOBRIDGE.GET_CHILDREN, "{}"
+            Constants.LEOBRIDGE.GET_CHILDREN, {}
         ).then((p_package: LeoBridgePackage) =&gt; {
             const w_nodes = p_package.children!;
             if (w_nodes &amp;&amp; w_nodes.length === 1) {
@@ -16923,7 +16846,7 @@ public incTreeId(): void {
 
         return this._leoIntegration.sendAction(
             Constants.LEOBRIDGE.GET_PARENT,
-            element ? utils.buildNodeCommandJson(element) : "{}"
+            element ? utils.buildNodeCommand(element) : {}
         ).then((p_package: LeoBridgePackage) =&gt; {
             if (p_package.node === null) {
                 return null;
@@ -17107,7 +17030,7 @@ private _refreshGotoPane(): void {
 
 </t>
 <t tx="felix.20220730152836.1">/**
- * unique string from AP's gnx, childIndex, and its stack's gnx and childIndex pairs.
+ * * unique string from AP's gnx, childIndex, and its stack's gnx and childIndex pairs.
  */
 export function buildApId(p: ArchivedPosition): string {
     return p.gnx + p.childIndex + p.stack.map(s =&gt; s.gnx + s.childIndex).join("");
@@ -17511,7 +17434,7 @@ public removeSentinels(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
                 q_importFiles = this.sendAction(
                     Constants.LEOBRIDGE.REMOVE_SENTINELS,
-                    JSON.stringify({ names: [w_fixedFilePath] })
+                    { names: [w_fixedFilePath] }
                 );
             } else {
                 q_importFiles = this._leoFilesBrowser.getImportFileUrls(
@@ -17530,7 +17453,7 @@ public removeSentinels(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                         if (p_chosenLeoFiles.length) {
                             return this.sendAction(
                                 Constants.LEOBRIDGE.REMOVE_SENTINELS,
-                                JSON.stringify({ names: p_chosenLeoFiles })
+                                { names: p_chosenLeoFiles }
                             );
                         } else {
                             return Promise.resolve(undefined);
@@ -17692,7 +17615,7 @@ public readFileIntoNode(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
                 q_importFile = this.sendAction(
                     Constants.LEOBRIDGE.READ_FILE_INTO_NODE,
-                    JSON.stringify({ name: w_fixedFilePath })
+                    { name: w_fixedFilePath }
                 );
             } else {
                 q_importFile = this._leoFilesBrowser.getImportFileUrls(
@@ -17708,7 +17631,7 @@ public readFileIntoNode(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                         if (p_chosenLeoFiles.length) {
                             return this.sendAction(
                                 Constants.LEOBRIDGE.READ_FILE_INTO_NODE,
-                                JSON.stringify({ name: p_chosenLeoFiles[0] })
+                                { name: p_chosenLeoFiles[0] }
                             );
                         } else {
                             return Promise.resolve(undefined);
@@ -18270,6 +18193,30 @@ export function buildJsonAp(p_node: ArchivedPosition): string {
         stack: p_node.stack,
     };
     return JSON.stringify(w_pureAP);
+}
+
+</t>
+<t tx="felix.20220904222510.1">/**
+ * * Builds and returns object with 'node' and 'name' members
+ * @param p_node Targeted tree node
+ * @param p_command from which to extract possible name and 'keep selection' flag
+ * @returns object suitable for being a parameter of a leoBridge action
+ */
+export function buildNodeCommand(p_node: ArchivedPosition, p_command?: UserCommand): { [key: string]: any } {
+    const w_result: any = {
+        ap: {
+            childIndex: p_node.childIndex,
+            gnx: p_node.gnx,
+            stack: p_node.stack,
+        }
+    };
+    if (p_command &amp;&amp; p_command.name) {
+        w_result.name = p_command.name;
+    }
+    if (p_command &amp;&amp; p_command.keepSelection) {
+        w_result.keep = true;
+    }
+    return w_result;
 }
 
 </t>

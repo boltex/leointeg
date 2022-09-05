@@ -90,7 +90,6 @@ export class CommandStack {
         const w_command: UserCommand = this._stack[0];
 
         let w_node: ArchivedPosition | undefined; // ap json used in building w_jsonParam
-        let w_jsonParam: string = ""; // Finished parameter that is sent
 
         // First command uses given node or last selected node.
         // Other subsequent commands on stack will use _receivedSelection regardless.
@@ -110,7 +109,7 @@ export class CommandStack {
                 throw new Error("ERROR NO ARCHIVED POSITION JSON");
             }
         }
-        w_jsonParam = utils.buildNodeCommandJson(w_node!, w_command); // 'Insert Named Node' or 'Edit Headline'
+        const w_jsonParam = utils.buildNodeCommand(w_node!, w_command); // 'Insert Named Node' or 'Edit Headline'
 
         // Setup _finalRefreshType, if command requires higher than the one setup so far
         Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)

@@ -114,13 +114,13 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
         if (element) {
             return this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.GET_CHILDREN,
-                utils.buildNodeCommandJson(element)
+                utils.buildNodeCommand(element)
             ).then((p_package: LeoBridgePackage) => {
                 return p_package.children!;
             });
         } else {
             return this._leoIntegration.sendAction(
-                Constants.LEOBRIDGE.GET_CHILDREN, "{}"
+                Constants.LEOBRIDGE.GET_CHILDREN, {}
             ).then((p_package: LeoBridgePackage) => {
                 const w_nodes = p_package.children!;
                 if (w_nodes && w_nodes.length === 1) {
@@ -146,7 +146,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
 
             return this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.GET_PARENT,
-                element ? utils.buildNodeCommandJson(element) : "{}"
+                element ? utils.buildNodeCommand(element) : {}
             ).then((p_package: LeoBridgePackage) => {
                 if (p_package.node === null) {
                     return null;
@@ -170,7 +170,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
         // Has description, so get uA's from server.
         return this._leoIntegration.sendAction(
             Constants.LEOBRIDGE.GET_UA,
-            utils.buildNodeCommandJson(element)
+            utils.buildNodeCommand(element)
         ).then((p_package: LeoBridgePackage) => {
             if (p_package.ua && p_package.ua !== null) {
 
