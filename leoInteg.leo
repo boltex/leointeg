@@ -608,7 +608,6 @@
 <v t="felix.20201106200100.1"><vh>addFileToGlobal</vh></v>
 <v t="felix.20201106200109.1"><vh>removeFileFromGlobal</vh></v>
 <v t="felix.20220730152836.1"><vh>buildApId</vh></v>
-<v t="felix.20220904204830.1"><vh>buildJsonAp</vh></v>
 <v t="felix.20200718195558.3"><vh>buildNodeIconPaths</vh></v>
 <v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
 <v t="ekr.20200815091945.1"><vh>buildButtonsIconPaths</vh></v>
@@ -18179,20 +18178,6 @@ public navigateNavEntry(p_nav: LeoGotoNavKey): void {
     next,
     first,
     last
-}
-
-</t>
-<t tx="felix.20220904204830.1">/**
- * * Builds a JSON string representation of an AP node, removing optional data.
- * @param p_node Node to be converted. Minimal data will be kept for server to match position.
- */
-export function buildJsonAp(p_node: ArchivedPosition): string {
-    const w_pureAP = {
-        childIndex: p_node.childIndex,
-        gnx: p_node.gnx,
-        stack: p_node.stack,
-    };
-    return JSON.stringify(w_pureAP);
 }
 
 </t>

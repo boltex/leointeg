@@ -100,19 +100,6 @@ export function buildApId(p: ArchivedPosition): string {
 }
 
 /**
- * * Builds a JSON string representation of an AP node, removing optional data.
- * @param p_node Node to be converted. Minimal data will be kept for server to match position.
- */
-export function buildJsonAp(p_node: ArchivedPosition): string {
-    const w_pureAP = {
-        childIndex: p_node.childIndex,
-        gnx: p_node.gnx,
-        stack: p_node.stack,
-    };
-    return JSON.stringify(w_pureAP);
-}
-
-/**
  * * Build all possible strings for node icons graphic file paths
  * @param p_context Needed to get to absolute paths on the system
  * @returns An array of the 16 vscode node icons used in this vscode expansion
