@@ -609,6 +609,7 @@
 <v t="felix.20201106200100.1"><vh>addFileToGlobal</vh></v>
 <v t="felix.20201106200109.1"><vh>removeFileFromGlobal</vh></v>
 <v t="felix.20220730152836.1"><vh>buildApId</vh></v>
+<v t="felix.20220904204830.1"><vh>buildJsonAp</vh></v>
 <v t="felix.20200718195558.3"><vh>buildNodeIconPaths</vh></v>
 <v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
 <v t="ekr.20200815091945.1"><vh>buildButtonsIconPaths</vh></v>
@@ -5783,7 +5784,7 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
     // Reference from bottom of stack, but don't remove it yet!
     const w_command: UserCommand = this._stack[0];
 
-    let w_nodeJson: string = ""; // ap json used in building w_jsonParam
+    let w_node: ArchivedPosition | undefined; // ap json used in building w_jsonParam
     let w_jsonParam: string = ""; // Finished parameter that is sent
 
     // First command uses given node or last selected node.
@@ -5791,19 +5792,20 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
     // (Commands such as 'collapse all' just ignore node parameter)
     if (w_command.node) {
         // Was node specific, so starting a new stack of commands
-        w_nodeJson = JSON.stringify(w_command.node);
+        w_node = w_command.node;
     } else {
         // Use received "selected node" unless first use, then use last selected node
         if (this.lastReceivedNode) {
-            w_nodeJson = JSON.stringify(this.lastReceivedNode);
+            w_node = this.lastReceivedNode;
         } else {
-            w_nodeJson = this._leoIntegration.lastSelectedNode ? JSON.stringify(this._leoIntegration.lastSelectedNode) : "";
+            w_node = this._leoIntegration.lastSelectedNode ? this._leoIntegration.lastSelectedNode : undefined;
         }
-        if (!w_nodeJson) {
+        if (!w_node) {
             console.log('ERROR NO ARCHIVED POSITION JSON');
+            throw new Error("ERROR NO ARCHIVED POSITION JSON");
         }
     }
-    w_jsonParam = utils.buildNodeCommandJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
+    w_jsonParam = utils.buildNodeCommandJson(w_node!, w_command); // 'Insert Named Node' or 'Edit Headline'
 
     // Setup _finalRefreshType, if command requires higher than the one setup so far
     Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
@@ -8484,21 +8486,27 @@ export function buildDocumentIconPaths(p_context: vscode.ExtensionContext): Icon
 </t>
 <t tx="felix.20200718195558.6">/**
  * * Builds and returns a JSON string with 'node' and 'name' members
- * @param p_nodeJson Targeted tree node in the proper JSON format
+ * @param p_node Targeted tree node
  * @param p_command from which to extract possible name and 'keep selection' flag
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
-export function buildNodeCommandJson(p_nodeJson: string, p_command?: UserCommand): string {
-    let w_json = "{\"ap\":" + p_nodeJson; // already json
+export function buildNodeCommandJson(p_node: ArchivedPosition, p_command?: UserCommand): string {
+    const w_result: any = {
+        ap: {
+            childIndex: p_node.childIndex,
+            gnx: p_node.gnx,
+            stack: p_node.stack,
+        }
+    };
+
     if (p_command &amp;&amp; p_command.name) {
-        w_json += ", \"name\": " + JSON.stringify(p_command.name);
+        w_result.name = p_command.name;
     }
     if (p_command &amp;&amp; p_command.keepSelection) {
-        w_json += ", \"keep\": true";
+        w_result.keep = true;
     }
-    // TODO : Generalize this function to send any other members of p_command / other members
-    w_json += "}";
-    return w_json;
+
+    return JSON.stringify(w_result);
 }
 
 </t>
@@ -9530,7 +9538,7 @@ private _onChangeCollapsedState(
     // * vscode will update its tree by itself, but we need to change Leo's model of its outline
     this.sendAction(
         p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE,
-        utils.buildNodeCommandJson(JSON.stringify(p_event.element))
+        utils.buildNodeCommandJson(p_event.element)
     );
 
 }
@@ -10381,7 +10389,7 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
 
         q_bodyStates = this.sendAction(
             Constants.LEOBRIDGE.GET_BODY_STATES,
-            utils.buildNodeCommandJson(JSON.stringify(this.lastSelectedNode))
+            utils.buildNodeCommandJson(this.lastSelectedNode!)
         );
 
         q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
@@ -10626,7 +10634,7 @@ public selectTreeNode(
     // * Set selected node in Leo via leoBridge
     const q_setSelectedNode = this.sendAction(
         Constants.LEOBRIDGE.SET_SELECTED_NODE,
-        utils.buildNodeCommandJson(JSON.stringify(p_node))
+        utils.buildNodeCommandJson(p_node)
     ).then((p_setSelectedResult) =&gt; {
         if (!p_internalCall) {
             this._refreshType.states = true;
@@ -14644,7 +14652,7 @@ public refreshBodyStates(): void {
     let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
     q_bodyStates = this.sendAction(
         Constants.LEOBRIDGE.GET_BODY_STATES,
-        utils.buildNodeCommandJson(JSON.stringify(this.lastSelectedNode!))
+        utils.buildNodeCommandJson(this.lastSelectedNode!)
     );
     q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
         let w_language: string = p_bodyStates.language!;
@@ -15491,7 +15499,7 @@ public async navTextChange(): Promise&lt;LeoBridgePackage&gt; {
 import { LeoIntegration } from "./leoIntegration";
 import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
-import { LeoGoto, TGotoTypes } from "./types";
+import { LeoGoto, LeoGotoNavKey, TGotoTypes } from "./types";
 import * as utils from "./utils";
 
 @language typescript
@@ -15708,7 +15716,8 @@ public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
     await this._isBusyTriggerSave(false, true);
 
     if (p_node.entryType === 'tag') {
-
+        // * For when the nav input IS CLEARED : GOTO PANE LISTS ALL TAGS!
+        // The node clicked was one of the tags, pre-fill the nac search with this tag and open find pane
         let w_string: string = p_node.label as string;
         let w_panelID = '';
         let w_panel: vscode.WebviewView | undefined;
@@ -15738,7 +15747,7 @@ public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
         }, 10);
 
     } else if (p_node.entryType !== 'generic' &amp;&amp; p_node.entryType !== 'parent') {
-        // Other and not a tag
+        // Other and not a tag so just locate the entry in either body or outline
         const p_navEntryResult = await this.sendAction(
             Constants.LEOBRIDGE.GOTO_NAV_ENTRY,
             JSON.stringify({ key: p_node.key })
@@ -16700,7 +16709,44 @@ import { ArchivedPosition, Icon, LeoBridgePackage } from './types';
 @others
 
 </t>
-<t tx="felix.20220721204822.10">}
+<t tx="felix.20220721204822.10">public resolveTreeItem(item: LeoApOutlineNode, element: ArchivedPosition, token: vscode.CancellationToken): vscode.ProviderResult&lt;LeoApOutlineNode&gt; {
+
+    if (!item.description) {
+        // No ua's nor node tags.
+        item.tooltip = item.label;
+        return item;
+    }
+
+    // Has description, so get uA's from server.
+    return this._leoIntegration.sendAction(
+        Constants.LEOBRIDGE.GET_UA,
+        utils.buildNodeCommandJson(element)
+    ).then((p_package: LeoBridgePackage) =&gt; {
+        if (p_package.ua &amp;&amp; p_package.ua !== null) {
+
+            const tagQty = (Object.keys(p_package.ua).length &amp;&amp; p_package.ua.__node_tags) ? p_package.ua.__node_tags.length : 0;
+
+            if (tagQty) {
+                // list tags instead
+                item.tooltip = item.label + "\n\u{1F3F7} " + p_package.ua.__node_tags.join('\n\u{1F3F7} ') + "\n";
+                delete p_package.ua.__node_tags;
+            } else {
+                item.tooltip = item.label + "\n";
+            }
+
+            // Recalculate
+            if (Object.keys(p_package.ua).length) {
+                item.tooltip += JSON.stringify(p_package.ua, undefined, 2);
+            }
+
+        } else {
+            item.tooltip = item.label;
+        }
+        return item;
+
+    });
+
+}
 
 </t>
 <t tx="felix.20220721204822.11">export class LeoApOutlineNode extends vscode.TreeItem {
@@ -16723,7 +16769,6 @@ import { ArchivedPosition, Icon, LeoBridgePackage } from './types';
         };
     }
 
-    @others
 }
 </t>
 <t tx="felix.20220721204822.2">export class LeoApOutlineProvider implements vscode.TreeDataProvider&lt;ArchivedPosition&gt; {
@@ -16804,47 +16849,21 @@ public incTreeId(): void {
         (+element.marked &lt;&lt; 1) |
         +element.hasBody;
 
-    // const w_u = (element.v.u &amp;&amp; Object.keys(element.v.u).length) ? element.v.u : false;
-    // let desc: string = "";
-    // // * some smaller grayed-out text accompanying the main label
-    // if (w_u) {
 
-    //     const w_uLength = Object.keys(w_u).length;
-    //     if (w_uLength) {
-    //         desc = "\u{1F4CE} (" + w_uLength + ")";
-    //         if (w_u.__node_tags) {
-    //             if (w_uLength === 1) {
-    //                 // was only tag, so reset it
-    //                 desc = "";
-    //             } else {
-    //                 desc = desc + " "; // add space
-    //             }
-    //             desc = desc + "\u{1F3F7} (" + Object.keys(w_u.__node_tags).length + ")";
-    //         }
-    //     }
-
-    // } else {
-    //     // desc = "id:" + this.id; // ! debug test
-    //     // desc = "gnx:" + this.gnx; // ! debug test
-    // }
     let desc: string = "";
     let tagsQty = 0;
     if (element.u || element.nodeTags) {
         tagsQty = element.nodeTags ? element.nodeTags : 0;
         if (element.u) {
             desc = "\u{1F4CE} (" + element.u + ")";
-            delete element.u;
         }
         if (tagsQty) {
             if (desc) {
                 desc = desc + " "; // add space
             }
             desc = desc + "\u{1F3F7} (" + tagsQty + ")";
-            delete element.nodeTags;
         }
     }
-
-
 
     const w_leoNode = new LeoApOutlineNode(
         element.headline,
@@ -16871,7 +16890,7 @@ public incTreeId(): void {
     if (element) {
         return this._leoIntegration.sendAction(
             Constants.LEOBRIDGE.GET_CHILDREN,
-            utils.buildNodeCommandJson(JSON.stringify(element))
+            utils.buildNodeCommandJson(element)
         ).then((p_package: LeoBridgePackage) =&gt; {
             return p_package.children!;
         });
@@ -16887,43 +16906,10 @@ public incTreeId(): void {
             return w_nodes;
         });
     }
-    // if (element) {
-    //     return [...element.children()];
-    // } else {
-    //     if (g.app.windowList[this._leoIntegration.frameIndex]) {
-    //         // Currently Selected Document's Commander
-    //         const w_c = g.app.windowList[this._leoIntegration.frameIndex].c;
-    //         if (w_c.hoistStack.length) {
-    //             // HOISTED: Topmost hoisted node starts the outline as single root 'child'
-    //             const w_rootPosition = w_c.hoistStack[w_c.hoistStack.length - 1].p;
-    //             w_rootPosition._isRoot = true;
-    //             return [w_rootPosition];
-    //         } else {
-    //             // NOT HOISTED: Normal list of root nodes
-    //             const w_rootNodes = [...w_c.all_Root_Children()];
-    //             if (w_rootNodes.length === 1) {
-    //                 // Exactly one: prevent hoisting on SINGLE top node
-    //                 w_rootNodes[0]._isRoot = true;
-    //             }
-    //             return w_rootNodes;
-    //         }
-    //     } else {
-    //         return []; // Attempted to access un-existent frame
-    //     }
-    // }
 }
 
-public getParent(element: ArchivedPosition): vscode.ProviderResult&lt;ArchivedPosition&gt; {
-    // if (element) {
-    //     const p_parent = element.parent();
-    //     if (p_parent.v) {
-    //         return p_parent;
-    //     } else {
-    //         return undefined;
-    //     }
-    // }
-    // return undefined;
-
+</t>
+<t tx="felix.20220721204822.9">public getParent(element: ArchivedPosition): vscode.ProviderResult&lt;ArchivedPosition&gt; {
     if (this._leoIntegration.leoStates.fileOpenedReady) {
         // Check if hoisted and is already up to root node
         if (this._rootNode &amp;&amp; element.gnx === this._rootNode.gnx &amp;&amp; element.childIndex === this._rootNode.childIndex) {
@@ -16937,7 +16923,7 @@ public getParent(element: ArchivedPosition): vscode.ProviderResult&lt;ArchivedPo
 
         return this._leoIntegration.sendAction(
             Constants.LEOBRIDGE.GET_PARENT,
-            element ? utils.buildNodeCommandJson(JSON.stringify(element)) : "{}"
+            element ? utils.buildNodeCommandJson(element) : "{}"
         ).then((p_package: LeoBridgePackage) =&gt; {
             if (p_package.node === null) {
                 return null;
@@ -16950,44 +16936,7 @@ public getParent(element: ArchivedPosition): vscode.ProviderResult&lt;ArchivedPo
     }
 }
 
-public resolveTreeItem(item: LeoApOutlineNode, element: ArchivedPosition, token: vscode.CancellationToken): vscode.ProviderResult&lt;LeoApOutlineNode&gt; {
-
-    if (!item.description) {
-        // No ua's nor node tags.
-        item.tooltip = item.label;
-        return item;
-    }
-
-    // Has description, so get uA's from server.
-    return this._leoIntegration.sendAction(
-        Constants.LEOBRIDGE.GET_UA,
-        utils.buildNodeCommandJson(JSON.stringify(element))
-    ).then((p_package: LeoBridgePackage) =&gt; {
-        if (p_package.ua &amp;&amp; p_package.ua !== null) {
-
-            const tagQty = (Object.keys(p_package.ua).length &amp;&amp; p_package.ua.__node_tags) ? p_package.ua.__node_tags.length : 0;
-
-            if (tagQty) {
-                // list tags instead
-                item.tooltip = item.label + "\n\u{1F3F7} " + p_package.ua.__node_tags.join('\n\u{1F3F7} ') + "\n";
-                delete p_package.ua.__node_tags;
-            } else {
-                item.tooltip = item.label + "\n";
-            }
-
-            // Recalculate
-            if (Object.keys(p_package.ua).length) {
-                item.tooltip += JSON.stringify(p_package.ua, undefined, 2);
-            }
-
-        } else {
-            item.tooltip = item.label;
-        }
-        return item;
-
-    });
 </t>
-<t tx="felix.20220721204822.9"></t>
 <t tx="felix.20220721225622.1">/**
  * * Handle the selected node that was reached while converting received ap_nodes.
  * @param p_element The "selected" ArchivedPosition element reached.
@@ -18103,25 +18052,58 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 
     private _lastGotoView: vscode.TreeView&lt;LeoGotoNode&gt; | undefined;
 
-    private _topNode: LeoGotoNode | undefined;
+    private _nodeList: LeoGotoNode[] = []; // Node list kept here.
+
+    private _selectedNodeIndex: number = 0;
 
     constructor(private _leoIntegration: LeoIntegration) { }
 
-    public showGotoPanel(): Thenable&lt;void&gt; {
-        if (this._lastGotoView &amp;&amp; this._topNode) {
-            return this._lastGotoView.reveal(this._topNode, { select: false, focus: false });
-        }
-        return Promise.resolve();
-    }
-
     public setLastGotoView(p_view: vscode.TreeView&lt;LeoGotoNode&gt;): void {
         this._lastGotoView = p_view;
+    }
+
+    public resetSelectedNode(p_node: LeoGotoNode): void {
+        this._selectedNodeIndex = 0;
+    }
+
+    public navigateNavEntry(p_nav: LeoGotoNavKey): void {
+        if (!this._nodeList.length) {
+            return;
+        }
+        switch (p_nav.valueOf()) {
+            case LeoGotoNavKey.first:
+                this._selectedNodeIndex = 0;
+                this._leoIntegration.gotoNavEntry(this._nodeList[this._selectedNodeIndex]);
+                break;
+
+            case LeoGotoNavKey.last:
+                this._selectedNodeIndex = this._nodeList.length - 1;
+                this._leoIntegration.gotoNavEntry(this._nodeList[this._selectedNodeIndex]);
+                break;
+
+            case LeoGotoNavKey.next:
+                if (this._selectedNodeIndex &lt; this._nodeList.length - 1) {
+                    this._selectedNodeIndex += 1;
+                }
+                break;
+
+            case LeoGotoNavKey.prev:
+                if (this._selectedNodeIndex &lt; 0) {
+                    this._selectedNodeIndex -= 1;
+                }
+                break;
+
+        }
+        this._lastGotoView?.reveal(this._nodeList[this._selectedNodeIndex]);
+        this._leoIntegration.gotoNavEntry(this._nodeList[this._selectedNodeIndex]);
     }
 
     /**
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
+        this._nodeList = [];
+        this._selectedNodeIndex = 0;
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -18134,24 +18116,19 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
 
-
             // call action to get get list, and convert to LeoButtonNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package =&gt; {
+                this._nodeList = [];
                 if (p_package &amp;&amp; p_package.navList) {
 
-                    const w_list: LeoGotoNode[] = [];
-                    this._topNode = undefined;
                     const w_navList: LeoGoto[] = p_package.navList;
                     if (w_navList &amp;&amp; w_navList.length) {
                         w_navList.forEach((p_goto: LeoGoto) =&gt; {
                             const w_newNode = new LeoGotoNode(this._leoIntegration, p_goto, p_package.navOptions!);
-                            if (!this._topNode) {
-                                this._topNode = w_newNode;
-                            }
-                            w_list.push(w_newNode);
+                            this._nodeList.push(w_newNode);
                         });
                     }
-                    return w_list;
+                    return this._nodeList;
                 } else {
                     return [];
                 }
@@ -18270,7 +18247,7 @@ export class LeoGotoNode extends vscode.TreeItem {
  * * Goto the next, previous, first or last nav entry via arrow keys in
  */
 public navigateNavEntry(p_nav: LeoGotoNavKey): void {
-
+    this._leoGotoProvider.navigateNavEntry(p_nav);
 }
 
 </t>
@@ -18279,6 +18256,20 @@ public navigateNavEntry(p_nav: LeoGotoNavKey): void {
     next,
     first,
     last
+}
+
+</t>
+<t tx="felix.20220904204830.1">/**
+ * * Builds a JSON string representation of an AP node, removing optional data.
+ * @param p_node Node to be converted. Minimal data will be kept for server to match position.
+ */
+export function buildJsonAp(p_node: ArchivedPosition): string {
+    const w_pureAP = {
+        childIndex: p_node.childIndex,
+        gnx: p_node.gnx,
+        stack: p_node.stack,
+    };
+    return JSON.stringify(w_pureAP);
 }
 
 </t>

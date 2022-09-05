@@ -100,6 +100,19 @@ export function buildApId(p: ArchivedPosition): string {
 }
 
 /**
+ * * Builds a JSON string representation of an AP node, removing optional data.
+ * @param p_node Node to be converted. Minimal data will be kept for server to match position.
+ */
+export function buildJsonAp(p_node: ArchivedPosition): string {
+    const w_pureAP = {
+        childIndex: p_node.childIndex,
+        gnx: p_node.gnx,
+        stack: p_node.stack,
+    };
+    return JSON.stringify(w_pureAP);
+}
+
+/**
  * * Build all possible strings for node icons graphic file paths
  * @param p_context Needed to get to absolute paths on the system
  * @returns An array of the 16 vscode node icons used in this vscode expansion
@@ -181,21 +194,27 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 
 /**
  * * Builds and returns a JSON string with 'node' and 'name' members
- * @param p_nodeJson Targeted tree node in the proper JSON format
+ * @param p_node Targeted tree node
  * @param p_command from which to extract possible name and 'keep selection' flag
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
-export function buildNodeCommandJson(p_nodeJson: string, p_command?: UserCommand): string {
-    let w_json = "{\"ap\":" + p_nodeJson; // already json
+export function buildNodeCommandJson(p_node: ArchivedPosition, p_command?: UserCommand): string {
+    const w_result: any = {
+        ap: {
+            childIndex: p_node.childIndex,
+            gnx: p_node.gnx,
+            stack: p_node.stack,
+        }
+    };
+
     if (p_command && p_command.name) {
-        w_json += ", \"name\": " + JSON.stringify(p_command.name);
+        w_result.name = p_command.name;
     }
     if (p_command && p_command.keepSelection) {
-        w_json += ", \"keep\": true";
+        w_result.keep = true;
     }
-    // TODO : Generalize this function to send any other members of p_command / other members
-    w_json += "}";
-    return w_json;
+
+    return JSON.stringify(w_result);
 }
 
 /**

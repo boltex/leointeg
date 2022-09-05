@@ -1245,7 +1245,7 @@ export class LeoIntegration {
         // * vscode will update its tree by itself, but we need to change Leo's model of its outline
         this.sendAction(
             p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE,
-            utils.buildNodeCommandJson(JSON.stringify(p_event.element))
+            utils.buildNodeCommandJson(p_event.element)
         );
 
     }
@@ -2621,7 +2621,7 @@ export class LeoIntegration {
 
             q_bodyStates = this.sendAction(
                 Constants.LEOBRIDGE.GET_BODY_STATES,
-                utils.buildNodeCommandJson(JSON.stringify(this.lastSelectedNode))
+                utils.buildNodeCommandJson(this.lastSelectedNode!)
             );
 
             q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
@@ -2878,7 +2878,7 @@ export class LeoIntegration {
         let q_bodyStates: Promise<LeoBridgePackage> | undefined;
         q_bodyStates = this.sendAction(
             Constants.LEOBRIDGE.GET_BODY_STATES,
-            utils.buildNodeCommandJson(JSON.stringify(this.lastSelectedNode!))
+            utils.buildNodeCommandJson(this.lastSelectedNode!)
         );
         q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
             let w_language: string = p_bodyStates.language!;
@@ -3131,7 +3131,7 @@ export class LeoIntegration {
         // * Set selected node in Leo via leoBridge
         const q_setSelectedNode = this.sendAction(
             Constants.LEOBRIDGE.SET_SELECTED_NODE,
-            utils.buildNodeCommandJson(JSON.stringify(p_node))
+            utils.buildNodeCommandJson(p_node)
         ).then((p_setSelectedResult) => {
             if (!p_internalCall) {
                 this._refreshType.states = true;
@@ -3748,7 +3748,8 @@ export class LeoIntegration {
         await this._isBusyTriggerSave(false, true);
 
         if (p_node.entryType === 'tag') {
-
+            // * For when the nav input IS CLEARED : GOTO PANE LISTS ALL TAGS!
+            // The node clicked was one of the tags, pre-fill the nac search with this tag and open find pane
             let w_string: string = p_node.label as string;
             let w_panelID = '';
             let w_panel: vscode.WebviewView | undefined;
@@ -3778,7 +3779,7 @@ export class LeoIntegration {
             }, 10);
 
         } else if (p_node.entryType !== 'generic' && p_node.entryType !== 'parent') {
-            // Other and not a tag
+            // Other and not a tag so just locate the entry in either body or outline
             const p_navEntryResult = await this.sendAction(
                 Constants.LEOBRIDGE.GOTO_NAV_ENTRY,
                 JSON.stringify({ key: p_node.key })
@@ -3815,7 +3816,7 @@ export class LeoIntegration {
      * * Goto the next, previous, first or last nav entry via arrow keys in
      */
     public navigateNavEntry(p_nav: LeoGotoNavKey): void {
-
+        this._leoGotoProvider.navigateNavEntry(p_nav);
     }
 
     /**

@@ -74,47 +74,21 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
             (+element.marked << 1) |
             +element.hasBody;
 
-        // const w_u = (element.v.u && Object.keys(element.v.u).length) ? element.v.u : false;
-        // let desc: string = "";
-        // // * some smaller grayed-out text accompanying the main label
-        // if (w_u) {
 
-        //     const w_uLength = Object.keys(w_u).length;
-        //     if (w_uLength) {
-        //         desc = "\u{1F4CE} (" + w_uLength + ")";
-        //         if (w_u.__node_tags) {
-        //             if (w_uLength === 1) {
-        //                 // was only tag, so reset it
-        //                 desc = "";
-        //             } else {
-        //                 desc = desc + " "; // add space
-        //             }
-        //             desc = desc + "\u{1F3F7} (" + Object.keys(w_u.__node_tags).length + ")";
-        //         }
-        //     }
-
-        // } else {
-        //     // desc = "id:" + this.id; // ! debug test
-        //     // desc = "gnx:" + this.gnx; // ! debug test
-        // }
         let desc: string = "";
         let tagsQty = 0;
         if (element.u || element.nodeTags) {
             tagsQty = element.nodeTags ? element.nodeTags : 0;
             if (element.u) {
                 desc = "\u{1F4CE} (" + element.u + ")";
-                delete element.u;
             }
             if (tagsQty) {
                 if (desc) {
                     desc = desc + " "; // add space
                 }
                 desc = desc + "\u{1F3F7} (" + tagsQty + ")";
-                delete element.nodeTags;
             }
         }
-
-
 
         const w_leoNode = new LeoApOutlineNode(
             element.headline,
@@ -140,7 +114,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
         if (element) {
             return this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.GET_CHILDREN,
-                utils.buildNodeCommandJson(JSON.stringify(element))
+                utils.buildNodeCommandJson(element)
             ).then((p_package: LeoBridgePackage) => {
                 return p_package.children!;
             });
@@ -156,43 +130,9 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
                 return w_nodes;
             });
         }
-        // if (element) {
-        //     return [...element.children()];
-        // } else {
-        //     if (g.app.windowList[this._leoIntegration.frameIndex]) {
-        //         // Currently Selected Document's Commander
-        //         const w_c = g.app.windowList[this._leoIntegration.frameIndex].c;
-        //         if (w_c.hoistStack.length) {
-        //             // HOISTED: Topmost hoisted node starts the outline as single root 'child'
-        //             const w_rootPosition = w_c.hoistStack[w_c.hoistStack.length - 1].p;
-        //             w_rootPosition._isRoot = true;
-        //             return [w_rootPosition];
-        //         } else {
-        //             // NOT HOISTED: Normal list of root nodes
-        //             const w_rootNodes = [...w_c.all_Root_Children()];
-        //             if (w_rootNodes.length === 1) {
-        //                 // Exactly one: prevent hoisting on SINGLE top node
-        //                 w_rootNodes[0]._isRoot = true;
-        //             }
-        //             return w_rootNodes;
-        //         }
-        //     } else {
-        //         return []; // Attempted to access un-existent frame
-        //     }
-        // }
     }
 
     public getParent(element: ArchivedPosition): vscode.ProviderResult<ArchivedPosition> {
-        // if (element) {
-        //     const p_parent = element.parent();
-        //     if (p_parent.v) {
-        //         return p_parent;
-        //     } else {
-        //         return undefined;
-        //     }
-        // }
-        // return undefined;
-
         if (this._leoIntegration.leoStates.fileOpenedReady) {
             // Check if hoisted and is already up to root node
             if (this._rootNode && element.gnx === this._rootNode.gnx && element.childIndex === this._rootNode.childIndex) {
@@ -206,7 +146,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
 
             return this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.GET_PARENT,
-                element ? utils.buildNodeCommandJson(JSON.stringify(element)) : "{}"
+                element ? utils.buildNodeCommandJson(element) : "{}"
             ).then((p_package: LeoBridgePackage) => {
                 if (p_package.node === null) {
                     return null;
@@ -230,7 +170,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
         // Has description, so get uA's from server.
         return this._leoIntegration.sendAction(
             Constants.LEOBRIDGE.GET_UA,
-            utils.buildNodeCommandJson(JSON.stringify(element))
+            utils.buildNodeCommandJson(element)
         ).then((p_package: LeoBridgePackage) => {
             if (p_package.ua && p_package.ua !== null) {
 
@@ -255,6 +195,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
             return item;
 
         });
+
     }
 
 }
