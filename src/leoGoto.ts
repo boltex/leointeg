@@ -26,8 +26,14 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
         this._lastGotoView = p_view;
     }
 
-    public resetSelectedNode(p_node: LeoGotoNode): void {
+    public resetSelectedNode(p_node?: LeoGotoNode): void {
         this._selectedNodeIndex = 0;
+        if (p_node) {
+            const w_found = this._nodeList.indexOf(p_node);
+            if (w_found >= 0) {
+                this._selectedNodeIndex = w_found;
+            }
+        }
     }
 
     public navigateNavEntry(p_nav: LeoGotoNavKey): void {
@@ -52,7 +58,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
                 break;
 
             case LeoGotoNavKey.prev:
-                if (this._selectedNodeIndex < 0) {
+                if (this._selectedNodeIndex > 0) {
                     this._selectedNodeIndex -= 1;
                 }
                 break;

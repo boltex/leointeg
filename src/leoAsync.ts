@@ -41,27 +41,25 @@ export class LeoAsync {
      * @param p_serverPackage the package sent along by the server
      */
     public refresh(p_serverPackage: any): Promise<unknown> {
-        // setup refresh 'all' by default for now.
-        this._leoIntegration.setupRefresh(
-            Focus.NoChange, // ! SHOULD BE KEPT AS CURRENT FOCUS !
-            {
-                tree: true,
-                body: true,
-                states: true,
-                buttons: true,
-                documents: true
-            }
-        );
-        if (p_serverPackage.opened && this._leoIntegration.leoStates.fileOpenedReady) {
-            // * PASS (refresh all already setup)
-            // this._leoIntegration.refreshAll();
-        } else if (p_serverPackage.opened && !this._leoIntegration.leoStates.fileOpenedReady) {
+        if (p_serverPackage.opened) {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                 .then((p_doNothingPackage) => {
                     p_doNothingPackage.filename = p_doNothingPackage.commander!.fileName;
                     this._leoIntegration.serverHasOpenedFile = true;
                     this._leoIntegration.serverOpenedFileName = p_doNothingPackage.filename!;
                     this._leoIntegration.serverOpenedNode = p_doNothingPackage.node!;
+                    this._leoIntegration.setupRefresh(
+                        Focus.NoChange,
+                        {
+                            tree: true,
+                            body: true,
+                            states: true,
+                            buttons: true,
+                            documents: true
+                        },
+                        p_doNothingPackage.node!
+                    );
+
                     return this._leoIntegration.launchRefresh();
                 });
         } else {
@@ -183,7 +181,13 @@ export class LeoAsync {
                         // refresh and reveal selection
                         this._leoIntegration.setupRefresh(
                             Focus.NoChange,
-                            { tree: true, body: true, states: true, buttons: true, documents: true },
+                            {
+                                tree: true,
+                                body: true,
+                                states: true,
+                                buttons: true,
+                                documents: true
+                            },
                             p_package.node
                         );
                         this._leoIntegration.launchRefresh();
