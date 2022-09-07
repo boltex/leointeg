@@ -1845,7 +1845,8 @@
         "command": "leointeg.cloneFindAllFlattened",
         "category": "Leo",
         "enablement": "leoTreeOpened",
-        "title": "Clone Find All Flattened"
+        "shortTitle": "cff",
+        "title": "cff - Clone Find All Flattened"
       },
       {
         "command": "leointeg.cloneFindMarked",
@@ -2680,6 +2681,11 @@
           "command": "leointeg.writeDirtyAtFileNodes",
           "when": "resourceScheme == leo && leoTreeOpened",
           "group": "navigation@8"
+        },
+        {
+          "command": "leointeg.refreshFromDiskSelection",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@9"
         },
         {
           "command": "leointeg.showSettingsPage",

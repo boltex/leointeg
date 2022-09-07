@@ -12492,7 +12492,8 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.cloneFindAllFlattened",
   "category": "Leo",
   "enablement": "leoTreeOpened",
-  "title": "Clone Find All Flattened"
+  "shortTitle": "cff",
+  "title": "cff - Clone Find All Flattened"
 },
 {
   "command": "leointeg.cloneFindMarked",
@@ -13605,6 +13606,11 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
     "command": "leointeg.writeDirtyAtFileNodes",
     "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
     "group": "navigation@8"
+  },
+  {
+    "command": "leointeg.refreshFromDiskSelection",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@9"
   },
   {
     "command": "leointeg.showSettingsPage",
