@@ -1334,9 +1334,12 @@ private async _tryApplyNodeToBody(
  * @returns Promise back from command's execution, if added on stack, undefined otherwise.
  * (see command stack 'rules' in commandStack.ts)
  */
-public nodeCommand(p_userCommand: UserCommand): Promise&lt;LeoBridgePackage&gt; | undefined {
+public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise&lt;LeoBridgePackage&gt; | undefined {
     // No forced vscode save-triggers for direct calls from extension.js
     this.triggerBodySave();
+    if (p_isNavigation) {
+        this.showBodyIfClosed = true;
+    }
     const q_result = this._commandStack.add(p_userCommand);
     if (q_result) {
         return q_result;
@@ -1711,13 +1714,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     node: U,
     refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 [CMD.EXPAND_AND_GO_RIGHT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.EXPAND_AND_GO_RIGHT,
     node: U,
     refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 
 [CMD.GOTO_NEXT_CLONE, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
@@ -1749,62 +1752,62 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     node: U,
     refreshType: REFRESH_NODE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 [CMD.GOTO_LAST_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_SIBLING,
     node: U,
     refreshType: REFRESH_NODE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 [CMD.GOTO_FIRST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_FIRST_VISIBLE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 [CMD.GOTO_LAST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_VISIBLE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 [CMD.GOTO_NEXT_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_VISIBLE,
     node: U,
     refreshType: REFRESH_NODE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 [CMD.GOTO_PREV_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_PREV_VISIBLE,
     node: U,
     refreshType: REFRESH_NODE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 
 [CMD.PAGE_UP, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PAGE_UP,
     node: U,
     refreshType: REFRESH_NODE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 [CMD.PAGE_DOWN, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PAGE_DOWN,
     node: U,
     refreshType: REFRESH_NODE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 [CMD.SCROLL_TOP, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SCROLL_TOP,
     node: U,
     refreshType: REFRESH_NODE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 [CMD.SCROLL_BOTTOM, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SCROLL_BOTTOM,
     node: U,
     refreshType: REFRESH_NODE_BODY,
     finalFocus: Focus.Outline
-})],
+}, true)],
 
 [CMD.DEHOIST, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEHOIST,

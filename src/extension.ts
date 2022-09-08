@@ -218,13 +218,13 @@ export function activate(p_context: vscode.ExtensionContext) {
             node: U,
             refreshType: REFRESH_TREE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
         [CMD.EXPAND_AND_GO_RIGHT, () => w_leo.nodeCommand({
             action: BRIDGE.EXPAND_AND_GO_RIGHT,
             node: U,
             refreshType: REFRESH_TREE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
 
         [CMD.GOTO_NEXT_CLONE, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
@@ -256,62 +256,62 @@ export function activate(p_context: vscode.ExtensionContext) {
             node: U,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
         [CMD.GOTO_LAST_SIBLING, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_LAST_SIBLING,
             node: U,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
         [CMD.GOTO_FIRST_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_FIRST_VISIBLE,
             node: U,
             refreshType: REFRESH_TREE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
         [CMD.GOTO_LAST_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_LAST_VISIBLE,
             node: U,
             refreshType: REFRESH_TREE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
         [CMD.GOTO_NEXT_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_VISIBLE,
             node: U,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
         [CMD.GOTO_PREV_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_PREV_VISIBLE,
             node: U,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
 
         [CMD.PAGE_UP, () => w_leo.nodeCommand({
             action: BRIDGE.PAGE_UP,
             node: U,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
         [CMD.PAGE_DOWN, () => w_leo.nodeCommand({
             action: BRIDGE.PAGE_DOWN,
             node: U,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
         [CMD.SCROLL_TOP, () => w_leo.nodeCommand({
             action: BRIDGE.SCROLL_TOP,
             node: U,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
         [CMD.SCROLL_BOTTOM, () => w_leo.nodeCommand({
             action: BRIDGE.SCROLL_BOTTOM,
             node: U,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
 
         [CMD.DEHOIST, () => w_leo.nodeCommand({
             action: BRIDGE.DEHOIST,

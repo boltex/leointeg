@@ -3191,9 +3191,12 @@ export class LeoIntegration {
      * @returns Promise back from command's execution, if added on stack, undefined otherwise.
      * (see command stack 'rules' in commandStack.ts)
      */
-    public nodeCommand(p_userCommand: UserCommand): Promise<LeoBridgePackage> | undefined {
+    public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise<LeoBridgePackage> | undefined {
         // No forced vscode save-triggers for direct calls from extension.js
         this.triggerBodySave();
+        if (p_isNavigation) {
+            this.showBodyIfClosed = true;
+        }
         const q_result = this._commandStack.add(p_userCommand);
         if (q_result) {
             return q_result;
