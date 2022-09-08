@@ -2102,7 +2102,6 @@ export class LeoIntegration {
     public gotSelectedNode(p_element: ArchivedPosition): void {
 
         const w_focusTree = (this._revealType.valueOf() >= RevealType.RevealSelectFocus.valueOf());
-
         const w_last = this.lastSelectedNode;
 
         if (
@@ -2224,10 +2223,8 @@ export class LeoIntegration {
             ) {
                 // if needs switching by actually having different gnx
                 if (utils.leoUriToStr(this.bodyUri) !== p_node.gnx) {
-
                     // * LOCATE OLD GNX FOR PROPER COLUMN
                     this._locateOpenedBody(utils.leoUriToStr(this.bodyUri));
-
                     // Make sure any pending changes in old body are applied before switching
                     return this._bodyTextDocument.save().then(() => {
                         return this._switchBody(p_aside, p_preventTakingFocus);
@@ -2267,38 +2264,61 @@ export class LeoIntegration {
             return Promise.resolve();
         }
         this.showBodyIfClosed = false;
+        let q_lastSecondSave: Thenable<boolean> | undefined;
+
+        if (w_visibleCount === 1) {
+            this._bodyPreviewMode = this._isBodyPreview(); // recheck in case user double clicked on title
+        }
 
         if (this.lastSelectedNode && this._bodyPreviewMode && this._bodyEnablePreview && w_visibleCount < 2) {
+            console.log('ShowBody first');
+
             // just show in same column and delete after
             this.bodyUri = utils.strToLeoUri(this.lastSelectedNode.gnx);
             const q_showBody = this.showBody(p_aside, p_preventTakingFocus);
 
             if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
-
-                vscode.window.tabGroups.all.forEach((p_tabGroup) => {
-                    p_tabGroup.tabs.forEach((p_tab) => {
-                        if (
-                            (p_tab.input as vscode.TabInputText).uri &&
-                            (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
-                            (p_tab.input as vscode.TabInputText).uri.fsPath === w_oldUri.fsPath
-                        ) {
-                            // Make sure it's saved AGAIN!!
-                            w_tabsToClose.push(p_tab);
-                        }
+                q_showBody.then(() => {
+                    vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+                        p_tabGroup.tabs.forEach((p_tab) => {
+                            if (
+                                (p_tab.input as vscode.TabInputText).uri &&
+                                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
+                                (p_tab.input as vscode.TabInputText).uri.fsPath === w_oldUri.fsPath
+                            ) {
+                                // Make sure it's saved AGAIN!!
+                                if (
+                                    p_tab.isDirty &&
+                                    this._bodyLastChangedDocument &&
+                                    (p_tab.input as vscode.TabInputText).uri.fsPath === this._bodyLastChangedDocument.uri.fsPath
+                                ) {
+                                    console.log('LAST SECOND SAVE1!'); // TODO : CLEANUP !                                     <===================
+                                    this._leoFileSystem.preventSaveToLeo = true;
+                                    this._editorTouched = false;
+                                    q_lastSecondSave = this._bodyLastChangedDocument.save();
+                                }
+                                w_tabsToClose.push(p_tab);
+                            }
+                        });
                     });
-                });
-                if (w_tabsToClose.length) {
-                    vscode.window.tabGroups.close(w_tabsToClose, true);
-                }
+                    if (w_tabsToClose.length) {
+                        if (q_lastSecondSave) {
+                            q_lastSecondSave.then(() => {
+                                return vscode.window.tabGroups.close(w_tabsToClose, true);
+                            });
+                        } else {
+                            vscode.window.tabGroups.close(w_tabsToClose, true);
+                        }
+                        vscode.window.tabGroups.close(w_tabsToClose, true);
+                    }
+                    // Remove from potential 'recently opened'
+                    vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri);
 
-                // Remove from potential 'recently opened'
-                vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri);
+                });
             }
             return q_showBody;
         } else {
             // Close ALL LEO EDITORS
-            let q_lastSecondSave: Thenable<boolean> | undefined;
-
             vscode.window.tabGroups.all.forEach((p_tabGroup) => {
                 p_tabGroup.tabs.forEach((p_tab) => {
                     if (
@@ -2312,8 +2332,7 @@ export class LeoIntegration {
                             this._bodyLastChangedDocument &&
                             (p_tab.input as vscode.TabInputText).uri.fsPath === this._bodyLastChangedDocument.uri.fsPath
                         ) {
-                            console.log('LAST SECOND SAVE!'); // TODO : CLEANUP !                                     <===================
-
+                            console.log('LAST SECOND SAVE2!'); // TODO : CLEANUP !
                             this._leoFileSystem.preventSaveToLeo = true;
                             this._editorTouched = false;
                             q_lastSecondSave = this._bodyLastChangedDocument.save();
@@ -2333,9 +2352,7 @@ export class LeoIntegration {
                     });
 
                 } else {
-
                     q_closeAll = vscode.window.tabGroups.close(w_tabsToClose, true);
-
                 }
 
             } else {
@@ -2410,6 +2427,33 @@ export class LeoIntegration {
             });
         });
         return w_total;
+    }
+
+    /**
+     * * Checks for all tabs if any are 'leoBody' scheme
+     * @returns total found
+     */
+    private _isBodyPreview(): boolean {
+        let w_isPreview: boolean = true;
+        let w_found: boolean = false;
+        vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+            p_tabGroup.tabs.forEach((p_tab) => {
+                if (
+                    (p_tab.input as vscode.TabInputText).uri &&
+                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
+                ) {
+                    w_found = true;
+                    if (!p_tab.isPreview) {
+                        w_isPreview = false;
+                    }
+                }
+            });
+        });
+        if (w_found) {
+            return w_isPreview;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -2588,7 +2632,7 @@ export class LeoIntegration {
                 (this._bodyLastChangedDocument.isDirty || this._editorTouched) &&
                 w_openedDocumentGnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)
             ) {
-                console.log('had to save'); // TODO : CLEANUP !                                     <===================
+                console.log('had to save'); // TODO : CLEANUP !
 
                 // MAKE SURE BODY IS NOT DIRTY  !!
                 this._leoFileSystem.preventSaveToLeo = true;
