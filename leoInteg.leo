@@ -6219,10 +6219,6 @@ export function activate(p_context: vscode.ExtensionContext) {
 
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
 
-        // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        // ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
-        // ["leointeg.testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
-
         &lt;&lt; Define entries for all commands &gt;&gt;
     ];
 
@@ -10997,6 +10993,9 @@ public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
 public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | undefined&gt; {
     return this._isBusyTriggerSave(true, true)
         .then((p_saveResult) =&gt; {
+            if (p_leoFileUri &amp;&amp; p_leoFileUri.scheme.startsWith("leo")) {
+                p_leoFileUri = undefined; // Was used in the editor/title menu!
+            }
             let q_openedFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
             if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');

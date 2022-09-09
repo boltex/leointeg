@@ -5027,6 +5027,9 @@ export class LeoIntegration {
     public openLeoFile(p_leoFileUri?: vscode.Uri): Promise<LeoBridgePackage | undefined> {
         return this._isBusyTriggerSave(true, true)
             .then((p_saveResult) => {
+                if (p_leoFileUri && p_leoFileUri.scheme.startsWith("leo")) {
+                    p_leoFileUri = undefined; // Was used in the editor/title menu!
+                }
                 let q_openedFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
                 if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
