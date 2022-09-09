@@ -9869,7 +9869,7 @@ private _switchBody(
             q_showBody.then(() =&gt; {
                 vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
                     p_tabGroup.tabs.forEach((p_tab) =&gt; {
-                        if (
+                        if (p_tab.input &amp;&amp;
                             (p_tab.input as vscode.TabInputText).uri &amp;&amp;
                             (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &amp;&amp;
                             (p_tab.input as vscode.TabInputText).uri.fsPath === w_oldUri.fsPath
@@ -9909,7 +9909,7 @@ private _switchBody(
         // Close ALL LEO EDITORS
         vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
             p_tabGroup.tabs.forEach((p_tab) =&gt; {
-                if (
+                if (p_tab.input &amp;&amp;
                     (p_tab.input as vscode.TabInputText).uri &amp;&amp;
                     (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &amp;&amp;
                     w_newUri.fsPath !== (p_tab.input as vscode.TabInputText).uri.fsPath // Maybe useless to check if different!
@@ -9980,7 +9980,7 @@ private _locateOpenedBody(p_gnx: string): boolean {
     let w_found = false;
     vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
         p_tabGroup.tabs.forEach((p_tab) =&gt; {
-            if (
+            if (p_tab.input &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri &amp;&amp;
                 utils.leoUriToStr((p_tab.input as vscode.TabInputText).uri) === p_gnx
             ) {
@@ -10151,7 +10151,9 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
     // Find body pane's position if already opened with same gnx (language still needs to be set per position)
     vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
         p_tabGroup.tabs.forEach((p_tab) =&gt; {
-            if ((p_tab.input as vscode.TabInputText).uri &amp;&amp;
+
+            if (p_tab.input &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri.fsPath === w_openedDocument.uri.fsPath) {
                 vscode.workspace.textDocuments.forEach((p_textDocument) =&gt; {
                     if (p_textDocument.uri.fsPath === (p_tab.input as vscode.TabInputText).uri.fsPath) {
@@ -10196,7 +10198,7 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
     ).then(
         (p_result) =&gt; { return p_result; },
         (p_reason) =&gt; {
-            console.log('showTextDocument rejected');
+            console.log('showTextDocument rejected: ', p_reason);
         }
     );
 
@@ -12547,7 +12549,7 @@ private _hideDeleteBody(p_textEditor: vscode.TextEditor): Thenable&lt;boolean&gt
     const w_foundTabs: vscode.Tab[] = [];
     vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
         p_tabGroup.tabs.forEach((p_tab) =&gt; {
-            if (
+            if (p_tab.input &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri.fsPath === p_textEditor.document.uri.fsPath
@@ -12594,7 +12596,7 @@ public closeBody(): Thenable&lt;any&gt; {
     const w_foundTabs: vscode.Tab[] = [];
     vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
         p_tabGroup.tabs.forEach((p_tab) =&gt; {
-            if (
+            if (p_tab.input &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
             ) {
@@ -12607,15 +12609,18 @@ public closeBody(): Thenable&lt;any&gt; {
     if (w_foundTabs.length) {
         q_closedTabs = vscode.window.tabGroups.close(w_foundTabs, true);
         w_foundTabs.forEach((p_tab) =&gt; {
-            vscode.commands.executeCommand(
-                'vscode.removeFromRecentlyOpened',
-                (p_tab.input as vscode.TabInputText).uri
-            );
-            // Delete to close all other body tabs.
-            // (w_oldUri will be deleted last below)
-            const w_edit = new vscode.WorkspaceEdit();
-            w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
-            vscode.workspace.applyEdit(w_edit);
+            if (p_tab.input) {
+
+                vscode.commands.executeCommand(
+                    'vscode.removeFromRecentlyOpened',
+                    (p_tab.input as vscode.TabInputText).uri
+                );
+                // Delete to close all other body tabs.
+                // (w_oldUri will be deleted last below)
+                const w_edit = new vscode.WorkspaceEdit();
+                w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
+                vscode.workspace.applyEdit(w_edit);
+            }
         });
     } else {
         q_closedTabs = Promise.resolve(true);
@@ -14361,7 +14366,7 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
                         // Shown document node
                     },
                     (p_reason) =&gt; {
-                        console.log('shown doc error on reveal: ');
+                        console.log('shown doc error on reveal: ', p_reason);
                     }
                 );
         }
@@ -14909,7 +14914,7 @@ function closeLeoTextEditors(): Thenable&lt;unknown&gt; {
 
     vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
         p_tabGroup.tabs.forEach((p_tab) =&gt; {
-            if (
+            if (p_tab.input &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
             ) {
@@ -14922,15 +14927,17 @@ function closeLeoTextEditors(): Thenable&lt;unknown&gt; {
     if (w_foundTabs.length) {
         q_closedTabs = vscode.window.tabGroups.close(w_foundTabs, true);
         w_foundTabs.forEach((p_tab) =&gt; {
-            vscode.commands.executeCommand(
-                'vscode.removeFromRecentlyOpened',
-                (p_tab.input as vscode.TabInputText).uri
-            );
-            // Delete to close all other body tabs.
-            // (w_oldUri will be deleted last below)
-            const w_edit = new vscode.WorkspaceEdit();
-            w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
-            vscode.workspace.applyEdit(w_edit);
+            if (p_tab.input) {
+                vscode.commands.executeCommand(
+                    'vscode.removeFromRecentlyOpened',
+                    (p_tab.input as vscode.TabInputText).uri
+                );
+                // Delete to close all other body tabs.
+                // (w_oldUri will be deleted last below)
+                const w_edit = new vscode.WorkspaceEdit();
+                w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
+                vscode.workspace.applyEdit(w_edit);
+            }
         });
     } else {
         q_closedTabs = Promise.resolve(true);
@@ -17785,7 +17792,7 @@ private _isBodyVisible(): number {
     let w_total = 0;
     vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
         p_tabGroup.tabs.forEach((p_tab) =&gt; {
-            if (
+            if (p_tab.input &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
             ) {
@@ -17815,7 +17822,7 @@ private _isBodyPreview(): boolean {
     let w_found: boolean = false;
     vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
         p_tabGroup.tabs.forEach((p_tab) =&gt; {
-            if (
+            if (p_tab.input &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
             ) {
