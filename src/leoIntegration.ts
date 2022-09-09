@@ -2271,7 +2271,6 @@ export class LeoIntegration {
         }
 
         if (this.lastSelectedNode && this._bodyPreviewMode && this._bodyEnablePreview && w_visibleCount < 2) {
-            console.log('ShowBody first');
 
             // just show in same column and delete after
             this.bodyUri = utils.strToLeoUri(this.lastSelectedNode.gnx);
@@ -2281,7 +2280,7 @@ export class LeoIntegration {
                 q_showBody.then(() => {
                     vscode.window.tabGroups.all.forEach((p_tabGroup) => {
                         p_tabGroup.tabs.forEach((p_tab) => {
-                            if (
+                            if (p_tab.input &&
                                 (p_tab.input as vscode.TabInputText).uri &&
                                 (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
                                 (p_tab.input as vscode.TabInputText).uri.fsPath === w_oldUri.fsPath
@@ -2292,7 +2291,7 @@ export class LeoIntegration {
                                     this._bodyLastChangedDocument &&
                                     (p_tab.input as vscode.TabInputText).uri.fsPath === this._bodyLastChangedDocument.uri.fsPath
                                 ) {
-                                    console.log('LAST SECOND SAVE1!'); // TODO : CLEANUP !                                     <===================
+                                    console.log('LAST SECOND SAVE1!'); // TODO : CLEANUP !
                                     this._leoFileSystem.preventSaveToLeo = true;
                                     this._editorTouched = false;
                                     q_lastSecondSave = this._bodyLastChangedDocument.save();
@@ -2321,7 +2320,7 @@ export class LeoIntegration {
             // Close ALL LEO EDITORS
             vscode.window.tabGroups.all.forEach((p_tabGroup) => {
                 p_tabGroup.tabs.forEach((p_tab) => {
-                    if (
+                    if (p_tab.input &&
                         (p_tab.input as vscode.TabInputText).uri &&
                         (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
                         w_newUri.fsPath !== (p_tab.input as vscode.TabInputText).uri.fsPath // Maybe useless to check if different!
@@ -2391,7 +2390,7 @@ export class LeoIntegration {
         let w_found = false;
         vscode.window.tabGroups.all.forEach((p_tabGroup) => {
             p_tabGroup.tabs.forEach((p_tab) => {
-                if (
+                if (p_tab.input &&
                     (p_tab.input as vscode.TabInputText).uri &&
                     utils.leoUriToStr((p_tab.input as vscode.TabInputText).uri) === p_gnx
                 ) {
@@ -2418,7 +2417,7 @@ export class LeoIntegration {
         let w_total = 0;
         vscode.window.tabGroups.all.forEach((p_tabGroup) => {
             p_tabGroup.tabs.forEach((p_tab) => {
-                if (
+                if (p_tab.input &&
                     (p_tab.input as vscode.TabInputText).uri &&
                     (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
                 ) {
@@ -2438,7 +2437,7 @@ export class LeoIntegration {
         let w_found: boolean = false;
         vscode.window.tabGroups.all.forEach((p_tabGroup) => {
             p_tabGroup.tabs.forEach((p_tab) => {
-                if (
+                if (p_tab.input &&
                     (p_tab.input as vscode.TabInputText).uri &&
                     (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
                 ) {
@@ -2478,7 +2477,7 @@ export class LeoIntegration {
         const w_foundTabs: vscode.Tab[] = [];
         vscode.window.tabGroups.all.forEach((p_tabGroup) => {
             p_tabGroup.tabs.forEach((p_tab) => {
-                if (
+                if (p_tab.input &&
                     (p_tab.input as vscode.TabInputText).uri &&
                     (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
                     (p_tab.input as vscode.TabInputText).uri.fsPath === p_textEditor.document.uri.fsPath
@@ -2525,7 +2524,7 @@ export class LeoIntegration {
         const w_foundTabs: vscode.Tab[] = [];
         vscode.window.tabGroups.all.forEach((p_tabGroup) => {
             p_tabGroup.tabs.forEach((p_tab) => {
-                if (
+                if (p_tab.input &&
                     (p_tab.input as vscode.TabInputText).uri &&
                     (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
                 ) {
@@ -2538,15 +2537,18 @@ export class LeoIntegration {
         if (w_foundTabs.length) {
             q_closedTabs = vscode.window.tabGroups.close(w_foundTabs, true);
             w_foundTabs.forEach((p_tab) => {
-                vscode.commands.executeCommand(
-                    'vscode.removeFromRecentlyOpened',
-                    (p_tab.input as vscode.TabInputText).uri
-                );
-                // Delete to close all other body tabs.
-                // (w_oldUri will be deleted last below)
-                const w_edit = new vscode.WorkspaceEdit();
-                w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
-                vscode.workspace.applyEdit(w_edit);
+                if (p_tab.input) {
+
+                    vscode.commands.executeCommand(
+                        'vscode.removeFromRecentlyOpened',
+                        (p_tab.input as vscode.TabInputText).uri
+                    );
+                    // Delete to close all other body tabs.
+                    // (w_oldUri will be deleted last below)
+                    const w_edit = new vscode.WorkspaceEdit();
+                    w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
+                    vscode.workspace.applyEdit(w_edit);
+                }
             });
         } else {
             q_closedTabs = Promise.resolve(true);
@@ -2738,7 +2740,9 @@ export class LeoIntegration {
         // Find body pane's position if already opened with same gnx (language still needs to be set per position)
         vscode.window.tabGroups.all.forEach((p_tabGroup) => {
             p_tabGroup.tabs.forEach((p_tab) => {
-                if ((p_tab.input as vscode.TabInputText).uri &&
+
+                if (p_tab.input &&
+                    (p_tab.input as vscode.TabInputText).uri &&
                     (p_tab.input as vscode.TabInputText).uri.fsPath === w_openedDocument.uri.fsPath) {
                     vscode.workspace.textDocuments.forEach((p_textDocument) => {
                         if (p_textDocument.uri.fsPath === (p_tab.input as vscode.TabInputText).uri.fsPath) {
@@ -2783,7 +2787,7 @@ export class LeoIntegration {
         ).then(
             (p_result) => { return p_result; },
             (p_reason) => {
-                console.log('showTextDocument rejected');
+                console.log('showTextDocument rejected: ', p_reason);
             }
         );
 
@@ -4601,7 +4605,7 @@ export class LeoIntegration {
                             // Shown document node
                         },
                         (p_reason) => {
-                            console.log('shown doc error on reveal: ');
+                            console.log('shown doc error on reveal: ', p_reason);
                         }
                     );
             }

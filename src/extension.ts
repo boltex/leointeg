@@ -782,7 +782,7 @@ function closeLeoTextEditors(): Thenable<unknown> {
 
     vscode.window.tabGroups.all.forEach((p_tabGroup) => {
         p_tabGroup.tabs.forEach((p_tab) => {
-            if (
+            if (p_tab.input &&
                 (p_tab.input as vscode.TabInputText).uri &&
                 (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
             ) {
@@ -795,15 +795,17 @@ function closeLeoTextEditors(): Thenable<unknown> {
     if (w_foundTabs.length) {
         q_closedTabs = vscode.window.tabGroups.close(w_foundTabs, true);
         w_foundTabs.forEach((p_tab) => {
-            vscode.commands.executeCommand(
-                'vscode.removeFromRecentlyOpened',
-                (p_tab.input as vscode.TabInputText).uri
-            );
-            // Delete to close all other body tabs.
-            // (w_oldUri will be deleted last below)
-            const w_edit = new vscode.WorkspaceEdit();
-            w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
-            vscode.workspace.applyEdit(w_edit);
+            if (p_tab.input) {
+                vscode.commands.executeCommand(
+                    'vscode.removeFromRecentlyOpened',
+                    (p_tab.input as vscode.TabInputText).uri
+                );
+                // Delete to close all other body tabs.
+                // (w_oldUri will be deleted last below)
+                const w_edit = new vscode.WorkspaceEdit();
+                w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
+                vscode.workspace.applyEdit(w_edit);
+            }
         });
     } else {
         q_closedTabs = Promise.resolve(true);

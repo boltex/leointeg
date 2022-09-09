@@ -4890,20 +4890,6 @@ print('done')
       "visibility": "visible"
     },
     {
-      "id": "leoDocumentsExplorer",
-      "name": "Leo Documents",
-      "contextualTitle": "Leo",
-      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
-      "visibility": "collapsed"
-    },
-    {
-      "id": "leoButtonsExplorer",
-      "name": "Leo Buttons",
-      "contextualTitle": "Leo",
-      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
-      "visibility": "collapsed"
-    },
-    {
       "type": "webview",
       "id": "leoFindPanelExplorer",
       "contextualTitle": "Leo",
@@ -4920,8 +4906,22 @@ print('done')
       "visibility": "collapsed"
     },
     {
+      "id": "leoDocumentsExplorer",
+      "name": "Leo Documents",
+      "contextualTitle": "Leo",
+      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
+      "visibility": "collapsed"
+    },
+    {
       "id": "leoUndosExplorer",
       "name": "Leo Undo History",
+      "contextualTitle": "Leo",
+      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
+      "visibility": "collapsed"
+    },
+    {
+      "id": "leoButtonsExplorer",
+      "name": "Leo Buttons",
       "contextualTitle": "Leo",
       "when": "treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
@@ -4933,18 +4933,6 @@ print('done')
       "contextualTitle": "Leo",
       "name": "Integration",
       "visibility": "visible"
-    },
-    {
-      "id": "leoDocuments",
-      "contextualTitle": "Leo",
-      "name": "Documents",
-      "visibility": "collapsed"
-    },
-    {
-      "id": "leoButtons",
-      "contextualTitle": "Leo",
-      "name": "Buttons",
-      "visibility": "collapsed"
     },
     {
       "type": "webview",
@@ -4962,10 +4950,22 @@ print('done')
       "visibility": "collapsed"
     },
     {
+      "id": "leoDocuments",
+      "contextualTitle": "Leo",
+      "name": "Documents",
+      "visibility": "collapsed"
+    },
+    {
       "id": "leoUndos",
       "contextualTitle": "Leo",
       "name": "Undo History",
       "when": "leoTreeOpened",
+      "visibility": "collapsed"
+    },
+    {
+      "id": "leoButtons",
+      "contextualTitle": "Leo",
+      "name": "Buttons",
       "visibility": "collapsed"
     }
   ]
@@ -9860,7 +9860,6 @@ private _switchBody(
     }
 
     if (this.lastSelectedNode &amp;&amp; this._bodyPreviewMode &amp;&amp; this._bodyEnablePreview &amp;&amp; w_visibleCount &lt; 2) {
-        console.log('ShowBody first');
 
         // just show in same column and delete after
         this.bodyUri = utils.strToLeoUri(this.lastSelectedNode.gnx);
@@ -9881,7 +9880,7 @@ private _switchBody(
                                 this._bodyLastChangedDocument &amp;&amp;
                                 (p_tab.input as vscode.TabInputText).uri.fsPath === this._bodyLastChangedDocument.uri.fsPath
                             ) {
-                                console.log('LAST SECOND SAVE1!'); // TODO : CLEANUP !                                     &lt;===================
+                                console.log('LAST SECOND SAVE1!'); // TODO : CLEANUP !
                                 this._leoFileSystem.preventSaveToLeo = true;
                                 this._editorTouched = false;
                                 q_lastSecondSave = this._bodyLastChangedDocument.save();

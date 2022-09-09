@@ -223,20 +223,6 @@
           "visibility": "visible"
         },
         {
-          "id": "leoDocumentsExplorer",
-          "name": "Leo Documents",
-          "contextualTitle": "Leo",
-          "when": "treeInExplorer && leoTreeOpened",
-          "visibility": "collapsed"
-        },
-        {
-          "id": "leoButtonsExplorer",
-          "name": "Leo Buttons",
-          "contextualTitle": "Leo",
-          "when": "treeInExplorer && leoTreeOpened",
-          "visibility": "collapsed"
-        },
-        {
           "type": "webview",
           "id": "leoFindPanelExplorer",
           "contextualTitle": "Leo",
@@ -253,8 +239,22 @@
           "visibility": "collapsed"
         },
         {
+          "id": "leoDocumentsExplorer",
+          "name": "Leo Documents",
+          "contextualTitle": "Leo",
+          "when": "treeInExplorer && leoTreeOpened",
+          "visibility": "collapsed"
+        },
+        {
           "id": "leoUndosExplorer",
           "name": "Leo Undo History",
+          "contextualTitle": "Leo",
+          "when": "treeInExplorer && leoTreeOpened",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "leoButtonsExplorer",
+          "name": "Leo Buttons",
           "contextualTitle": "Leo",
           "when": "treeInExplorer && leoTreeOpened",
           "visibility": "collapsed"
@@ -266,18 +266,6 @@
           "contextualTitle": "Leo",
           "name": "Integration",
           "visibility": "visible"
-        },
-        {
-          "id": "leoDocuments",
-          "contextualTitle": "Leo",
-          "name": "Documents",
-          "visibility": "collapsed"
-        },
-        {
-          "id": "leoButtons",
-          "contextualTitle": "Leo",
-          "name": "Buttons",
-          "visibility": "collapsed"
         },
         {
           "type": "webview",
@@ -295,10 +283,22 @@
           "visibility": "collapsed"
         },
         {
+          "id": "leoDocuments",
+          "contextualTitle": "Leo",
+          "name": "Documents",
+          "visibility": "collapsed"
+        },
+        {
           "id": "leoUndos",
           "contextualTitle": "Leo",
           "name": "Undo History",
           "when": "leoTreeOpened",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "leoButtons",
+          "contextualTitle": "Leo",
+          "name": "Buttons",
           "visibility": "collapsed"
         }
       ]
