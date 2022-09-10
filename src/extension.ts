@@ -698,6 +698,12 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.CLONE_FIND_ALL, () => w_leo.cloneFind(false, false)],
         [CMD.CLONE_FIND_ALL_FLATTENED, () => w_leo.cloneFind(false, true)],
         [CMD.CLONE_FIND_TAG, () => w_leo.cloneFindTag()],
+        [CMD.CLONE_FIND_PARENTS, () => w_leo.nodeCommand({
+            action: BRIDGE.CLONE_FIND_PARENTS,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            finalFocus: Focus.NoChange
+        })],
         [CMD.CLONE_FIND_MARKED, () => w_leo.cloneFind(true, false)],
         [CMD.CLONE_FIND_FLATTENED_MARKED, () => w_leo.cloneFind(true, true)],
 

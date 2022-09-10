@@ -2198,6 +2198,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.CLONE_FIND_ALL, () =&gt; w_leo.cloneFind(false, false)],
 [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; w_leo.cloneFind(false, true)],
 [CMD.CLONE_FIND_TAG, () =&gt; w_leo.cloneFindTag()],
+[CMD.CLONE_FIND_PARENTS, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.CLONE_FIND_PARENTS,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    finalFocus: Focus.NoChange
+})],
 [CMD.CLONE_FIND_MARKED, () =&gt; w_leo.cloneFind(true, false)],
 [CMD.CLONE_FIND_FLATTENED_MARKED, () =&gt; w_leo.cloneFind(true, true)],
 
@@ -5167,6 +5173,7 @@ public static LEOBRIDGE = {
     CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
     CLONE_FIND_MARKED: "!clone_find_all_marked",
     CLONE_FIND_FLATTENED_MARKED: "!clone_find_all_flattened_marked",
+    CLONE_FIND_PARENTS: "-clone-find-parents",
     GOTO_PREV_HISTORY: "goToPrevHistory",
     GOTO_NEXT_HISTORY: "goToNextHistory"
 };
@@ -5372,6 +5379,7 @@ public static COMMANDS = {
     CLONE_FIND_TAG: Constants.NAME + ".cloneFindTag",
     CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
     CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
+    CLONE_FIND_PARENTS: Constants.NAME + ".cloneFindParents",
 
     GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
     TAG_CHILDREN: Constants.NAME + ".tagChildren",
@@ -12887,6 +12895,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.cloneFindAll",
   "category": "Leo",
   "enablement": "leoTreeOpened",
+  "shortTitle": "cfa",
   "title": "Clone Find All"
 },
 {
@@ -12894,28 +12903,34 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "category": "Leo",
   "enablement": "leoTreeOpened",
   "shortTitle": "cff",
-  "title": "cff - Clone Find All Flattened"
+  "title": "Clone Find All Flattened"
 },
 {
   "command": "leointeg.cloneFindMarked",
   "category": "Leo",
   "enablement": "leoTreeOpened",
   "shortTitle": "cfam",
-  "title": "cfam - Clone Find All Marked Nodes"
+  "title": "Clone Find All Marked Nodes"
 },
 {
   "command": "leointeg.cloneFindFlattenedMarked",
   "category": "Leo",
   "enablement": "leoTreeOpened",
   "shortTitle": "cffm",
-  "title": "cffm - Clone Find All Flattened Marked"
+  "title": "Clone Find All Flattened Marked"
+},
+{
+  "command": "leointeg.cloneFindParents",
+  "category": "Leo",
+  "enablement": "leoTreeOpened &amp;&amp; leoCloned",
+  "title": "Clone Find Parents"
 },
 {
   "command": "leointeg.cloneFindTag",
   "category": "Leo",
   "enablement": "leoTreeOpened",
   "shortTitle": "cft",
-  "title": "cft - Clone Find Tag"
+  "title": "Clone Find Tag"
 },
 {
   "command": "leointeg.tagChildren",
@@ -14093,14 +14108,34 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
     "group": "1_leoInteg3@5"
   },
   {
-    "command": "leointeg.cloneFindAllFlattened",
+    "command": "leointeg.cloneFindAll",
     "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg4@1"
   },
   {
-    "command": "leointeg.cloneFindFlattenedMarked",
+    "command": "leointeg.cloneFindAllFlattened",
     "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg4@2"
+  },
+  {
+    "command": "leointeg.cloneFindMarked",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "1_leoInteg4@3"
+  },
+  {
+    "command": "leointeg.cloneFindFlattenedMarked",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "1_leoInteg4@4"
+  },
+  {
+    "command": "leointeg.cloneFindParents",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "1_leoInteg4@5"
+  },
+  {
+    "command": "leointeg.cloneFindTag",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "1_leoInteg4@6"
   }
 ],
 </t>

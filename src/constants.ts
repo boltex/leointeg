@@ -624,6 +624,7 @@ export class Constants {
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
         CLONE_FIND_MARKED: "!clone_find_all_marked",
         CLONE_FIND_FLATTENED_MARKED: "!clone_find_all_flattened_marked",
+        CLONE_FIND_PARENTS: "-clone-find-parents",
         GOTO_PREV_HISTORY: "goToPrevHistory",
         GOTO_NEXT_HISTORY: "goToNextHistory"
     };
@@ -828,6 +829,7 @@ export class Constants {
         CLONE_FIND_TAG: Constants.NAME + ".cloneFindTag",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
         CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
+        CLONE_FIND_PARENTS: Constants.NAME + ".cloneFindParents",
 
         GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
         TAG_CHILDREN: Constants.NAME + ".tagChildren",

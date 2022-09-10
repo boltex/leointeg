@@ -1482,13 +1482,21 @@
         "command": "leointeg.sortChildrenSelection",
         "category": "Leo",
         "enablement": "leoTreeOpened && leoChild",
-        "title": "Sort Children"
+        "title": "Sort Children",
+        "icon": {
+          "light": "resources/light/sort-children.svg",
+          "dark": "resources/dark/sort-children.svg"
+        }
       },
       {
         "command": "leointeg.sortChildrenSelectionFromOutline",
         "category": "Leo",
         "enablement": "leoTreeOpened && leoChild",
-        "title": "Sort Children"
+        "title": "Sort Children",
+        "icon": {
+          "light": "resources/light/sort-children.svg",
+          "dark": "resources/dark/sort-children.svg"
+        }
       },
       {
         "command": "leointeg.sortSiblingsSelection",
@@ -1496,8 +1504,8 @@
         "enablement": "leoTreeOpened",
         "title": "Sort Siblings",
         "icon": {
-          "light": "resources/light/sort.svg",
-          "dark": "resources/dark/sort.svg"
+          "light": "resources/light/sort-siblings.svg",
+          "dark": "resources/dark/sort-siblings.svg"
         }
       },
       {
@@ -1506,8 +1514,8 @@
         "enablement": "leoTreeOpened",
         "title": "Sort Siblings",
         "icon": {
-          "light": "resources/light/sort.svg",
-          "dark": "resources/dark/sort.svg"
+          "light": "resources/light/sort-siblings.svg",
+          "dark": "resources/dark/sort-siblings.svg"
         }
       },
       {
@@ -1839,6 +1847,7 @@
         "command": "leointeg.cloneFindAll",
         "category": "Leo",
         "enablement": "leoTreeOpened",
+        "shortTitle": "cfa",
         "title": "Clone Find All"
       },
       {
@@ -1846,28 +1855,34 @@
         "category": "Leo",
         "enablement": "leoTreeOpened",
         "shortTitle": "cff",
-        "title": "cff - Clone Find All Flattened"
+        "title": "Clone Find All Flattened"
       },
       {
         "command": "leointeg.cloneFindMarked",
         "category": "Leo",
         "enablement": "leoTreeOpened",
         "shortTitle": "cfam",
-        "title": "cfam - Clone Find All Marked Nodes"
+        "title": "Clone Find All Marked Nodes"
       },
       {
         "command": "leointeg.cloneFindFlattenedMarked",
         "category": "Leo",
         "enablement": "leoTreeOpened",
         "shortTitle": "cffm",
-        "title": "cffm - Clone Find All Flattened Marked"
+        "title": "Clone Find All Flattened Marked"
+      },
+      {
+        "command": "leointeg.cloneFindParents",
+        "category": "Leo",
+        "enablement": "leoTreeOpened && leoCloned",
+        "title": "Clone Find Parents"
       },
       {
         "command": "leointeg.cloneFindTag",
         "category": "Leo",
         "enablement": "leoTreeOpened",
         "shortTitle": "cft",
-        "title": "cft - Clone Find Tag"
+        "title": "Clone Find Tag"
       },
       {
         "command": "leointeg.tagChildren",
@@ -2763,14 +2778,34 @@
           "group": "1_leoInteg3@5"
         },
         {
-          "command": "leointeg.cloneFindAllFlattened",
+          "command": "leointeg.cloneFindAll",
           "when": "resourceScheme == leo && leoTreeOpened",
           "group": "1_leoInteg4@1"
         },
         {
-          "command": "leointeg.cloneFindFlattenedMarked",
+          "command": "leointeg.cloneFindAllFlattened",
           "when": "resourceScheme == leo && leoTreeOpened",
           "group": "1_leoInteg4@2"
+        },
+        {
+          "command": "leointeg.cloneFindMarked",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg4@3"
+        },
+        {
+          "command": "leointeg.cloneFindFlattenedMarked",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg4@4"
+        },
+        {
+          "command": "leointeg.cloneFindParents",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg4@5"
+        },
+        {
+          "command": "leointeg.cloneFindTag",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg4@6"
         }
       ],
       "editor/context": [
