@@ -1377,6 +1377,8 @@ export class LeoIntegration {
     ): void {
         if (p_editor && p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
             if (this.bodyUri.fsPath !== p_editor.document.uri.fsPath) {
+                console.log('from _onActiveEditorChanged this.bodyUri is', this.bodyUri.fsPath);
+
                 this._hideDeleteBody(p_editor);
             }
             this._checkPreviewMode(p_editor);
@@ -1387,6 +1389,7 @@ export class LeoIntegration {
         // * Status flag check
         if (!p_editor && this._leoStatusBar.statusBarFlag) {
             return;
+            // this._leoStatusBar.update(false);
         }
         // * Status flag check
         setTimeout(() => {
@@ -1421,6 +1424,7 @@ export class LeoIntegration {
             p_editors.forEach((p_textEditor) => {
                 if (p_textEditor && p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
                     if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
+                        console.log('from _changedVisibleTextEditors! this.bodyUri is', this.bodyUri.fsPath);
                         this._hideDeleteBody(p_textEditor);
                     }
                     this._checkPreviewMode(p_textEditor);
@@ -2257,14 +2261,12 @@ export class LeoIntegration {
         const w_newUri: vscode.Uri = utils.strToLeoUri(this.lastSelectedNode!.gnx);
         const w_newTS = performance.now();
         const w_visibleCount = this._isBodyVisible();
-        const w_tabsToClose: vscode.Tab[] = [];
 
         if (w_visibleCount === 0 && !this.showBodyIfClosed) {
             this.bodyUri = w_newUri;
             return Promise.resolve();
         }
         this.showBodyIfClosed = false;
-        let q_lastSecondSave: Thenable<boolean> | undefined;
 
         if (w_visibleCount === 1) {
             this._bodyPreviewMode = this._isBodyPreview(); // recheck in case user double clicked on title
@@ -2278,6 +2280,8 @@ export class LeoIntegration {
 
             if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
                 q_showBody.then(() => {
+                    const w_tabsToCloseFound: vscode.Tab[] = [];
+                    let q_lastSecondSaveFound: Thenable<boolean> = Promise.resolve(true);
                     vscode.window.tabGroups.all.forEach((p_tabGroup) => {
                         p_tabGroup.tabs.forEach((p_tab) => {
                             if (p_tab.input &&
@@ -2294,21 +2298,16 @@ export class LeoIntegration {
                                     console.log('LAST SECOND SAVE1!'); // TODO : CLEANUP !
                                     this._leoFileSystem.preventSaveToLeo = true;
                                     this._editorTouched = false;
-                                    q_lastSecondSave = this._bodyLastChangedDocument.save();
+                                    q_lastSecondSaveFound = this._bodyLastChangedDocument.save();
                                 }
-                                w_tabsToClose.push(p_tab);
+                                w_tabsToCloseFound.push(p_tab);
                             }
                         });
                     });
-                    if (w_tabsToClose.length) {
-                        if (q_lastSecondSave) {
-                            q_lastSecondSave.then(() => {
-                                return vscode.window.tabGroups.close(w_tabsToClose, true);
-                            });
-                        } else {
-                            vscode.window.tabGroups.close(w_tabsToClose, true);
-                        }
-                        vscode.window.tabGroups.close(w_tabsToClose, true);
+                    if (w_tabsToCloseFound.length) {
+                        q_lastSecondSaveFound.then(() => {
+                            vscode.window.tabGroups.close(w_tabsToCloseFound, true);
+                        });
                     }
                     // Remove from potential 'recently opened'
                     vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri);
@@ -2317,7 +2316,11 @@ export class LeoIntegration {
             }
             return q_showBody;
         } else {
-            // Close ALL LEO EDITORS
+            this.bodyUri = w_newUri;
+            // Close ALL LEO EDITORS first !
+            const w_tabsToCloseAll: vscode.Tab[] = [];
+            let q_lastSecondSaveAll: Thenable<boolean> = Promise.resolve(true);
+
             vscode.window.tabGroups.all.forEach((p_tabGroup) => {
                 p_tabGroup.tabs.forEach((p_tab) => {
                     if (p_tab.input &&
@@ -2334,25 +2337,19 @@ export class LeoIntegration {
                             console.log('LAST SECOND SAVE2!'); // TODO : CLEANUP !
                             this._leoFileSystem.preventSaveToLeo = true;
                             this._editorTouched = false;
-                            q_lastSecondSave = this._bodyLastChangedDocument.save();
+                            q_lastSecondSaveAll = this._bodyLastChangedDocument.save();
                         }
 
-                        w_tabsToClose.push(p_tab);
+                        w_tabsToCloseAll.push(p_tab);
                     }
                 });
             });
 
             let q_closeAll: Thenable<unknown>;
-            if (w_tabsToClose.length) {
-
-                if (q_lastSecondSave) {
-                    q_closeAll = q_lastSecondSave.then(() => {
-                        return vscode.window.tabGroups.close(w_tabsToClose, true);
-                    });
-
-                } else {
-                    q_closeAll = vscode.window.tabGroups.close(w_tabsToClose, true);
-                }
+            if (w_tabsToCloseAll.length) {
+                q_closeAll = q_lastSecondSaveAll.then(() => {
+                    return vscode.window.tabGroups.close(w_tabsToCloseAll, true);
+                });
 
             } else {
                 q_closeAll = Promise.resolve();
@@ -2367,6 +2364,7 @@ export class LeoIntegration {
             }
 
             return q_closeAll.then(() => {
+                this._bodyPreviewMode = true;
                 // * CHECK ALL 3 POSSIBLE NEW PLACES FOR BODY SWITCH AFTER q_bodyStates & q_showTextDocument
                 if (
                     // Should the gnx be relevant?  !this.isGnxStillValid(w_newGnx, w_newTS)
@@ -2374,8 +2372,6 @@ export class LeoIntegration {
                 ) {
                     return;
                 }
-                this._bodyPreviewMode = true;
-                this.bodyUri = w_newUri;
                 return this.showBody(p_aside, p_preventTakingFocus);
             });
         }
@@ -2469,6 +2465,7 @@ export class LeoIntegration {
      * @returns promise that resolves to true if it closed tabs, false if none were found
      */
     private _hideDeleteBody(p_textEditor: vscode.TextEditor): Thenable<boolean> {
+        console.log('HIDE DELETED! editor was : ', p_textEditor.document.uri.fsPath, " ");
 
         const w_edit = new vscode.WorkspaceEdit();
         w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
@@ -2499,7 +2496,6 @@ export class LeoIntegration {
         return Promise.resolve(false);
     }
 
-
     /**
      * * Clears the global 'Preview Mode' flag if the given editor is not in the main body column
      * @param p_editor is the editor to check for is in the same column as the main one
@@ -2514,6 +2510,7 @@ export class LeoIntegration {
             this._bodyMainSelectionColumn = p_editor.viewColumn;
         }
     }
+
 
     /**
      * * Closes any body pane opened in this vscode window instance
@@ -2552,6 +2549,7 @@ export class LeoIntegration {
             });
         } else {
             q_closedTabs = Promise.resolve(true);
+
         }
 
         let q_closedBody;
@@ -2565,7 +2563,6 @@ export class LeoIntegration {
         }
 
         return Promise.all([q_closedTabs, q_closedBody]);
-
     }
 
     /**
@@ -3426,7 +3423,6 @@ export class LeoIntegration {
             return w_commandResult.then(p_package => {
                 if (p_package.node) {
                     this.replaceClipboardWith(p_package.node.gnx);
-                } else {
                 }
                 return p_package;
             });
@@ -3436,7 +3432,7 @@ export class LeoIntegration {
         }
     }
 
-    /**
+                /**
      * * Place the XML or JSON Leo outline tree on the clipboard for the given node, and removes it.
      */
     public async cutNode(
@@ -3457,7 +3453,6 @@ export class LeoIntegration {
             return w_commandResult.then(p_package => {
                 if (p_package.string) {
                     this.replaceClipboardWith(p_package.string);
-                } else {
                 }
                 return p_package;
             });
@@ -3747,6 +3742,7 @@ export class LeoIntegration {
         this._leoGotoProvider.refreshTreeRoot();
         return this.findQuickGoAnywhere();
     }
+
 
     /**
      * * Lists all nodes that are changed (aka "dirty") since last save.
@@ -4398,6 +4394,7 @@ export class LeoIntegration {
             });
     }
 
+
     /**
      * * Tag Node
      */
@@ -4423,6 +4420,7 @@ export class LeoIntegration {
                         Constants.LEOBRIDGE.TAG_NODE,
                         { tag: p_inputResult }
                     ).then((p_resultTag: LeoBridgePackage) => {
+
                         this.setupRefresh(
                             Focus.NoChange,
                             {
@@ -4847,9 +4845,9 @@ export class LeoIntegration {
     }
 
     /**
-     * * Close an opened Leo file
-     * @returns the launchRefresh promise started after it's done closing the Leo document
-     */
+    * * Close an opened Leo file
+    * @returns the launchRefresh promise started after it's done closing the Leo document
+    */
     public closeLeoFile(): Promise<boolean> {
         let w_removeLastFileName: string = '';
         return this._isBusyTriggerSave(true, true)
@@ -5244,6 +5242,7 @@ export class LeoIntegration {
                 }
             });
     }
+
     /**
      * * Outline To CWEB
      */
@@ -5286,6 +5285,7 @@ export class LeoIntegration {
                 }
             });
     }
+
     /**
      * * Outline To Noweb
      */
@@ -5328,6 +5328,7 @@ export class LeoIntegration {
                 }
             });
     }
+
     /**
      * * Remove Sentinels
      */
@@ -5398,6 +5399,7 @@ export class LeoIntegration {
             );
 
     }
+
     /**
      * * Weave
      * Simulate a literate-programming weave operation by writing the outline to a text file.
@@ -5440,6 +5442,7 @@ export class LeoIntegration {
                 }
             });
     }
+
     /**
      * * Write file from node
      */
@@ -5507,6 +5510,7 @@ export class LeoIntegration {
             }
         });
     }
+
     /**
      * * Read file from node
      */
@@ -5573,6 +5577,7 @@ export class LeoIntegration {
             );
 
     }
+
     /**
      * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
      * @param p_node the node of the at-buttons panel that was clicked
@@ -5792,14 +5797,4 @@ export class LeoIntegration {
         */
     }
 
-    /**
-     * * Test/Dummy command
-     * @param p_fromOutline Flags if the call came with focus on the outline
-     * @returns Thenable from the tested functionality
-     */
-    public test(p_fromOutline?: boolean): Thenable<unknown> {
-
-        return Promise.resolve("");
-
-    }
 }

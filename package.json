@@ -2778,34 +2778,54 @@
           "group": "1_leoInteg3@5"
         },
         {
-          "command": "leointeg.cloneFindAll",
-          "when": "resourceScheme == leo && leoTreeOpened",
-          "group": "1_leoInteg4@1"
-        },
-        {
-          "command": "leointeg.cloneFindAllFlattened",
+          "command": "leointeg.readFileIntoNode",
           "when": "resourceScheme == leo && leoTreeOpened",
           "group": "1_leoInteg4@2"
         },
         {
-          "command": "leointeg.cloneFindMarked",
+          "command": "leointeg.writeFileFromNode",
           "when": "resourceScheme == leo && leoTreeOpened",
           "group": "1_leoInteg4@3"
         },
         {
-          "command": "leointeg.cloneFindFlattenedMarked",
+          "command": "leointeg.writeAtFileNodes",
           "when": "resourceScheme == leo && leoTreeOpened",
           "group": "1_leoInteg4@4"
         },
         {
-          "command": "leointeg.cloneFindParents",
+          "command": "leointeg.writeDirtyAtFileNodes",
           "when": "resourceScheme == leo && leoTreeOpened",
           "group": "1_leoInteg4@5"
         },
         {
+          "command": "leointeg.cloneFindAll",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg5@1"
+        },
+        {
+          "command": "leointeg.cloneFindAllFlattened",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg5@2"
+        },
+        {
+          "command": "leointeg.cloneFindMarked",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg5@3"
+        },
+        {
+          "command": "leointeg.cloneFindFlattenedMarked",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg5@4"
+        },
+        {
+          "command": "leointeg.cloneFindParents",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg5@5"
+        },
+        {
           "command": "leointeg.cloneFindTag",
           "when": "resourceScheme == leo && leoTreeOpened",
-          "group": "1_leoInteg4@6"
+          "group": "1_leoInteg5@6"
         }
       ],
       "editor/context": [
