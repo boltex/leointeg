@@ -31,7 +31,7 @@ export class LeoStatusBar {
         this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR;
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
-        _context.subscriptions.push(this._leoStatusBarItem);
+        this._context.subscriptions.push(this._leoStatusBarItem);
         this._leoStatusBarItem.hide();
     }
 

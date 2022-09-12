@@ -7305,7 +7305,7 @@ export class LeoStatusBar {
         this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR;
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
-        _context.subscriptions.push(this._leoStatusBarItem);
+        this._context.subscriptions.push(this._leoStatusBarItem);
         this._leoStatusBarItem.hide();
     }
 
@@ -11592,7 +11592,7 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.stopServer",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoServerStarted",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; !leoTreeOpened &amp;&amp; leoServerStarted",
     "group": "navigation@1"
   },
   {
@@ -14424,7 +14424,7 @@ private async _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Promis
 }
 
 </t>
-<t tx="felix.20220222012528.1">            /**
+<t tx="felix.20220222012528.1">/**
  * * Place the XML or JSON Leo outline tree on the clipboard for the given node, and removes it.
  */
 public async cutNode(

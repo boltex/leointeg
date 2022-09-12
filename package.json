@@ -2918,7 +2918,7 @@
         },
         {
           "command": "leointeg.stopServer",
-          "when": "view =~ /^leoIntegration/ && !leoBridgeReady && !leoTreeOpened && leoServerStarted",
+          "when": "view =~ /^leoIntegration/ && !leoTreeOpened && leoServerStarted",
           "group": "navigation@1"
         },
         {

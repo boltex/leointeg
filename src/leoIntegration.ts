@@ -3432,7 +3432,7 @@ export class LeoIntegration {
         }
     }
 
-                /**
+    /**
      * * Place the XML or JSON Leo outline tree on the clipboard for the given node, and removes it.
      */
     public async cutNode(
