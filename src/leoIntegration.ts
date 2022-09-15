@@ -2857,10 +2857,19 @@ export class LeoIntegration {
 
                         if (this._refreshType.scroll) {
                             this._refreshType.scroll = false;
-                            // set scroll approximation
+                            // Set scroll approximation
                             w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
-                            // compensate for reveal that steals the focus.
-                            // TODO !!
+                            // ! Compensate for reveal that steals the focus.
+                            if (this._refreshType.goto) {
+                                this._refreshType.goto = false;
+                                let w_viewName: string;
+                                if (this._lastTreeView === this._leoTreeExView) {
+                                    w_viewName = Constants.GOTO_EXPLORER_ID;
+                                } else {
+                                    w_viewName = Constants.GOTO_ID;
+                                }
+                                vscode.commands.executeCommand(w_viewName + ".focus");
+                            }
                         }
 
                     } else {
@@ -3861,6 +3870,7 @@ export class LeoIntegration {
                         // documents: false,
                         // buttons: false,
                         states: true,
+                        goto: w_revealTarget === Focus.Body // ! HAVE TO FORCE BACK
                     },
                     p_navEntryResult.node
                 );
