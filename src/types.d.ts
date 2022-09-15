@@ -65,7 +65,8 @@ export interface FontSettings {
 export const enum Focus {
     NoChange = 0, // Stays on goto pane, or other current panel.
     Body, // Forces body to appear, refresh leaves focus on body.
-    Outline // Forces outline to appear, refresh leaves focus on body.
+    Outline, // Forces outline to appear, refresh leaves focus on Outline.
+    Goto
 }
 
 /**
@@ -89,7 +90,7 @@ export interface ReqRefresh {
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
     documents?: boolean; // Documents needs refresh
-    nav?: boolean; // Nav panel needs refresh
+    goto?: boolean; // Goto pane needs refresh
 }
 
 /**

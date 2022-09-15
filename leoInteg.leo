@@ -835,7 +835,6 @@ public showAskModalDialog(p_askArg: runAskYesNoDialogParameters): void {
         );
         if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
             w_sendResultPromise.then(() =&gt; {
-                //  this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
                 return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
             }).then((p_package) =&gt; {
                 // refresh and reveal selection
@@ -846,7 +845,8 @@ public showAskModalDialog(p_askArg: runAskYesNoDialogParameters): void {
                         body: true,
                         states: true,
                         buttons: true,
-                        documents: true
+                        documents: true,
+                        goto: true
                     },
                     p_package.node
                 );
@@ -8059,7 +8059,7 @@ export interface ReqRefresh {
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
     documents?: boolean; // Documents needs refresh
-    nav?: boolean; // Nav panel needs refresh
+    goto?: boolean; // Goto pane needs refresh
 }
 
 </t>
@@ -8791,6 +8791,7 @@ private _openLastFiles(): Promise&lt;LeoBridgePackage&gt; {
                             documents: true,
                             buttons: true,
                             states: true,
+                            goto: true,
                         },
                         p_openFileResult.node
                     );
@@ -8898,6 +8899,10 @@ private _triggerGetStates(): void {
     if (this._refreshType.documents) {
         this._refreshType.documents = false;
         this.refreshDocumentsPane();
+    }
+    if (this._refreshType.goto) {
+        this._refreshType.goto = false;
+        this.refreshGotoPane();
     }
     if (this._refreshType.buttons) {
         this._refreshType.buttons = false;
@@ -9182,7 +9187,8 @@ private _setupOpenedLeoDocument(): void {
             body: true,
             states: true,
             buttons: true,
-            documents: true
+            documents: true,
+            goto: true
         },
         this.serverOpenedNode
     );
@@ -10278,7 +10284,10 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
 
                     if (this._refreshType.scroll) {
                         this._refreshType.scroll = false;
-                        w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
+                        // set scroll approximation
+                        w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+                        // compensate for reveal that steals the focus.
+                        // TODO !!
                     }
 
                 } else {
@@ -10678,7 +10687,9 @@ public async selectOpenedLeoDocument(p_index: number): Promise&lt;LeoBridgePacka
                 body: true,
                 documents: true,
                 buttons: true,
-                states: true
+                states: true,
+                goto: true
+
             }
         );
         this.launchRefresh();
@@ -10727,6 +10738,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                             documents: true,
                             buttons: true,
                             states: true,
+                            goto: true
                         }
                     );
                 } else {
@@ -10812,6 +10824,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                                         documents: true,
                                         buttons: true,
                                         states: true,
+                                        goto: true
                                     }
                                 );
                             } else {
@@ -10854,6 +10867,7 @@ public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
                 documents: true,
                 buttons: true,
                 states: true,
+                goto: true
             }
         );
         this.launchRefresh();
@@ -10924,6 +10938,7 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
                                 documents: true,
                                 buttons: true,
                                 states: true,
+                                goto: true
                             }
                         );
                         // * TODO : SHOULD LAUNCH REFRESH INSTEAD
@@ -12013,7 +12028,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
             {
                 tree: true, // HAVE to refresh tree because find folds/unfolds only result outline paths
                 body: true,
-                scroll: p_findResult.found &amp;&amp; !w_finalFocus,
+                scroll: p_findResult.found &amp;&amp; w_finalFocus === Focus.Body,
                 // documents: false,
                 // buttons: false,
                 states: true,
@@ -13594,7 +13609,7 @@ public async findSymbol(p_def: boolean): Promise&lt;any&gt; {
             {
                 tree: true,
                 body: true,
-                scroll: p_findResult.found &amp;&amp; !w_finalFocus,
+                scroll: p_findResult.found &amp;&amp; w_finalFocus === Focus.Body,
                 // documents: false,
                 // buttons: false,
                 states: true,
@@ -13842,6 +13857,8 @@ public refresh(p_serverPackage: any): Promise&lt;unknown&gt; {
         return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
             .then((p_doNothingPackage) =&gt; {
                 p_doNothingPackage.filename = p_doNothingPackage.commander!.fileName;
+                const w_gotoNeeded = (this._leoIntegration.serverHasOpenedFile === false) ||
+                    this._leoIntegration.serverOpenedFileName === p_doNothingPackage.filename!;
                 this._leoIntegration.serverHasOpenedFile = true;
                 this._leoIntegration.serverOpenedFileName = p_doNothingPackage.filename!;
                 this._leoIntegration.serverOpenedNode = p_doNothingPackage.node!;
@@ -13852,7 +13869,8 @@ public refresh(p_serverPackage: any): Promise&lt;unknown&gt; {
                         body: true,
                         states: true,
                         buttons: true,
-                        documents: true
+                        documents: true,
+                        goto: w_gotoNeeded
                     },
                     p_doNothingPackage.node!
                 );
@@ -14336,22 +14354,20 @@ private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): T
                     w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED
                 );
             } else if (!w_langName) {
-                // Document was closed: refresh (should not happen!)
-                console.log('_setBodyLanguage had closed document, so refresh');
-
-                // TODO : TEST IF THOSE REFRESH FLAGS ARE ENOUGH - or- TOO MUCH
-                this.setupRefresh(
-                    this.finalFocus,
-                    {
-                        // tree: true,
-                        body: true,
-                        // documents: true,
-                        // buttons: false,
-                        states: true,
-                    }
-                );
-                this.launchRefresh();
-
+                // Document was closed: refresh after a timeout cycle (should not happen!)
+                setTimeout(() =&gt; {
+                    this.setupRefresh(
+                        this.finalFocus,
+                        {
+                            // tree: true,
+                            body: true,
+                            // documents: true,
+                            // buttons: false,
+                            states: true,
+                        }
+                    );
+                    this.launchRefresh();
+                }, 0);
             }
             return p_document;
         }
@@ -15365,24 +15381,24 @@ public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
         if (!p_navEntryResult.focus) {
             return vscode.window.showInformationMessage('Not found');
         } else {
-            let w_focusTarget = Focus.Body;
+            let w_revealTarget = Focus.Body;
             const w_focus = p_navEntryResult.focus.toLowerCase();
 
             if (w_focus.includes('tree') || w_focus.includes('head')) {
                 // tree
-                w_focusTarget = Focus.Outline;
+                w_revealTarget = Focus.Outline;
                 this.showOutlineIfClosed = true;
             } else {
                 this.showBodyIfClosed = true;
             }
 
             this.setupRefresh(
-                // ! NO CHANGE TO KEEP FOCUS ON GOTO PANE !
-                Focus.NoChange, // w_focusTarget,
+                // ! KEEP FOCUS ON GOTO PANE !
+                Focus.Goto,
                 {
                     tree: true,
                     body: true,
-                    scroll: !w_focusTarget,
+                    scroll: w_revealTarget === Focus.Body,
                     // documents: false,
                     // buttons: false,
                     states: true,
@@ -17576,7 +17592,8 @@ export function isApEqual(p_a: ArchivedPosition, p_b: ArchivedPosition): boolean
 export const enum Focus {
     NoChange = 0, // Stays on goto pane, or other current panel.
     Body, // Forces body to appear, refresh leaves focus on body.
-    Outline // Forces outline to appear, refresh leaves focus on body.
+    Outline, // Forces outline to appear, refresh leaves focus on Outline.
+    Goto
 }
 
 </t>

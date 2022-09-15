@@ -950,6 +950,7 @@ export class LeoIntegration {
                                 documents: true,
                                 buttons: true,
                                 states: true,
+                                goto: true,
                             },
                             p_openFileResult.node
                         );
@@ -1075,6 +1076,10 @@ export class LeoIntegration {
             this._refreshType.documents = false;
             this.refreshDocumentsPane();
         }
+        if (this._refreshType.goto) {
+            this._refreshType.goto = false;
+            this.refreshGotoPane();
+        }
         if (this._refreshType.buttons) {
             this._refreshType.buttons = false;
             this.refreshButtonsPane();
@@ -1162,7 +1167,8 @@ export class LeoIntegration {
                 body: true,
                 states: true,
                 buttons: true,
-                documents: true
+                documents: true,
+                goto: true
             },
             this.serverOpenedNode
         );
@@ -2851,7 +2857,10 @@ export class LeoIntegration {
 
                         if (this._refreshType.scroll) {
                             this._refreshType.scroll = false;
-                            w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
+                            // set scroll approximation
+                            w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+                            // compensate for reveal that steals the focus.
+                            // TODO !!
                         }
 
                     } else {
@@ -2884,22 +2893,20 @@ export class LeoIntegration {
                         w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED
                     );
                 } else if (!w_langName) {
-                    // Document was closed: refresh (should not happen!)
-                    console.log('_setBodyLanguage had closed document, so refresh');
-
-                    // TODO : TEST IF THOSE REFRESH FLAGS ARE ENOUGH - or- TOO MUCH
-                    this.setupRefresh(
-                        this.finalFocus,
-                        {
-                            // tree: true,
-                            body: true,
-                            // documents: true,
-                            // buttons: false,
-                            states: true,
-                        }
-                    );
-                    this.launchRefresh();
-
+                    // Document was closed: refresh after a timeout cycle (should not happen!)
+                    setTimeout(() => {
+                        this.setupRefresh(
+                            this.finalFocus,
+                            {
+                                // tree: true,
+                                body: true,
+                                // documents: true,
+                                // buttons: false,
+                                states: true,
+                            }
+                        );
+                        this.launchRefresh();
+                    }, 0);
                 }
                 return p_document;
             }
@@ -3833,24 +3840,24 @@ export class LeoIntegration {
             if (!p_navEntryResult.focus) {
                 return vscode.window.showInformationMessage('Not found');
             } else {
-                let w_focusTarget = Focus.Body;
+                let w_revealTarget = Focus.Body;
                 const w_focus = p_navEntryResult.focus.toLowerCase();
 
                 if (w_focus.includes('tree') || w_focus.includes('head')) {
                     // tree
-                    w_focusTarget = Focus.Outline;
+                    w_revealTarget = Focus.Outline;
                     this.showOutlineIfClosed = true;
                 } else {
                     this.showBodyIfClosed = true;
                 }
 
                 this.setupRefresh(
-                    // ! NO CHANGE TO KEEP FOCUS ON GOTO PANE !
-                    Focus.NoChange, // w_focusTarget,
+                    // ! KEEP FOCUS ON GOTO PANE !
+                    Focus.Goto,
                     {
                         tree: true,
                         body: true,
-                        scroll: !w_focusTarget,
+                        scroll: w_revealTarget === Focus.Body,
                         // documents: false,
                         // buttons: false,
                         states: true,
@@ -3996,7 +4003,7 @@ export class LeoIntegration {
                 {
                     tree: true, // HAVE to refresh tree because find folds/unfolds only result outline paths
                     body: true,
-                    scroll: p_findResult.found && !w_finalFocus,
+                    scroll: p_findResult.found && w_finalFocus === Focus.Body,
                     // documents: false,
                     // buttons: false,
                     states: true,
@@ -4036,7 +4043,7 @@ export class LeoIntegration {
                 {
                     tree: true,
                     body: true,
-                    scroll: p_findResult.found && !w_finalFocus,
+                    scroll: p_findResult.found && w_finalFocus === Focus.Body,
                     // documents: false,
                     // buttons: false,
                     states: true,
@@ -4820,7 +4827,9 @@ export class LeoIntegration {
                     body: true,
                     documents: true,
                     buttons: true,
-                    states: true
+                    states: true,
+                    goto: true
+
                 }
             );
             this.launchRefresh();
@@ -4877,6 +4886,7 @@ export class LeoIntegration {
                                 documents: true,
                                 buttons: true,
                                 states: true,
+                                goto: true
                             }
                         );
                     } else {
@@ -4962,6 +4972,7 @@ export class LeoIntegration {
                                             documents: true,
                                             buttons: true,
                                             states: true,
+                                            goto: true
                                         }
                                     );
                                 } else {
@@ -5003,6 +5014,7 @@ export class LeoIntegration {
                     documents: true,
                     buttons: true,
                     states: true,
+                    goto: true
                 }
             );
             this.launchRefresh();
@@ -5072,6 +5084,7 @@ export class LeoIntegration {
                                     documents: true,
                                     buttons: true,
                                     states: true,
+                                    goto: true
                                 }
                             );
                             // * TODO : SHOULD LAUNCH REFRESH INSTEAD

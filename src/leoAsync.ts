@@ -45,6 +45,8 @@ export class LeoAsync {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                 .then((p_doNothingPackage) => {
                     p_doNothingPackage.filename = p_doNothingPackage.commander!.fileName;
+                    const w_gotoNeeded = (this._leoIntegration.serverHasOpenedFile === false) ||
+                        this._leoIntegration.serverOpenedFileName === p_doNothingPackage.filename!;
                     this._leoIntegration.serverHasOpenedFile = true;
                     this._leoIntegration.serverOpenedFileName = p_doNothingPackage.filename!;
                     this._leoIntegration.serverOpenedNode = p_doNothingPackage.node!;
@@ -55,7 +57,8 @@ export class LeoAsync {
                             body: true,
                             states: true,
                             buttons: true,
-                            documents: true
+                            documents: true,
+                            goto: w_gotoNeeded
                         },
                         p_doNothingPackage.node!
                     );
@@ -129,7 +132,6 @@ export class LeoAsync {
             );
             if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
                 w_sendResultPromise.then(() => {
-                    //  this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
                 }).then((p_package) => {
                     // refresh and reveal selection
@@ -140,7 +142,8 @@ export class LeoAsync {
                             body: true,
                             states: true,
                             buttons: true,
-                            documents: true
+                            documents: true,
+                            goto: true
                         },
                         p_package.node
                     );
