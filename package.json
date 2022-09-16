@@ -629,16 +629,6 @@
     ],
     "commands": [
       {
-        "command": "leointeg.setEnablePreview",
-        "category": "Leo",
-        "title": "Set Enable-Preview"
-      },
-      {
-        "command": "leointeg.clearCloseEmptyGroups",
-        "category": "Leo",
-        "title": "Clear Close-Empty-Groups"
-      },
-      {
         "command": "leointeg.showSettingsPage",
         "title": "Open Leo Settings",
         "category": "Leo",
@@ -2324,14 +2314,6 @@
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "leointeg.setEnablePreview",
-          "when": "false"
-        },
-        {
-          "command": "leointeg.clearCloseEmptyGroups",
-          "when": "false"
-        },
         {
           "command": "leointeg.statusBar",
           "when": "false"

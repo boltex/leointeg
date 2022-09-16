@@ -129,7 +129,6 @@
 </v>
 <v t="ekr.20200815123601.42"><vh>menus</vh>
 <v t="ekr.20200815123601.43"><vh>commandPalette</vh>
-<v t="ekr.20200815123601.57"><vh>VSCode Settings Commands</vh></v>
 <v t="felix.20210709004123.1"><vh>Status Bar Click</vh></v>
 <v t="ekr.20200815123601.58"><vh>Scripting &amp; @buttons</vh></v>
 <v t="ekr.20200815123601.59"><vh>Show UI Panes</vh></v>
@@ -2617,16 +2616,6 @@ print('done')
 ],
 </t>
 <t tx="ekr.20200815123601.15">{
-  "command": "leointeg.setEnablePreview",
-  "category": "Leo",
-  "title": "Set Enable-Preview"
-},
-{
-  "command": "leointeg.clearCloseEmptyGroups",
-  "category": "Leo",
-  "title": "Clear Close-Empty-Groups"
-},
-{
   "command": "leointeg.showSettingsPage",
   "title": "Open Leo Settings",
   "category": "Leo",
@@ -3850,15 +3839,6 @@ print('done')
   "default": "fb7c47",
   "type": "string",
   "description": "Specifies the hexadecimal color string for the Status Bar Indicator"
-},
-</t>
-<t tx="ekr.20200815123601.57">{
-  "command": "leointeg.setEnablePreview",
-  "when": "false"
-},
-{
-  "command": "leointeg.clearCloseEmptyGroups",
-  "when": "false"
 },
 </t>
 <t tx="ekr.20200815123601.58">{
@@ -10289,15 +10269,13 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
                         // ! Compensate for reveal that steals the focus.
                         if (this._refreshType.goto) {
                             this._refreshType.goto = false;
-                            setTimeout(() =&gt; {
-                                let w_viewName: string;
-                                if (this._lastTreeView === this._leoTreeExView) {
-                                    w_viewName = Constants.GOTO_EXPLORER_ID;
-                                } else {
-                                    w_viewName = Constants.GOTO_ID;
-                                }
-                                vscode.commands.executeCommand(w_viewName + ".focus");
-                            }, 0);
+                            let w_viewName: string;
+                            if (this._lastTreeView === this._leoTreeExView) {
+                                w_viewName = Constants.GOTO_EXPLORER_ID;
+                            } else {
+                                w_viewName = Constants.GOTO_ID;
+                            }
+                            vscode.commands.executeCommand(w_viewName + ".focus");
                         }
                     }
 
