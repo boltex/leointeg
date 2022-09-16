@@ -695,12 +695,6 @@
         }
       },
       {
-        "command": "leointeg.statusBar",
-        "category": "Leo",
-        "enablement": "leoBridgeReady",
-        "title": "Statusbar Click"
-      },
-      {
         "command": "leointeg.minibuffer",
         "category": "Leo",
         "enablement": "leoTreeOpened",
@@ -2314,10 +2308,6 @@
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "leointeg.statusBar",
-          "when": "false"
-        },
         {
           "command": "leointeg.gotoScript",
           "when": "false"

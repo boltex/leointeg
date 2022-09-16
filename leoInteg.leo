@@ -129,7 +129,6 @@
 </v>
 <v t="ekr.20200815123601.42"><vh>menus</vh>
 <v t="ekr.20200815123601.43"><vh>commandPalette</vh>
-<v t="felix.20210709004123.1"><vh>Status Bar Click</vh></v>
 <v t="ekr.20200815123601.58"><vh>Scripting &amp; @buttons</vh></v>
 <v t="ekr.20200815123601.59"><vh>Show UI Panes</vh></v>
 <v t="ekr.20200815123601.60"><vh>Leo File Documents</vh></v>
@@ -2682,12 +2681,6 @@ print('done')
     "light": "resources/light/execute.svg",
     "dark": "resources/dark/execute.svg"
   }
-},
-{
-  "command": "leointeg.statusBar",
-  "category": "Leo",
-  "enablement": "leoBridgeReady",
-  "title": "Statusbar Click"
 },
 {
   "command": "leointeg.minibuffer",
@@ -13563,11 +13556,6 @@ export function getUniqueId(): string {
     return id.toString();
 }
 
-</t>
-<t tx="felix.20210709004123.1">{
-  "command": "leointeg.statusBar",
-  "when": "false"
-},
 </t>
 <t tx="felix.20210713000442.1">/**
  * * find-var or find-def commands
