@@ -4,6 +4,6 @@ src/**
 package-json.lock
 tsconfig.json
 webpack.config.js
-leoInteg.leo
+*.leo
 leoserver.py
 .gitignore
