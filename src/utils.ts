@@ -269,7 +269,8 @@ export function isApEqual(p_a: ArchivedPosition, p_b: ArchivedPosition): boolean
  * @returns True if it would change the icon with actual body content, false otherwise
  */
 export function isIconChangedByEdit(p_node: ArchivedPosition, p_newHasBody: boolean): boolean {
-    if (!p_node.dirty || (p_node.hasBody === !p_newHasBody)) {
+    // hasBody can be undefined so force boolean.
+    if (!p_node.dirty || (!!p_node.hasBody === !p_newHasBody)) {
         return true;
     }
     return false;

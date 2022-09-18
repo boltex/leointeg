@@ -8211,7 +8211,8 @@ export function getFileFromPath(p_path: string): string {
  * @returns True if it would change the icon with actual body content, false otherwise
  */
 export function isIconChangedByEdit(p_node: ArchivedPosition, p_newHasBody: boolean): boolean {
-    if (!p_node.dirty || (p_node.hasBody === !p_newHasBody)) {
+    // hasBody can be undefined so force boolean.
+    if (!p_node.dirty || (!!p_node.hasBody === !p_newHasBody)) {
         return true;
     }
     return false;
@@ -9620,22 +9621,28 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
 
         // * If icon should change then do it now (if there's no document edit pending)
         if (
-            !this._currentDocumentChanged ||
             utils.leoUriToStr(p_textDocumentChange.document.uri) === this.lastSelectedNode.gnx
         ) {
             const w_hasBody = !!p_textDocumentChange.document.getText().length;
-            if (utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody)) {
+            const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
+
+            if (!this._currentDocumentChanged || w_iconChanged) {
+                // Document pane icon needs refresh (changed) and/or outline icon changed
                 this._bodySaveDocument(p_textDocumentChange.document).then(() =&gt; {
                     if (this.lastSelectedNode) {
                         this.lastSelectedNode.dirty = true;
                         this.lastSelectedNode.hasBody = w_hasBody;
-                        // NOT incrementing this.treeID to keep ids intact
                     }
-                    // NoReveal since we're keeping the same id.
-                    this._refreshOutline(false, RevealType.NoReveal);
+                    if (w_iconChanged) {
+                        // NOT incrementing this.treeID to keep ids intact
+                        // NoReveal since we're keeping the same id.
+                        this._refreshOutline(false, RevealType.NoReveal);
+                    }
                 });
-                // also refresh document panel (icon may be dirty now)
-                this.refreshDocumentsPane();
+                if (!this._currentDocumentChanged) {
+                    // also refresh document panel (icon may be dirty now)
+                    this.refreshDocumentsPane();
+                }
             }
         }
 
