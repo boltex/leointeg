@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { Constants } from "./constants";
 import * as utils from './utils';
+import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
 import { ArchivedPosition, Icon, LeoBridgePackage } from './types';
 

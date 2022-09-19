@@ -865,11 +865,11 @@ export class LeoIntegration {
     public checkVersion(): void {
 
         this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_result: LeoBridgePackage) => {
-            // major: 1, minor: 0, patch: 2
+            // major: 1, minor: 0, patch: 4
             let ok = false;
             if (p_result && p_result.major !== undefined && p_result.minor !== undefined && p_result.patch !== undefined) {
 
-                if (p_result.major >= 1 && p_result.minor >= 0 && p_result.patch >= 2) {
+                if (p_result.major >= 1 && p_result.minor >= 0 && p_result.patch >= 4) {
                     ok = true;
                 }
             }
@@ -1383,8 +1383,6 @@ export class LeoIntegration {
     ): void {
         if (p_editor && p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
             if (this.bodyUri.fsPath !== p_editor.document.uri.fsPath) {
-                console.log('from _onActiveEditorChanged this.bodyUri is', this.bodyUri.fsPath);
-
                 this._hideDeleteBody(p_editor);
             }
             this._checkPreviewMode(p_editor);
@@ -1430,7 +1428,6 @@ export class LeoIntegration {
             p_editors.forEach((p_textEditor) => {
                 if (p_textEditor && p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
                     if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
-                        console.log('from _changedVisibleTextEditors! this.bodyUri is', this.bodyUri.fsPath);
                         this._hideDeleteBody(p_textEditor);
                     }
                     this._checkPreviewMode(p_textEditor);
@@ -2247,12 +2244,10 @@ export class LeoIntegration {
                     });
                 }
             }
-        } else {
-            // first time?
-            this.bodyUri = utils.strToLeoUri(p_node.gnx);
         }
+        // first time or no body opened
+        this.bodyUri = utils.strToLeoUri(p_node.gnx);
         if (this._isBodyVisible() === 0 && !this.showBodyIfClosed) {
-            this.bodyUri = utils.strToLeoUri(p_node.gnx);
             return Promise.resolve();
         }
         this.showBodyIfClosed = false;
@@ -2274,8 +2269,9 @@ export class LeoIntegration {
         const w_newTS = performance.now();
         const w_visibleCount = this._isBodyVisible();
 
+        this.bodyUri = w_newUri; // New GLOBAL BODY URI
+
         if (w_visibleCount === 0 && !this.showBodyIfClosed) {
-            this.bodyUri = w_newUri;
             return Promise.resolve();
         }
         this.showBodyIfClosed = false;
@@ -2287,7 +2283,6 @@ export class LeoIntegration {
         if (this.lastSelectedNode && this._bodyPreviewMode && this._bodyEnablePreview && w_visibleCount < 2) {
 
             // just show in same column and delete after
-            this.bodyUri = utils.strToLeoUri(this.lastSelectedNode.gnx);
             const q_showBody = this.showBody(p_aside, p_preventTakingFocus);
 
             if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
@@ -2328,7 +2323,6 @@ export class LeoIntegration {
             }
             return q_showBody;
         } else {
-            this.bodyUri = w_newUri;
             // Close ALL LEO EDITORS first !
             const w_tabsToCloseAll: vscode.Tab[] = [];
             let q_lastSecondSaveAll: Thenable<boolean> = Promise.resolve(true);
@@ -2472,24 +2466,20 @@ export class LeoIntegration {
     }
 
     /**
-     * * Closes non-existing body by deleting the file and calling 'hide'
+     * * Closes non-existing text-editor body if it doesn't match bodyUri
      * @param p_textEditor the editor to close
      * @returns promise that resolves to true if it closed tabs, false if none were found
      */
-    private _hideDeleteBody(p_textEditor: vscode.TextEditor): Thenable<boolean> {
-        console.log('HIDE DELETED! editor was : ', p_textEditor.document.uri.fsPath, " ");
-
-        const w_edit = new vscode.WorkspaceEdit();
-        w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
-        vscode.workspace.applyEdit(w_edit);
-
+    private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
         const w_foundTabs: vscode.Tab[] = [];
+        const w_editorFsPath = p_textEditor.document.uri.fsPath;
         vscode.window.tabGroups.all.forEach((p_tabGroup) => {
             p_tabGroup.tabs.forEach((p_tab) => {
                 if (p_tab.input &&
                     (p_tab.input as vscode.TabInputText).uri &&
                     (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
-                    (p_tab.input as vscode.TabInputText).uri.fsPath === p_textEditor.document.uri.fsPath
+                    (p_tab.input as vscode.TabInputText).uri.fsPath === w_editorFsPath &&
+                    this.bodyUri.fsPath !== w_editorFsPath // if BODY is now the same, dont hide!
                 ) {
                     w_foundTabs.push(p_tab);
                 }
@@ -2503,9 +2493,11 @@ export class LeoIntegration {
         );
 
         if (w_foundTabs.length) {
-            return vscode.window.tabGroups.close(w_foundTabs, true);
+            vscode.window.tabGroups.close(w_foundTabs, true);
+            return;
         }
-        return Promise.resolve(false);
+
+        return;
     }
 
     /**

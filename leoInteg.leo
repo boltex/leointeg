@@ -1312,12 +1312,10 @@ private async _tryApplyNodeToBody(
                 });
             }
         }
-    } else {
-        // first time?
-        this.bodyUri = utils.strToLeoUri(p_node.gnx);
     }
+    // first time or no body opened
+    this.bodyUri = utils.strToLeoUri(p_node.gnx);
     if (this._isBodyVisible() === 0 &amp;&amp; !this.showBodyIfClosed) {
-        this.bodyUri = utils.strToLeoUri(p_node.gnx);
         return Promise.resolve();
     }
     this.showBodyIfClosed = false;
@@ -5518,7 +5516,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_VERSION: "Please update: Leo 6.6.4 required.",
+    MINIMUM_VERSION: "Please update: Leo 6.7 required.",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
     MINIBUFFER_BUTTON_START: "@button-",
@@ -9286,8 +9284,6 @@ private _onActiveEditorChanged(
 ): void {
     if (p_editor &amp;&amp; p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
         if (this.bodyUri.fsPath !== p_editor.document.uri.fsPath) {
-            console.log('from _onActiveEditorChanged this.bodyUri is', this.bodyUri.fsPath);
-
             this._hideDeleteBody(p_editor);
         }
         this._checkPreviewMode(p_editor);
@@ -9803,8 +9799,9 @@ private _switchBody(
     const w_newTS = performance.now();
     const w_visibleCount = this._isBodyVisible();
 
+    this.bodyUri = w_newUri; // New GLOBAL BODY URI
+
     if (w_visibleCount === 0 &amp;&amp; !this.showBodyIfClosed) {
-        this.bodyUri = w_newUri;
         return Promise.resolve();
     }
     this.showBodyIfClosed = false;
@@ -9816,7 +9813,6 @@ private _switchBody(
     if (this.lastSelectedNode &amp;&amp; this._bodyPreviewMode &amp;&amp; this._bodyEnablePreview &amp;&amp; w_visibleCount &lt; 2) {
 
         // just show in same column and delete after
-        this.bodyUri = utils.strToLeoUri(this.lastSelectedNode.gnx);
         const q_showBody = this.showBody(p_aside, p_preventTakingFocus);
 
         if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
@@ -9857,7 +9853,6 @@ private _switchBody(
         }
         return q_showBody;
     } else {
-        this.bodyUri = w_newUri;
         // Close ALL LEO EDITORS first !
         const w_tabsToCloseAll: vscode.Tab[] = [];
         let q_lastSecondSaveAll: Thenable&lt;boolean&gt; = Promise.resolve(true);
@@ -11835,24 +11830,20 @@ public static VSCODE_COMMANDS = {
 ],
 </t>
 <t tx="felix.20210418013332.1">/**
- * * Closes non-existing body by deleting the file and calling 'hide'
+ * * Closes non-existing text-editor body if it doesn't match bodyUri
  * @param p_textEditor the editor to close
  * @returns promise that resolves to true if it closed tabs, false if none were found
  */
-private _hideDeleteBody(p_textEditor: vscode.TextEditor): Thenable&lt;boolean&gt; {
-    console.log('HIDE DELETED! editor was : ', p_textEditor.document.uri.fsPath, " ");
-
-    const w_edit = new vscode.WorkspaceEdit();
-    w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
-    vscode.workspace.applyEdit(w_edit);
-
+private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
     const w_foundTabs: vscode.Tab[] = [];
+    const w_editorFsPath = p_textEditor.document.uri.fsPath;
     vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
         p_tabGroup.tabs.forEach((p_tab) =&gt; {
             if (p_tab.input &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &amp;&amp;
-                (p_tab.input as vscode.TabInputText).uri.fsPath === p_textEditor.document.uri.fsPath
+                (p_tab.input as vscode.TabInputText).uri.fsPath === w_editorFsPath &amp;&amp;
+                this.bodyUri.fsPath !== w_editorFsPath // if BODY is now the same, dont hide!
             ) {
                 w_foundTabs.push(p_tab);
             }
@@ -11866,9 +11857,11 @@ private _hideDeleteBody(p_textEditor: vscode.TextEditor): Thenable&lt;boolean&gt
     );
 
     if (w_foundTabs.length) {
-        return vscode.window.tabGroups.close(w_foundTabs, true);
+        vscode.window.tabGroups.close(w_foundTabs, true);
+        return;
     }
-    return Promise.resolve(false);
+
+    return;
 }
 
 </t>
@@ -11896,7 +11889,6 @@ public _changedVisibleTextEditors(p_editors: readonly vscode.TextEditor[]): void
         p_editors.forEach((p_textEditor) =&gt; {
             if (p_textEditor &amp;&amp; p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
                 if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
-                    console.log('from _changedVisibleTextEditors! this.bodyUri is', this.bodyUri.fsPath);
                     this._hideDeleteBody(p_textEditor);
                 }
                 this._checkPreviewMode(p_textEditor);
@@ -15982,11 +15974,11 @@ export class LeoUndoNode extends vscode.TreeItem {
 public checkVersion(): void {
 
     this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_result: LeoBridgePackage) =&gt; {
-        // major: 1, minor: 0, patch: 2
+        // major: 1, minor: 0, patch: 4
         let ok = false;
         if (p_result &amp;&amp; p_result.major !== undefined &amp;&amp; p_result.minor !== undefined &amp;&amp; p_result.patch !== undefined) {
 
-            if (p_result.major &gt;= 1 &amp;&amp; p_result.minor &gt;= 0 &amp;&amp; p_result.patch &gt;= 2) {
+            if (p_result.major &gt;= 1 &amp;&amp; p_result.minor &gt;= 0 &amp;&amp; p_result.patch &gt;= 4) {
                 ok = true;
             }
         }
@@ -16237,8 +16229,8 @@ set leoTopHoistChapter(p_value: boolean) {
 }
 </t>
 <t tx="felix.20220721204822.1">import * as vscode from 'vscode';
-import { Constants } from "./constants";
 import * as utils from './utils';
+import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
 import { ArchivedPosition, Icon, LeoBridgePackage } from './types';
 
