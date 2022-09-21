@@ -1835,6 +1835,8 @@ export class LeoIntegration {
             w_revealType = RevealType.RevealSelect;
         }
 
+        const w_showBodyNoFocus: boolean = this.finalFocus.valueOf() !== Focus.Body;
+
         // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
         if (this._refreshType.tree) {
             this._refreshType.tree = false;
@@ -1842,7 +1844,7 @@ export class LeoIntegration {
             if (!this.isOutlineVisible() && !this.showOutlineIfClosed && this._refreshType.body) {
                 // wont get 'gotSelectedNode so show body!
                 this._refreshType.body = false;
-                this._tryApplyNodeToBody(this._refreshNode || this.serverOpenedNode || this.lastSelectedNode!, false, false);
+                this._tryApplyNodeToBody(this._refreshNode || this.serverOpenedNode || this.lastSelectedNode!, false, w_showBodyNoFocus);
             }
             this._refreshOutline(true, w_revealType);
         } else if (this._refreshType.node && this._refreshNode) {
@@ -1865,12 +1867,12 @@ export class LeoIntegration {
                 // * if no outline visible, just update body pane as needed
                 if (!this.isOutlineVisible()) {
                     this._refreshType.body = false;
-                    this._tryApplyNodeToBody(this._refreshNode, false, false);
+                    this._tryApplyNodeToBody(this._refreshNode, false, w_showBodyNoFocus);
                 }
             }
         } else if (this._refreshType.body) {
             this._refreshType.body = false;
-            this._tryApplyNodeToBody(this._refreshNode || this.serverOpenedNode || this.lastSelectedNode!, false, false);
+            this._tryApplyNodeToBody(this._refreshNode || this.serverOpenedNode || this.lastSelectedNode!, false, w_showBodyNoFocus);
         }
         return this.getStates();
     }
@@ -2622,14 +2624,12 @@ export class LeoIntegration {
 
         const w_openedDocumentTS = performance.now();
         const w_openedDocumentGnx = utils.leoUriToStr(this.bodyUri);
+        let q_saved: Thenable<unknown> | undefined;
 
         // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
         if (this._refreshType.body) {
             this._refreshType.body = false;
-            // TODO : CHECK IF TIMEOUT NECESSARY!
-            //setTimeout(() => {
 
-            let q_saved: Thenable<unknown>;
             if (this._bodyLastChangedDocument &&
                 !this._bodyLastChangedDocument.isClosed &&
                 (this._bodyLastChangedDocument.isDirty || this._editorTouched) &&
@@ -2637,18 +2637,17 @@ export class LeoIntegration {
             ) {
                 console.log('had to save'); // TODO : CLEANUP !
 
-                // MAKE SURE BODY IS NOT DIRTY  !!
+                // ! FAKE SAVE to make sure body is not dirty !
                 this._leoFileSystem.preventSaveToLeo = true;
                 this._editorTouched = false;
                 q_saved = this._bodyLastChangedDocument.save();
-            } else {
-                q_saved = Promise.resolve();
             }
-            q_saved.then(() => {
-                this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
-            });
 
-            // }, 0);
+            if (q_saved) {
+                await q_saved;
+                this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
+            }
+
         }
         // Handle 'Prevent Show Body flag' and return
         if (this._preventShowBody) {
@@ -2739,6 +2738,7 @@ export class LeoIntegration {
         }
 
         // Find body pane's position if already opened with same gnx (language still needs to be set per position)
+        let w_foundOpened = false;
         vscode.window.tabGroups.all.forEach((p_tabGroup) => {
             p_tabGroup.tabs.forEach((p_tab) => {
 
@@ -2749,11 +2749,16 @@ export class LeoIntegration {
                         if (p_textDocument.uri.fsPath === (p_tab.input as vscode.TabInputText).uri.fsPath) {
                             this._bodyTextDocument = p_textDocument; // vscode.workspace.openTextDocument
                             this._bodyMainSelectionColumn = p_tab.group.viewColumn;
+                            w_foundOpened = true;
                         }
                     });
                 }
             });
         });
+        if (w_foundOpened && !q_saved) {
+            // Was the same and was asked to show body (and did not already had to fake-save and refresh)
+            this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
+        }
 
         // Setup options for the preview state of the opened editor, and to choose which column it should appear
         const w_showOptions: vscode.TextDocumentShowOptions = p_aside
