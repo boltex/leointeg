@@ -74,6 +74,29 @@ export class LeoIntegration {
     // * LeoBridge
     private _leoBridge: LeoBridge; // Singleton service to access the Leo server.
 
+    // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
+    public finalFocus: Focus = Focus.NoChange; // Set in _setupRefresh : Last command issued had focus on outline, as opposed to the body
+    public showBodyIfClosed: boolean = false;
+    public showOutlineIfClosed: boolean = false;
+
+    private _refreshType: ReqRefresh = {}; // Set in _setupRefresh : Flags for commands to require parts of UI to refresh
+
+    private __refreshNode: ArchivedPosition | undefined; // Set in _setupRefresh : Last command issued a specific node to reveal
+    private _lastRefreshNodeTS: number = 0;
+    get _refreshNode(): ArchivedPosition | undefined {
+        return this.__refreshNode;
+    }
+    set _refreshNode(p_ap: ArchivedPosition | undefined) {
+        // Needs undefined type because it cannot be set in the constructor
+        this.__refreshNode = p_ap;
+        this._lastRefreshNodeTS = performance.now();
+    }
+
+    public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
+    public serverOpenedFileName: string = ""; // Server last reported opened file name.
+    public serverOpenedNode: ArchivedPosition | undefined; // Server last reported opened file name.
+    private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
+
     // * Outline Pane
     private _leoTreeProvider: LeoApOutlineProvider; // TreeDataProvider single instance
     private _leoTreeView: vscode.TreeView<ArchivedPosition>; // Outline tree view added to the Tree View Container with an Activity Bar icon
@@ -122,28 +145,21 @@ export class LeoIntegration {
     private _leoUndosExplorerShown = false;
     private _lastLeoUndos: vscode.TreeView<LeoUndoNode> | undefined;
 
-    // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
-    public finalFocus: Focus = Focus.NoChange; // Set in _setupRefresh : Last command issued had focus on outline, as opposed to the body
-    public showBodyIfClosed: boolean = false;
-    public showOutlineIfClosed: boolean = false;
+    // * '@button' pane
+    private _leoButtonsProvider: LeoButtonsProvider;
+    private _leoButtons: vscode.TreeView<LeoButtonNode>;
+    private _leoButtonsExplorer: vscode.TreeView<LeoButtonNode>;
+    private _rclickSelected: number[] = [];
 
-    private _refreshType: ReqRefresh = {}; // Set in _setupRefresh : Flags for commands to require parts of UI to refresh
+    // * Find panel
+    private _findPanelWebviewView: vscode.WebviewView | undefined;
+    private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
+    private _lastFindView: vscode.WebviewView | undefined;  // ? Maybe unused ?
+    private _findNeedsFocus: boolean = false;
+    private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
 
-    private __refreshNode: ArchivedPosition | undefined; // Set in _setupRefresh : Last command issued a specific node to reveal
-    private _lastRefreshNodeTS: number = 0;
-    get _refreshNode(): ArchivedPosition | undefined {
-        return this.__refreshNode;
-    }
-    set _refreshNode(p_ap: ArchivedPosition | undefined) {
-        // Needs undefined type because it cannot be set in the constructor
-        this.__refreshNode = p_ap;
-        this._lastRefreshNodeTS = performance.now();
-    }
-
-    public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
-    public serverOpenedFileName: string = ""; // Server last reported opened file name.
-    public serverOpenedNode: ArchivedPosition | undefined; // Server last reported opened file name.
-    private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
+    // * Leo Find Panel
+    private _leoFindPanelProvider: vscode.WebviewViewProvider;
 
     // * Body Pane
     private _bodyFileSystemStarted: boolean = false;
@@ -160,21 +176,6 @@ export class LeoIntegration {
 
     private _bodyStatesTimer: NodeJS.Timeout | undefined;
 
-    // * Find panel
-    private _findPanelWebviewView: vscode.WebviewView | undefined;
-    private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
-    private _lastFindView: vscode.WebviewView | undefined;  // ? Maybe unused ?
-    private _findNeedsFocus: boolean = false;
-    private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
-
-    // * Selection & scroll
-    private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
-    private _selectionGnx: string = ''; // Packaged into 'BodySelectionInfo' structures, sent to Leo
-    private _selection: vscode.Selection | undefined; // also packaged into 'BodySelectionInfo'
-    private _scrollDirty: boolean = false; // Flag set when cursor selection is changed
-    private _scrollGnx: string = '';
-    private _scroll: vscode.Range | undefined;
-
     private _bodyUri: vscode.Uri = utils.strToLeoUri('');
     get bodyUri(): vscode.Uri {
         return this._bodyUri;
@@ -184,14 +185,13 @@ export class LeoIntegration {
         this._bodyUri = p_uri;
     }
 
-    // * '@button' pane
-    private _leoButtonsProvider: LeoButtonsProvider;
-    private _leoButtons: vscode.TreeView<LeoButtonNode>;
-    private _leoButtonsExplorer: vscode.TreeView<LeoButtonNode>;
-    private _rclickSelected: number[] = [];
-
-    // * Leo Find Panel
-    private _leoFindPanelProvider: vscode.WebviewViewProvider;
+    // * Selection & scroll
+    private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
+    private _selectionGnx: string = ''; // Packaged into 'BodySelectionInfo' structures, sent to Leo
+    private _selection: vscode.Selection | undefined; // also packaged into 'BodySelectionInfo'
+    private _scrollDirty: boolean = false; // Flag set when cursor selection is changed
+    private _scrollGnx: string = '';
+    private _scroll: vscode.Range | undefined;
 
     // * Settings / Welcome webview
     public leoSettingsWebview: LeoSettingsProvider;
@@ -1244,9 +1244,11 @@ export class LeoIntegration {
             // * This happens if the tree selection is already the same as the expanded/collapsed node
             // Pass
         } else {
-            // * This part only happens if the user clicked on the arrow without trying to select the node
-            this._revealNode(p_event.element, { select: true, focus: false }); // No force focus : it breaks collapse/expand when direct parent
-            this.selectTreeNode(p_event.element, true); // not waiting for a .then(...) so not to add any lag
+            if (this.config.leoTreeBrowse) {
+                // * This part only happens if the user clicked on the arrow without trying to select the node
+                this._revealNode(p_event.element, { select: true, focus: false }); // No force focus : it breaks collapse/expand when direct parent
+                this.selectTreeNode(p_event.element, true); // not waiting for a .then(...) so not to add any lag
+            }
         }
 
         // * vscode will update its tree by itself, but we need to change Leo's model of its outline
@@ -1771,7 +1773,7 @@ export class LeoIntegration {
 
     /**
      * * Setup global refresh options
-     * @param p_finalFocus Flag for focus to be placed in outline
+     * @param p_finalFocus final focus placement
      * @param p_refreshType Refresh flags for each UI part
      * @param p_node The AP node to be refreshed if refresh type 'node' only is set
      */
@@ -1790,7 +1792,7 @@ export class LeoIntegration {
     /**
      * * Launches refresh for UI components: treeviews, body, and context states
      */
-    public async _launchRefresh(): Promise<unknown> {
+    private async _launchRefresh(): Promise<unknown> {
 
         // check states for having at least a document opened
         if (!this.serverHasOpenedFile && this.leoStates.leoBridgeReady && this.leoStates.fileOpenedReady) {
