@@ -503,6 +503,7 @@
 <v t="felix.20220721204822.1"><vh>@clean src/leoApOutline.ts</vh>
 <v t="felix.20220721204822.2"><vh>class LeoApOutlineProvider</vh>
 <v t="felix.20220721204822.3"><vh>constructor</vh></v>
+<v t="felix.20220924172739.1"><vh>setInvertFlag</vh></v>
 <v t="felix.20220721204822.4"><vh>refreshTreeRoot</vh></v>
 <v t="felix.20220721204822.5"><vh>buildId</vh></v>
 <v t="felix.20220721204822.6"><vh>incTreeId</vh></v>
@@ -1082,6 +1083,7 @@ private _onButtonsTreeViewVisibilityChanged(
  * * Refresh tree for 'node hover icons' to show up properly after changing their settings
  */
 public configTreeRefresh(): void {
+    this._leoTreeProvider.setInvertFlag(this.config.invertNodeContrast);
     if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
         this._preventShowBody = true;
         this._refreshOutline(true, RevealType.RevealSelect);
@@ -1194,7 +1196,6 @@ private _revealNode(
  * * Launches refresh for UI components: treeviews, body, and context states
  */
 private async _launchRefresh(): Promise&lt;unknown&gt; {
-    console.log('launch refresh');
 
     // check states for having at least a document opened
     if (!this.serverHasOpenedFile &amp;&amp; this.leoStates.leoBridgeReady &amp;&amp; this.leoStates.fileOpenedReady) {
@@ -9360,7 +9361,7 @@ private _onActiveEditorChanged(
     this._commandStack = new CommandStack(_context, this);
 
     // * Create a single data provider for both outline trees, Leo view and Explorer view
-    this._leoTreeProvider = new LeoApOutlineProvider(this.nodeIcons, this);
+    this._leoTreeProvider = new LeoApOutlineProvider(this.nodeIcons, !!this.config.invertNodeContrast, this);
 
     // * Create Leo stand-alone view and Explorer view outline panes
     // Uses 'select node' command, so 'onDidChangeSelection' is not used
@@ -9617,13 +9618,6 @@ private _onActiveEditorChanged(
  * @param p_textDocumentChange Text changed event passed by vscode
  */
 private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent): void {
-    if (p_textDocumentChange.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-        console.log('p_textDocumentChange scheme', p_textDocumentChange.document.uri.scheme);
-        console.log('p_textDocumentChange length', p_textDocumentChange.contentChanges.length);
-
-    }
-
-
     // ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
     if (
         this.lastSelectedNode &amp;&amp;
@@ -9643,16 +9637,11 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
         ) {
             const w_hasBody = !!p_textDocumentChange.document.getText().length;
             const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
-            console.log('icon changed: ', w_iconChanged);
 
             if (!this._currentDocumentChanged || w_iconChanged) {
                 if (this.preventIconChange) {
-                    console.log('prevented!');
-
                     this.preventIconChange = false;
                 } else {
-                    console.log('not prevented!');
-
                     // Document pane icon needs refresh (changed) and/or outline icon changed
                     this._bodySaveDocument(p_textDocumentChange.document).then(() =&gt; {
                         if (this.lastSelectedNode) {
@@ -16354,6 +16343,7 @@ import { ArchivedPosition, Icon, LeoBridgePackage } from './types';
 </t>
 <t tx="felix.20220721204822.3">constructor(
     private _icons: Icon[],
+    private _invertDirty: boolean,
     private _leoIntegration: LeoIntegration
 ) {
 }
@@ -16411,15 +16401,11 @@ public incTreeId(): void {
         w_contextValue += Constants.CONTEXT_FLAGS.NODE_NOT_ROOT;
     }
 
-    const w_inverted = this._leoIntegration.config.invertNodeContrast;
-    const w_dirty = !w_inverted !== !element.dirty;
-
     const w_icon: number =
-        (+w_dirty &lt;&lt; 3) |
+        (+(this._invertDirty !== !!element.dirty) &lt;&lt; 3) |
         (+element.cloned &lt;&lt; 2) |
         (+element.marked &lt;&lt; 1) |
         +element.hasBody;
-
 
     let desc: string = "";
     let tagsQty = 0;
@@ -16455,7 +16441,6 @@ public incTreeId(): void {
 
 </t>
 <t tx="felix.20220721204822.8">public getChildren(element?: ArchivedPosition): Thenable&lt;ArchivedPosition[]&gt; {
-    console.log('getChildren');
 
     if (!this._leoIntegration.leoStates.fileOpenedReady) {
         return Promise.resolve([]); // Defaults to an empty list of children
@@ -16542,8 +16527,6 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
                 }).then(() =&gt; {
                     // ok
                 }, (p_reason) =&gt; {
-                    console.log('Reveal failed.', p_reason);
-
                     // Reveal failed. Retry refreshOutline once
                     this._refreshOutline(true, RevealType.RevealSelect);
                 });
@@ -16589,11 +16572,8 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
  * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
  */
 public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
-
     this._currentDocumentChanged = p_documentNode.documentEntry.changed;
     this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
-    console.log('setDocumentSelection. is changed: ', this._currentDocumentChanged);
-
     setTimeout(() =&gt; {
         if (!this._leoDocuments.visible &amp;&amp; !this._leoDocumentsExplorer.visible) {
             return;
@@ -17924,6 +17904,15 @@ private _isBodyPreview(): boolean {
     } else {
         return false;
     }
+}
+
+</t>
+<t tx="felix.20220924172739.1">/**
+ * (Re)set the set of icons
+ * @param p_icons New set of icons
+ */
+public setInvertFlag(p_invertFLag: boolean): void {
+    this._invertDirty = p_invertFLag;
 }
 
 </t>

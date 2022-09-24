@@ -277,7 +277,7 @@ export class LeoIntegration {
         this._commandStack = new CommandStack(_context, this);
 
         // * Create a single data provider for both outline trees, Leo view and Explorer view
-        this._leoTreeProvider = new LeoApOutlineProvider(this.nodeIcons, this);
+        this._leoTreeProvider = new LeoApOutlineProvider(this.nodeIcons, !!this.config.invertNodeContrast, this);
 
         // * Create Leo stand-alone view and Explorer view outline panes
         // Uses 'select node' command, so 'onDidChangeSelection' is not used
@@ -1770,6 +1770,7 @@ export class LeoIntegration {
      * * Refresh tree for 'node hover icons' to show up properly after changing their settings
      */
     public configTreeRefresh(): void {
+        this._leoTreeProvider.setInvertFlag(this.config.invertNodeContrast);
         if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
             this._preventShowBody = true;
             this._refreshOutline(true, RevealType.RevealSelect);
