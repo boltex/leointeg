@@ -176,6 +176,8 @@ export class LeoIntegration {
 
     private _bodyStatesTimer: NodeJS.Timeout | undefined;
 
+    public preventIconChange: boolean = false; // Prevent refresh outline to keep selected node icon
+
     private _bodyUri: vscode.Uri = utils.strToLeoUri('');
     get bodyUri(): vscode.Uri {
         return this._bodyUri;
@@ -1477,7 +1479,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Handle typing that was detected in a document
+     * * Handle typing, undos and read-from-file refreshes that was detected as a document change
      * @param p_textDocumentChange Text changed event passed by vscode
      */
     private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent): void {
@@ -1488,13 +1490,11 @@ export class LeoIntegration {
             p_textDocumentChange.document.uri.scheme === Constants.URI_LEO_SCHEME
         ) {
 
-            // * There was an actual change on a Leo Body by the user
+            // * There was a on a Leo Body by the user OR FROM LEO REFRESH FROM FILE
             this._bodyLastChangedDocument = p_textDocumentChange.document;
             this._bodyLastChangedDocumentSaved = false;
             this._editorTouched = true; // To make sure to transfer content to Leo even if all undone
             this._bodyPreviewMode = false;
-
-            // this.finalFocus = Focus.Body; // Focus is on body pane // ? NOT NEEDED TO CHANGE finalFocus ?
 
             // * If icon should change then do it now (if there's no document edit pending)
             if (
@@ -1504,18 +1504,23 @@ export class LeoIntegration {
                 const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
 
                 if (!this._currentDocumentChanged || w_iconChanged) {
-                    // Document pane icon needs refresh (changed) and/or outline icon changed
-                    this._bodySaveDocument(p_textDocumentChange.document).then(() => {
-                        if (this.lastSelectedNode) {
-                            this.lastSelectedNode.dirty = true;
-                            this.lastSelectedNode.hasBody = w_hasBody;
-                        }
-                        if (w_iconChanged) {
-                            // NOT incrementing this.treeID to keep ids intact
-                            // NoReveal since we're keeping the same id.
-                            this._refreshOutline(false, RevealType.NoReveal);
-                        }
-                    });
+                    if (this.preventIconChange) {
+                        this.preventIconChange = false;
+                    } else {
+                        // Document pane icon needs refresh (changed) and/or outline icon changed
+                        this._bodySaveDocument(p_textDocumentChange.document).then(() => {
+                            if (this.lastSelectedNode) {
+                                this.lastSelectedNode.dirty = true;
+                                this.lastSelectedNode.hasBody = w_hasBody;
+                            }
+                            if (w_iconChanged) {
+                                // NOT incrementing this.treeID to keep ids intact
+                                // NoReveal since we're keeping the same id.
+                                this._refreshOutline(false, RevealType.NoReveal);
+                            }
+                        });
+                    }
+
                     if (!this._currentDocumentChanged) {
                         // also refresh document panel (icon may be dirty now)
                         this.refreshDocumentsPane();
@@ -2637,7 +2642,6 @@ export class LeoIntegration {
                 (this._bodyLastChangedDocument.isDirty || this._editorTouched) &&
                 w_openedDocumentGnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)
             ) {
-                console.log('had to save'); // TODO : CLEANUP !
 
                 // ! FAKE SAVE to make sure body is not dirty !
                 this._leoFileSystem.preventSaveToLeo = true;
@@ -2647,6 +2651,7 @@ export class LeoIntegration {
 
             if (q_saved) {
                 await q_saved;
+                this.preventIconChange = true;
                 this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
             }
 
@@ -2759,6 +2764,7 @@ export class LeoIntegration {
         });
         if (w_foundOpened && !q_saved) {
             // Was the same and was asked to show body (and did not already had to fake-save and refresh)
+            this.preventIconChange = true;
             this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
         }
 
@@ -2785,6 +2791,7 @@ export class LeoIntegration {
             // Should the gnx be relevant? -> !this.isGnxStillValid(w_openedDocumentGnx, w_openedDocumentTS)
 
         ) {
+            this.preventIconChange = false;
             return;
         }
 
@@ -3223,7 +3230,6 @@ export class LeoIntegration {
         if (q_result) {
             return q_result;
         } else {
-            // TODO : Use cleanup message string CONSTANT instead
             vscode.window.showInformationMessage(
                 Constants.USER_MESSAGES.TOO_FAST + p_userCommand.action
             );

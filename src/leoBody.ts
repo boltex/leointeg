@@ -106,7 +106,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
-        // TODO : Fix/Check extraneous stat(...) call(s)
         if (this._leoIntegration.leoStates.fileOpenedReady) {
             const w_gnx = utils.leoUriToStr(p_uri);
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
@@ -157,22 +156,30 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     Constants.LEOBRIDGE.GET_BODY,
                     { "gnx": w_gnx }
                 );
+                let w_buffer: Uint8Array;
                 if (p_result.body) {
                     // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
 
                     this._errorRefreshFlag = false; // got body so reset possible flag!
+                    if (this._lastGnx === w_gnx && this._lastBodyData === p_result.body) {
+                        // If EXACT SAME body has refreshed, clear prevent preventIconChange
+                        // (because _onDocumentChanged will not be triggered)
+                        // Otherwise, changing a character wont change the icon, until the next change.
+                        this._leoIntegration.preventIconChange = false;
+                    }
+
                     this._lastGnx = w_gnx;
                     this._lastBodyData = p_result.body;
-                    const w_buffer_1: Uint8Array = Buffer.from(p_result.body);
-                    this._lastBodyLength = w_buffer_1.byteLength;
-                    return Promise.resolve(w_buffer_1);
+                    w_buffer = Buffer.from(p_result.body);
+                    this._lastBodyLength = w_buffer.byteLength;
+
                 } else if (p_result.body === "") {
                     // console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
 
                     this._lastGnx = w_gnx;
                     this._lastBodyLength = 0;
                     this._lastBodyData = "";
-                    return Promise.resolve(Buffer.from(""));
+                    w_buffer = Buffer.from("");
                 } else {
                     if (!this._errorRefreshFlag) {
                         this._leoIntegration.fullRefresh();
@@ -180,15 +187,16 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     if (this._lastGnx === w_gnx) {
                         // was last gnx of closed file about to be switched to new document selected
                         console.log('Passed in not found: ' + w_gnx);
-                        return Promise.resolve(Buffer.from(this._lastBodyData));
+                        w_buffer = Buffer.from(this._lastBodyData);
+                    } else {
+                        console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
+                        //  throw vscode.FileSystemError.FileNotFound();
+                        // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                        w_buffer = Buffer.from("");
                     }
-                    console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
-
-
-                    //  throw vscode.FileSystemError.FileNotFound();
-                    // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
-                    return Promise.resolve(Buffer.from(""));
                 }
+
+                return w_buffer;
             }
         } else {
             throw vscode.FileSystemError.FileNotFound(p_uri);

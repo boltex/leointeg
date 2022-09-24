@@ -884,7 +884,7 @@ public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters)
 
             this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                 .then((p_package) =&gt; {
-                    // refresh and reveal selection
+
                     this._leoIntegration.setupRefresh(
                         Focus.NoChange,
                         {
@@ -1194,6 +1194,7 @@ private _revealNode(
  * * Launches refresh for UI components: treeviews, body, and context states
  */
 private async _launchRefresh(): Promise&lt;unknown&gt; {
+    console.log('launch refresh');
 
     // check states for having at least a document opened
     if (!this.serverHasOpenedFile &amp;&amp; this.leoStates.leoBridgeReady &amp;&amp; this.leoStates.fileOpenedReady) {
@@ -1341,7 +1342,6 @@ public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promis
     if (q_result) {
         return q_result;
     } else {
-        // TODO : Use cleanup message string CONSTANT instead
         vscode.window.showInformationMessage(
             Constants.USER_MESSAGES.TOO_FAST + p_userCommand.action
         );
@@ -5980,6 +5980,10 @@ public setLeoIntegSettings(p_changes: ConfigSetting[]): Promise&lt;void&gt; {
             // Check if tree refresh is required for hover-icons to be displayed or hidden accordingly
             this._needsTreeRefresh = true;
         }
+        if (i_change &amp;&amp; i_change.code === Constants.CONFIG_NAMES.INVERT_NODES) {
+            // Check if tree refresh is required for hover-icons to be displayed or hidden accordingly
+            this._needsTreeRefresh = true;
+        }
         if (w_vscodeConfig.inspect(i_change.code)!.defaultValue === i_change.value) {
             // Set as undefined - same as default
             w_promises.push(w_vscodeConfig.update(i_change.code, undefined, true));
@@ -6287,7 +6291,6 @@ import { BodyTimeInfo } from "./types";
 @others
 </t>
 <t tx="felix.20200718040540.10">public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable&lt;vscode.FileStat&gt; {
-    // TODO : Fix/Check extraneous stat(...) call(s)
     if (this._leoIntegration.leoStates.fileOpenedReady) {
         const w_gnx = utils.leoUriToStr(p_uri);
         if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
@@ -6339,22 +6342,30 @@ import { BodyTimeInfo } from "./types";
                 Constants.LEOBRIDGE.GET_BODY,
                 { "gnx": w_gnx }
             );
+            let w_buffer: Uint8Array;
             if (p_result.body) {
                 // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
 
                 this._errorRefreshFlag = false; // got body so reset possible flag!
+                if (this._lastGnx === w_gnx &amp;&amp; this._lastBodyData === p_result.body) {
+                    // If EXACT SAME body has refreshed, clear prevent preventIconChange
+                    // (because _onDocumentChanged will not be triggered)
+                    // Otherwise, changing a character wont change the icon, until the next change.
+                    this._leoIntegration.preventIconChange = false;
+                }
+
                 this._lastGnx = w_gnx;
                 this._lastBodyData = p_result.body;
-                const w_buffer_1: Uint8Array = Buffer.from(p_result.body);
-                this._lastBodyLength = w_buffer_1.byteLength;
-                return Promise.resolve(w_buffer_1);
+                w_buffer = Buffer.from(p_result.body);
+                this._lastBodyLength = w_buffer.byteLength;
+
             } else if (p_result.body === "") {
                 // console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
 
                 this._lastGnx = w_gnx;
                 this._lastBodyLength = 0;
                 this._lastBodyData = "";
-                return Promise.resolve(Buffer.from(""));
+                w_buffer = Buffer.from("");
             } else {
                 if (!this._errorRefreshFlag) {
                     this._leoIntegration.fullRefresh();
@@ -6362,15 +6373,16 @@ import { BodyTimeInfo } from "./types";
                 if (this._lastGnx === w_gnx) {
                     // was last gnx of closed file about to be switched to new document selected
                     console.log('Passed in not found: ' + w_gnx);
-                    return Promise.resolve(Buffer.from(this._lastBodyData));
+                    w_buffer = Buffer.from(this._lastBodyData);
+                } else {
+                    console.error("ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
+                    //  throw vscode.FileSystemError.FileNotFound();
+                    // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                    w_buffer = Buffer.from("");
                 }
-                console.error("ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
-
-
-                //  throw vscode.FileSystemError.FileNotFound();
-                // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
-                return Promise.resolve(Buffer.from(""));
             }
+
+            return w_buffer;
         }
     } else {
         throw vscode.FileSystemError.FileNotFound(p_uri);
@@ -9032,6 +9044,8 @@ export class LeoIntegration {
 
     private _bodyStatesTimer: NodeJS.Timeout | undefined;
 
+    public preventIconChange: boolean = false; // Prevent refresh outline to keep selected node icon
+
     private _bodyUri: vscode.Uri = utils.strToLeoUri('');
     get bodyUri(): vscode.Uri {
         return this._bodyUri;
@@ -9599,10 +9613,17 @@ private _onActiveEditorChanged(
 
 </t>
 <t tx="felix.20200719025231.31">/**
- * * Handle typing that was detected in a document
+ * * Handle typing, undos and read-from-file refreshes that was detected as a document change
  * @param p_textDocumentChange Text changed event passed by vscode
  */
 private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent): void {
+    if (p_textDocumentChange.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+        console.log('p_textDocumentChange scheme', p_textDocumentChange.document.uri.scheme);
+        console.log('p_textDocumentChange length', p_textDocumentChange.contentChanges.length);
+
+    }
+
+
     // ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
     if (
         this.lastSelectedNode &amp;&amp;
@@ -9610,13 +9631,11 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
         p_textDocumentChange.document.uri.scheme === Constants.URI_LEO_SCHEME
     ) {
 
-        // * There was an actual change on a Leo Body by the user
+        // * There was a on a Leo Body by the user OR FROM LEO REFRESH FROM FILE
         this._bodyLastChangedDocument = p_textDocumentChange.document;
         this._bodyLastChangedDocumentSaved = false;
         this._editorTouched = true; // To make sure to transfer content to Leo even if all undone
         this._bodyPreviewMode = false;
-
-        // this.finalFocus = Focus.Body; // Focus is on body pane // ? NOT NEEDED TO CHANGE finalFocus ?
 
         // * If icon should change then do it now (if there's no document edit pending)
         if (
@@ -9624,20 +9643,30 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
         ) {
             const w_hasBody = !!p_textDocumentChange.document.getText().length;
             const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
+            console.log('icon changed: ', w_iconChanged);
 
             if (!this._currentDocumentChanged || w_iconChanged) {
-                // Document pane icon needs refresh (changed) and/or outline icon changed
-                this._bodySaveDocument(p_textDocumentChange.document).then(() =&gt; {
-                    if (this.lastSelectedNode) {
-                        this.lastSelectedNode.dirty = true;
-                        this.lastSelectedNode.hasBody = w_hasBody;
-                    }
-                    if (w_iconChanged) {
-                        // NOT incrementing this.treeID to keep ids intact
-                        // NoReveal since we're keeping the same id.
-                        this._refreshOutline(false, RevealType.NoReveal);
-                    }
-                });
+                if (this.preventIconChange) {
+                    console.log('prevented!');
+
+                    this.preventIconChange = false;
+                } else {
+                    console.log('not prevented!');
+
+                    // Document pane icon needs refresh (changed) and/or outline icon changed
+                    this._bodySaveDocument(p_textDocumentChange.document).then(() =&gt; {
+                        if (this.lastSelectedNode) {
+                            this.lastSelectedNode.dirty = true;
+                            this.lastSelectedNode.hasBody = w_hasBody;
+                        }
+                        if (w_iconChanged) {
+                            // NOT incrementing this.treeID to keep ids intact
+                            // NoReveal since we're keeping the same id.
+                            this._refreshOutline(false, RevealType.NoReveal);
+                        }
+                    });
+                }
+
                 if (!this._currentDocumentChanged) {
                     // also refresh document panel (icon may be dirty now)
                     this.refreshDocumentsPane();
@@ -10040,7 +10069,6 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
             (this._bodyLastChangedDocument.isDirty || this._editorTouched) &amp;&amp;
             w_openedDocumentGnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)
         ) {
-            console.log('had to save'); // TODO : CLEANUP !
 
             // ! FAKE SAVE to make sure body is not dirty !
             this._leoFileSystem.preventSaveToLeo = true;
@@ -10050,6 +10078,7 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
 
         if (q_saved) {
             await q_saved;
+            this.preventIconChange = true;
             this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
         }
 
@@ -10162,6 +10191,7 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
     });
     if (w_foundOpened &amp;&amp; !q_saved) {
         // Was the same and was asked to show body (and did not already had to fake-save and refresh)
+        this.preventIconChange = true;
         this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
     }
 
@@ -10188,6 +10218,7 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
         // Should the gnx be relevant? -&gt; !this.isGnxStillValid(w_openedDocumentGnx, w_openedDocumentTS)
 
     ) {
+        this.preventIconChange = false;
         return;
     }
 
@@ -16379,8 +16410,12 @@ public incTreeId(): void {
     } else {
         w_contextValue += Constants.CONTEXT_FLAGS.NODE_NOT_ROOT;
     }
+
+    const w_inverted = this._leoIntegration.config.invertNodeContrast;
+    const w_dirty = !w_inverted !== !element.dirty;
+
     const w_icon: number =
-        (+element.dirty &lt;&lt; 3) |
+        (+w_dirty &lt;&lt; 3) |
         (+element.cloned &lt;&lt; 2) |
         (+element.marked &lt;&lt; 1) |
         +element.hasBody;
@@ -16420,6 +16455,8 @@ public incTreeId(): void {
 
 </t>
 <t tx="felix.20220721204822.8">public getChildren(element?: ArchivedPosition): Thenable&lt;ArchivedPosition[]&gt; {
+    console.log('getChildren');
+
     if (!this._leoIntegration.leoStates.fileOpenedReady) {
         return Promise.resolve([]); // Defaults to an empty list of children
     }
@@ -16505,6 +16542,8 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
                 }).then(() =&gt; {
                     // ok
                 }, (p_reason) =&gt; {
+                    console.log('Reveal failed.', p_reason);
+
                     // Reveal failed. Retry refreshOutline once
                     this._refreshOutline(true, RevealType.RevealSelect);
                 });
@@ -16550,8 +16589,11 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
  * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
  */
 public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
+
     this._currentDocumentChanged = p_documentNode.documentEntry.changed;
     this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
+    console.log('setDocumentSelection. is changed: ', this._currentDocumentChanged);
+
     setTimeout(() =&gt; {
         if (!this._leoDocuments.visible &amp;&amp; !this._leoDocumentsExplorer.visible) {
             return;

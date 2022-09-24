@@ -68,8 +68,12 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
         } else {
             w_contextValue += Constants.CONTEXT_FLAGS.NODE_NOT_ROOT;
         }
+
+        const w_inverted = this._leoIntegration.config.invertNodeContrast;
+        const w_dirty = !w_inverted !== !element.dirty;
+
         const w_icon: number =
-            (+element.dirty << 3) |
+            (+w_dirty << 3) |
             (+element.cloned << 2) |
             (+element.marked << 1) |
             +element.hasBody;
@@ -108,6 +112,8 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
     }
 
     public getChildren(element?: ArchivedPosition): Thenable<ArchivedPosition[]> {
+        console.log('getChildren');
+
         if (!this._leoIntegration.leoStates.fileOpenedReady) {
             return Promise.resolve([]); // Defaults to an empty list of children
         }

@@ -181,7 +181,7 @@ export class LeoAsync {
 
                 this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                     .then((p_package) => {
-                        // refresh and reveal selection
+
                         this._leoIntegration.setupRefresh(
                             Focus.NoChange,
                             {
