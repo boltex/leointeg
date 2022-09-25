@@ -444,6 +444,7 @@
 <v t="felix.20210530225640.1"><vh>Search</vh>
 <v t="felix.20220305225942.1"><vh>navEnter</vh></v>
 <v t="felix.20220305231404.1"><vh>navTextChange</vh></v>
+<v t="felix.20220925181748.1"><vh>navTextClear</vh></v>
 <v t="felix.20210516233931.1"><vh>startSearch</vh></v>
 <v t="felix.20220825224916.1"><vh>checkForceFindFocus</vh></v>
 <v t="felix.20210613205741.1"><vh>_inputFindPattern</vh></v>
@@ -5081,6 +5082,7 @@ public static LEOBRIDGE = {
 
     NAV_HEADLINE_SEARCH: "!nav_headline_search",
     NAV_SEARCH: "!nav_search",
+    NAV_CLEAR: "!nav_clear",
 
     FIND_QUICK_TIMELINE: "!find_quick_timeline",
     FIND_QUICK_CHANGED: "!find_quick_changed",
@@ -14937,6 +14939,9 @@ public getTextFromClipboard(): string {
                     }
                     vscode.postMessage({ type: 'leoNavEnter' });
                 }
+                if(searchSettings.navText.length===0){
+                    vscode.postMessage({ type: 'leoNavClear' });
+                }
                 return false;
             }
         };
@@ -17918,6 +17923,19 @@ public setInvertFlag(p_invertFLag: boolean): void {
 }
 
 </t>
+<t tx="felix.20220925181748.1">/**
+ * * CLears the nav search results of the goto pane
+ */
+public async navTextClear(): Promise&lt;LeoBridgePackage&gt; {
+    await this._isBusyTriggerSave(false, true);
+    const w_package = await this.sendAction(
+        Constants.LEOBRIDGE.NAV_CLEAR
+    );
+    this._leoGotoProvider.refreshTreeRoot();
+    return w_package;
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -18094,6 +18112,10 @@ import * as utils from "../utils";
                 }
                 case 'leoNavTextChange': {
                     this._leoIntegration.navTextChange();
+                    break;
+                }
+                case 'leoNavClear': {
+                    this._leoIntegration.navTextClear();
                     break;
                 }
                 case 'gotFocus': {

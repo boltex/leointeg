@@ -596,6 +596,7 @@ export class Constants {
 
         NAV_HEADLINE_SEARCH: "!nav_headline_search",
         NAV_SEARCH: "!nav_search",
+        NAV_CLEAR: "!nav_clear",
 
         FIND_QUICK_TIMELINE: "!find_quick_timeline",
         FIND_QUICK_CHANGED: "!find_quick_changed",

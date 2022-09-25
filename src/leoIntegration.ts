@@ -3925,6 +3925,18 @@ export class LeoIntegration {
     }
 
     /**
+     * * CLears the nav search results of the goto pane
+     */
+    public async navTextClear(): Promise<LeoBridgePackage> {
+        await this._isBusyTriggerSave(false, true);
+        const w_package = await this.sendAction(
+            Constants.LEOBRIDGE.NAV_CLEAR
+        );
+        this._leoGotoProvider.refreshTreeRoot();
+        return w_package;
+    }
+
+    /**
      * * Opens the find panel and focuses on the "find/replace" field, selecting all it's content.
      */
     public startSearch(): void {
