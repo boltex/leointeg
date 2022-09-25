@@ -10288,8 +10288,7 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
                         // Set scroll approximation
                         w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
                         // ! Compensate for reveal that steals the focus.
-                        if (this._refreshType.goto) {
-                            this._refreshType.goto = false;
+                        if (this.finalFocus.valueOf() === Focus.Goto) {
                             let w_viewName: string;
                             if (this._lastTreeView === this._leoTreeExView) {
                                 w_viewName = Constants.GOTO_EXPLORER_ID;
@@ -15404,7 +15403,7 @@ public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
                     // documents: false,
                     // buttons: false,
                     states: true,
-                    goto: w_revealTarget === Focus.Body // ! HAVE TO FORCE BACK
+                    // goto: w_revealTarget === Focus.Body // ! HAVE TO FORCE BACK
                 },
                 p_navEntryResult.node
             );
@@ -17672,6 +17671,8 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
+        console.log('goto refreshTreeRoot');
+
         this._nodeList = [];
         this._selectedNodeIndex = 0;
         this._onDidChangeTreeData.fire(undefined);
