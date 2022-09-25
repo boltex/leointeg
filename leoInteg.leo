@@ -17671,8 +17671,6 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
-        console.log('goto refreshTreeRoot');
-
         this._nodeList = [];
         this._selectedNodeIndex = 0;
         this._onDidChangeTreeData.fire(undefined);
