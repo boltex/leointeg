@@ -1,9 +1,6 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoUndoNode } from "./leoUndoNode";
-import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
-import { LeoUndo } from "./types";
 
 // leo undo provider class
 export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
@@ -16,8 +13,6 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
 
     constructor(
         private _leoIntegration: LeoIntegration
-        // private _leoStates: LeoStates,
-        // private _leoUI: LeoUI,
     ) { }
 
     /**
@@ -95,43 +90,6 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
             return Promise.resolve([]); // Defaults to an empty list of children
         }
 
-        // if called with element, or not ready, give back empty array as there won't be any children
-        // if (this._leoStates.fileOpenedReady && !element && g.app.windowList.length) {
-        //     const c = g.app.windowList[this._leoUI.frameIndex].c;
-        //     const undoer = c.undoer;
-        //     if (undoer.beads.length) {
-        //         let i: number = 0;
-        //         undoer.beads.forEach(p_bead => {
-        //             let w_description: string = "";
-        //             let w_undoFlag: boolean = false;
-        //             if (i === undoer.bead) {
-        //                 w_description = "Undo";
-        //                 w_undoFlag = true;
-        //             }
-        //             if (i === undoer.bead + 1) {
-        //                 w_description = "Redo";
-        //             }
-        //             const w_node = new LeoUndoNode(
-        //                 p_bead.undoType || "unknown",
-        //                 w_description,
-        //                 (this._beadId++).toString()
-        //             );
-        //             w_children.push(w_node);
-        //             if (w_undoFlag) {
-        //                 this._leoUI.setUndoSelection(w_node);
-        //             }
-        //             i++;
-        //         });
-        //     } else {
-        //         const w_node = new LeoUndoNode(
-        //             "Unchanged",
-        //             "",
-        //             (this._beadId++).toString()
-        //         );
-        //         w_children.push(w_node);
-        //     }
-        // }
-
     }
 
     public getParent(element: LeoUndoNode): vscode.ProviderResult<LeoUndoNode> {
@@ -143,4 +101,24 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
         // item.tooltip = "TODO Undo Tooltip";
         return item;
     }
+}
+
+/**
+ * * Opened Leo documents tree view node item implementation for usage in a TreeDataProvider
+ */
+export class LeoUndoNode extends vscode.TreeItem {
+
+    // Context string is checked in package.json with 'when' clauses
+    public contextValue: string = "leoUndoNode";
+
+    constructor(
+        public label: string,
+        public description: string,
+        public id: string,
+        // public contextValue: string,
+        public beadIndex: number
+    ) {
+        super(label);
+    }
+
 }

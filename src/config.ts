@@ -140,6 +140,10 @@ export class Config implements ConfigMembers {
                 // Check if tree refresh is required for hover-icons to be displayed or hidden accordingly
                 this._needsTreeRefresh = true;
             }
+            if (i_change && i_change.code === Constants.CONFIG_NAMES.INVERT_NODES) {
+                // Check if tree refresh is required for hover-icons to be displayed or hidden accordingly
+                this._needsTreeRefresh = true;
+            }
             if (w_vscodeConfig.inspect(i_change.code)!.defaultValue === i_change.value) {
                 // Set as undefined - same as default
                 w_promises.push(w_vscodeConfig.update(i_change.code, undefined, true));

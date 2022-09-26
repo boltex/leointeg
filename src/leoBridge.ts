@@ -39,15 +39,21 @@ export class LeoBridge {
     /**
      * * Places an action on top of a stack, to be resolved from the bottom
      * @param p_action Command string to be performed by Leo via leoserver.py
-     * @param p_jsonParam Optional JSON parameter for the specified action
+     * @param p_param Optional JSON parameter for the specified action
      * @param p_deferredPayload Used to build this._readyPromise that resolves itself at startup
      * @param p_preventCall Flag for special action used to build this._readyPromise that resolves itself at startup
      * @returns a Promise that will contain the JSON package answered back by leoserver.py
      */
-    public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
+    public action(p_action: string, p_param?: { [key: string]: any }, p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         return new Promise((p_resolve, p_reject) => {
             const w_action: LeoAction = {
-                parameter: this._buildActionParameter(p_action, p_jsonParam),
+                parameter: JSON.stringify(
+                    {
+                        id: ++this._leoBridgeSerialId,
+                        action: p_action,
+                        param: p_param === undefined ? null : p_param
+                    }
+                ),
                 deferredPayload: p_deferredPayload ? p_deferredPayload : undefined,
                 resolveFn: p_resolve,
                 rejectFn: p_reject
@@ -108,19 +114,6 @@ export class LeoBridge {
         } else {
             console.error("[leoIntegration] Unknown async command from leoBridge");
         }
-    }
-
-    /**
-     * * Build JSON string for action parameter to the leoBridge
-     * @param p_action Action string to be invoked as command by Leo in the leoserver.py script
-     * @param p_jsonParam Optional JSON string to be added as a 'param' to the action sent to Leo
-     * @returns the JSON string built from the action string and the parameters
-     */
-    private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
-        return "{\"id\":" + (++this._leoBridgeSerialId) + // no quotes, serial id is a number, pre incremented
-            ", \"action\": \"" + p_action +  // action is string so surround with quotes
-            "\", \"param\":" + p_jsonParam +  // param is already json, no need for added quotes
-            "}";
     }
 
     /**
@@ -259,7 +252,7 @@ export class LeoBridge {
             }
         };
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
-        this._readyPromise = this.action("", "", { id: Constants.STARTING_PACKAGE_ID }, true);
+        this._readyPromise = this.action("", undefined, { id: Constants.STARTING_PACKAGE_ID }, true);
         return this._readyPromise; // This promise will resolve when the started python process starts
     }
 

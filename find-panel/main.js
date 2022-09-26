@@ -337,6 +337,9 @@
                     }
                     vscode.postMessage({ type: 'leoNavEnter' });
                 }
+                if(searchSettings.navText.length===0){
+                    vscode.postMessage({ type: 'leoNavClear' });
+                }
                 return false;
             }
         };

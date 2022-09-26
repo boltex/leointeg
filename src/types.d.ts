@@ -51,9 +51,22 @@ export interface ConfigSetting {
     value: any;
 }
 
+/**
+ * * Structure for user settings, used when changing vscode's UI zoom and font size
+ */
 export interface FontSettings {
     zoomLevel: number;
     fontSize: number;
+}
+
+/**
+ * * Location of focus to be set when current/last command is resolved
+ */
+export const enum Focus {
+    NoChange = 0, // Stays on goto pane, or other current panel.
+    Body, // Forces body to appear, refresh leaves focus on body.
+    Outline, // Forces outline to appear, refresh leaves focus on Outline.
+    Goto
 }
 
 /**
@@ -77,7 +90,7 @@ export interface ReqRefresh {
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
     documents?: boolean; // Documents needs refresh
-    nav?: boolean; // Nav panel needs refresh
+    goto?: boolean; // Goto pane needs refresh
 }
 
 /**
@@ -88,7 +101,7 @@ export interface UserCommand {
     node?: ArchivedPosition | undefined;  // We can START a stack with a targeted command
     name?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command
-    fromOutline: boolean; // Focus back on outline instead of body
+    finalFocus: Focus; // Focus back on outline instead of body
     keepSelection?: boolean; // Should bring back selection on node prior to command
     resolveFn?: (result: any) => void; // call that with an answer from python's (or other) side
     rejectFn?: (reason: any) => void; // call if problem is encountered
@@ -235,22 +248,19 @@ export interface LeoButton {
     index: string; // STRING KEY
 }
 
-/**
- * * Undo structure
- */
-export interface LeoUndo {
-
-    // undo from server
-    name: string;
-
-}
-
 export type TGotoTypes = "tag" | "headline" | "body" | "parent" | "generic";
 
 export interface LeoGoto {
     key: number; // id from python
     h: string;
     t: TGotoTypes;
+}
+
+export const enum LeoGotoNavKey {
+    prev = 0,
+    next,
+    first,
+    last
 }
 
 /**

@@ -93,7 +93,7 @@ export function removeFileFromWorkspace(p_context: vscode.ExtensionContext, p_fi
 }
 
 /**
- * unique string from AP's gnx, childIndex, and its stack's gnx and childIndex pairs.
+ * * unique string from AP's gnx, childIndex, and its stack's gnx and childIndex pairs.
  */
 export function buildApId(p: ArchivedPosition): string {
     return p.gnx + p.childIndex + p.stack.map(s => s.gnx + s.childIndex).join("");
@@ -180,22 +180,26 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 }
 
 /**
- * * Builds and returns a JSON string with 'node' and 'name' members
- * @param p_nodeJson Targeted tree node in the proper JSON format
+ * * Builds and returns object with 'node' and 'name' members
+ * @param p_node Targeted tree node
  * @param p_command from which to extract possible name and 'keep selection' flag
- * @returns JSON string suitable for being a parameter of a leoBridge action
+ * @returns object suitable for being a parameter of a leoBridge action
  */
-export function buildNodeCommandJson(p_nodeJson: string, p_command?: UserCommand): string {
-    let w_json = "{\"ap\":" + p_nodeJson; // already json
+export function buildNodeCommand(p_node: ArchivedPosition, p_command?: UserCommand): { [key: string]: any } {
+    const w_result: any = {
+        ap: {
+            childIndex: p_node.childIndex,
+            gnx: p_node.gnx,
+            stack: p_node.stack,
+        }
+    };
     if (p_command && p_command.name) {
-        w_json += ", \"name\": " + JSON.stringify(p_command.name);
+        w_result.name = p_command.name;
     }
     if (p_command && p_command.keepSelection) {
-        w_json += ", \"keep\": true";
+        w_result.keep = true;
     }
-    // TODO : Generalize this function to send any other members of p_command / other members
-    w_json += "}";
-    return w_json;
+    return w_result;
 }
 
 /**
@@ -265,7 +269,8 @@ export function isApEqual(p_a: ArchivedPosition, p_b: ArchivedPosition): boolean
  * @returns True if it would change the icon with actual body content, false otherwise
  */
 export function isIconChangedByEdit(p_node: ArchivedPosition, p_newHasBody: boolean): boolean {
-    if (!p_node.dirty || (p_node.hasBody === !p_newHasBody)) {
+    // hasBody can be undefined so force boolean.
+    if (!p_node.dirty || (!!p_node.hasBody === !p_newHasBody)) {
         return true;
     }
     return false;

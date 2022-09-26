@@ -195,7 +195,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_VERSION: "Please update: Leo 6.6.4 required.",
+        MINIMUM_VERSION: "Please update: Leo 6.7 required.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
@@ -596,6 +596,7 @@ export class Constants {
 
         NAV_HEADLINE_SEARCH: "!nav_headline_search",
         NAV_SEARCH: "!nav_search",
+        NAV_CLEAR: "!nav_clear",
 
         FIND_QUICK_TIMELINE: "!find_quick_timeline",
         FIND_QUICK_CHANGED: "!find_quick_changed",
@@ -624,6 +625,7 @@ export class Constants {
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
         CLONE_FIND_MARKED: "!clone_find_all_marked",
         CLONE_FIND_FLATTENED_MARKED: "!clone_find_all_flattened_marked",
+        CLONE_FIND_PARENTS: "-clone-find-parents",
         GOTO_PREV_HISTORY: "goToPrevHistory",
         GOTO_NEXT_HISTORY: "goToNextHistory"
     };
@@ -804,6 +806,11 @@ export class Constants {
         FIND_QUICK_GO_ANYWHERE: Constants.NAME + ".goAnywhere",
         GOTO_NAV_ENTRY: Constants.NAME + ".gotoNav",
 
+        GOTO_NAV_PREV: Constants.NAME + ".gotoNavPrev",
+        GOTO_NAV_NEXT: Constants.NAME + ".gotoNavNext",
+        GOTO_NAV_FIRST: Constants.NAME + ".gotoNavFirst",
+        GOTO_NAV_LAST: Constants.NAME + ".gotoNavLast",
+
         START_SEARCH: Constants.NAME + ".startSearch",
         FIND_ALL: Constants.NAME + ".findAll",
         FIND_NEXT: Constants.NAME + ".findNext",
@@ -823,6 +830,7 @@ export class Constants {
         CLONE_FIND_TAG: Constants.NAME + ".cloneFindTag",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
         CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
+        CLONE_FIND_PARENTS: Constants.NAME + ".cloneFindParents",
 
         GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
         TAG_CHILDREN: Constants.NAME + ".tagChildren",

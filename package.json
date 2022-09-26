@@ -223,20 +223,6 @@
           "visibility": "visible"
         },
         {
-          "id": "leoDocumentsExplorer",
-          "name": "Leo Documents",
-          "contextualTitle": "Leo",
-          "when": "treeInExplorer && leoTreeOpened",
-          "visibility": "collapsed"
-        },
-        {
-          "id": "leoButtonsExplorer",
-          "name": "Leo Buttons",
-          "contextualTitle": "Leo",
-          "when": "treeInExplorer && leoTreeOpened",
-          "visibility": "collapsed"
-        },
-        {
           "type": "webview",
           "id": "leoFindPanelExplorer",
           "contextualTitle": "Leo",
@@ -253,8 +239,22 @@
           "visibility": "collapsed"
         },
         {
+          "id": "leoDocumentsExplorer",
+          "name": "Leo Documents",
+          "contextualTitle": "Leo",
+          "when": "treeInExplorer && leoTreeOpened",
+          "visibility": "collapsed"
+        },
+        {
           "id": "leoUndosExplorer",
           "name": "Leo Undo History",
+          "contextualTitle": "Leo",
+          "when": "treeInExplorer && leoTreeOpened",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "leoButtonsExplorer",
+          "name": "Leo Buttons",
           "contextualTitle": "Leo",
           "when": "treeInExplorer && leoTreeOpened",
           "visibility": "collapsed"
@@ -266,18 +266,6 @@
           "contextualTitle": "Leo",
           "name": "Integration",
           "visibility": "visible"
-        },
-        {
-          "id": "leoDocuments",
-          "contextualTitle": "Leo",
-          "name": "Documents",
-          "visibility": "collapsed"
-        },
-        {
-          "id": "leoButtons",
-          "contextualTitle": "Leo",
-          "name": "Buttons",
-          "visibility": "collapsed"
         },
         {
           "type": "webview",
@@ -295,10 +283,22 @@
           "visibility": "collapsed"
         },
         {
+          "id": "leoDocuments",
+          "contextualTitle": "Leo",
+          "name": "Documents",
+          "visibility": "collapsed"
+        },
+        {
           "id": "leoUndos",
           "contextualTitle": "Leo",
           "name": "Undo History",
           "when": "leoTreeOpened",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "leoButtons",
+          "contextualTitle": "Leo",
+          "name": "Buttons",
           "visibility": "collapsed"
         }
       ]
@@ -629,16 +629,6 @@
     ],
     "commands": [
       {
-        "command": "leointeg.setEnablePreview",
-        "category": "Leo",
-        "title": "Set Enable-Preview"
-      },
-      {
-        "command": "leointeg.clearCloseEmptyGroups",
-        "category": "Leo",
-        "title": "Clear Close-Empty-Groups"
-      },
-      {
         "command": "leointeg.showSettingsPage",
         "title": "Open Leo Settings",
         "category": "Leo",
@@ -703,12 +693,6 @@
           "light": "resources/light/execute.svg",
           "dark": "resources/dark/execute.svg"
         }
-      },
-      {
-        "command": "leointeg.statusBar",
-        "category": "Leo",
-        "enablement": "leoBridgeReady",
-        "title": "Statusbar Click"
       },
       {
         "command": "leointeg.minibuffer",
@@ -1482,13 +1466,21 @@
         "command": "leointeg.sortChildrenSelection",
         "category": "Leo",
         "enablement": "leoTreeOpened && leoChild",
-        "title": "Sort Children"
+        "title": "Sort Children",
+        "icon": {
+          "light": "resources/light/sort-children.svg",
+          "dark": "resources/dark/sort-children.svg"
+        }
       },
       {
         "command": "leointeg.sortChildrenSelectionFromOutline",
         "category": "Leo",
         "enablement": "leoTreeOpened && leoChild",
-        "title": "Sort Children"
+        "title": "Sort Children",
+        "icon": {
+          "light": "resources/light/sort-children.svg",
+          "dark": "resources/dark/sort-children.svg"
+        }
       },
       {
         "command": "leointeg.sortSiblingsSelection",
@@ -1496,8 +1488,8 @@
         "enablement": "leoTreeOpened",
         "title": "Sort Siblings",
         "icon": {
-          "light": "resources/light/sort.svg",
-          "dark": "resources/dark/sort.svg"
+          "light": "resources/light/sort-siblings.svg",
+          "dark": "resources/dark/sort-siblings.svg"
         }
       },
       {
@@ -1506,8 +1498,8 @@
         "enablement": "leoTreeOpened",
         "title": "Sort Siblings",
         "icon": {
-          "light": "resources/light/sort.svg",
-          "dark": "resources/dark/sort.svg"
+          "light": "resources/light/sort-siblings.svg",
+          "dark": "resources/dark/sort-siblings.svg"
         }
       },
       {
@@ -1839,12 +1831,14 @@
         "command": "leointeg.cloneFindAll",
         "category": "Leo",
         "enablement": "leoTreeOpened",
+        "shortTitle": "cfa",
         "title": "Clone Find All"
       },
       {
         "command": "leointeg.cloneFindAllFlattened",
         "category": "Leo",
         "enablement": "leoTreeOpened",
+        "shortTitle": "cff",
         "title": "Clone Find All Flattened"
       },
       {
@@ -1852,21 +1846,27 @@
         "category": "Leo",
         "enablement": "leoTreeOpened",
         "shortTitle": "cfam",
-        "title": "cfam - Clone Find All Marked Nodes"
+        "title": "Clone Find All Marked Nodes"
       },
       {
         "command": "leointeg.cloneFindFlattenedMarked",
         "category": "Leo",
         "enablement": "leoTreeOpened",
         "shortTitle": "cffm",
-        "title": "cffm - Clone Find All Flattened Marked"
+        "title": "Clone Find All Flattened Marked"
+      },
+      {
+        "command": "leointeg.cloneFindParents",
+        "category": "Leo",
+        "enablement": "leoTreeOpened && leoCloned",
+        "title": "Clone Find Parents"
       },
       {
         "command": "leointeg.cloneFindTag",
         "category": "Leo",
         "enablement": "leoTreeOpened",
         "shortTitle": "cft",
-        "title": "cft - Clone Find Tag"
+        "title": "Clone Find Tag"
       },
       {
         "command": "leointeg.tagChildren",
@@ -1980,6 +1980,30 @@
         "category": "Leo",
         "enablement": "leoTreeOpened",
         "title": "Go Anywhere"
+      },
+      {
+        "command": "leointeg.gotoNavPrev",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Select Previous Goto Result"
+      },
+      {
+        "command": "leointeg.gotoNavNext",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Select Next Goto Result"
+      },
+      {
+        "command": "leointeg.gotoNavFirst",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Select First Goto Result"
+      },
+      {
+        "command": "leointeg.gotoNavLast",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Select Last Goto Result"
       },
       {
         "command": "leointeg.findQuickSelected",
@@ -2285,18 +2309,6 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "leointeg.setEnablePreview",
-          "when": "false"
-        },
-        {
-          "command": "leointeg.clearCloseEmptyGroups",
-          "when": "false"
-        },
-        {
-          "command": "leointeg.statusBar",
-          "when": "false"
-        },
-        {
           "command": "leointeg.gotoScript",
           "when": "false"
         },
@@ -2553,6 +2565,22 @@
           "when": "false"
         },
         {
+          "command": "leointeg.gotoNavPrev",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.gotoNavNext",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.gotoNavFirst",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.gotoNavLast",
+          "when": "false"
+        },
+        {
           "command": "leointeg.hoistNode",
           "when": "false"
         },
@@ -2642,6 +2670,11 @@
           "group": "navigation@8"
         },
         {
+          "command": "leointeg.refreshFromDiskSelection",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@9"
+        },
+        {
           "command": "leointeg.showSettingsPage",
           "when": "resourceScheme == leo",
           "group": "1_leoInteg@1"
@@ -2717,14 +2750,54 @@
           "group": "1_leoInteg3@5"
         },
         {
+          "command": "leointeg.readFileIntoNode",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg4@2"
+        },
+        {
+          "command": "leointeg.writeFileFromNode",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg4@3"
+        },
+        {
+          "command": "leointeg.writeAtFileNodes",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg4@4"
+        },
+        {
+          "command": "leointeg.writeDirtyAtFileNodes",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg4@5"
+        },
+        {
+          "command": "leointeg.cloneFindAll",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg5@1"
+        },
+        {
           "command": "leointeg.cloneFindAllFlattened",
           "when": "resourceScheme == leo && leoTreeOpened",
-          "group": "1_leoInteg4@1"
+          "group": "1_leoInteg5@2"
+        },
+        {
+          "command": "leointeg.cloneFindMarked",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg5@3"
         },
         {
           "command": "leointeg.cloneFindFlattenedMarked",
           "when": "resourceScheme == leo && leoTreeOpened",
-          "group": "1_leoInteg4@2"
+          "group": "1_leoInteg5@4"
+        },
+        {
+          "command": "leointeg.cloneFindParents",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg5@5"
+        },
+        {
+          "command": "leointeg.cloneFindTag",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "1_leoInteg5@6"
         }
       ],
       "editor/context": [
@@ -2817,7 +2890,7 @@
         },
         {
           "command": "leointeg.stopServer",
-          "when": "view =~ /^leoIntegration/ && !leoBridgeReady && !leoTreeOpened && leoServerStarted",
+          "when": "view =~ /^leoIntegration/ && !leoTreeOpened && leoServerStarted",
           "group": "navigation@1"
         },
         {
@@ -3514,9 +3587,19 @@
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
+        "command": "leointeg.gotoNavFirst",
+        "key": "home",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
+      },
+      {
         "command": "leointeg.scrollBottom",
         "key": "end",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
+      },
+      {
+        "command": "leointeg.gotoNavLast",
+        "key": "end",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
       },
       {
         "command": "leointeg.gotoFirstSibling",
@@ -3524,9 +3607,19 @@
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
+        "command": "leointeg.gotoNavFirst",
+        "key": "pageup",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
+      },
+      {
         "command": "leointeg.gotoLastSibling",
         "key": "pagedown",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
+      },
+      {
+        "command": "leointeg.gotoNavLast",
+        "key": "pagedown",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
       },
       {
         "command": "leointeg.gotoNextCloneSelectionFromOutline",
@@ -3544,6 +3637,11 @@
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
+        "command": "leointeg.gotoNavNext",
+        "key": "down",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
+      },
+      {
         "command": "leointeg.gotoNextVisible",
         "key": "alt+down",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
@@ -3552,6 +3650,11 @@
         "command": "leointeg.gotoPrevVisible",
         "key": "up",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
+      },
+      {
+        "command": "leointeg.gotoNavPrev",
+        "key": "up",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
       },
       {
         "command": "leointeg.gotoPrevVisible",

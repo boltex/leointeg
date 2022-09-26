@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { Constants } from "./constants";
 import {
     AskMessageItem,
+    Focus,
     runAskYesNoDialogParameters,
     runWarnMessageDialogParameters,
     runInfoMessageDialogParameters,
@@ -40,27 +41,28 @@ export class LeoAsync {
      * @param p_serverPackage the package sent along by the server
      */
     public refresh(p_serverPackage: any): Promise<unknown> {
-        // setup refresh 'all' by default for now.
-        this._leoIntegration.setupRefresh(
-            this._leoIntegration.fromOutline,
-            {
-                tree: true,
-                body: true,
-                states: true,
-                buttons: true,
-                documents: true
-            }
-        );
-        if (p_serverPackage.opened && this._leoIntegration.leoStates.fileOpenedReady) {
-            // * PASS (refresh all already setup)
-            // this._leoIntegration.refreshAll();
-        } else if (p_serverPackage.opened && !this._leoIntegration.leoStates.fileOpenedReady) {
+        if (p_serverPackage.opened) {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                 .then((p_doNothingPackage) => {
                     p_doNothingPackage.filename = p_doNothingPackage.commander!.fileName;
+                    const w_gotoNeeded = (this._leoIntegration.serverHasOpenedFile === false) ||
+                        this._leoIntegration.serverOpenedFileName === p_doNothingPackage.filename!;
                     this._leoIntegration.serverHasOpenedFile = true;
                     this._leoIntegration.serverOpenedFileName = p_doNothingPackage.filename!;
                     this._leoIntegration.serverOpenedNode = p_doNothingPackage.node!;
+                    this._leoIntegration.setupRefresh(
+                        Focus.NoChange,
+                        {
+                            tree: true,
+                            body: true,
+                            states: true,
+                            buttons: true,
+                            documents: true,
+                            goto: w_gotoNeeded
+                        },
+                        p_doNothingPackage.node!
+                    );
+
                     return this._leoIntegration.launchRefresh();
                 });
         } else {
@@ -126,22 +128,22 @@ export class LeoAsync {
             }
             const w_sendResultPromise = this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.ASK_RESULT,
-                JSON.stringify({ "result": this._askResult })
+                { "result": this._askResult }
             );
             if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
                 w_sendResultPromise.then(() => {
-                    //  this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
                 }).then((p_package) => {
                     // refresh and reveal selection
                     this._leoIntegration.setupRefresh(
-                        false,
+                        Focus.NoChange,
                         {
                             tree: true,
                             body: true,
                             states: true,
                             buttons: true,
-                            documents: true
+                            documents: true,
+                            goto: true
                         },
                         p_package.node
                     );
@@ -162,7 +164,7 @@ export class LeoAsync {
         ).then(() => {
             this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.ASK_RESULT,
-                JSON.stringify({ "result": Constants.ASYNC_ASK_RETURN_CODES.OK })
+                { "result": Constants.ASYNC_ASK_RETURN_CODES.OK }
             );
         });
     }
@@ -179,10 +181,16 @@ export class LeoAsync {
 
                 this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                     .then((p_package) => {
-                        // refresh and reveal selection
+
                         this._leoIntegration.setupRefresh(
-                            false,
-                            { tree: true, body: true, states: true, buttons: true, documents: true },
+                            Focus.NoChange,
+                            {
+                                tree: true,
+                                body: true,
+                                states: true,
+                                buttons: true,
+                                documents: true
+                            },
                             p_package.node
                         );
                         this._leoIntegration.launchRefresh();
@@ -261,3 +269,4 @@ def simulateDialog(self, key, defaultVal):
     return defaultVal
 
 */
+

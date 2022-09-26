@@ -15,8 +15,14 @@
 - Start position selected upon opening is now fixed, and not forced as the first one
 - Many minibuffer-only commands are now fixed and available through the minibuffer itself, and for some, the vscode command palette.
 - Removed 'close on delete' setting requirement because of the new vscode API to control individual tabs as needed.
-- db file extensions support: Load / Save-as now supports .db file extension.
+- DB file extensions support: Load / Save-as now supports .db file extension.
 - Added 'minibuffer history' as top choice of minibuffer entries.
+- Fixed config settings that were not working in tandem with leoserver. (Ask for refreshing, invert node colors, etc.)
+- New requirement Leo version 6.7 is now the minimal version required.
+- Fixed mouse expand/collapse behavior in outline when 'leo tree browsing' is off.
+- changing 'invert node dirty' color scheme now changes / refreshes after saving the setting.
+- Goto Panel can now be browsed with the keyboard arrow keys. The focus will stay on the goto pane while displaying results.
+- Goto panel can be cleared by pressing 'enter' in a cleared/empty nav input box (in the find panel).
 
 ## 1.0.7
 

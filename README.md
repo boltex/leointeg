@@ -31,9 +31,10 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
-- **Find Panel** that responds to Leo's original keybindings, Ctrl+F, F2, F3... when focus is set in the outline or body panes
+- **Find panel** that responds to Leo's original keybindings, Ctrl+F, F2, F3... when focus is set in the outline or body panes
 - **Nav and Tag panel** controls are integrated in the Find panel
 - **Goto Anywhere panel** to navigate directly from a list of nodes
+- **Undo History panel** , showing all actions and allowing going to any undo states.
 - Access **Leo commands** with context menus, hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
   - Outline editing commands

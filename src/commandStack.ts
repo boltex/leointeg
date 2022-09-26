@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
-import { UserCommand, LeoBridgePackage, ReqRefresh, ArchivedPosition } from "./types";
+import { UserCommand, LeoBridgePackage, ReqRefresh, ArchivedPosition, Focus } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
@@ -18,7 +18,7 @@ export class CommandStack {
     public _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
 
     // Flag used to set focus on outline instead of body when done resolving (From last pushed)
-    private _finalFromOutline: boolean = false;
+    private _finalFocus: Focus = Focus.NoChange;
 
     // Received selection from the last command that finished
     // It will be re-sent as 'target node' instead of lastSelectedNode if present
@@ -63,7 +63,7 @@ export class CommandStack {
                 p_command.rejectFn = p_reject;
             });
             this._stack.push(p_command);
-            this._finalFromOutline = p_command.fromOutline; // Set final "focus-placement"
+            this._finalFocus = p_command.finalFocus; // Set final "focus-placement"
             this._tryStart();
             return q_promise;
         }
@@ -89,27 +89,27 @@ export class CommandStack {
         // Reference from bottom of stack, but don't remove it yet!
         const w_command: UserCommand = this._stack[0];
 
-        let w_nodeJson: string = ""; // ap json used in building w_jsonParam
-        let w_jsonParam: string = ""; // Finished parameter that is sent
+        let w_node: ArchivedPosition | undefined; // ap json used in building w_jsonParam
 
         // First command uses given node or last selected node.
         // Other subsequent commands on stack will use _receivedSelection regardless.
         // (Commands such as 'collapse all' just ignore node parameter)
         if (w_command.node) {
             // Was node specific, so starting a new stack of commands
-            w_nodeJson = JSON.stringify(w_command.node);
+            w_node = w_command.node;
         } else {
             // Use received "selected node" unless first use, then use last selected node
             if (this.lastReceivedNode) {
-                w_nodeJson = JSON.stringify(this.lastReceivedNode);
+                w_node = this.lastReceivedNode;
             } else {
-                w_nodeJson = this._leoIntegration.lastSelectedNode ? JSON.stringify(this._leoIntegration.lastSelectedNode) : "";
+                w_node = this._leoIntegration.lastSelectedNode ? this._leoIntegration.lastSelectedNode : undefined;
             }
-            if (!w_nodeJson) {
+            if (!w_node) {
                 console.log('ERROR NO ARCHIVED POSITION JSON');
+                throw new Error("ERROR NO ARCHIVED POSITION JSON");
             }
         }
-        w_jsonParam = utils.buildNodeCommandJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
+        const w_jsonParam = utils.buildNodeCommand(w_node!, w_command); // 'Insert Named Node' or 'Edit Headline'
 
         // Setup _finalRefreshType, if command requires higher than the one setup so far
         Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
@@ -147,7 +147,7 @@ export class CommandStack {
             if (Object.keys(this._finalRefreshType).length) {
                 // At least some type of refresh
                 this._leoIntegration.setupRefresh(
-                    this._finalFromOutline,
+                    this._finalFocus,
                     this._finalRefreshType,
                     p_package.node
                 );
