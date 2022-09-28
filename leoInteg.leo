@@ -8285,7 +8285,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.6.3 or later\
+- Leo Editor 6.7 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -8304,7 +8304,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 - **Find panel** that responds to Leo's original keybindings, Ctrl+F, F2, F3... when focus is set in the outline or body panes
 - **Nav and Tag panel** controls are integrated in the Find panel
 - **Goto Anywhere panel** to navigate directly from a list of nodes
-- **Undo History panel** , showing all actions and allowing going to any undo states.
+- **Undo History panel** , showing all actions and allowing going back, or forward, to any undo states.
 - Access **Leo commands** with context menus, hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
   - Outline editing commands
@@ -16014,7 +16014,7 @@ public checkVersion(): void {
         // major: 1, minor: 0, patch: 4
         let ok = false;
         if (p_result &amp;&amp; p_result.major !== undefined &amp;&amp; p_result.minor !== undefined &amp;&amp; p_result.patch !== undefined) {
-
+            // 1.0.4
             if (p_result.major &gt;= 1 &amp;&amp; p_result.minor &gt;= 0 &amp;&amp; p_result.patch &gt;= 4) {
                 ok = true;
             }

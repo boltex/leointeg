@@ -870,7 +870,7 @@ export class LeoIntegration {
             // major: 1, minor: 0, patch: 4
             let ok = false;
             if (p_result && p_result.major !== undefined && p_result.minor !== undefined && p_result.patch !== undefined) {
-
+                // 1.0.4
                 if (p_result.major >= 1 && p_result.minor >= 0 && p_result.patch >= 4) {
                     ok = true;
                 }

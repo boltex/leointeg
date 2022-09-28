@@ -16,7 +16,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Requirements
 
-- Leo Editor 6.6.3 or later\
+- Leo Editor 6.7 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -34,7 +34,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 - **Find panel** that responds to Leo's original keybindings, Ctrl+F, F2, F3... when focus is set in the outline or body panes
 - **Nav and Tag panel** controls are integrated in the Find panel
 - **Goto Anywhere panel** to navigate directly from a list of nodes
-- **Undo History panel** , showing all actions and allowing going to any undo states.
+- **Undo History panel** , showing all actions and allowing going back, or forward, to any undo states.
 - Access **Leo commands** with context menus, hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
   - Outline editing commands
