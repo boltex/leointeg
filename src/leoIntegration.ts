@@ -2312,7 +2312,7 @@ export class LeoIntegration {
                                     this._bodyLastChangedDocument &&
                                     (p_tab.input as vscode.TabInputText).uri.fsPath === this._bodyLastChangedDocument.uri.fsPath
                                 ) {
-                                    console.log('LAST SECOND SAVE1!'); // TODO : CLEANUP !
+                                    // console.log('LAST SECOND SAVE1!');
                                     this._leoFileSystem.preventSaveToLeo = true;
                                     this._editorTouched = false;
                                     q_lastSecondSaveFound = this._bodyLastChangedDocument.save();
@@ -2350,7 +2350,7 @@ export class LeoIntegration {
                             this._bodyLastChangedDocument &&
                             (p_tab.input as vscode.TabInputText).uri.fsPath === this._bodyLastChangedDocument.uri.fsPath
                         ) {
-                            console.log('LAST SECOND SAVE2!'); // TODO : CLEANUP !
+                            // console.log('LAST SECOND SAVE2!');
                             this._leoFileSystem.preventSaveToLeo = true;
                             this._editorTouched = false;
                             q_lastSecondSaveAll = this._bodyLastChangedDocument.save();
