@@ -1,5 +1,29 @@
 # Change Log
 
+## 1.0.8
+
+- Added an 'undo panel' that shows actions history and supports right-clicking to go to any undo point.
+- Added and improved icons sets for disabled icon-buttons and common actions.
+- Tooltips and description do not contain the whole u.a. when listing positions.
+  (Hovering the mouse triggers the retrieval of this info for a single node.)
+- Initial node selection when opening Leo Documents: Fixed in leoserver 1.0.3 to come out in Leo 6.6.4.
+- Zoom-in/Zoom-out vscode commands now called instead of replace next/previous (on Ctrl+/-) if no text range selected.
+- Re-wrote the main tree outline view integration: Revised and refactored internal tree model.
+- Disabled commands created with enablement clauses instead of extraneous commands.
+- Replaced the page-up/page-down Outline keyboard shortcut commands with goto-first-sibling and goto-last-sibling
+- 'new leo document' CTRL+N and 'open leo file' CTRL+O keybindings can now also be used with focus in the body pane
+- Start position selected upon opening is now fixed, and not forced as the first one
+- Many minibuffer-only commands are now fixed and available through the minibuffer itself, and for some, the vscode command palette.
+- Removed 'close on delete' setting requirement because of the new vscode API to control individual tabs as needed.
+- DB file extensions support: Load / Save-as now supports .db file extension.
+- Added 'minibuffer history' as top choice of minibuffer entries.
+- Fixed config settings that were not working in tandem with leoserver. (Ask for refreshing, invert node colors, etc.)
+- New requirement Leo version 6.7 is now the minimal version required.
+- Fixed mouse expand/collapse behavior in outline when 'leo tree browsing' is off.
+- changing 'invert node dirty' color scheme now changes / refreshes after saving the setting.
+- Goto Panel can now be browsed with the keyboard arrow keys. The focus will stay on the goto pane while displaying results.
+- Goto panel can be cleared by pressing 'enter' in a cleared/empty nav input box (in the find panel).
+
 ## 1.0.7
 
 - Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'. (Requires Leo minimal version of at least 6.6-final)

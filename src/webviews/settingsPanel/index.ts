@@ -1,5 +1,5 @@
 import { initializeAndWatchThemeColors } from './theme';
-import { debounce } from "debounce";
+import { debounce } from "lodash";
 import { ConfigSetting, IVsCodeApi } from '../../types';
 
 declare function acquireVsCodeApi(): IVsCodeApi;
@@ -250,38 +250,46 @@ declare function acquireVsCodeApi(): IVsCodeApi;
         return frontConfig[p_setting];
     }
 
-    var applyChanges = debounce(function () {
-        var w_changes: ConfigSetting[] = [];
-        if (frontConfig) {
-            for (var prop in frontConfig) {
-                if (Object.prototype.hasOwnProperty.call(frontConfig, prop)) {
-                    // console.log(prop);
-                    if (frontConfig[prop] !== vscodeConfig[prop]) {
-                        w_changes.push({ code: prop, value: frontConfig[prop] });
+    var applyChanges = debounce(
+        function () {
+            var w_changes: ConfigSetting[] = [];
+            if (frontConfig) {
+                for (var prop in frontConfig) {
+                    if (Object.prototype.hasOwnProperty.call(frontConfig, prop)) {
+                        // console.log(prop);
+                        if (frontConfig[prop] !== vscodeConfig[prop]) {
+                            w_changes.push({ code: prop, value: frontConfig[prop] });
+                        }
                     }
                 }
             }
-        }
-        if (w_changes.length) {
-            // ok replace!
-            vscodeConfig = frontConfig;
-            frontConfig = JSON.parse(JSON.stringify(frontConfig));
-            vscode.postMessage({
-                command: "config",
-                changes: w_changes
-            });
-        } else {
-            // Still have to remove 'modified' popup
-            dirty!.className = dirty!.className.replace("show", "");
-        }
-    }, 1500);
+            if (w_changes.length) {
+                // ok replace!
+                vscodeConfig = frontConfig;
+                frontConfig = JSON.parse(JSON.stringify(frontConfig));
+                vscode.postMessage({
+                    command: "config",
+                    changes: w_changes
+                });
+            } else {
+                // Still have to remove 'modified' popup
+                dirty!.className = dirty!.className.replace("show", "");
+            }
+        },
+        1500,
+        { leading: false, trailing: true }
+    );
 
-    var applyFontChanges = debounce(function () {
-        vscode.postMessage({
-            command: "fontConfig",
-            changes: frontFontConfig
-        });
-    }, 800);
+    var applyFontChanges = debounce(
+        function () {
+            vscode.postMessage({
+                command: "fontConfig",
+                changes: frontFontConfig
+            });
+        },
+        800,
+        { leading: false, trailing: true }
+    );
 
 
     // * START

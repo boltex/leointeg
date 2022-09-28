@@ -15,7 +15,9 @@ export class LeoSettingsProvider {
         private _leoIntegration: LeoIntegration
     ) {
         this._extensionPath = _context.extensionPath;
-        vscode.workspace.onDidChangeConfiguration(p_event => this.changedConfiguration(p_event));
+        _context.subscriptions.push(
+            vscode.workspace.onDidChangeConfiguration(p_event => this.changedConfiguration(p_event))
+        );
     }
 
     public changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): void {
@@ -41,6 +43,7 @@ export class LeoSettingsProvider {
                         enableScripts: true
                     }
                 );
+                this._context.subscriptions.push(this._panel);
                 let w_baseUri = this._panel.webview.asWebviewUri(vscode.Uri.file(
                     path.join(this._extensionPath)
                 ));

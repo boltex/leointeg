@@ -31,57 +31,63 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        webviewView.webview.onDidReceiveMessage((data) => {
-            switch (data.type) {
-                case 'leoNavEnter': {
-                    this._leoIntegration.navEnter();
-                    break;
+        this._context.subscriptions.push(
+            webviewView.webview.onDidReceiveMessage((data) => {
+                switch (data.type) {
+                    case 'leoNavEnter': {
+                        this._leoIntegration.navEnter();
+                        break;
+                    }
+                    case 'leoNavTextChange': {
+                        this._leoIntegration.navTextChange();
+                        break;
+                    }
+                    case 'leoNavClear': {
+                        this._leoIntegration.navTextClear();
+                        break;
+                    }
+                    case 'gotFocus': {
+                        // utils.setContext("sideBarFocus", true);
+                        // utils.setContext("focusedView", "leoFindPanel");
+                        utils.setContext("leoFindFocus", true);
+                        break;
+                    }
+                    case 'lostFocus': {
+                        // utils.setContext("sideBarFocus", false);
+                        // utils.setContext("focusedView", "");
+                        utils.setContext("leoFindFocus", false);
+                        break;
+                    }
+                    case 'leoFindNext': {
+                        vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
+                        break;
+                    }
+                    case 'leoFindPrevious': {
+                        vscode.commands.executeCommand(Constants.COMMANDS.FIND_PREVIOUS);
+                        break;
+                    }
+                    case 'searchConfig': {
+                        this._leoIntegration.saveSearchSettings(data.value);
+                        break;
+                    }
+                    case 'replace': {
+                        this._leoIntegration.replace(true, false);
+                        break;
+                    }
+                    case 'replaceThenFind': {
+                        this._leoIntegration.replace(true, true);
+                        break;
+                    }
+                    case 'refreshSearchConfig': {
+                        // Leave a cycle before getting settings
+                        setTimeout(() => {
+                            this._leoIntegration.loadSearchSettings();
+                        }, 0);
+                        break;
+                    }
                 }
-                case 'leoNavTextChange': {
-                    this._leoIntegration.navTextChange();
-                    break;
-                }
-                case 'gotFocus': {
-                    // utils.setContext("sideBarFocus", true);
-                    // utils.setContext("focusedView", "leoFindPanel");
-                    utils.setContext("leoFindFocus", true);
-                    break;
-                }
-                case 'lostFocus': {
-                    // utils.setContext("sideBarFocus", false);
-                    // utils.setContext("focusedView", "");
-                    utils.setContext("leoFindFocus", false);
-                    break;
-                }
-                case 'leoFindNext': {
-                    vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
-                    break;
-                }
-                case 'leoFindPrevious': {
-                    vscode.commands.executeCommand(Constants.COMMANDS.FIND_PREVIOUS);
-                    break;
-                }
-                case 'searchConfig': {
-                    this._leoIntegration.saveSearchSettings(data.value);
-                    break;
-                }
-                case 'replace': {
-                    this._leoIntegration.replace(true, false);
-                    break;
-                }
-                case 'replaceThenFind': {
-                    this._leoIntegration.replace(true, true);
-                    break;
-                }
-                case 'refreshSearchConfig': {
-                    // Leave a cycle before getting settings
-                    setTimeout(() => {
-                        this._leoIntegration.loadSearchSettings();
-                    }, 0);
-                    break;
-                }
-            }
-        });
+            })
+        );
         this._leoIntegration.setFindPanel(this._view);
     }
 
@@ -174,6 +180,8 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                         <label title="Limit to Selected Outline (Ctrl+Alt+S)" class="label-fix" for="subOutlineOnly"><u>S</u>uboutline Only</label><br>
                         <input type="radio" id="nodeOnly" name="searchScope" value="2">
                         <label title="Limit to Selected Node (Ctrl+Alt+N)" class="label-fix" for="nodeOnly"><u>N</u>ode only</label><br>
+                        <input type="radio" id="fileOnly" name="searchScope" value="3">
+                        <label title="Limit to External Files (Ctrl+Alt+L)" class="label-fix" for="fileOnly">Fi<u>l</u>e only</label><br>
                         <!-- CHECKBOXES -->
                         <input type="checkbox" id="searchHeadline" name="searchHeadline" >
                         <label title="Search in Headlines (Ctrl+Alt+H)" class="label-fix" for="searchHeadline">Search <u>h</u>eadline</label><br>

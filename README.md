@@ -16,7 +16,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Requirements
 
-- Leo Editor 6.6 or later\
+- Leo Editor 6.7 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -31,9 +31,10 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
-- **Find Panel** that responds to Leo's original keybindings, Ctrl+F, F2, F3... when focus is set in the outline or body panes
+- **Find panel** that responds to Leo's original keybindings, Ctrl+F, F2, F3... when focus is set in the outline or body panes
 - **Nav and Tag panel** controls are integrated in the Find panel
 - **Goto Anywhere panel** to navigate directly from a list of nodes
+- **Undo History panel** , showing all actions and allowing going back, or forward, to any undo states.
 - Access **Leo commands** with context menus, hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
   - Outline editing commands
@@ -47,16 +48,19 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 Here are the most useful Commands. Most of Leo's other commands are also available with their original keybindings.
 
-| Outline Commands           |     |                  |                  |
-| :------------------------- | :-- | :--------------- | :--------------- |
-| `Ctrl + I`                 | or  | `Shift + Insert` | Insert Node      |
-| `Ctrl + H`                 |     |                  | Edit Headline    |
-| `Ctrl + Shift + C`         |     |                  | Copy Node        |
-| `Ctrl + Shift + X`         |     |                  | Cut Node         |
-| `Ctrl + Shift + V`         |     |                  | Paste Node       |
-| `Ctrl + Shift + Backspace` | or  | `Delete`         | Delete Node      |
-| `Ctrl + Backquote`         |     |                  | Clone Node       |
-| `Ctrl + {`                 | and | `Ctrl + }`       | Promote / Demote |
+| Outline Commands           |     |                    |                  |
+| :------------------------- | :-- | :----------------- | :--------------- |
+| `Ctrl + Z`                 |     | `Ctrl + Shift + Z` | Undo / Redo      |
+| `Ctrl + I`                 | or  | `Shift + Insert`   | Insert Node      |
+| `Ctrl + Insert`            |     |                    | Insert Child     |
+| `Ctrl + H`                 |     |                    | Edit Headline    |
+| `Ctrl + M`                 |     |                    | Mark / Unmark    |
+| `Ctrl + Shift + C`         |     |                    | Copy Node        |
+| `Ctrl + Shift + X`         |     |                    | Cut Node         |
+| `Ctrl + Shift + V`         |     |                    | Paste Node       |
+| `Ctrl + Shift + Backspace` | or  | `Delete`           | Delete Node      |
+| `Ctrl + Backquote`         |     |                    | Clone Node       |
+| `Ctrl + {`                 | and | `Ctrl + }`         | Promote / Demote |
 
 | Moving Outline Nodes |     |                         |                    |
 | :------------------- | :-- | :---------------------- | :----------------- |
@@ -69,31 +73,38 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 | Common Operations  |     |           |                     |
 | :----------------- | :-- | :-------- | :------------------ |
-| `Alt + -`          |     |           | Contract All        |
-| `Ctrl + M`         |     |           | Mark / Unmark       |
-| `Ctrl + B`         |     |           | Execute Script      |
 | `Ctrl + T`         |     |           | Toggle Outline/Body |
 | `Tab`              | or  | `Alt + D` | Focus on Body       |
 | `Alt + T`          |     |           | Focus on Outline    |
+| `Alt + -`          |     |           | Contract All        |
+| `Ctrl + B`         |     |           | Execute Script      |
 | `Ctrl + Shift + D` |     |           | Extract             |
 | `Ctrl + Shift + N` |     |           | Extract Names       |
 | `Alt + A`          |     |           | Sort Siblings       |
 | `Ctrl + F`         |     |           | Start Search        |
 | `F3`               |     |           | Find Next           |
 | `F2`               |     |           | Find Previous       |
+| `Alt + X`          |     |           | Minibuffer Palette  |
 
-| Tree Navigation    |     |                 |                          |
-| :----------------- | :-- | :-------------- | :----------------------- |
-| `Alt + Home`       | or  | `Home` \*       | Go To First Visible Node |
-| `Alt + End`        |     |                 | Go To Last Sibling       |
-|                    |     | `End` \*        | Go To Last Visible Node  |
-| `Alt + N`          |     |                 | Go To Next Clone         |
-| `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree              |
-| `Ctrl + T`         |     |                 | Switch Tree/Body Focus   |
-| `Tab`              |     |                 | Focus from Tree to Body  |
-| `Alt + G`          |     |                 | Go To Global Line        |
+| Tree Navigation    |     |                 |                             |
+| :----------------- | :-- | :-------------- | :-------------------------- |
+| `Alt + Home`       | or  | `Home` \*       | Scroll to top of outline    |
+|                    |     | `End` \*        | Scroll to bottom of outline |
+|                    |     | `PgUp` \*       | Go To First Sibling          |
+| `Alt + End`        | or  | `PdDn` \*       | Go To Last Sibling          |
+| `Alt + N`          |     |                 | Go To Next Clone            |
+| `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree                 |
+| `Alt + G`          |     |                 | Go To Global Line           |
 
-\* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
+**\*** _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
+
+| File Commands      |     |                         |                   |
+| :----------------- | :-- | :---------------------- | :---------------- |
+| `Ctrl + S`         |     |                         | Save Leo Document |
+| `Ctrl + N`         |     |                         | New Leo Document  |
+| `Ctrl + O`         |     |                         | Open Leo Document |
+| `Ctrl + Shift + W` |     |                         | Write File Nodes  |
+| `Ctrl + Shift + Q` |     |                         | Write Dirty Files |
 
 ---
 

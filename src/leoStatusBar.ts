@@ -11,7 +11,6 @@ export class LeoStatusBar {
     private _leoStatusBarItem: vscode.StatusBarItem;
     private _statusbarNormalColor = new vscode.ThemeColor(Constants.GUI.THEME_STATUSBAR);  // "statusBar.foreground"
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
-    private _string: string = ""; // Use this string with indicator, using this will replace the default from config
 
     // * Represents having focus on a leo tree, body or document panel to enable leo keybindings
     private _statusBarFlag: boolean = false;
@@ -30,10 +29,9 @@ export class LeoStatusBar {
         this._leoStatusBarItem.color = this._leoIntegration.config.statusBarColor;
 
         this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
-        // this._leoStatusBarItem.command = "leointeg.test"; // just call test function for now to help debugging
-        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this._leoIntegration.config.statusBarString;
+        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR;
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
-        _context.subscriptions.push(this._leoStatusBarItem);
+        this._context.subscriptions.push(this._leoStatusBarItem);
         this._leoStatusBarItem.hide();
     }
 
@@ -49,14 +47,6 @@ export class LeoStatusBar {
      */
     public hide(): void {
         this._leoStatusBarItem.hide();
-    }
-
-    /**
-     * * Sets string to replace default from config & refresh it
-     */
-    public setString(p_string: string): void {
-        this._string = p_string;
-        this._updateLeoObjectIndicator();
     }
 
     /**
@@ -100,7 +90,6 @@ export class LeoStatusBar {
         utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
 
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
-            (this._string ? this._string : this._leoIntegration.config.statusBarString) + " " +
             (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
 
         // Also check in constructor for statusBar properties (the createStatusBarItem call itself)

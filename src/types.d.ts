@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { LeoNode } from "./leoNode";
 
 /**
  * * For simple interactions in webviews into vscode API
@@ -19,27 +18,16 @@ export interface ConfigMembers {
     leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
-    statusBarString: string;
+    // statusBarString: string;
     statusBarColor: string;
     treeInExplorer: boolean;
     showOpenAside: boolean;
     showEditOnNodes: boolean;
-    showArrowsOnNodes: boolean;
+    // showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
     showMarkOnNodes: boolean;
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
-
-    showEditionOnBody: boolean; // clone delete insert(s)
-    showClipboardOnBody: boolean; // cut copy paste(s)
-    showPromoteOnBody: boolean; // promote demote
-    showExecuteOnBody: boolean; // extract(s)
-    showExtractOnBody: boolean;
-    showImportOnBody: boolean;
-    showRefreshOnBody: boolean;
-    showHoistOnBody: boolean;
-    showMarkOnBody: boolean;
-    showSortOnBody: boolean;
 
     invertNodeContrast: boolean;
     leoEditorPath: string;
@@ -51,6 +39,8 @@ export interface ConfigMembers {
 
     setDetached: boolean;
     limitUsers: number
+
+    uAsNumber?: boolean; // 'true' flag starting at leoInteg 1.0.8
 }
 
 /**
@@ -61,9 +51,22 @@ export interface ConfigSetting {
     value: any;
 }
 
+/**
+ * * Structure for user settings, used when changing vscode's UI zoom and font size
+ */
 export interface FontSettings {
     zoomLevel: number;
     fontSize: number;
+}
+
+/**
+ * * Location of focus to be set when current/last command is resolved
+ */
+export const enum Focus {
+    NoChange = 0, // Stays on goto pane, or other current panel.
+    Body, // Forces body to appear, refresh leaves focus on body.
+    Outline, // Forces outline to appear, refresh leaves focus on Outline.
+    Goto
 }
 
 /**
@@ -87,18 +90,18 @@ export interface ReqRefresh {
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
     documents?: boolean; // Documents needs refresh
-    nav?: boolean; // NAv panel needs refresh
+    goto?: boolean; // Goto pane needs refresh
 }
 
 /**
  * * Stackable front end commands
  */
 export interface UserCommand {
-    action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver
-    node?: LeoNode | undefined;  // We can START a stack with a targeted command
+    action: string; // String from Constants.LEOBRIDGE, which are commands for leoserver.py
+    node?: ArchivedPosition | undefined;  // We can START a stack with a targeted command
     name?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command
-    fromOutline: boolean; // Focus back on outline instead of body
+    finalFocus: Focus; // Focus back on outline instead of body
     keepSelection?: boolean; // Should bring back selection on node prior to command
     resolveFn?: (result: any) => void; // call that with an answer from python's (or other) side
     rejectFn?: (reason: any) => void; // call if problem is encountered
@@ -125,36 +128,59 @@ export interface LeoLogEntry {
  * * ArchivedPosition format package from Leo's leoflexx.py
  */
 export interface ArchivedPosition {
-    hasBody: boolean;       // bool(p.b),
-    hasChildren: boolean;   // p.hasChildren()
+    // * From server's _p_to_ap : childIndex, gnx and stack
     childIndex: number;     // p._childIndex
-    cloned: boolean;        // p.isCloned()
-    dirty: boolean;         // p.isDirty()
-    expanded: boolean;      // p.isExpanded()
     gnx: string;            // p.v.gnx
-    level: number;          // p.level()
-    headline: string;       // p.h
-    marked: boolean;        // p.isMarked()
-    atFile: boolean         // p.isAnyAtFileNode():
-    selected: boolean;      // p == commander.p
-    u?: any;               // User Attributes
     stack: {
         gnx: string;        // stack_v.gnx
         childIndex: number; // stack_childIndex
-        headline: string;   // stack_v.h
     }[];                    // for (stack_v, stack_childIndex) in p.stack]
+
+    // * Attributes for UI appearance
+    headline: string;       // p.h
+    cloned: boolean;        // p.isCloned()
+    dirty: boolean;         // p.isDirty()
+    expanded: boolean;      // p.isExpanded()
+    marked: boolean;        // p.isMarked()
+    atFile: boolean         // p.isAnyAtFileNode():
+    selected: boolean;      // p == commander.p
+    hasBody: boolean;       // bool(p.b),
+    hasChildren: boolean;   // p.hasChildren()
+
+    // * ALPHA FEATURE : Only If called with get_structure instead of get_children
+    children?: ArchivedPosition[];
+
+    // * ALPHA FEATURE
+    _isRoot?: boolean; // Added front side by leoInteg, for internal usage
+
+    // * unknown attributes
+    u?: number;             // User-attributes displayed qty
+    nodeTags?: number;      // 'tags' user-attributes displayed qty
+
 }
 
 /**
  * * Object sent back from leoInteg's 'getStates' command
  */
 export interface LeoPackageStates {
+
     changed: boolean; // Leo document has changed (is dirty)
+
     canUndo: boolean; // Leo document can undo the last operation done
     canRedo: boolean; // Leo document can redo the last operation 'undone'
+
+    canGoBack: boolean;
+    canGoNext: boolean;
+
     canDemote: boolean; // Currently selected node can have its siblings demoted
     canPromote: boolean; // Currently selected node can have its children promoted
-    canDehoist: boolean; // Leo Document is currently hoisted and can be de-hoisted
+
+    canDehoist: boolean; // There least least one entry on stack
+    canHoist: boolean; // c.p is not root position and not already the hoisted node
+
+    inChapter: boolean; // cc.inChapter returned true
+    topHoistChapter: boolean; // Has entry on stack and top begins with '@chapter'
+
 }
 
 /**
@@ -169,6 +195,7 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
+    chapters?: string[], // get_chapters
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
     messages?: string[]; // get_goto
@@ -193,10 +220,13 @@ export interface LeoBridgePackage {
     states?: LeoPackageStates; // get_ui_states
     string?: string; // from cut / copy outline
     total?: number; // set_opened_file, open_file(s), close_file
+    ua?: any;
     version?: string;
     major?: number;
     minor?: number;
     patch?: number;
+    bead?: number;
+    undos?: string[];
 }
 
 /**
@@ -226,13 +256,21 @@ export interface LeoGoto {
     t: TGotoTypes;
 }
 
+export const enum LeoGotoNavKey {
+    prev = 0,
+    next,
+    first,
+    last
+}
+
 /**
  * * LeoInteg's Enum type for the search scope radio buttons of the find panel.
  */
 export const enum LeoSearchScope {
     entireOutline = 0,
     subOutlineOnly,
-    nodeOnly
+    nodeOnly,
+    fileOnly
 }
 
 /**
@@ -255,7 +293,7 @@ export interface LeoSearchSettings {
     markChanges: boolean;
     searchHeadline: boolean;
     searchBody: boolean;
-    searchScope: LeoSearchScope; // 0, 1 or 2 for outline, sub-outline, or node.
+    searchScope: LeoSearchScope; // 0, 1, 2  or 3 for outline, sub-outline, node-only or file-only.
 }
 
 /**
@@ -275,6 +313,7 @@ export interface LeoGuiFindTabManagerSettings {
     mark_changes: boolean,
     mark_finds: boolean,
     node_only: boolean,
+    file_only: boolean,
     pattern_match: boolean,
     search_body: boolean,
     search_headline: boolean,

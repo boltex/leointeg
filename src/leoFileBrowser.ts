@@ -38,29 +38,31 @@ export class LeoFilesBrowser {
 
     /**
      * * Open a file browser to let user choose file(s) to import
-     * @param p_fileType can be used to restrict to a particular file type
-     * @returns a promise of an array of filepath+name strings
+     * @param p_fileTypes can be used to restrict to particular file types
+     * @param p_single can be used to force single file selection
+     * @param p_title to specify a window title
+     * @returns a promise of an array of filepath+name string(s)
      */
-    public getImportFileUrls(p_fileType?: string): Promise<string[]> {
+    public getImportFileUrls(p_fileTypes?: { [name: string]: string[]; }, p_single?: boolean, p_title?: string): Promise<string[]> {
         if (this._fileBrowserActive) {
             return Promise.resolve([]);
         }
         this._fileBrowserActive = true;
         let w_types: { [name: string]: string[]; };
-        if (p_fileType && Constants.IMPORT_FILE_TYPES[p_fileType]) {
-            w_types = {};
-            w_types[p_fileType] = Constants.IMPORT_FILE_TYPES[p_fileType];
+        if (p_fileTypes) {
+            w_types = p_fileTypes;
         } else {
             w_types = Constants.IMPORT_FILE_TYPES;
         }
         return new Promise((p_resolve, p_reject) => {
             vscode.window
                 .showOpenDialog({
-                    canSelectMany: true,
-                    openLabel: "Import File",
+                    canSelectMany: p_single ? false : true,
+                    openLabel: "Import",
                     canSelectFolders: false,
                     filters: w_types,
-                    defaultUri: this._getBestOpenFolderUri()
+                    defaultUri: this._getBestOpenFolderUri(),
+                    title: p_title ? p_title : "Import File"
                 })
                 .then(p_chosenLeoFiles => {
                     this._fileBrowserActive = false;
@@ -76,6 +78,7 @@ export class LeoFilesBrowser {
                 });
         });
     }
+
     /**
      * * Open a file browser and let the user choose a Leo file or cancel the operation
      * @param p_saveAsFlag Optional flag that will ask for a 'save' path+filename
@@ -90,7 +93,8 @@ export class LeoFilesBrowser {
             const w_filters: { [name: string]: string[] } = {};
             w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [
                 Constants.FILE_EXTENSION,
-                Constants.JS_FILE_EXTENSION
+                Constants.JS_FILE_EXTENSION,
+                Constants.DB_FILE_EXTENSION
             ];
 
             if (p_saveAsFlag) {
@@ -98,7 +102,8 @@ export class LeoFilesBrowser {
                 vscode.window.showSaveDialog({
                     saveLabel: "Save Leo File",
                     defaultUri: this._getBestOpenFolderUri(),
-                    filters: { 'Leo File': ['leo'] }
+                    filters: w_filters,
+                    title: "Save as Leo File"
                 })
                     .then(p_chosenLeoFile => {
                         this._fileBrowserActive = false;
@@ -115,7 +120,8 @@ export class LeoFilesBrowser {
                         canSelectMany: false,
                         defaultUri: this._getBestOpenFolderUri(),
                         canSelectFolders: false,
-                        filters: w_filters
+                        filters: w_filters,
+                        title: "Open Leo File"
                     })
                     .then(p_chosenLeoFile => {
                         this._fileBrowserActive = false;
@@ -142,9 +148,39 @@ export class LeoFilesBrowser {
         return new Promise((p_resolve, p_reject) => {
             // Choose file
             vscode.window.showSaveDialog({
-                saveLabel: "Save as leojs File",
+                saveLabel: "Save Leojs File",
                 defaultUri: this._getBestOpenFolderUri(),
-                filters: { 'JSON Leo File': ['leojs'] }
+                filters: { 'JSON Leo File': ['leojs'] },
+                title: "Save as LeoJS File"
+            })
+                .then(p_chosenLeoFile => {
+                    this._fileBrowserActive = false;
+                    if (p_chosenLeoFile) {
+                        // single string
+                        p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                    } else {
+                        p_resolve(""); // not rejection - resolve empty string
+                    }
+                });
+
+        });
+    }
+
+    /**
+     * * getExportFileUrl
+     */
+    public getExportFileUrl(p_title: string, p_fileTypes: { [name: string]: string[]; }): Promise<string> {
+        if (this._fileBrowserActive) {
+            return Promise.resolve("");
+        }
+        this._fileBrowserActive = true;
+        return new Promise((p_resolve, p_reject) => {
+            // Choose file
+            vscode.window.showSaveDialog({
+                saveLabel: "Export File",
+                defaultUri: this._getBestOpenFolderUri(),
+                filters: p_fileTypes,
+                title: p_title
             })
                 .then(p_chosenLeoFile => {
                     this._fileBrowserActive = false;
