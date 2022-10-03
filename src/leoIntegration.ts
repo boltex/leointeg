@@ -1220,7 +1220,10 @@ export class LeoIntegration {
         if (
             this.leoStates.leoBridgeReady &&
             p_document.uri.scheme === Constants.URI_FILE_SCHEME &&
-            p_document.uri.fsPath.toLowerCase().endsWith('.leo')
+            (
+                p_document.uri.fsPath.toLowerCase().endsWith('.leo') ||
+                p_document.uri.fsPath.toLowerCase().endsWith('.leojs')
+            )
         ) {
             if (!this._hasShownContextOpenMessage) {
                 vscode.window.showInformationMessage(Constants.USER_MESSAGES.RIGHT_CLICK_TO_OPEN);
@@ -2027,7 +2030,6 @@ export class LeoIntegration {
     private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): void {
 
         if (p_incrementTreeID) {
-            // this._treeId++;
             this._leoTreeProvider.incTreeId();
         }
         if (p_revealType !== undefined && p_revealType.valueOf() >= this._revealType.valueOf()) {
@@ -2138,7 +2140,7 @@ export class LeoIntegration {
         ) {
             // ! MINIMAL TIMEOUT REQUIRED ! WHY ?? (works so leave)
             setTimeout(() => {
-                this.showBody(false, false); // SAME with scroll information specified
+                this.showBody(false, this.finalFocus.valueOf() !== Focus.Body); // SAME with scroll information specified
             }, 25);
         } else {
 
@@ -2872,16 +2874,17 @@ export class LeoIntegration {
                             this._refreshType.scroll = false;
                             // Set scroll approximation
                             w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+                            console.log('-------------------------------------------------------------skipped setting back focus to goto');
                             // ! Compensate for reveal that steals the focus.
-                            if (this.finalFocus.valueOf() === Focus.Goto) {
-                                let w_viewName: string;
-                                if (this._lastTreeView === this._leoTreeExView) {
-                                    w_viewName = Constants.GOTO_EXPLORER_ID;
-                                } else {
-                                    w_viewName = Constants.GOTO_ID;
-                                }
-                                vscode.commands.executeCommand(w_viewName + ".focus");
-                            }
+                            // if (this.finalFocus.valueOf() === Focus.Goto) {
+                            //     let w_viewName: string;
+                            //     if (this._lastTreeView === this._leoTreeExView) {
+                            //         w_viewName = Constants.GOTO_EXPLORER_ID;
+                            //     } else {
+                            //         w_viewName = Constants.GOTO_ID;
+                            //     }
+                            //     vscode.commands.executeCommand(w_viewName + ".focus");
+                            // }
                         }
 
                     } else {
@@ -2992,7 +2995,7 @@ export class LeoIntegration {
         // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
         await this._isBusyTriggerSave(false);
 
-        const w_commandList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
+        const q_commandList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
             Constants.LEOBRIDGE.GET_COMMANDS
         ).then((p_result: LeoBridgePackage) => {
             if (p_result.commands && p_result.commands.length) {
@@ -3066,12 +3069,12 @@ export class LeoIntegration {
                 return [];
             }
         });
-        // Add Nav tab special commands
+
         const w_options: vscode.QuickPickOptions = {
             placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
             matchOnDetail: true,
         };
-        const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
+        const w_picked = await vscode.window.showQuickPick(q_commandList, w_options);
         // First, check for undo-history list being requested
         if (w_picked && w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
             return this.minibufferHistory();
@@ -3110,7 +3113,7 @@ export class LeoIntegration {
         if (p_picked &&
             p_picked.label &&
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
-            this._minibufferHistory.push(p_picked.label); // Add to minibuffer history
+            this._minibufferHistory.unshift(p_picked.label); // Add to minibuffer history
             return vscode.commands.executeCommand(
                 Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
             );
@@ -3221,11 +3224,17 @@ export class LeoIntegration {
      * (see command stack 'rules' in commandStack.ts)
      */
     public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise<LeoBridgePackage> | undefined {
+
         // No forced vscode save-triggers for direct calls from extension.js
         this.triggerBodySave();
         if (p_isNavigation) {
+            // If any navigation command is used from outline or command palette: show body.
             this.showBodyIfClosed = true;
+
+            // If alt+arrow is used to navigate: SHOW and leave focus on outline.
+            this.showOutlineIfClosed = true;
         }
+
         const q_result = this._commandStack.add(p_userCommand);
         if (q_result) {
             return q_result;
@@ -3881,7 +3890,6 @@ export class LeoIntegration {
                         // documents: false,
                         // buttons: false,
                         states: true,
-                        // goto: w_revealTarget === Focus.Body // ! HAVE TO FORCE BACK
                     },
                     p_navEntryResult.node
                 );
@@ -5070,11 +5078,11 @@ export class LeoIntegration {
     public openLeoFile(p_leoFileUri?: vscode.Uri): Promise<LeoBridgePackage | undefined> {
         return this._isBusyTriggerSave(true, true)
             .then((p_saveResult) => {
-                if (p_leoFileUri && p_leoFileUri.scheme.startsWith("leo")) {
+                if (p_leoFileUri && p_leoFileUri.scheme && p_leoFileUri.scheme.startsWith("leo")) {
                     p_leoFileUri = undefined; // Was used in the editor/title menu!
                 }
                 let q_openedFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
-                if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
+                if (p_leoFileUri && p_leoFileUri.fsPath && p_leoFileUri.fsPath.trim()) {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
                     q_openedFile = this.sendAction(
                         Constants.LEOBRIDGE.OPEN_FILE,
