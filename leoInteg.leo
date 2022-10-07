@@ -1155,8 +1155,6 @@ private _revealNode(
     p_leoNode: ArchivedPosition,
     p_options?: { select?: boolean; focus?: boolean; expand?: boolean | number }
 ): Thenable&lt;void&gt; {
-    console.log('_revealNode!');
-
     let w_treeview: vscode.TreeView&lt;ArchivedPosition&gt; | undefined;
     if (this._leoTreeView.visible) {
         w_treeview = this._leoTreeView;
@@ -1175,8 +1173,6 @@ private _revealNode(
                 select: true
             };
         }
-        console.log('revealing hidden!');
-
     }
     try {
         if (w_treeview) {
@@ -1214,7 +1210,6 @@ private _revealNode(
  * * Launches refresh for UI components: treeviews, body, and context states
  */
 private async _launchRefresh(): Promise&lt;unknown&gt; {
-    console.log("in launchRefresh");
 
     // check states for having at least a document opened
     if (!this.serverHasOpenedFile &amp;&amp; this.leoStates.leoBridgeReady &amp;&amp; this.leoStates.fileOpenedReady) {
@@ -1270,15 +1265,12 @@ private async _launchRefresh(): Promise&lt;unknown&gt; {
             this._refreshType.body = false;
             this._tryApplyNodeToBody(this._refreshNode || this.serverOpenedNode || this.lastSelectedNode!, false, w_showBodyNoFocus);
         }
-        console.log('launching refreshOutline!, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
         this._refreshOutline(true, w_revealType);
     } else if (this._refreshType.node &amp;&amp; this._refreshNode) {
         // * Force single node "refresh" by revealing it, instead of "refreshing" it
         this._refreshType.node = false;
         this.leoStates.setSelectedNodeFlags(this._refreshNode);
         let w_showOutline = this.isOutlineVisible();
-        console.log('in else!');
-
         if (!this.isOutlineVisible() &amp;&amp; this.showOutlineIfClosed) {
             this.showOutlineIfClosed = false;
             w_showOutline = true;
@@ -1294,15 +1286,11 @@ private async _launchRefresh(): Promise&lt;unknown&gt; {
             // * if no outline visible, just update body pane as needed
             if (!this.isOutlineVisible()) {
                 this._refreshType.body = false;
-                console.log('2nd _tryApplyNodeToBody, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
-
                 this._tryApplyNodeToBody(this._refreshNode, false, w_showBodyNoFocus);
             }
         }
     } else if (this._refreshType.body) {
         this._refreshType.body = false;
-        console.log('3nd _tryApplyNodeToBody, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
-
         this._tryApplyNodeToBody(this._refreshNode || this.serverOpenedNode || this.lastSelectedNode!, false, w_showBodyNoFocus);
     }
     return this.getStates();
@@ -1322,8 +1310,6 @@ private async _tryApplyNodeToBody(
     p_aside: boolean,
     p_preventTakingFocus: boolean,
 ): Promise&lt;void | vscode.TextEditor&gt; {
-
-    console.log('IN _tryApplyNodeToBody, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
 
     this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
     this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
@@ -1367,10 +1353,8 @@ public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promis
     if (p_isNavigation) {
         // If any navigation command is used from outline or command palette: show body.
         this.showBodyIfClosed = true;
-
         // If alt+arrow is used to navigate: SHOW and leave focus on outline.
         this.showOutlineIfClosed = true;
-        // * If is navigation, and the outline is not visible : REFRESH TREE TOO
     }
 
     const q_result = this._commandStack.add(p_userCommand);
@@ -9033,7 +9017,6 @@ export class LeoIntegration {
     private _leoDocumentsProvider: LeoDocumentsProvider;
     private _leoDocuments: vscode.TreeView&lt;LeoDocumentNode&gt;;
     private _leoDocumentsExplorer: vscode.TreeView&lt;LeoDocumentNode&gt;;
-    private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
 
     // * Goto nav panel
     private _leoGotoProvider: LeoGotoProvider;
@@ -9303,8 +9286,6 @@ private _onTreeViewVisibilityChanged(
     p_event: vscode.TreeViewVisibilityChangeEvent,
     p_explorerView: boolean
 ): void {
-    console.log('_onTreeViewVisibilityChanged visible: ', p_event.visible);
-
     if (p_event.visible) {
         this._lastTreeView = p_explorerView ? this._leoTreeExView : this._leoTreeView;
         this.setTreeViewTitle();
@@ -9681,7 +9662,11 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
             const w_hasBody = !!p_textDocumentChange.document.getText().length;
             const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
 
-            if (!this._currentDocumentChanged || w_iconChanged) {
+            console.log('this.leoStates.leoChanged', this.leoStates.leoChanged);
+            console.log('w_iconChanged', w_iconChanged);
+
+
+            if (!this.leoStates.leoChanged || w_iconChanged) {
                 if (this.preventIconChange) {
                     this.preventIconChange = false;
                 } else {
@@ -9699,7 +9684,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                     });
                 }
 
-                if (!this._currentDocumentChanged) {
+                if (!this.leoStates.leoChanged) {
                     // also refresh document panel (icon may be dirty now)
                     this.refreshDocumentsPane();
                 }
@@ -10086,8 +10071,6 @@ public sendAction(
  * @returns a promise of an editor, or void if body had been changed again in the meantime.
  */
 public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise&lt;vscode.TextEditor | void&gt; {
-
-    console.log('showBody, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
 
     const w_openedDocumentTS = performance.now();
     const w_openedDocumentGnx = utils.leoUriToStr(this.bodyUri);
@@ -16601,8 +16584,6 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
         }
         if (!w_last || this._needLastSelectedRefresh) {
             // lastSelectedNode will be set in _tryApplyNodeToBody !
-            console.log('in got selected node, setting _needLastSelectedRefresh FALSE');
-
             this._needLastSelectedRefresh = false;
         }
 
@@ -16632,7 +16613,7 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
  * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
  */
 public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
-    this._currentDocumentChanged = p_documentNode.documentEntry.changed;
+    this.leoStates.leoChanged = p_documentNode.documentEntry.changed; // also set here since slightly newer.
     this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
     setTimeout(() =&gt; {
         if (!this._leoDocuments.visible &amp;&amp; !this._leoDocumentsExplorer.visible) {
@@ -17989,10 +17970,12 @@ public async navTextClear(): Promise&lt;LeoBridgePackage&gt; {
 }
 
 </t>
-<t tx="felix.20221002170017.1">_needLastSelectedRefresh## 1.0.9
+<t tx="felix.20221002170017.1">## 1.0.9
 
 - Fixed minibuffer history order.
 - Fixed keyboard navigation in the goto pane: focus no more flashes.
+- Fixed navigation commands, including alt+arrow keys, to show outline if hidden.
+- Fixed body edit undo bead creation frequency (when documents pane is not visible.)
 - Fixed expand-collapse node selection prior to an 'insert' command.
 
 </t>

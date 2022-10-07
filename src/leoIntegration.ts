@@ -130,7 +130,6 @@ export class LeoIntegration {
     private _leoDocumentsProvider: LeoDocumentsProvider;
     private _leoDocuments: vscode.TreeView<LeoDocumentNode>;
     private _leoDocumentsExplorer: vscode.TreeView<LeoDocumentNode>;
-    private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
 
     // * Goto nav panel
     private _leoGotoProvider: LeoGotoProvider;
@@ -1515,7 +1514,7 @@ export class LeoIntegration {
                 const w_hasBody = !!p_textDocumentChange.document.getText().length;
                 const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
 
-                if (!this._currentDocumentChanged || w_iconChanged) {
+                if (!this.leoStates.leoChanged || w_iconChanged) {
                     if (this.preventIconChange) {
                         this.preventIconChange = false;
                     } else {
@@ -1533,7 +1532,7 @@ export class LeoIntegration {
                         });
                     }
 
-                    if (!this._currentDocumentChanged) {
+                    if (!this.leoStates.leoChanged) {
                         // also refresh document panel (icon may be dirty now)
                         this.refreshDocumentsPane();
                     }
@@ -4646,7 +4645,7 @@ export class LeoIntegration {
      * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
      */
     public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
-        this._currentDocumentChanged = p_documentNode.documentEntry.changed;
+        this.leoStates.leoChanged = p_documentNode.documentEntry.changed; // also set here since slightly newer.
         this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
         setTimeout(() => {
             if (!this._leoDocuments.visible && !this._leoDocumentsExplorer.visible) {
