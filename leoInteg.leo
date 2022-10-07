@@ -1120,8 +1120,6 @@ private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): 
             } else {
                 w_viewName = Constants.TREEVIEW_ID;
             }
-            // console.log('_refreshOutline HAS TO FORCE TREEVIEW SHOW - UP !');
-
             vscode.commands.executeCommand(w_viewName + ".focus").then(
                 () =&gt; {
                     this._revealNodeRetriedRefreshOutline = false;
@@ -1157,12 +1155,28 @@ private _revealNode(
     p_leoNode: ArchivedPosition,
     p_options?: { select?: boolean; focus?: boolean; expand?: boolean | number }
 ): Thenable&lt;void&gt; {
+    console.log('_revealNode!');
+
     let w_treeview: vscode.TreeView&lt;ArchivedPosition&gt; | undefined;
     if (this._leoTreeView.visible) {
         w_treeview = this._leoTreeView;
     }
     if (this._leoTreeExView.visible &amp;&amp; this.config.treeInExplorer) {
         w_treeview = this._leoTreeExView;
+    }
+    if (!w_treeview &amp;&amp; (this.showOutlineIfClosed || (p_options &amp;&amp; p_options.focus))) {
+        this.showOutlineIfClosed = false;
+        w_treeview = this._lastTreeView;
+        if (p_options) {
+            p_options.focus = true;
+        } else {
+            p_options = {
+                focus: true,
+                select: true
+            };
+        }
+        console.log('revealing hidden!');
+
     }
     try {
         if (w_treeview) {
@@ -1200,6 +1214,7 @@ private _revealNode(
  * * Launches refresh for UI components: treeviews, body, and context states
  */
 private async _launchRefresh(): Promise&lt;unknown&gt; {
+    console.log("in launchRefresh");
 
     // check states for having at least a document opened
     if (!this.serverHasOpenedFile &amp;&amp; this.leoStates.leoBridgeReady &amp;&amp; this.leoStates.fileOpenedReady) {
@@ -1255,12 +1270,15 @@ private async _launchRefresh(): Promise&lt;unknown&gt; {
             this._refreshType.body = false;
             this._tryApplyNodeToBody(this._refreshNode || this.serverOpenedNode || this.lastSelectedNode!, false, w_showBodyNoFocus);
         }
+        console.log('launching refreshOutline!, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
         this._refreshOutline(true, w_revealType);
     } else if (this._refreshType.node &amp;&amp; this._refreshNode) {
         // * Force single node "refresh" by revealing it, instead of "refreshing" it
         this._refreshType.node = false;
         this.leoStates.setSelectedNodeFlags(this._refreshNode);
         let w_showOutline = this.isOutlineVisible();
+        console.log('in else!');
+
         if (!this.isOutlineVisible() &amp;&amp; this.showOutlineIfClosed) {
             this.showOutlineIfClosed = false;
             w_showOutline = true;
@@ -1276,11 +1294,15 @@ private async _launchRefresh(): Promise&lt;unknown&gt; {
             // * if no outline visible, just update body pane as needed
             if (!this.isOutlineVisible()) {
                 this._refreshType.body = false;
+                console.log('2nd _tryApplyNodeToBody, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
+
                 this._tryApplyNodeToBody(this._refreshNode, false, w_showBodyNoFocus);
             }
         }
     } else if (this._refreshType.body) {
         this._refreshType.body = false;
+        console.log('3nd _tryApplyNodeToBody, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
+
         this._tryApplyNodeToBody(this._refreshNode || this.serverOpenedNode || this.lastSelectedNode!, false, w_showBodyNoFocus);
     }
     return this.getStates();
@@ -1300,6 +1322,8 @@ private async _tryApplyNodeToBody(
     p_aside: boolean,
     p_preventTakingFocus: boolean,
 ): Promise&lt;void | vscode.TextEditor&gt; {
+
+    console.log('IN _tryApplyNodeToBody, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
 
     this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
     this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
@@ -1326,7 +1350,6 @@ private async _tryApplyNodeToBody(
     if (this._isBodyVisible() === 0 &amp;&amp; !this.showBodyIfClosed) {
         return Promise.resolve();
     }
-    this.showBodyIfClosed = false;
     return this.showBody(p_aside, p_preventTakingFocus);
 }
 
@@ -1347,6 +1370,7 @@ public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promis
 
         // If alt+arrow is used to navigate: SHOW and leave focus on outline.
         this.showOutlineIfClosed = true;
+        // * If is navigation, and the outline is not visible : REFRESH TREE TOO
     }
 
     const q_result = this._commandStack.add(p_userCommand);
@@ -9243,6 +9267,13 @@ private _onChangeCollapsedState(
 ): void {
     // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
     this.triggerBodySave(true);
+    // * Set expanded flag even on leointeg's vscode side of things, mostly for 'insert node'.
+    if (p_expand) {
+        p_event.element.expanded = true;
+    } else {
+        p_event.element.expanded = false;
+    }
+    // * distinguish between: changing expand state on already-selected node -vs- selecting at the same time as clicking caret.
     if (p_treeView.selection[0] &amp;&amp; utils.buildApId(p_treeView.selection[0]) === utils.buildApId(p_event.element)) {
         // * This happens if the tree selection is already the same as the expanded/collapsed node
         // Pass
@@ -9272,6 +9303,8 @@ private _onTreeViewVisibilityChanged(
     p_event: vscode.TreeViewVisibilityChangeEvent,
     p_explorerView: boolean
 ): void {
+    console.log('_onTreeViewVisibilityChanged visible: ', p_event.visible);
+
     if (p_event.visible) {
         this._lastTreeView = p_explorerView ? this._leoTreeExView : this._leoTreeView;
         this.setTreeViewTitle();
@@ -9835,7 +9868,6 @@ private _switchBody(
     if (w_visibleCount === 0 &amp;&amp; !this.showBodyIfClosed) {
         return Promise.resolve();
     }
-    this.showBodyIfClosed = false;
 
     if (w_visibleCount === 1) {
         this._bodyPreviewMode = this._isBodyPreview(); // recheck in case user double clicked on title
@@ -10055,6 +10087,8 @@ public sendAction(
  */
 public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise&lt;vscode.TextEditor | void&gt; {
 
+    console.log('showBody, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
+
     const w_openedDocumentTS = performance.now();
     const w_openedDocumentGnx = utils.leoUriToStr(this.bodyUri);
     let q_saved: Thenable&lt;unknown&gt; | undefined;
@@ -10221,12 +10255,16 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
         return;
     }
 
+    console.log('SHOW TEXT EDITOR!, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
     // * Actually Show the body pane document in a text editor
     const q_showTextDocument = vscode.window.showTextDocument(
         this._bodyTextDocument,
         w_showOptions
     ).then(
-        (p_result) =&gt; { return p_result; },
+        (p_result) =&gt; {
+            this.showBodyIfClosed = false;
+            return p_result;
+        },
         (p_reason) =&gt; {
             console.log('showTextDocument rejected: ', p_reason);
         }
@@ -11114,6 +11152,7 @@ public connect(): void {
                         this.serverOpenedNode = p_package.node!;
                         // will provoke _setupOpenedLeoDocument
                         this.loadSearchSettings();
+                        // Server already had opened files.
                         this.setupRefresh(
                             this.finalFocus,
                             {
@@ -11124,6 +11163,7 @@ public connect(): void {
                                 states: true,
                             }
                         );
+                        this.launchRefresh();
                     }
 
                     if (!this.config.connectToServerAutomatically) {
@@ -16561,6 +16601,8 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
         }
         if (!w_last || this._needLastSelectedRefresh) {
             // lastSelectedNode will be set in _tryApplyNodeToBody !
+            console.log('in got selected node, setting _needLastSelectedRefresh FALSE');
+
             this._needLastSelectedRefresh = false;
         }
 
@@ -16572,7 +16614,7 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
             // * Just make sure body selection is considered done.
             this.lastSelectedNode = p_element; // Set the 'lastSelectedNode' this will also set the 'marked' node context
             this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
-
+            this._preventShowBody = false; // in case it was a config-changed-refresh
         } else {
             // * Actually run the normal 'APPLY NODE TO BODY' to show or switch
             this._tryApplyNodeToBody(p_element, false, w_showBodyNoFocus);
@@ -17947,10 +17989,11 @@ public async navTextClear(): Promise&lt;LeoBridgePackage&gt; {
 }
 
 </t>
-<t tx="felix.20221002170017.1">## 1.0.9
+<t tx="felix.20221002170017.1">_needLastSelectedRefresh## 1.0.9
 
-- Fixed minibuffer history order
+- Fixed minibuffer history order.
 - Fixed keyboard navigation in the goto pane: focus no more flashes.
+- Fixed expand-collapse node selection prior to an 'insert' command.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

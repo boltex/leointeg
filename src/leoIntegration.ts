@@ -695,6 +695,7 @@ export class LeoIntegration {
                             this.serverOpenedNode = p_package.node!;
                             // will provoke _setupOpenedLeoDocument
                             this.loadSearchSettings();
+                            // Server already had opened files.
                             this.setupRefresh(
                                 this.finalFocus,
                                 {
@@ -705,6 +706,7 @@ export class LeoIntegration {
                                     states: true,
                                 }
                             );
+                            this.launchRefresh();
                         }
 
                         if (!this.config.connectToServerAutomatically) {
@@ -1245,6 +1247,13 @@ export class LeoIntegration {
     ): void {
         // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
         this.triggerBodySave(true);
+        // * Set expanded flag even on leointeg's vscode side of things, mostly for 'insert node'.
+        if (p_expand) {
+            p_event.element.expanded = true;
+        } else {
+            p_event.element.expanded = false;
+        }
+        // * distinguish between: changing expand state on already-selected node -vs- selecting at the same time as clicking caret.
         if (p_treeView.selection[0] && utils.buildApId(p_treeView.selection[0]) === utils.buildApId(p_event.element)) {
             // * This happens if the tree selection is already the same as the expanded/collapsed node
             // Pass
@@ -2046,8 +2055,6 @@ export class LeoIntegration {
                 } else {
                     w_viewName = Constants.TREEVIEW_ID;
                 }
-                // console.log('_refreshOutline HAS TO FORCE TREEVIEW SHOW - UP !');
-
                 vscode.commands.executeCommand(w_viewName + ".focus").then(
                     () => {
                         this._revealNodeRetriedRefreshOutline = false;
@@ -2088,6 +2095,18 @@ export class LeoIntegration {
         }
         if (this._leoTreeExView.visible && this.config.treeInExplorer) {
             w_treeview = this._leoTreeExView;
+        }
+        if (!w_treeview && (this.showOutlineIfClosed || (p_options && p_options.focus))) {
+            this.showOutlineIfClosed = false;
+            w_treeview = this._lastTreeView;
+            if (p_options) {
+                p_options.focus = true;
+            } else {
+                p_options = {
+                    focus: true,
+                    select: true
+                };
+            }
         }
         try {
             if (w_treeview) {
@@ -2179,7 +2198,7 @@ export class LeoIntegration {
                 // * Just make sure body selection is considered done.
                 this.lastSelectedNode = p_element; // Set the 'lastSelectedNode' this will also set the 'marked' node context
                 this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
-
+                this._preventShowBody = false; // in case it was a config-changed-refresh
             } else {
                 // * Actually run the normal 'APPLY NODE TO BODY' to show or switch
                 this._tryApplyNodeToBody(p_element, false, w_showBodyNoFocus);
@@ -2262,7 +2281,6 @@ export class LeoIntegration {
         if (this._isBodyVisible() === 0 && !this.showBodyIfClosed) {
             return Promise.resolve();
         }
-        this.showBodyIfClosed = false;
         return this.showBody(p_aside, p_preventTakingFocus);
     }
 
@@ -2286,7 +2304,6 @@ export class LeoIntegration {
         if (w_visibleCount === 0 && !this.showBodyIfClosed) {
             return Promise.resolve();
         }
-        this.showBodyIfClosed = false;
 
         if (w_visibleCount === 1) {
             this._bodyPreviewMode = this._isBodyPreview(); // recheck in case user double clicked on title
@@ -2798,12 +2815,16 @@ export class LeoIntegration {
             return;
         }
 
+        console.log('SHOW TEXT EDITOR!, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
         // * Actually Show the body pane document in a text editor
         const q_showTextDocument = vscode.window.showTextDocument(
             this._bodyTextDocument,
             w_showOptions
         ).then(
-            (p_result) => { return p_result; },
+            (p_result) => {
+                this.showBodyIfClosed = false;
+                return p_result;
+            },
             (p_reason) => {
                 console.log('showTextDocument rejected: ', p_reason);
             }
@@ -3230,7 +3251,6 @@ export class LeoIntegration {
         if (p_isNavigation) {
             // If any navigation command is used from outline or command palette: show body.
             this.showBodyIfClosed = true;
-
             // If alt+arrow is used to navigate: SHOW and leave focus on outline.
             this.showOutlineIfClosed = true;
         }

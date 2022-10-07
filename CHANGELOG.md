@@ -2,8 +2,10 @@
 
 ## 1.0.9
 
-- Fixed minibuffer history order
+- Fixed minibuffer history order.
 - Fixed keyboard navigation in the goto pane: focus no more flashes.
+- Fixed navigation commands, including alt+arrow keys, to show outline if hidden.
+- Fixed expand-collapse node selection prior to an 'insert' command.
 
 ## 1.0.8
 
