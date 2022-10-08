@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.9
+
+- Fixed minibuffer history order.
+- Fixed keyboard navigation in the goto pane: focus no more flashes.
+- Fixed navigation commands, including alt+arrow keys, to show outline if hidden.
+- Fixed body edit undo bead creation frequency (when documents pane is not visible.)
+- Fixed expand-collapse node selection prior to an 'insert' command.
+
 ## 1.0.8
 
 - Added an 'undo panel' that shows actions history and supports right-clicking to go to any undo point.

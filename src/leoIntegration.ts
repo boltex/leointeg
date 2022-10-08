@@ -130,7 +130,6 @@ export class LeoIntegration {
     private _leoDocumentsProvider: LeoDocumentsProvider;
     private _leoDocuments: vscode.TreeView<LeoDocumentNode>;
     private _leoDocumentsExplorer: vscode.TreeView<LeoDocumentNode>;
-    private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
 
     // * Goto nav panel
     private _leoGotoProvider: LeoGotoProvider;
@@ -695,6 +694,7 @@ export class LeoIntegration {
                             this.serverOpenedNode = p_package.node!;
                             // will provoke _setupOpenedLeoDocument
                             this.loadSearchSettings();
+                            // Server already had opened files.
                             this.setupRefresh(
                                 this.finalFocus,
                                 {
@@ -705,6 +705,7 @@ export class LeoIntegration {
                                     states: true,
                                 }
                             );
+                            this.launchRefresh();
                         }
 
                         if (!this.config.connectToServerAutomatically) {
@@ -1220,7 +1221,10 @@ export class LeoIntegration {
         if (
             this.leoStates.leoBridgeReady &&
             p_document.uri.scheme === Constants.URI_FILE_SCHEME &&
-            p_document.uri.fsPath.toLowerCase().endsWith('.leo')
+            (
+                p_document.uri.fsPath.toLowerCase().endsWith('.leo') ||
+                p_document.uri.fsPath.toLowerCase().endsWith('.leojs')
+            )
         ) {
             if (!this._hasShownContextOpenMessage) {
                 vscode.window.showInformationMessage(Constants.USER_MESSAGES.RIGHT_CLICK_TO_OPEN);
@@ -1242,6 +1246,13 @@ export class LeoIntegration {
     ): void {
         // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
         this.triggerBodySave(true);
+        // * Set expanded flag even on leointeg's vscode side of things, mostly for 'insert node'.
+        if (p_expand) {
+            p_event.element.expanded = true;
+        } else {
+            p_event.element.expanded = false;
+        }
+        // * distinguish between: changing expand state on already-selected node -vs- selecting at the same time as clicking caret.
         if (p_treeView.selection[0] && utils.buildApId(p_treeView.selection[0]) === utils.buildApId(p_event.element)) {
             // * This happens if the tree selection is already the same as the expanded/collapsed node
             // Pass
@@ -1503,7 +1514,7 @@ export class LeoIntegration {
                 const w_hasBody = !!p_textDocumentChange.document.getText().length;
                 const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
 
-                if (!this._currentDocumentChanged || w_iconChanged) {
+                if (!this.leoStates.leoChanged || w_iconChanged) {
                     if (this.preventIconChange) {
                         this.preventIconChange = false;
                     } else {
@@ -1521,7 +1532,7 @@ export class LeoIntegration {
                         });
                     }
 
-                    if (!this._currentDocumentChanged) {
+                    if (!this.leoStates.leoChanged) {
                         // also refresh document panel (icon may be dirty now)
                         this.refreshDocumentsPane();
                     }
@@ -2027,7 +2038,6 @@ export class LeoIntegration {
     private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): void {
 
         if (p_incrementTreeID) {
-            // this._treeId++;
             this._leoTreeProvider.incTreeId();
         }
         if (p_revealType !== undefined && p_revealType.valueOf() >= this._revealType.valueOf()) {
@@ -2044,8 +2054,6 @@ export class LeoIntegration {
                 } else {
                     w_viewName = Constants.TREEVIEW_ID;
                 }
-                // console.log('_refreshOutline HAS TO FORCE TREEVIEW SHOW - UP !');
-
                 vscode.commands.executeCommand(w_viewName + ".focus").then(
                     () => {
                         this._revealNodeRetriedRefreshOutline = false;
@@ -2086,6 +2094,18 @@ export class LeoIntegration {
         }
         if (this._leoTreeExView.visible && this.config.treeInExplorer) {
             w_treeview = this._leoTreeExView;
+        }
+        if (!w_treeview && (this.showOutlineIfClosed || (p_options && p_options.focus))) {
+            this.showOutlineIfClosed = false;
+            w_treeview = this._lastTreeView;
+            if (p_options) {
+                p_options.focus = true;
+            } else {
+                p_options = {
+                    focus: true,
+                    select: true
+                };
+            }
         }
         try {
             if (w_treeview) {
@@ -2138,7 +2158,7 @@ export class LeoIntegration {
         ) {
             // ! MINIMAL TIMEOUT REQUIRED ! WHY ?? (works so leave)
             setTimeout(() => {
-                this.showBody(false, false); // SAME with scroll information specified
+                this.showBody(false, this.finalFocus.valueOf() !== Focus.Body); // SAME with scroll information specified
             }, 25);
         } else {
 
@@ -2177,7 +2197,7 @@ export class LeoIntegration {
                 // * Just make sure body selection is considered done.
                 this.lastSelectedNode = p_element; // Set the 'lastSelectedNode' this will also set the 'marked' node context
                 this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
-
+                this._preventShowBody = false; // in case it was a config-changed-refresh
             } else {
                 // * Actually run the normal 'APPLY NODE TO BODY' to show or switch
                 this._tryApplyNodeToBody(p_element, false, w_showBodyNoFocus);
@@ -2260,7 +2280,6 @@ export class LeoIntegration {
         if (this._isBodyVisible() === 0 && !this.showBodyIfClosed) {
             return Promise.resolve();
         }
-        this.showBodyIfClosed = false;
         return this.showBody(p_aside, p_preventTakingFocus);
     }
 
@@ -2284,7 +2303,6 @@ export class LeoIntegration {
         if (w_visibleCount === 0 && !this.showBodyIfClosed) {
             return Promise.resolve();
         }
-        this.showBodyIfClosed = false;
 
         if (w_visibleCount === 1) {
             this._bodyPreviewMode = this._isBodyPreview(); // recheck in case user double clicked on title
@@ -2801,7 +2819,10 @@ export class LeoIntegration {
             this._bodyTextDocument,
             w_showOptions
         ).then(
-            (p_result) => { return p_result; },
+            (p_result) => {
+                this.showBodyIfClosed = false;
+                return p_result;
+            },
             (p_reason) => {
                 console.log('showTextDocument rejected: ', p_reason);
             }
@@ -2872,16 +2893,6 @@ export class LeoIntegration {
                             this._refreshType.scroll = false;
                             // Set scroll approximation
                             w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
-                            // ! Compensate for reveal that steals the focus.
-                            if (this.finalFocus.valueOf() === Focus.Goto) {
-                                let w_viewName: string;
-                                if (this._lastTreeView === this._leoTreeExView) {
-                                    w_viewName = Constants.GOTO_EXPLORER_ID;
-                                } else {
-                                    w_viewName = Constants.GOTO_ID;
-                                }
-                                vscode.commands.executeCommand(w_viewName + ".focus");
-                            }
                         }
 
                     } else {
@@ -2992,7 +3003,7 @@ export class LeoIntegration {
         // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
         await this._isBusyTriggerSave(false);
 
-        const w_commandList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
+        const q_commandList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
             Constants.LEOBRIDGE.GET_COMMANDS
         ).then((p_result: LeoBridgePackage) => {
             if (p_result.commands && p_result.commands.length) {
@@ -3066,12 +3077,12 @@ export class LeoIntegration {
                 return [];
             }
         });
-        // Add Nav tab special commands
+
         const w_options: vscode.QuickPickOptions = {
             placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
             matchOnDetail: true,
         };
-        const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
+        const w_picked = await vscode.window.showQuickPick(q_commandList, w_options);
         // First, check for undo-history list being requested
         if (w_picked && w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
             return this.minibufferHistory();
@@ -3110,7 +3121,7 @@ export class LeoIntegration {
         if (p_picked &&
             p_picked.label &&
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
-            this._minibufferHistory.push(p_picked.label); // Add to minibuffer history
+            this._minibufferHistory.unshift(p_picked.label); // Add to minibuffer history
             return vscode.commands.executeCommand(
                 Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
             );
@@ -3221,11 +3232,16 @@ export class LeoIntegration {
      * (see command stack 'rules' in commandStack.ts)
      */
     public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise<LeoBridgePackage> | undefined {
+
         // No forced vscode save-triggers for direct calls from extension.js
         this.triggerBodySave();
         if (p_isNavigation) {
+            // If any navigation command is used from outline or command palette: show body.
             this.showBodyIfClosed = true;
+            // If alt+arrow is used to navigate: SHOW and leave focus on outline.
+            this.showOutlineIfClosed = true;
         }
+
         const q_result = this._commandStack.add(p_userCommand);
         if (q_result) {
             return q_result;
@@ -3881,7 +3897,6 @@ export class LeoIntegration {
                         // documents: false,
                         // buttons: false,
                         states: true,
-                        // goto: w_revealTarget === Focus.Body // ! HAVE TO FORCE BACK
                     },
                     p_navEntryResult.node
                 );
@@ -4618,7 +4633,7 @@ export class LeoIntegration {
      * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
      */
     public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
-        this._currentDocumentChanged = p_documentNode.documentEntry.changed;
+        this.leoStates.leoChanged = p_documentNode.documentEntry.changed; // also set here since slightly newer.
         this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
         setTimeout(() => {
             if (!this._leoDocuments.visible && !this._leoDocumentsExplorer.visible) {
@@ -5070,11 +5085,11 @@ export class LeoIntegration {
     public openLeoFile(p_leoFileUri?: vscode.Uri): Promise<LeoBridgePackage | undefined> {
         return this._isBusyTriggerSave(true, true)
             .then((p_saveResult) => {
-                if (p_leoFileUri && p_leoFileUri.scheme.startsWith("leo")) {
+                if (p_leoFileUri && p_leoFileUri.scheme && p_leoFileUri.scheme.startsWith("leo")) {
                     p_leoFileUri = undefined; // Was used in the editor/title menu!
                 }
                 let q_openedFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
-                if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
+                if (p_leoFileUri && p_leoFileUri.fsPath && p_leoFileUri.fsPath.trim()) {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
                     q_openedFile = this.sendAction(
                         Constants.LEOBRIDGE.OPEN_FILE,

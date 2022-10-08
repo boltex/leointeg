@@ -18,8 +18,6 @@ var LeoInteg: LeoIntegration | undefined = undefined;
  */
 export function activate(p_context: vscode.ExtensionContext) {
 
-    const w_start = process.hrtime(); // For calculating total startup time duration
-
     // * Reset Extension context flags (used in 'when' clauses in package.json)
     utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
     utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
@@ -824,7 +822,6 @@ function closeLeoTextEditors(): Thenable<unknown> {
 async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined, p_leoInteg: LeoIntegration): Promise<unknown> {
     let w_showWelcomeScreen: boolean = false;
     if (p_previousVersion === undefined) {
-        console.log('leointeg first-time install');
         // Force-Set/Clear leointeg's required configuration settings
         p_leoInteg.config.setEnablePreview();
         p_leoInteg.config.clearCloseEmptyGroups();
