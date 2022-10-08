@@ -2216,7 +2216,7 @@ print('done')
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
   "version": "1.0.9",
   "author": {
-    "name": "Félix"
+    "name": "Félix Malboeuf"
   },
   "sponsor": {
     "url": "https://boltex.github.io/"
