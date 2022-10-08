@@ -822,7 +822,6 @@ function closeLeoTextEditors(): Thenable<unknown> {
 async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined, p_leoInteg: LeoIntegration): Promise<unknown> {
     let w_showWelcomeScreen: boolean = false;
     if (p_previousVersion === undefined) {
-        console.log('leointeg first-time install');
         // Force-Set/Clear leointeg's required configuration settings
         p_leoInteg.config.setEnablePreview();
         p_leoInteg.config.clearCloseEmptyGroups();

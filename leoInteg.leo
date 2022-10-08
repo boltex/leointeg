@@ -6251,7 +6251,6 @@ export function deactivate(): Thenable&lt;unknown&gt; {
 async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined, p_leoInteg: LeoIntegration): Promise&lt;unknown&gt; {
     let w_showWelcomeScreen: boolean = false;
     if (p_previousVersion === undefined) {
-        console.log('leointeg first-time install');
         // Force-Set/Clear leointeg's required configuration settings
         p_leoInteg.config.setEnablePreview();
         p_leoInteg.config.clearCloseEmptyGroups();
@@ -9662,10 +9661,6 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
             const w_hasBody = !!p_textDocumentChange.document.getText().length;
             const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
 
-            console.log('this.leoStates.leoChanged', this.leoStates.leoChanged);
-            console.log('w_iconChanged', w_iconChanged);
-
-
             if (!this.leoStates.leoChanged || w_iconChanged) {
                 if (this.preventIconChange) {
                     this.preventIconChange = false;
@@ -10238,7 +10233,6 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
         return;
     }
 
-    console.log('SHOW TEXT EDITOR!, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
     // * Actually Show the body pane document in a text editor
     const q_showTextDocument = vscode.window.showTextDocument(
         this._bodyTextDocument,
@@ -10318,17 +10312,6 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
                         this._refreshType.scroll = false;
                         // Set scroll approximation
                         w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
-                        console.log('-------------------------------------------------------------skipped setting back focus to goto');
-                        // ! Compensate for reveal that steals the focus.
-                        // if (this.finalFocus.valueOf() === Focus.Goto) {
-                        //     let w_viewName: string;
-                        //     if (this._lastTreeView === this._leoTreeExView) {
-                        //         w_viewName = Constants.GOTO_EXPLORER_ID;
-                        //     } else {
-                        //         w_viewName = Constants.GOTO_ID;
-                        //     }
-                        //     vscode.commands.executeCommand(w_viewName + ".focus");
-                        // }
                     }
 
                 } else {

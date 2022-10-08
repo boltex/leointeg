@@ -2814,7 +2814,6 @@ export class LeoIntegration {
             return;
         }
 
-        console.log('SHOW TEXT EDITOR!, this._needLastSelectedRefresh', this._needLastSelectedRefresh, 'this.showBodyIfClosed :', this.showBodyIfClosed);
         // * Actually Show the body pane document in a text editor
         const q_showTextDocument = vscode.window.showTextDocument(
             this._bodyTextDocument,
@@ -2894,17 +2893,6 @@ export class LeoIntegration {
                             this._refreshType.scroll = false;
                             // Set scroll approximation
                             w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
-                            console.log('-------------------------------------------------------------skipped setting back focus to goto');
-                            // ! Compensate for reveal that steals the focus.
-                            // if (this.finalFocus.valueOf() === Focus.Goto) {
-                            //     let w_viewName: string;
-                            //     if (this._lastTreeView === this._leoTreeExView) {
-                            //         w_viewName = Constants.GOTO_EXPLORER_ID;
-                            //     } else {
-                            //         w_viewName = Constants.GOTO_ID;
-                            //     }
-                            //     vscode.commands.executeCommand(w_viewName + ".focus");
-                            // }
                         }
 
                     } else {
