@@ -100,6 +100,15 @@ export class Constants {
         ICON_LIGHT_TAG: "resources/light/tag.svg",
         ICON_DARK_TAG: "resources/dark/tag.svg",
 
+        ICON_LIGHT_UNDO_ACTIVE: "resources/light/undo.svg",
+        ICON_DARK_UNDO_ACTIVE: "resources/dark/undo.svg",
+        ICON_LIGHT_UNDO: "resources/dark/undo.svg",
+        ICON_DARK_UNDO: "resources/light/undo.svg",
+        ICON_LIGHT_REDO_ACTIVE: "resources/light/redo.svg",
+        ICON_DARK_REDO_ACTIVE: "resources/dark/redo.svg",
+        ICON_LIGHT_REDO: "resources/dark/redo.svg",
+        ICON_DARK_REDO: "resources/light/redo.svg",
+
         ICON_LIGHT_DOCUMENT: "resources/light/document.svg",
         ICON_DARK_DOCUMENT: "resources/dark/document.svg",
         ICON_LIGHT_DOCUMENT_DIRTY: "resources/light/document-dirty.svg",
@@ -124,7 +133,6 @@ export class Constants {
         TREEVIEW_TITLE_INTEGRATION: "INTEGRATION",
         BODY_TITLE: "LEO BODY",
         LOG_PANE_TITLE: "Leo Log Window",
-        TERMINAL_PANE_TITLE: "LeoBridge Server",
         THEME_STATUSBAR: "statusBar.foreground"
     };
 

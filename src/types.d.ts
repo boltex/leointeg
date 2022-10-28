@@ -325,8 +325,8 @@ export interface LeoGuiFindTabManagerSettings {
  * * Icon path names used in leoNodes for rendering in treeview
  */
 export interface Icon {
-    light: string;
-    dark: string;
+    light: string | vscode.Uri;
+    dark: string | vscode.Uri;
 }
 
 /**

@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.10
+
+- Added 'navigation' flag to 'goto_next_clone' and 'goto_next_marked' commands to force open body and outline if not visible.
+- fixed icon path string generation.
+- Added icons to the undo pane.
+
 ## 1.0.9
 
 - Fixed minibuffer history order.

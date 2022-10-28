@@ -90,8 +90,8 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | :----------------- | :-- | :-------------- | :-------------------------- |
 | `Alt + Home`       | or  | `Home` \*       | Scroll to top of outline    |
 |                    |     | `End` \*        | Scroll to bottom of outline |
-|                    |     | `PgUp` \*       | Go To First Sibling          |
-| `Alt + End`        | or  | `PdDn` \*       | Go To Last Sibling          |
+| `PgUp / pgDn`      |     |                 | Tree page up/down           |
+| `Alt + End`        |     |                 | Go To Last Sibling          |
 | `Alt + N`          |     |                 | Go To Next Clone            |
 | `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree                 |
 | `Alt + G`          |     |                 | Go To Global Line           |

@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -3161,18 +3161,18 @@
         "command": "leointeg.showBody",
         "key": "ctrl+t",
         "mac": "cmd+t",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.showBody",
         "key": "alt+d",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.showBody",
         "key": "ctrl+g",
         "mac": "cmd+g",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.showBody",
@@ -3188,7 +3188,7 @@
         "command": "leointeg.saveLeoFileFromOutline",
         "key": "ctrl+s",
         "mac": "cmd+s",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.saveLeoFile",
@@ -3200,13 +3200,13 @@
         "command": "leointeg.newLeoFile",
         "key": "ctrl+n",
         "mac": "cmd+n",
-        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo || leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "editorTextFocus && resourceScheme == leo || leoFindFocus || sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.openLeoFile",
         "key": "ctrl+o",
         "mac": "cmd+o",
-        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo || leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "editorTextFocus && resourceScheme == leo || leoFindFocus || sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.writeAtFileNodes",
@@ -3218,7 +3218,7 @@
         "command": "leointeg.writeAtFileNodesFromOutline",
         "key": "ctrl+shift+w",
         "mac": "cmd+shift+w",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.writeDirtyAtFileNodes",
@@ -3230,7 +3230,7 @@
         "command": "leointeg.writeDirtyAtFileNodesFromOutline",
         "key": "ctrl+shift+q",
         "mac": "cmd+shift+q",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.contractAll",
@@ -3240,7 +3240,7 @@
       {
         "command": "leointeg.contractAllFromOutline",
         "key": "alt+-",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.editSelectedHeadline",

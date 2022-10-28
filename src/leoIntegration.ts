@@ -64,6 +64,7 @@ export class LeoIntegration {
 
     // * Icon Paths
     public nodeIcons: Icon[] = []; // Singleton static array of all icon paths used for rendering in treeview
+    public undoIcons: Icon[] = [];
     public documentIcons: Icon[] = [];
     public buttonIcons: Icon[] = [];
     public gotoIcons: Icon[] = [];
@@ -262,6 +263,7 @@ export class LeoIntegration {
 
         // * Build Icon filename paths
         this.nodeIcons = utils.buildNodeIconPaths(_context);
+        this.undoIcons = utils.buildUndoIconPaths(_context);
         this.documentIcons = utils.buildDocumentIconPaths(_context);
         this.buttonIcons = utils.buildButtonsIconPaths(_context);
         this.gotoIcons = utils.buildGotoIconPaths(_context);

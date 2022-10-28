@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { Constants } from "./constants";
+import { Icon } from "./types";
 
 // leo undo provider class
 export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
@@ -42,15 +43,23 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
                     if (beads.length) {
                         let w_foundNode: LeoUndoNode | undefined;
                         let i: number = 0;
+                        let w_defaultIcon = 1;
+
                         beads.forEach(p_bead => {
                             let w_description: string = "";
                             let w_undoFlag: boolean = false;
+                            let w_icon = w_defaultIcon;
+
                             if (i === bead) {
                                 w_description = "Undo";
                                 w_undoFlag = true;
+                                w_icon = 0;
+                                w_defaultIcon = 2;
                             }
                             if (i === bead + 1) {
                                 w_description = "Redo";
+                                w_icon = 2;
+                                w_defaultIcon = 3;
                                 if (!w_foundNode) {
                                     w_undoFlag = true; // Passed all nodes until 'redo', no undo found.
                                 }
@@ -59,8 +68,8 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
                                 p_bead || "unknown",
                                 w_description,
                                 (this._beadId++).toString(),
-                                i - bead // 0 is same (no undo) +/- undo redo.
-
+                                i - bead, // 0 is same (no undo) +/- undo redo.
+                                this._leoIntegration.undoIcons[w_icon]
                             );
                             w_children.push(w_node);
                             if (w_undoFlag) {
@@ -116,7 +125,9 @@ export class LeoUndoNode extends vscode.TreeItem {
         public description: string,
         public id: string,
         // public contextValue: string,
-        public beadIndex: number
+        public beadIndex: number,
+        public iconPath?: Icon
+
     ) {
         super(label);
     }

@@ -107,10 +107,36 @@ export function buildApId(p: ArchivedPosition): string {
 export function buildNodeIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     return Array(16).fill("").map((p_val, p_index) => {
         return {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_PATH + padNumber2(p_index) + Constants.GUI.ICON_FILE_EXT),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_PATH + padNumber2(p_index) + Constants.GUI.ICON_FILE_EXT)
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_PATH + padNumber2(p_index) + Constants.GUI.ICON_FILE_EXT),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_PATH + padNumber2(p_index) + Constants.GUI.ICON_FILE_EXT),
         };
     });
+}
+
+/**
+ * * Build all possible strings for undo icons graphic file paths
+ * @param p_context Needed to get to absolute paths on the system
+ * @returns An array containing icons for the undo tree view
+ */
+export function buildUndoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
+    return [
+        {
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_UNDO_ACTIVE),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_UNDO_ACTIVE)
+        },
+        {
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_UNDO),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_UNDO)
+        },
+        {
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_REDO_ACTIVE),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_REDO_ACTIVE)
+        },
+        {
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_REDO),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_REDO)
+        }
+    ];
 }
 
 /**
@@ -121,12 +147,12 @@ export function buildNodeIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 export function buildDocumentIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     return [
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_DOCUMENT),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_DOCUMENT)
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_DOCUMENT),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_DOCUMENT)
         },
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_DOCUMENT_DIRTY),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_DOCUMENT_DIRTY)
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_DOCUMENT_DIRTY),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_DOCUMENT_DIRTY)
         }
     ];
 }
@@ -139,16 +165,16 @@ export function buildDocumentIconPaths(p_context: vscode.ExtensionContext): Icon
 export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     return [
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON)
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_BUTTON),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_BUTTON)
         },
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_RCLICK),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_RCLICK)
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_BUTTON_RCLICK),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_BUTTON_RCLICK)
         },
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_ADD),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_ADD)
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_BUTTON_ADD),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_BUTTON_ADD)
         }
     ];
 }
@@ -161,20 +187,20 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     return [
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_PARENT),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_PARENT)
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_PARENT),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_PARENT)
         },
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_NODE),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_NODE)
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_NODE),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_NODE)
         },
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BODY),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BODY)
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_BODY),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_BODY)
         },
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_TAG),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_TAG)
+            light: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_LIGHT_TAG),
+            dark: vscode.Uri.joinPath(p_context.extensionUri, Constants.GUI.ICON_DARK_TAG)
         }
     ];
 }
