@@ -4752,7 +4752,7 @@ print('done')
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
 },
 {
-  "command": "leointeg.gotoFirstSibling",
+  "command": "leointeg.pageUp",
   "key": "pageup",
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
@@ -4762,7 +4762,7 @@ print('done')
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
 },
 {
-  "command": "leointeg.gotoLastSibling",
+  "command": "leointeg.pageDown",
   "key": "pagedown",
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },

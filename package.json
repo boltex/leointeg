@@ -3602,7 +3602,7 @@
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
       },
       {
-        "command": "leointeg.gotoFirstSibling",
+        "command": "leointeg.pageUp",
         "key": "pageup",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
@@ -3612,7 +3612,7 @@
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoGoto/"
       },
       {
-        "command": "leointeg.gotoLastSibling",
+        "command": "leointeg.pageDown",
         "key": "pagedown",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
