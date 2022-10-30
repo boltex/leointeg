@@ -840,6 +840,12 @@ public showAskModalDialog(p_askArg: runAskYesNoDialogParameters): void {
             w_sendResultPromise.then(() =&gt; {
                 return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
             }).then((p_package) =&gt; {
+                if (p_package.commander) {
+                    p_package.filename = p_package.commander.fileName;
+                    this._leoIntegration.serverOpenedFileName = p_package.filename;
+                    this._leoIntegration.serverOpenedNode = p_package.node!;
+                }
+
                 // refresh and reveal selection
                 this._leoIntegration.setupRefresh(
                     Focus.NoChange,
@@ -889,7 +895,11 @@ public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters)
 
             this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                 .then((p_package) =&gt; {
-
+                    if (p_package.commander) {
+                        p_package.filename = p_package.commander.fileName;
+                        this._leoIntegration.serverOpenedFileName = p_package.filename;
+                        this._leoIntegration.serverOpenedNode = p_package.node!;
+                    }
                     this._leoIntegration.setupRefresh(
                         Focus.NoChange,
                         {
@@ -7710,6 +7720,11 @@ set fileOpenedReady(p_value: boolean) {
     this._leoIntegration.setTreeViewTitle(
         p_value ? Constants.GUI.TREEVIEW_TITLE : Constants.GUI.TREEVIEW_TITLE_INTEGRATION
     );
+    if (p_value) {
+        this._leoIntegration.serverOpenedFileName = this._leoOpenedFileName; // will trigger outline pane title decorations
+    } else {
+        this._leoIntegration.serverOpenedFileName = "";
+    }
 }
 
 </t>
@@ -7726,6 +7741,7 @@ set leoOpenedFileName(p_name: string) {
         this._leoOpenedFileName = "";
         this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, false);
     }
+    this._leoIntegration.serverOpenedFileName = p_name; // will trigger outline pane title decorations
 }
 
 </t>
@@ -7740,6 +7756,7 @@ set leoChanged(p_value: boolean) {
         this._leoIntegration.refreshDocumentsPane();
     }
     this._leoChanged = p_value;
+    this._leoIntegration.setTreeViewTitle(); // Will refresh the '*' to signify document changed.
     this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_CHANGED, p_value);
 }
 
@@ -8991,8 +9008,39 @@ export class LeoIntegration {
     }
 
     public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
-    public serverOpenedFileName: string = ""; // Server last reported opened file name.
-    public serverOpenedNode: ArchivedPosition | undefined; // Server last reported opened file name.
+    public _serverOpenedFileName: string = ""; // Server last reported opened file name.
+    get serverOpenedFileName(): string {
+        return this._serverOpenedFileName;
+    }
+    set serverOpenedFileName(s: string) {
+
+        if (this._serverOpenedFileName !== s) {
+            this._serverOpenedFileName = s;
+        }
+
+        // Add to desc.
+        let w_desc = "";
+        const w_filename = s ? utils.getFileFromPath(s) : Constants.UNTITLED_FILE_NAME;
+        let w_path = "";
+        const n = s.lastIndexOf(w_filename);
+        if (n &gt;= 0 &amp;&amp; n + w_filename.length &gt;= s.length) {
+            w_path = s.substring(0, n);
+        }
+        w_desc = w_filename + (w_path ? " in " + w_path : '');
+
+        if (this._titleDesc !== w_desc) {
+            this._titleDesc = w_desc;
+            if (this._leoTreeView) {
+                this._leoTreeView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
+            }
+            if (this._leoTreeExView) {
+                this._leoTreeExView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
+            }
+        }
+    }
+    private _titleDesc = "";
+
+    public serverOpenedNode: ArchivedPosition | undefined; // Server last reported opened node.
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
     // * Outline Pane
@@ -9178,6 +9226,7 @@ private _setupNoOpenedLeoDocument(): void {
     this.refreshDocumentsPane();
     this.refreshButtonsPane();
     this.refreshUndoPane();
+    this._leoStatusBar.hide();
     this.closeBody();
 }
 
@@ -9221,7 +9270,7 @@ private _setupOpenedLeoDocument(): void {
     }
 
     this._leoStatusBar.update(true, 0, true);
-    this._leoStatusBar.show(); // Just selected a node
+    this._leoStatusBar.show();
     this.sendConfigToServer(this.config.getConfig());
     this.loadSearchSettings();
 
@@ -11432,6 +11481,7 @@ private _isBusyTriggerSave(p_all: boolean, p_forcedVsCodeSave?: boolean): Promis
 </t>
 <t tx="felix.20201114185218.1">/**
  * * Sets the outline pane top bar string message or refreshes with existing title if no title passed
+ * * This includes the '*' asterisk that signifies 'document changed'
  * @param p_title new string to replace the current title
  */
 public setTreeViewTitle(p_title?: string): void {
@@ -11439,12 +11489,15 @@ public setTreeViewTitle(p_title?: string): void {
         this._currentOutlineTitle = p_title;
     }
     // * Set/Change outline pane title e.g. "INTEGRATION", "OUTLINE"
+    const w_changed = this.leoStates.fileOpenedReady &amp;&amp; this._serverOpenedFileName &amp;&amp; this.leoStates.leoChanged ? "*" : "";
     if (this._leoTreeView) {
-        this._leoTreeView.title = this._currentOutlineTitle;
+        this._leoTreeView.title = this._currentOutlineTitle + w_changed;
+        this._leoTreeView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
     }
     if (this._leoTreeExView) {
         this._leoTreeExView.title =
-            Constants.GUI.EXPLORER_TREEVIEW_PREFIX + this._currentOutlineTitle;
+            Constants.GUI.EXPLORER_TREEVIEW_PREFIX + this._currentOutlineTitle + w_changed;
+        this._leoTreeExView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
     }
 }
 
@@ -16733,6 +16786,17 @@ public fullRefresh(): Promise&lt;LeoBridgePackage&gt; | undefined {
         }
     };
     const q_result = this._commandStack.add(w_command);
+
+    if (q_result) {
+        q_result.then((p_doNothingPackage) =&gt; {
+            if (p_doNothingPackage.commander) {
+                p_doNothingPackage.filename = p_doNothingPackage.commander.fileName;
+                this.serverOpenedFileName = p_doNothingPackage.filename;
+                this.serverOpenedNode = p_doNothingPackage.node!;
+            }
+        });
+    }
+
     return q_result;
 }
 
@@ -17991,6 +18055,8 @@ public async navTextClear(): Promise&lt;LeoBridgePackage&gt; {
 - Added 'navigation' flag to 'goto_next_clone' and 'goto_next_marked' commands to force open body and outline if not visible.
 - fixed icon path string generation.
 - Added icons to the undo pane.
+- Added asterisk to outline title to flag 'changed' document.
+- Added opened-file description to outline title.
 
 </t>
 <t tx="felix.20221027232254.1">/**

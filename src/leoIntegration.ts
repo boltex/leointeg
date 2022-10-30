@@ -94,8 +94,39 @@ export class LeoIntegration {
     }
 
     public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
-    public serverOpenedFileName: string = ""; // Server last reported opened file name.
-    public serverOpenedNode: ArchivedPosition | undefined; // Server last reported opened file name.
+    public _serverOpenedFileName: string = ""; // Server last reported opened file name.
+    get serverOpenedFileName(): string {
+        return this._serverOpenedFileName;
+    }
+    set serverOpenedFileName(s: string) {
+
+        if (this._serverOpenedFileName !== s) {
+            this._serverOpenedFileName = s;
+        }
+
+        // Add to desc.
+        let w_desc = "";
+        const w_filename = s ? utils.getFileFromPath(s) : Constants.UNTITLED_FILE_NAME;
+        let w_path = "";
+        const n = s.lastIndexOf(w_filename);
+        if (n >= 0 && n + w_filename.length >= s.length) {
+            w_path = s.substring(0, n);
+        }
+        w_desc = w_filename + (w_path ? " in " + w_path : '');
+
+        if (this._titleDesc !== w_desc) {
+            this._titleDesc = w_desc;
+            if (this._leoTreeView) {
+                this._leoTreeView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
+            }
+            if (this._leoTreeExView) {
+                this._leoTreeExView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
+            }
+        }
+    }
+    private _titleDesc = "";
+
+    public serverOpenedNode: ArchivedPosition | undefined; // Server last reported opened node.
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
     // * Outline Pane
@@ -1148,6 +1179,7 @@ export class LeoIntegration {
         this.refreshDocumentsPane();
         this.refreshButtonsPane();
         this.refreshUndoPane();
+        this._leoStatusBar.hide();
         this.closeBody();
     }
 
@@ -1190,7 +1222,7 @@ export class LeoIntegration {
         }
 
         this._leoStatusBar.update(true, 0, true);
-        this._leoStatusBar.show(); // Just selected a node
+        this._leoStatusBar.show();
         this.sendConfigToServer(this.config.getConfig());
         this.loadSearchSettings();
 
@@ -1726,6 +1758,7 @@ export class LeoIntegration {
 
     /**
      * * Sets the outline pane top bar string message or refreshes with existing title if no title passed
+     * * This includes the '*' asterisk that signifies 'document changed'
      * @param p_title new string to replace the current title
      */
     public setTreeViewTitle(p_title?: string): void {
@@ -1733,12 +1766,15 @@ export class LeoIntegration {
             this._currentOutlineTitle = p_title;
         }
         // * Set/Change outline pane title e.g. "INTEGRATION", "OUTLINE"
+        const w_changed = this.leoStates.fileOpenedReady && this._serverOpenedFileName && this.leoStates.leoChanged ? "*" : "";
         if (this._leoTreeView) {
-            this._leoTreeView.title = this._currentOutlineTitle;
+            this._leoTreeView.title = this._currentOutlineTitle + w_changed;
+            this._leoTreeView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
         }
         if (this._leoTreeExView) {
             this._leoTreeExView.title =
-                Constants.GUI.EXPLORER_TREEVIEW_PREFIX + this._currentOutlineTitle;
+                Constants.GUI.EXPLORER_TREEVIEW_PREFIX + this._currentOutlineTitle + w_changed;
+            this._leoTreeExView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
         }
     }
 
@@ -1915,6 +1951,17 @@ export class LeoIntegration {
             }
         };
         const q_result = this._commandStack.add(w_command);
+
+        if (q_result) {
+            q_result.then((p_doNothingPackage) => {
+                if (p_doNothingPackage.commander) {
+                    p_doNothingPackage.filename = p_doNothingPackage.commander.fileName;
+                    this.serverOpenedFileName = p_doNothingPackage.filename;
+                    this.serverOpenedNode = p_doNothingPackage.node!;
+                }
+            });
+        }
+
         return q_result;
     }
 

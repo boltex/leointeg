@@ -134,6 +134,12 @@ export class LeoAsync {
                 w_sendResultPromise.then(() => {
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
                 }).then((p_package) => {
+                    if (p_package.commander) {
+                        p_package.filename = p_package.commander.fileName;
+                        this._leoIntegration.serverOpenedFileName = p_package.filename;
+                        this._leoIntegration.serverOpenedNode = p_package.node!;
+                    }
+
                     // refresh and reveal selection
                     this._leoIntegration.setupRefresh(
                         Focus.NoChange,
@@ -181,7 +187,11 @@ export class LeoAsync {
 
                 this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                     .then((p_package) => {
-
+                        if (p_package.commander) {
+                            p_package.filename = p_package.commander.fileName;
+                            this._leoIntegration.serverOpenedFileName = p_package.filename;
+                            this._leoIntegration.serverOpenedNode = p_package.node!;
+                        }
                         this._leoIntegration.setupRefresh(
                             Focus.NoChange,
                             {

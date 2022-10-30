@@ -5,6 +5,8 @@
 - Added 'navigation' flag to 'goto_next_clone' and 'goto_next_marked' commands to force open body and outline if not visible.
 - fixed icon path string generation.
 - Added icons to the undo pane.
+- Added asterisk to outline title to flag 'changed' document.
+- Added opened-file description to outline title.
 
 ## 1.0.9
 
