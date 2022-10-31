@@ -43,6 +43,7 @@ export class Constants {
     public static UNTITLED_FILE_NAME: string = "untitled";
     public static RECENT_FILES_KEY: string = "leoRecentFiles";
     public static LAST_FILES_KEY: string = "leoLastFiles";
+    public static LAST_ACTIVE_FILE_KEY: string = "leoLastActiveFile";
 
     public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";

@@ -76,6 +76,15 @@ export class LeoStates {
         return this._leoOpenedFileName;
     }
     set leoOpenedFileName(p_name: string) {
+
+        if (!p_name) {
+            p_name = "";
+        }
+        if (p_name === this._leoOpenedFileName) {
+            // same!
+            return;
+        }
+
         if (p_name && p_name.length) {
             this._leoOpenedFileName = p_name;
             this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, true);
@@ -83,6 +92,7 @@ export class LeoStates {
             this._leoOpenedFileName = "";
             this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, false);
         }
+        // is new so make sure it's also the same.
         this._leoIntegration.serverOpenedFileName = p_name; // will trigger outline pane title decorations
     }
 

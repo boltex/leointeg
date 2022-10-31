@@ -37,9 +37,7 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
                 if (p_package && p_package.files) {
                     const w_list: LeoDocumentNode[] = [];
                     const w_files: LeoDocument[] = p_package.files;
-
                     let w_index: number = 0;
-
                     if (w_files && w_files.length) {
                         w_files.forEach((i_file: LeoDocument) => {
                             i_file.index = w_index;

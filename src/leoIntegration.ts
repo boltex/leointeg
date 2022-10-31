@@ -94,21 +94,23 @@ export class LeoIntegration {
     }
 
     public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
-    public _serverOpenedFileName: string = ""; // Server last reported opened file name.
+    private _serverOpenedFileName: string = ""; // Server last reported opened file name.
     get serverOpenedFileName(): string {
         return this._serverOpenedFileName;
     }
     set serverOpenedFileName(s: string) {
-
+        let w_isNew = false;
         if (this._serverOpenedFileName !== s) {
             this._serverOpenedFileName = s;
+            this.leoStates.leoOpenedFileName = s; // In case context flag not set yet.
+            w_isNew = true;
         }
 
         // Add to desc.
         let w_desc = "";
         const w_filename = s ? utils.getFileFromPath(s) : Constants.UNTITLED_FILE_NAME;
         let w_path = "";
-        const n = s.lastIndexOf(w_filename);
+        const n = s ? s.lastIndexOf(w_filename) : -1;
         if (n >= 0 && n + w_filename.length >= s.length) {
             w_path = s.substring(0, n);
         }
@@ -123,6 +125,11 @@ export class LeoIntegration {
                 this._leoTreeExView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
             }
         }
+        if (w_isNew && s) {
+            // save to workspace 'last active file' momento.
+            utils.setGlobalLastActiveFile(this._context, s);
+        }
+
     }
     private _titleDesc = "";
 
@@ -973,25 +980,71 @@ export class LeoIntegration {
                     this.leoStates.leoStartupFinished = true;
 
                     if (p_openFileResult.total) {
-                        this.serverHasOpenedFile = true;
-                        this.serverOpenedFileName = p_openFileResult.filename!;
-                        this.serverOpenedNode = p_openFileResult.node!;
 
-                        this.loadSearchSettings();
-                        this.setupRefresh(
-                            this.finalFocus,
-                            {
-                                tree: true,
-                                body: true,
-                                documents: true,
-                                buttons: true,
-                                states: true,
-                                goto: true,
-                            },
-                            p_openFileResult.node
-                        );
-                        this.launchRefresh();
-                        return p_openFileResult;
+                        let q_finalResult: Promise<LeoBridgePackage>;
+
+                        // Check for last active Leo document
+                        const w_lastActive = utils.getGlobalLastActiveFile(this._context);
+
+                        //  Need to switch ?
+                        if (w_lastActive && p_openFileResult.filename! !== w_lastActive) {
+                            // Call server "get all opened commanders"
+                            q_finalResult = this.sendAction(
+                                Constants.LEOBRIDGE.GET_OPENED_FILES
+                            ).then((p_openedFiles) => {
+                                const w_files: LeoDocument[] = p_openedFiles.files || [];
+                                let w_index: number = 0;
+                                let w_indexToSelect: number = -1;
+                                if (w_files && w_files.length) {
+                                    w_files.forEach((i_file: LeoDocument) => {
+                                        i_file.index = w_index;
+                                        if (i_file.name === w_lastActive) {
+                                            w_indexToSelect = w_index;
+                                        }
+                                        w_index++;
+                                    });
+                                }
+                                if (w_indexToSelect >= 0) {
+                                    // found it!
+                                    console.log('found it!', w_indexToSelect);
+
+                                    // Select from list if present, by index with "set opened file"
+                                    return this.sendAction(
+                                        Constants.LEOBRIDGE.SET_OPENED_FILE, { index: w_indexToSelect }
+                                    );
+                                } else {
+                                    // return default package
+                                    return p_openedFiles;
+                                }
+                            });
+                        } else {
+                            q_finalResult = Promise.resolve(p_openFileResult);
+                        }
+
+                        q_finalResult.then((p_fileResult) => {
+
+                            this.serverHasOpenedFile = true;
+                            this.serverOpenedFileName = p_fileResult.filename!;
+                            this.serverOpenedNode = p_fileResult.node!;
+
+                            this.loadSearchSettings();
+                            this.setupRefresh(
+                                this.finalFocus,
+                                {
+                                    tree: true,
+                                    body: true,
+                                    documents: true,
+                                    buttons: true,
+                                    states: true,
+                                    goto: true,
+                                },
+                                p_fileResult.node
+                            );
+                            this.launchRefresh();
+                            return p_fileResult;
+                        });
+
+                        return q_finalResult;
 
                     } else {
                         this.serverHasOpenedFile = false;
@@ -1175,6 +1228,7 @@ export class LeoIntegration {
         this.leoStates.fileOpenedReady = false;
         this._bodyTextDocument = undefined;
         this.lastSelectedNode = undefined;
+        utils.setGlobalLastActiveFile(this._context, "");
         this._refreshOutline(false, RevealType.NoReveal);
         this.refreshDocumentsPane();
         this.refreshButtonsPane();

@@ -93,6 +93,22 @@ export function removeFileFromWorkspace(p_context: vscode.ExtensionContext, p_fi
 }
 
 /**
+ * Saves the selected Leo file for selecting on the next startup
+ * Note: Must be a real file on disk, not untitled document(s)!
+ */
+export function setGlobalLastActiveFile(p_context: vscode.ExtensionContext, p_file: string): Thenable<void> {
+    return p_context.workspaceState.update(Constants.LAST_ACTIVE_FILE_KEY, p_file);
+}
+
+/**
+ * Gets the last Leo file (or empty string) that was active. (Used to select it at startup.)
+ * Note: Must be a real file on disk, not untitled document(s)!
+ */
+export function getGlobalLastActiveFile(p_context: vscode.ExtensionContext): string {
+    return p_context.workspaceState.get(Constants.LAST_ACTIVE_FILE_KEY) || "";
+}
+
+/**
  * * unique string from AP's gnx, childIndex, and its stack's gnx and childIndex pairs.
  */
 export function buildApId(p: ArchivedPosition): string {
