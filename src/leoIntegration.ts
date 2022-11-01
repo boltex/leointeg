@@ -118,12 +118,7 @@ export class LeoIntegration {
 
         if (this._titleDesc !== w_desc) {
             this._titleDesc = w_desc;
-            if (this._leoTreeView) {
-                this._leoTreeView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
-            }
-            if (this._leoTreeExView) {
-                this._leoTreeExView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
-            }
+            this.refreshDesc();
         }
         if (w_isNew && s) {
             // save to workspace 'last active file' momento.
@@ -257,6 +252,9 @@ export class LeoIntegration {
     private _needLastSelectedRefresh = false; // USED IN showBody
     private _bodyLastChangedDocument: vscode.TextDocument | undefined; // Only set in _onDocumentChanged
     private _bodyLastChangedDocumentSaved: boolean = true; // don't use 'isDirty' of the document!
+
+    // * Debounced method used to refresh the outline-tree title desc
+    public refreshDesc: (() => void);
 
     // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
     public getStates: (() => void);
@@ -529,6 +527,11 @@ export class LeoIntegration {
             )
         );
         // * Debounced refresh flags and UI parts, other than the tree and body
+        this.refreshDesc = debounce(
+            this._refreshDesc,
+            Constants.OUTLINE_DESC_DEBOUNCE_DELAY,
+            { leading: false, trailing: true }
+        );
         this.getStates = debounce(
             this._triggerGetStates,
             Constants.STATES_DEBOUNCE_DELAY,
@@ -908,11 +911,11 @@ export class LeoIntegration {
     public checkVersion(): void {
 
         this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_result: LeoBridgePackage) => {
-            // major: 1, minor: 0, patch: 4
+            // major: 1, minor: 0, patch: 5
             let ok = false;
             if (p_result && p_result.major !== undefined && p_result.minor !== undefined && p_result.patch !== undefined) {
                 // 1.0.4
-                if (p_result.major >= 1 && p_result.minor >= 0 && p_result.patch >= 4) {
+                if (p_result.major >= 1 && p_result.minor >= 0 && p_result.patch >= 5) {
                     ok = true;
                 }
             }
@@ -1655,6 +1658,40 @@ export class LeoIntegration {
     }
 
     /**
+     * * Refresh the outline's description (debounced):
+     * <branch>: <filename> in <path>
+     */
+    private _refreshDesc(): void {
+        if (this.leoStates.fileOpenedReady) {
+
+            this.sendAction(
+                Constants.LEOBRIDGE.GET_BRANCH
+            ).then(
+                (p_result: LeoBridgePackage) => {
+                    let w_branch = "";
+                    if (p_result && p_result.branch) {
+                        w_branch = p_result.branch + ": ";
+                    }
+
+                    if (this._leoTreeView) {
+                        this._leoTreeView.description = w_branch + this._titleDesc;
+                    }
+                    if (this._leoTreeExView) {
+                        this._leoTreeExView.description = w_branch + this._titleDesc;
+                    }
+                }
+            );
+        } else {
+            if (this._leoTreeView) {
+                this._leoTreeView.description = "";
+            }
+            if (this._leoTreeExView) {
+                this._leoTreeExView.description = "";
+            }
+        }
+    }
+
+    /**
      * * Capture instance for further calls on find panel webview
      * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
      */
@@ -1823,13 +1860,12 @@ export class LeoIntegration {
         const w_changed = this.leoStates.fileOpenedReady && this._serverOpenedFileName && this.leoStates.leoChanged ? "*" : "";
         if (this._leoTreeView) {
             this._leoTreeView.title = this._currentOutlineTitle + w_changed;
-            this._leoTreeView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
         }
         if (this._leoTreeExView) {
             this._leoTreeExView.title =
                 Constants.GUI.EXPLORER_TREEVIEW_PREFIX + this._currentOutlineTitle + w_changed;
-            this._leoTreeExView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
         }
+        this.refreshDesc();
     }
 
     /**

@@ -365,6 +365,7 @@
 <v t="felix.20200928004727.1"><vh>_onChangeEditorSelection</vh></v>
 <v t="felix.20201014020145.1"><vh>_onChangeEditorScroll</vh></v>
 <v t="felix.20200719025231.31"><vh>_onDocumentChanged</vh></v>
+<v t="felix.20221031200229.1"><vh>_refreshDesc</vh></v>
 <v t="felix.20220806151117.1"><vh>setFindPanel</vh></v>
 </v>
 <v t="felix.20200719030842.1"><vh>Body Editing</vh>
@@ -5025,6 +5026,7 @@ public static LEOBRIDGE = {
     // * Leo Documents
     GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles",
     SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile",
+    GET_BRANCH: "!get_branch",
     OPEN_FILE: "!open_file", // "openFile",
     OPEN_FILES: "!open_files", //  "openFiles",
     CLOSE_FILE: "!close_file", // "closeFile",
@@ -5439,6 +5441,7 @@ public static UNDOS_REVEAL_DEBOUNCE_DELAY: number = 50;
 public static REFRESH_DEBOUNCE_DELAY: number = 50;
 public static STATES_DEBOUNCE_DELAY: number = 100;
 public static BODY_STATES_DEBOUNCE_DELAY: number = 140;
+public static OUTLINE_DESC_DEBOUNCE_DELAY: number = 250;
 public static GOTO_DEBOUNCE_DELAY: number = 50;
 
 public static LOG_ALERT_COLOR: string = 'red';
@@ -7911,6 +7914,8 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
+    branch?: string;
+    commit?: string;
     chapters?: string[], // get_chapters
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
@@ -9089,12 +9094,7 @@ export class LeoIntegration {
 
         if (this._titleDesc !== w_desc) {
             this._titleDesc = w_desc;
-            if (this._leoTreeView) {
-                this._leoTreeView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
-            }
-            if (this._leoTreeExView) {
-                this._leoTreeExView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
-            }
+            this.refreshDesc();
         }
         if (w_isNew &amp;&amp; s) {
             // save to workspace 'last active file' momento.
@@ -9228,6 +9228,9 @@ export class LeoIntegration {
     private _needLastSelectedRefresh = false; // USED IN showBody
     private _bodyLastChangedDocument: vscode.TextDocument | undefined; // Only set in _onDocumentChanged
     private _bodyLastChangedDocumentSaved: boolean = true; // don't use 'isDirty' of the document!
+
+    // * Debounced method used to refresh the outline-tree title desc
+    public refreshDesc: (() =&gt; void);
 
     // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
     public getStates: (() =&gt; void);
@@ -9724,6 +9727,11 @@ private _onActiveEditorChanged(
         )
     );
     // * Debounced refresh flags and UI parts, other than the tree and body
+    this.refreshDesc = debounce(
+        this._refreshDesc,
+        Constants.OUTLINE_DESC_DEBOUNCE_DELAY,
+        { leading: false, trailing: true }
+    );
     this.getStates = debounce(
         this._triggerGetStates,
         Constants.STATES_DEBOUNCE_DELAY,
@@ -11557,13 +11565,12 @@ public setTreeViewTitle(p_title?: string): void {
     const w_changed = this.leoStates.fileOpenedReady &amp;&amp; this._serverOpenedFileName &amp;&amp; this.leoStates.leoChanged ? "*" : "";
     if (this._leoTreeView) {
         this._leoTreeView.title = this._currentOutlineTitle + w_changed;
-        this._leoTreeView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
     }
     if (this._leoTreeExView) {
         this._leoTreeExView.title =
             Constants.GUI.EXPLORER_TREEVIEW_PREFIX + this._currentOutlineTitle + w_changed;
-        this._leoTreeExView.description = this.leoStates.fileOpenedReady ? this._titleDesc : "";
     }
+    this.refreshDesc();
 }
 
 </t>
@@ -16166,11 +16173,11 @@ export class LeoUndoNode extends vscode.TreeItem {
 public checkVersion(): void {
 
     this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_result: LeoBridgePackage) =&gt; {
-        // major: 1, minor: 0, patch: 4
+        // major: 1, minor: 0, patch: 5
         let ok = false;
         if (p_result &amp;&amp; p_result.major !== undefined &amp;&amp; p_result.minor !== undefined &amp;&amp; p_result.patch !== undefined) {
             // 1.0.4
-            if (p_result.major &gt;= 1 &amp;&amp; p_result.minor &gt;= 0 &amp;&amp; p_result.patch &gt;= 4) {
+            if (p_result.major &gt;= 1 &amp;&amp; p_result.minor &gt;= 0 &amp;&amp; p_result.patch &gt;= 5) {
                 ok = true;
             }
         }
@@ -18121,7 +18128,7 @@ public async navTextClear(): Promise&lt;LeoBridgePackage&gt; {
 - fixed icon path string generation.
 - Added icons to the undo pane.
 - Added asterisk to outline title to flag 'changed' document.
-- Added opened-file description to outline title.
+- Added branch info, and opened-file description to outline title.
 
 </t>
 <t tx="felix.20221027232254.1">/**
@@ -18166,6 +18173,41 @@ export function setGlobalLastActiveFile(p_context: vscode.ExtensionContext, p_fi
  */
 export function getGlobalLastActiveFile(p_context: vscode.ExtensionContext): string {
     return p_context.workspaceState.get(Constants.LAST_ACTIVE_FILE_KEY) || "";
+}
+
+</t>
+<t tx="felix.20221031200229.1">/**
+ * * Refresh the outline's description (debounced):
+ * &lt;branch&gt;: &lt;filename&gt; in &lt;path&gt;
+ */
+private _refreshDesc(): void {
+    if (this.leoStates.fileOpenedReady) {
+
+        this.sendAction(
+            Constants.LEOBRIDGE.GET_BRANCH
+        ).then(
+            (p_result: LeoBridgePackage) =&gt; {
+                let w_branch = "";
+                if (p_result &amp;&amp; p_result.branch) {
+                    w_branch = p_result.branch + ": ";
+                }
+
+                if (this._leoTreeView) {
+                    this._leoTreeView.description = w_branch + this._titleDesc;
+                }
+                if (this._leoTreeExView) {
+                    this._leoTreeExView.description = w_branch + this._titleDesc;
+                }
+            }
+        );
+    } else {
+        if (this._leoTreeView) {
+            this._leoTreeView.description = "";
+        }
+        if (this._leoTreeExView) {
+            this._leoTreeExView.description = "";
+        }
+    }
 }
 
 </t>

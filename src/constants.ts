@@ -64,6 +64,7 @@ export class Constants {
     public static REFRESH_DEBOUNCE_DELAY: number = 50;
     public static STATES_DEBOUNCE_DELAY: number = 100;
     public static BODY_STATES_DEBOUNCE_DELAY: number = 140;
+    public static OUTLINE_DESC_DEBOUNCE_DELAY: number = 250;
     public static GOTO_DEBOUNCE_DELAY: number = 50;
 
     public static LOG_ALERT_COLOR: string = 'red';
@@ -516,6 +517,7 @@ export class Constants {
         // * Leo Documents
         GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles",
         SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile",
+        GET_BRANCH: "!get_branch",
         OPEN_FILE: "!open_file", // "openFile",
         OPEN_FILES: "!open_files", //  "openFiles",
         CLOSE_FILE: "!close_file", // "closeFile",
