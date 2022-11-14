@@ -286,6 +286,7 @@
           "id": "leoDocuments",
           "contextualTitle": "Leo",
           "name": "Documents",
+          "when": "leoTreeOpened",
           "visibility": "collapsed"
         },
         {
@@ -299,6 +300,7 @@
           "id": "leoButtons",
           "contextualTitle": "Leo",
           "name": "Buttons",
+          "when": "leoTreeOpened",
           "visibility": "collapsed"
         }
       ]

@@ -4929,6 +4929,7 @@ print('done')
       "id": "leoDocuments",
       "contextualTitle": "Leo",
       "name": "Documents",
+      "when": "leoTreeOpened",
       "visibility": "collapsed"
     },
     {
@@ -4942,6 +4943,7 @@ print('done')
       "id": "leoButtons",
       "contextualTitle": "Leo",
       "name": "Buttons",
+      "when": "leoTreeOpened",
       "visibility": "collapsed"
     }
   ]
