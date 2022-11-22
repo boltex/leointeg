@@ -265,7 +265,7 @@ export class LeoIntegration {
     // * Debounced method used to get content of the at-buttons pane
     public refreshButtonsPane: (() => void);
 
-    // * Debounced method used to get content of the at-buttons pane
+    // * Debounced method used to get content of the goto pane
     public refreshGotoPane: (() => void);
 
     // * Debounced method used to get content of the undos pane
@@ -529,43 +529,35 @@ export class LeoIntegration {
         // * Debounced refresh flags and UI parts, other than the tree and body
         this.refreshDesc = debounce(
             this._refreshDesc,
-            Constants.OUTLINE_DESC_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.OUTLINE_DESC_DEBOUNCE_DELAY
         );
         this.getStates = debounce(
             this._triggerGetStates,
-            Constants.STATES_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.STATES_DEBOUNCE_DELAY
         );
         this.refreshDocumentsPane = debounce(
             this._refreshDocumentsPane,
-            Constants.DOCUMENTS_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.DOCUMENTS_DEBOUNCE_DELAY
         );
         this.refreshButtonsPane = debounce(
             this._refreshButtonsPane,
-            Constants.BUTTONS_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.BUTTONS_DEBOUNCE_DELAY
         );
         this.refreshGotoPane = debounce(
             this._refreshGotoPane,
-            Constants.GOTO_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.GOTO_DEBOUNCE_DELAY
         );
         this.refreshUndoPane = debounce(
             this._refreshUndoPane,
-            Constants.UNDOS_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.UNDOS_DEBOUNCE_DELAY
         );
         this.setUndoSelection = debounce(
             this._setUndoSelection,
-            Constants.UNDOS_REVEAL_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.UNDOS_REVEAL_DEBOUNCE_DELAY
         );
         this.launchRefresh = debounce(
             this._launchRefresh,
-            Constants.REFRESH_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.REFRESH_DEBOUNCE_DELAY
         );
 
     }
@@ -914,7 +906,7 @@ export class LeoIntegration {
             // major: 1, minor: 0, patch: 5
             let ok = false;
             if (p_result && p_result.major !== undefined && p_result.minor !== undefined && p_result.patch !== undefined) {
-                // 1.0.4
+                // 1.0.5
                 if (p_result.major >= 1 && p_result.minor >= 0 && p_result.patch >= 5) {
                     ok = true;
                 }

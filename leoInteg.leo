@@ -132,7 +132,6 @@
 <v t="ekr.20200815123601.42"><vh>menus</vh>
 <v t="ekr.20200815123601.43"><vh>commandPalette</vh>
 <v t="ekr.20200815123601.58"><vh>Scripting &amp; @buttons</vh></v>
-<v t="ekr.20200815123601.59"><vh>Show UI Panes</vh></v>
 <v t="ekr.20200815123601.60"><vh>Leo File Documents</vh></v>
 <v t="ekr.20200815123601.61"><vh>Tree View</vh></v>
 <v t="ekr.20200815123601.62"><vh>Node Editing</vh></v>
@@ -477,9 +476,9 @@
 <v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
 <v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
 <v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
-<v t="felix.20210602155312.1"><vh>importFile</vh></v>
 </v>
 <v t="felix.20220808233838.1"><vh>Export/Import Commands</vh>
+<v t="felix.20210602155312.1"><vh>importFile</vh></v>
 <v t="felix.20220808233838.2"><vh>exportHeadlines</vh></v>
 <v t="felix.20220808233838.4"><vh>flattenOutline</vh></v>
 <v t="felix.20220808233838.5"><vh>outlineToCweb</vh></v>
@@ -2745,6 +2744,7 @@ print('done')
 {
   "command": "leointeg.showOutline",
   "category": "Leo",
+  "enablement": "leoTreeOpened",
   "title": "Focus on Tree"
 },
 {
@@ -3875,15 +3875,6 @@ print('done')
 },
 {
   "command": "leointeg.removeButton",
-  "when": "false"
-},
-</t>
-<t tx="ekr.20200815123601.59">{
-  "command": "leointeg.showBody",
-  "when": "false"
-},
-{
-  "command": "leointeg.showOutline",
   "when": "false"
 },
 </t>
@@ -9243,7 +9234,7 @@ export class LeoIntegration {
     // * Debounced method used to get content of the at-buttons pane
     public refreshButtonsPane: (() =&gt; void);
 
-    // * Debounced method used to get content of the at-buttons pane
+    // * Debounced method used to get content of the goto pane
     public refreshGotoPane: (() =&gt; void);
 
     // * Debounced method used to get content of the undos pane
@@ -9731,43 +9722,35 @@ private _onActiveEditorChanged(
     // * Debounced refresh flags and UI parts, other than the tree and body
     this.refreshDesc = debounce(
         this._refreshDesc,
-        Constants.OUTLINE_DESC_DEBOUNCE_DELAY,
-        { leading: false, trailing: true }
+        Constants.OUTLINE_DESC_DEBOUNCE_DELAY
     );
     this.getStates = debounce(
         this._triggerGetStates,
-        Constants.STATES_DEBOUNCE_DELAY,
-        { leading: false, trailing: true }
+        Constants.STATES_DEBOUNCE_DELAY
     );
     this.refreshDocumentsPane = debounce(
         this._refreshDocumentsPane,
-        Constants.DOCUMENTS_DEBOUNCE_DELAY,
-        { leading: false, trailing: true }
+        Constants.DOCUMENTS_DEBOUNCE_DELAY
     );
     this.refreshButtonsPane = debounce(
         this._refreshButtonsPane,
-        Constants.BUTTONS_DEBOUNCE_DELAY,
-        { leading: false, trailing: true }
+        Constants.BUTTONS_DEBOUNCE_DELAY
     );
     this.refreshGotoPane = debounce(
         this._refreshGotoPane,
-        Constants.GOTO_DEBOUNCE_DELAY,
-        { leading: false, trailing: true }
+        Constants.GOTO_DEBOUNCE_DELAY
     );
     this.refreshUndoPane = debounce(
         this._refreshUndoPane,
-        Constants.UNDOS_DEBOUNCE_DELAY,
-        { leading: false, trailing: true }
+        Constants.UNDOS_DEBOUNCE_DELAY
     );
     this.setUndoSelection = debounce(
         this._setUndoSelection,
-        Constants.UNDOS_REVEAL_DEBOUNCE_DELAY,
-        { leading: false, trailing: true }
+        Constants.UNDOS_REVEAL_DEBOUNCE_DELAY
     );
     this.launchRefresh = debounce(
         this._launchRefresh,
-        Constants.REFRESH_DEBOUNCE_DELAY,
-        { leading: false, trailing: true }
+        Constants.REFRESH_DEBOUNCE_DELAY
     );
 
 }
@@ -18878,7 +18861,7 @@ body &gt; div &gt; div &gt; label:active {
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
              title="LeoInteg is built by the support of generous users like you!"
-             href="https://boltex.github.io/"&gt;Sponsor LeoInteg
+             href="https://boltex.github.io/"&gt;Sponsor Me
             &lt;span class="heart"&gt;&amp;#x2764;&lt;/span&gt;
           &lt;/a&gt;
           &lt;a class="button button--flat"

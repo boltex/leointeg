@@ -6,7 +6,7 @@
 - fixed icon path string generation.
 - Added icons to the undo pane.
 - Added asterisk to outline title to flag 'changed' document.
-- Added branch info, and opened-file description to outline title.
+- Added branch info, and opened-file description to outline title: requires Leo 6.7.1
 
 ## 1.0.9
 

@@ -723,6 +723,7 @@
       {
         "command": "leointeg.showOutline",
         "category": "Leo",
+        "enablement": "leoTreeOpened",
         "title": "Focus on Tree"
       },
       {
@@ -2316,14 +2317,6 @@
         },
         {
           "command": "leointeg.removeButton",
-          "when": "false"
-        },
-        {
-          "command": "leointeg.showBody",
-          "when": "false"
-        },
-        {
-          "command": "leointeg.showOutline",
           "when": "false"
         },
         {
