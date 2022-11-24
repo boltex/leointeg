@@ -3692,12 +3692,12 @@
         "command": "leointeg.startSearch",
         "key": "ctrl+f",
         "mac": "cmd+f",
-        "when": "leoTreeOpened && sideBarFocus && !editorFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoTreeOpened && sideBarFocus && !editorFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.findNextFromOutline",
         "key": "f3",
-        "when": "leoFindFocus || leoTreeOpened && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.findNext",
@@ -3707,7 +3707,7 @@
       {
         "command": "leointeg.findPreviousFromOutline",
         "key": "f2",
-        "when": "leoFindFocus || leoTreeOpened && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.findPrevious",
@@ -3724,7 +3724,7 @@
         "command": "leointeg.replaceFromOutline",
         "key": "ctrl+=",
         "mac": "cmd+=",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.replaceThenFind",
@@ -3736,78 +3736,78 @@
         "command": "leointeg.replaceThenFindFromOutline",
         "key": "ctrl+-",
         "mac": "cmd+-",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.gotoGlobalLine",
         "key": "alt+g",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.setFindEverywhereOption",
         "key": "ctrl+alt+e",
         "mac": "cmd+alt+e",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.setFindNodeOnlyOption",
         "key": "ctrl+alt+n",
         "mac": "cmd+alt+n",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.setFindFileOnlyOption",
         "key": "ctrl+alt+l",
         "mac": "cmd+alt+l",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.setFindSuboutlineOnlyOption",
         "key": "ctrl+alt+s",
         "mac": "cmd+alt+s",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.toggleFindIgnoreCaseOption",
         "key": "ctrl+alt+i",
         "mac": "cmd+alt+i",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.toggleFindMarkChangesOption",
         "key": "ctrl+alt+c",
         "mac": "cmd+alt+c",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.toggleFindMarkFindsOption",
         "key": "ctrl+alt+f",
         "mac": "cmd+alt+f",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.toggleFindRegexpOption",
         "key": "ctrl+alt+x",
         "mac": "cmd+alt+x",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.toggleFindWordOption",
         "key": "ctrl+alt+w",
         "mac": "cmd+alt+w",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.toggleFindSearchBodyOption",
         "key": "ctrl+alt+b",
         "mac": "cmd+alt+b",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.toggleFindSearchHeadlineOption",
         "key": "ctrl+alt+h",
         "mac": "cmd+alt+h",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "workbench.files.action.collapseExplorerFolders",
