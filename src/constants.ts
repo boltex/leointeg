@@ -275,22 +275,22 @@ export class Constants {
         TREE_IN_EXPLORER: "treeInExplorer",
         SHOW_OPEN_ASIDE: "showOpenAside",
         SHOW_EDIT: "showEditOnNodes",
-        SHOW_ARROWS: "showArrowsOnNodes",
+        // SHOW_ARROWS: "showArrowsOnNodes",
         SHOW_ADD: "showAddOnNodes",
         SHOW_MARK: "showMarkOnNodes",
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
 
-        SHOW_EDITION_BODY: "showEditionOnBody",
-        SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
-        SHOW_PROMOTE_BODY: "showPromoteOnBody",
-        SHOW_EXECUTE_BODY: "showExecuteOnBody",
-        SHOW_EXTRACT_BODY: "showExtractOnBody",
-        SHOW_IMPORT_BODY: "showImportOnBody",
-        SHOW_REFRESH_BODY: "showRefreshOnBody",
-        SHOW_HOIST_BODY: "showHoistOnBody",
-        SHOW_MARK_BODY: "showMarkOnBody",
-        SHOW_SORT_BODY: "showSortOnBody",
+        // SHOW_EDITION_BODY: "showEditionOnBody",
+        // SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
+        // SHOW_PROMOTE_BODY: "showPromoteOnBody",
+        // SHOW_EXECUTE_BODY: "showExecuteOnBody",
+        // SHOW_EXTRACT_BODY: "showExtractOnBody",
+        // SHOW_IMPORT_BODY: "showImportOnBody",
+        // SHOW_REFRESH_BODY: "showRefreshOnBody",
+        // SHOW_HOIST_BODY: "showHoistOnBody",
+        // SHOW_MARK_BODY: "showMarkOnBody",
+        // SHOW_SORT_BODY: "showSortOnBody",
 
         INVERT_NODES: "invertNodeContrast",
         LEO_EDITOR_PATH: "leoEditorPath",
@@ -401,28 +401,31 @@ export class Constants {
         DOCUMENT_UNTITLED: "leoDocumentUntitled",
 
         // Flags that match specific LeoInteg config settings
-        LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
-        TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
-        SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
-        SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,              // Hover Icons on outline nodes
-        SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,           // Hover Icons on outline nodes
-        SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                 // Hover Icons on outline nodes
-        SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,               // Hover Icons on outline nodes
-        SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
-        SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
-        AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
-        AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
+        // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
+        // TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
+        // SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
+        // SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,              // Hover Icons on outline nodes
+        // SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,           // Hover Icons on outline nodes
+        // SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                 // Hover Icons on outline nodes
+        // SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,               // Hover Icons on outline nodes
+        // SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
+        // SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
+        // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
+        // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
 
-        SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
-        SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
-        SHOW_PROMOTE_BODY: Constants.CONFIG_NAMES.SHOW_PROMOTE_BODY,
-        SHOW_EXECUTE_BODY: Constants.CONFIG_NAMES.SHOW_EXECUTE_BODY,
-        SHOW_EXTRACT_BODY: Constants.CONFIG_NAMES.SHOW_EXTRACT_BODY,
-        SHOW_IMPORT_BODY: Constants.CONFIG_NAMES.SHOW_IMPORT_BODY,
-        SHOW_REFRESH_BODY: Constants.CONFIG_NAMES.SHOW_REFRESH_BODY,
-        SHOW_HOIST_BODY: Constants.CONFIG_NAMES.SHOW_HOIST_BODY,
-        SHOW_MARK_BODY: Constants.CONFIG_NAMES.SHOW_MARK_BODY,
-        SHOW_SORT_BODY: Constants.CONFIG_NAMES.SHOW_SORT_BODY
+        AUTO_CONNECT: 'leoAutoConnect',             // Used at startup by 'views-welcome'
+        AUTO_START_SERVER: 'leoAutoStartServer',   // Used at startup by 'views-welcome'
+
+        // SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
+        // SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
+        // SHOW_PROMOTE_BODY: Constants.CONFIG_NAMES.SHOW_PROMOTE_BODY,
+        // SHOW_EXECUTE_BODY: Constants.CONFIG_NAMES.SHOW_EXECUTE_BODY,
+        // SHOW_EXTRACT_BODY: Constants.CONFIG_NAMES.SHOW_EXTRACT_BODY,
+        // SHOW_IMPORT_BODY: Constants.CONFIG_NAMES.SHOW_IMPORT_BODY,
+        // SHOW_REFRESH_BODY: Constants.CONFIG_NAMES.SHOW_REFRESH_BODY,
+        // SHOW_HOIST_BODY: Constants.CONFIG_NAMES.SHOW_HOIST_BODY,
+        // SHOW_MARK_BODY: Constants.CONFIG_NAMES.SHOW_MARK_BODY,
+        // SHOW_SORT_BODY: Constants.CONFIG_NAMES.SHOW_SORT_BODY
 
     };
 

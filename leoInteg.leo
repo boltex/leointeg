@@ -3737,34 +3737,34 @@ print('done')
 <t tx="ekr.20200815123601.30">{
   "view": "leoIntegration",
   "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting"
+  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !leoAutoStartServer &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting"
 },
 {
   "view": "leoIntegrationExplorer",
   "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting"
+  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !leoAutoStartServer &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting"
 },
 </t>
 <t tx="ekr.20200815123601.31">{
   "view": "leoIntegration",
   "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; startServerAutomatically &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoAutoStartServer &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting"
 },
 {
   "view": "leoIntegrationExplorer",
   "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; startServerAutomatically &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoAutoStartServer &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting"
 },
 </t>
 <t tx="ekr.20200815123601.33">{
   "view": "leoIntegration",
   "contents": "Connecting...",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; connectToServerAutomatically &amp;&amp; !leoConnecting &amp;&amp; !leoStartupFinished"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoAutoConnect &amp;&amp; !leoConnecting &amp;&amp; !leoStartupFinished"
 },
 {
   "view": "leoIntegrationExplorer",
   "contents": "Connecting...",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; connectToServerAutomatically &amp;&amp; !leoConnecting &amp;&amp; !leoStartupFinished"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoAutoConnect &amp;&amp; !leoConnecting &amp;&amp; !leoStartupFinished"
 },
 </t>
 <t tx="ekr.20200815123601.34">{
@@ -4328,7 +4328,7 @@ print('done')
 {
   "command": "leointeg.showBody",
   "key": "enter",
-  "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 </t>
 <t tx="ekr.20200815123601.79">{
@@ -4738,7 +4738,7 @@ print('done')
 {
   "command": "leointeg.scrollTop",
   "key": "home",
-  "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.gotoNavFirst",
@@ -4748,7 +4748,7 @@ print('done')
 {
   "command": "leointeg.scrollBottom",
   "key": "end",
-  "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.gotoNavLast",
@@ -4758,7 +4758,7 @@ print('done')
 {
   "command": "leointeg.pageUp",
   "key": "pageup",
-  "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.gotoNavFirst",
@@ -4768,7 +4768,7 @@ print('done')
 {
   "command": "leointeg.pageDown",
   "key": "pagedown",
-  "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.gotoNavLast",
@@ -4788,7 +4788,7 @@ print('done')
 {
   "command": "leointeg.gotoNextVisible",
   "key": "down",
-  "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.gotoNavNext",
@@ -4803,7 +4803,7 @@ print('done')
 {
   "command": "leointeg.gotoPrevVisible",
   "key": "up",
-  "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.gotoNavPrev",
@@ -4818,7 +4818,7 @@ print('done')
 {
   "command": "leointeg.contractOrGoLeft",
   "key": "left",
-  "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.contractOrGoLeft",
@@ -4828,7 +4828,7 @@ print('done')
 {
   "command": "leointeg.expandAndGoRight",
   "key": "right",
-  "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.expandAndGoRight",
@@ -4853,7 +4853,7 @@ print('done')
       "id": "leoIntegrationExplorer",
       "name": "Leo Integration",
       "contextualTitle": "Leo",
-      "when": "treeInExplorer",
+      "when": "config.leoIntegration.treeInExplorer",
       "visibility": "visible"
     },
     {
@@ -4862,35 +4862,35 @@ print('done')
       "contextualTitle": "Leo",
       "name": "Leo Find",
       "title": "Leo Find",
-      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
+      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
     },
     {
       "id": "leoGotoPanelExplorer",
       "name": "Leo Goto",
       "contextualTitle": "Leo",
-      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
+      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
     },
     {
       "id": "leoDocumentsExplorer",
       "name": "Leo Documents",
       "contextualTitle": "Leo",
-      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
+      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
     },
     {
       "id": "leoUndosExplorer",
       "name": "Leo Undo History",
       "contextualTitle": "Leo",
-      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
+      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
     },
     {
       "id": "leoButtonsExplorer",
       "name": "Leo Buttons",
       "contextualTitle": "Leo",
-      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
+      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
     }
   ],
@@ -5603,22 +5603,22 @@ public static CONFIG_NAMES = {
     TREE_IN_EXPLORER: "treeInExplorer",
     SHOW_OPEN_ASIDE: "showOpenAside",
     SHOW_EDIT: "showEditOnNodes",
-    SHOW_ARROWS: "showArrowsOnNodes",
+    // SHOW_ARROWS: "showArrowsOnNodes",
     SHOW_ADD: "showAddOnNodes",
     SHOW_MARK: "showMarkOnNodes",
     SHOW_CLONE: "showCloneOnNodes",
     SHOW_COPY: "showCopyOnNodes",
 
-    SHOW_EDITION_BODY: "showEditionOnBody",
-    SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
-    SHOW_PROMOTE_BODY: "showPromoteOnBody",
-    SHOW_EXECUTE_BODY: "showExecuteOnBody",
-    SHOW_EXTRACT_BODY: "showExtractOnBody",
-    SHOW_IMPORT_BODY: "showImportOnBody",
-    SHOW_REFRESH_BODY: "showRefreshOnBody",
-    SHOW_HOIST_BODY: "showHoistOnBody",
-    SHOW_MARK_BODY: "showMarkOnBody",
-    SHOW_SORT_BODY: "showSortOnBody",
+    // SHOW_EDITION_BODY: "showEditionOnBody",
+    // SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
+    // SHOW_PROMOTE_BODY: "showPromoteOnBody",
+    // SHOW_EXECUTE_BODY: "showExecuteOnBody",
+    // SHOW_EXTRACT_BODY: "showExtractOnBody",
+    // SHOW_IMPORT_BODY: "showImportOnBody",
+    // SHOW_REFRESH_BODY: "showRefreshOnBody",
+    // SHOW_HOIST_BODY: "showHoistOnBody",
+    // SHOW_MARK_BODY: "showMarkOnBody",
+    // SHOW_SORT_BODY: "showSortOnBody",
 
     INVERT_NODES: "invertNodeContrast",
     LEO_EDITOR_PATH: "leoEditorPath",
@@ -5685,28 +5685,31 @@ public static CONTEXT_FLAGS = {
     DOCUMENT_UNTITLED: "leoDocumentUntitled",
 
     // Flags that match specific LeoInteg config settings
-    LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
-    TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
-    SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
-    SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,              // Hover Icons on outline nodes
-    SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,           // Hover Icons on outline nodes
-    SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                 // Hover Icons on outline nodes
-    SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,               // Hover Icons on outline nodes
-    SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
-    SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
-    AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
-    AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
+    // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
+    // TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
+    // SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
+    // SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,              // Hover Icons on outline nodes
+    // SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,           // Hover Icons on outline nodes
+    // SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                 // Hover Icons on outline nodes
+    // SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,               // Hover Icons on outline nodes
+    // SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
+    // SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
+    // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
+    // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
 
-    SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
-    SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
-    SHOW_PROMOTE_BODY: Constants.CONFIG_NAMES.SHOW_PROMOTE_BODY,
-    SHOW_EXECUTE_BODY: Constants.CONFIG_NAMES.SHOW_EXECUTE_BODY,
-    SHOW_EXTRACT_BODY: Constants.CONFIG_NAMES.SHOW_EXTRACT_BODY,
-    SHOW_IMPORT_BODY: Constants.CONFIG_NAMES.SHOW_IMPORT_BODY,
-    SHOW_REFRESH_BODY: Constants.CONFIG_NAMES.SHOW_REFRESH_BODY,
-    SHOW_HOIST_BODY: Constants.CONFIG_NAMES.SHOW_HOIST_BODY,
-    SHOW_MARK_BODY: Constants.CONFIG_NAMES.SHOW_MARK_BODY,
-    SHOW_SORT_BODY: Constants.CONFIG_NAMES.SHOW_SORT_BODY
+    AUTO_CONNECT: 'leoAutoConnect',             // Used at startup by 'views-welcome'
+    AUTO_START_SERVER: 'leoAutoStartServer',   // Used at startup by 'views-welcome'
+
+    // SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
+    // SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
+    // SHOW_PROMOTE_BODY: Constants.CONFIG_NAMES.SHOW_PROMOTE_BODY,
+    // SHOW_EXECUTE_BODY: Constants.CONFIG_NAMES.SHOW_EXECUTE_BODY,
+    // SHOW_EXTRACT_BODY: Constants.CONFIG_NAMES.SHOW_EXTRACT_BODY,
+    // SHOW_IMPORT_BODY: Constants.CONFIG_NAMES.SHOW_IMPORT_BODY,
+    // SHOW_REFRESH_BODY: Constants.CONFIG_NAMES.SHOW_REFRESH_BODY,
+    // SHOW_HOIST_BODY: Constants.CONFIG_NAMES.SHOW_HOIST_BODY,
+    // SHOW_MARK_BODY: Constants.CONFIG_NAMES.SHOW_MARK_BODY,
+    // SHOW_SORT_BODY: Constants.CONFIG_NAMES.SHOW_SORT_BODY
 
 };
 
@@ -6077,11 +6080,12 @@ public buildFromSavedSettings(): void {
         this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
         this.showOpenAside = GET(NAME).get(NAMES.SHOW_OPEN_ASIDE, DEFAULTS.SHOW_OPEN_ASIDE);
         this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
-        // this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
         this.showAddOnNodes = GET(NAME).get(NAMES.SHOW_ADD, DEFAULTS.SHOW_ADD);
         this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
         this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
         this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
+
+        // this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
 
         // this.showEditionOnBody = GET(NAME).get(NAMES.SHOW_EDITION_BODY, DEFAULTS.SHOW_EDITION_BODY);
         // this.showClipboardOnBody = GET(NAME).get(NAMES.SHOW_CLIPBOARD_BODY, DEFAULTS.SHOW_CLIPBOARD_BODY);
@@ -6109,15 +6113,17 @@ public buildFromSavedSettings(): void {
         if (this._leoIntegration.leoStates.leoBridgeReady) {
             this._leoIntegration.sendConfigToServer(this.getConfig());
         }
-        utils.setContext(FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
-        utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
-        utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
-        utils.setContext(FLAGS.SHOW_EDIT, this.showEditOnNodes);
+
+        // utils.setContext(FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
+        // utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
+        // utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
+        // utils.setContext(FLAGS.SHOW_EDIT, this.showEditOnNodes);
+        // utils.setContext(FLAGS.SHOW_ADD, this.showAddOnNodes);
+        // utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
+        // utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
+        // utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
+
         // utils.setContext(FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
-        utils.setContext(FLAGS.SHOW_ADD, this.showAddOnNodes);
-        utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
-        utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
-        utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
 
         // utils.setContext(FLAGS.SHOW_EDITION_BODY, this.showEditionOnBody);
         // utils.setContext(FLAGS.SHOW_CLIPBOARD_BODY, this.showClipboardOnBody);
@@ -11879,37 +11885,37 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.editHeadline",
-    "when": "showEditOnNodes &amp;&amp; viewItem =~ /^leoNode/",
+    "when": "config.leoIntegration.showEditOnNodes &amp;&amp; viewItem =~ /^leoNode/",
     "group": "inline@1"
   },
   {
     "command": "leointeg.insertNode",
-    "when": "showAddOnNodes &amp;&amp; viewItem =~ /^leoNode/",
+    "when": "config.leoIntegration.showAddOnNodes &amp;&amp; viewItem =~ /^leoNode/",
     "group": "inline@2"
   },
   {
     "command": "leointeg.copyNode",
-    "when": "showCopyOnNodes &amp;&amp; viewItem =~ /^leoNode/",
+    "when": "config.leoIntegration.showCopyOnNodes &amp;&amp; viewItem =~ /^leoNode/",
     "group": "inline@3"
   },
   {
     "command": "leointeg.cloneNode",
-    "when": "showCloneOnNodes &amp;&amp; viewItem =~ /^leoNode/",
+    "when": "config.leoIntegration.showCloneOnNodes &amp;&amp; viewItem =~ /^leoNode/",
     "group": "inline@3"
   },
   {
     "command": "leointeg.mark",
-    "when": "showMarkOnNodes &amp;&amp; viewItem =~ /^leoNodeUnmarked/",
+    "when": "config.leoIntegration.showMarkOnNodes &amp;&amp; viewItem =~ /^leoNodeUnmarked/",
     "group": "inline@4"
   },
   {
     "command": "leointeg.unmark",
-    "when": "showMarkOnNodes &amp;&amp; viewItem =~ /^leoNodeMarked/",
+    "when": "config.leoIntegration.showMarkOnNodes &amp;&amp; viewItem =~ /^leoNodeMarked/",
     "group": "inline@4"
   },
   {
     "command": "leointeg.openAside",
-    "when": "showOpenAside &amp;&amp; viewItem =~ /^leoNode/",
+    "when": "leoIntegration.showOpenAside &amp;&amp; viewItem =~ /^leoNode/",
     "group": "leoNodeContext1@1"
   },
   {
@@ -18861,7 +18867,7 @@ body &gt; div &gt; div &gt; label:active {
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
              title="LeoInteg is built by the support of generous users like you!"
-             href="https://boltex.github.io/"&gt;Sponsor Me
+             href="https://boltex.github.io/"&gt;Sponsor LeoInteg
             &lt;span class="heart"&gt;&amp;#x2764;&lt;/span&gt;
           &lt;/a&gt;
           &lt;a class="button button--flat"

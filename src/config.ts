@@ -298,11 +298,12 @@ export class Config implements ConfigMembers {
             this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
             this.showOpenAside = GET(NAME).get(NAMES.SHOW_OPEN_ASIDE, DEFAULTS.SHOW_OPEN_ASIDE);
             this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
-            // this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
             this.showAddOnNodes = GET(NAME).get(NAMES.SHOW_ADD, DEFAULTS.SHOW_ADD);
             this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
             this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
             this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
+
+            // this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
 
             // this.showEditionOnBody = GET(NAME).get(NAMES.SHOW_EDITION_BODY, DEFAULTS.SHOW_EDITION_BODY);
             // this.showClipboardOnBody = GET(NAME).get(NAMES.SHOW_CLIPBOARD_BODY, DEFAULTS.SHOW_CLIPBOARD_BODY);
@@ -330,15 +331,17 @@ export class Config implements ConfigMembers {
             if (this._leoIntegration.leoStates.leoBridgeReady) {
                 this._leoIntegration.sendConfigToServer(this.getConfig());
             }
-            utils.setContext(FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
-            utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
-            utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
-            utils.setContext(FLAGS.SHOW_EDIT, this.showEditOnNodes);
+
+            // utils.setContext(FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
+            // utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
+            // utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
+            // utils.setContext(FLAGS.SHOW_EDIT, this.showEditOnNodes);
+            // utils.setContext(FLAGS.SHOW_ADD, this.showAddOnNodes);
+            // utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
+            // utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
+            // utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
+
             // utils.setContext(FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
-            utils.setContext(FLAGS.SHOW_ADD, this.showAddOnNodes);
-            utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
-            utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
-            utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
 
             // utils.setContext(FLAGS.SHOW_EDITION_BODY, this.showEditionOnBody);
             // utils.setContext(FLAGS.SHOW_CLIPBOARD_BODY, this.showClipboardOnBody);
