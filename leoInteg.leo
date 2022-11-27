@@ -1601,12 +1601,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Body
 })],
-[CMD.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.REFRESH_FROM_DISK_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    finalFocus: Focus.Outline
-})],
 
 [CMD.WRITE_AT_FILE_NODES, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.WRITE_AT_FILE_NODES,
@@ -2879,16 +2873,6 @@ print('done')
   }
 },
 {
-  "command": "leointeg.refreshFromDiskSelectionFromOutline",
-  "category": "Leo",
-  "title": "Refresh from Disk",
-  "enablement": "leoTreeOpened &amp;&amp; leoAtFile",
-  "icon": {
-    "light": "resources/light/refresh.svg",
-    "dark": "resources/dark/refresh.svg"
-  }
-},
-{
   "command": "leointeg.writeAtFileNodes",
   "category": "Leo",
   "enablement": "leoTreeOpened",
@@ -3950,10 +3934,6 @@ print('done')
 },
 {
   "command": "leointeg.refreshFromDisk",
-  "when": "false"
-},
-{
-  "command": "leointeg.refreshFromDiskSelectionFromOutline",
   "when": "false"
 },
 {
@@ -5307,7 +5287,6 @@ public static COMMANDS = {
     CLONE_SELECTION_FO: Constants.NAME + ".cloneNodeSelectionFromOutline",
     PROMOTE_SELECTION_FO: Constants.NAME + ".promoteSelectionFromOutline",
     DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
-    REFRESH_FROM_DISK_SELECTION_FO: Constants.NAME + ".refreshFromDiskSelectionFromOutline",
     HOIST: Constants.NAME + ".hoistNode",
     HOIST_SELECTION: Constants.NAME + ".hoistSelection",
     HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",

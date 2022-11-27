@@ -808,7 +808,6 @@ export class Constants {
         CLONE_SELECTION_FO: Constants.NAME + ".cloneNodeSelectionFromOutline",
         PROMOTE_SELECTION_FO: Constants.NAME + ".promoteSelectionFromOutline",
         DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
-        REFRESH_FROM_DISK_SELECTION_FO: Constants.NAME + ".refreshFromDiskSelectionFromOutline",
         HOIST: Constants.NAME + ".hoistNode",
         HOIST_SELECTION: Constants.NAME + ".hoistSelection",
         HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",

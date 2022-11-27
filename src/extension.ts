@@ -109,12 +109,6 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             finalFocus: Focus.Body
         })],
-        [CMD.REFRESH_FROM_DISK_SELECTION_FO, () => w_leo.nodeCommand({
-            action: BRIDGE.REFRESH_FROM_DISK_PNODE,
-            node: U,
-            refreshType: REFRESH_TREE_BODY,
-            finalFocus: Focus.Outline
-        })],
 
         [CMD.WRITE_AT_FILE_NODES, () => w_leo.nodeCommand({
             action: BRIDGE.WRITE_AT_FILE_NODES,

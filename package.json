@@ -864,16 +864,6 @@
         }
       },
       {
-        "command": "leointeg.refreshFromDiskSelectionFromOutline",
-        "category": "Leo",
-        "title": "Refresh from Disk",
-        "enablement": "leoTreeOpened && leoAtFile",
-        "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh.svg"
-        }
-      },
-      {
         "command": "leointeg.writeAtFileNodes",
         "category": "Leo",
         "enablement": "leoTreeOpened",
@@ -2337,10 +2327,6 @@
         },
         {
           "command": "leointeg.refreshFromDisk",
-          "when": "false"
-        },
-        {
-          "command": "leointeg.refreshFromDiskSelectionFromOutline",
           "when": "false"
         },
         {
