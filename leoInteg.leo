@@ -200,6 +200,7 @@
 <v t="felix.20200718020912.1"><vh>@clean src/constants.ts</vh>
 <v t="felix.20200718020912.2"><vh>class Constants</vh>
 <v t="felix.20200718020912.3"><vh>general constants</vh></v>
+<v t="felix.20221127172926.1"><vh>server minimal version</vh></v>
 <v t="felix.20210530233134.1"><vh>find panel ids</vh></v>
 <v t="felix.20200718020912.5"><vh>workbench interface panels</vh></v>
 <v t="felix.20200718020912.6"><vh>user messages</vh></v>
@@ -5574,7 +5575,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_VERSION: "Please update: Leo 6.7.1 required.",
+    MINIMUM_LEO_VERSION_STRING: "Please update: Leo 6.7.1 required.",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
     MINIBUFFER_BUTTON_START: "@button-",
@@ -6687,7 +6688,7 @@ private _processAnswer(p_data: string): void {
             if (this._updateWarningShown + 3 &lt; w_timeStampSec) { // Limit to re-show for 3 sec.
                 this._updateWarningShown = w_timeStampSec;
                 vscode.window.showErrorMessage(
-                    Constants.USER_MESSAGES.MINIMUM_VERSION + " Command missing: " + w_action
+                    Constants.USER_MESSAGES.MINIMUM_LEO_VERSION_STRING + " Command missing: " + w_action
                 );
             }
         }
@@ -16203,23 +16204,24 @@ export class LeoUndoNode extends vscode.TreeItem {
  * * Checks the server version and pops up a message to the user if an update is possible
  */
 public checkVersion(): void {
-
-    this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_result: LeoBridgePackage) =&gt; {
-        // major: 1, minor: 0, patch: 5
-        let ok = false;
-        if (p_result &amp;&amp; p_result.major !== undefined &amp;&amp; p_result.minor !== undefined &amp;&amp; p_result.patch !== undefined) {
-            // 1.0.5
-            if (p_result.major &gt;= 1 &amp;&amp; p_result.minor &gt;= 0 &amp;&amp; p_result.patch &gt;= 5) {
-                ok = true;
+    this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_rv: LeoBridgePackage) =&gt; {
+        let w_ok = false;
+        let w_sv = Constants.MIN_SERVER_VERSION_NUMBER;
+        if (p_rv &amp;&amp; p_rv.major !== undefined &amp;&amp; p_rv.minor !== undefined &amp;&amp; p_rv.patch !== undefined) {
+            if (
+                p_rv.major &gt; w_sv.minMajor ||
+                p_rv.major === w_sv.minMajor &amp;&amp; p_rv.minor &gt; w_sv.minMinor ||
+                p_rv.major === w_sv.minMajor &amp;&amp; p_rv.minor === w_sv.minMinor &amp;&amp; p_rv.patch &gt;= w_sv.minPatch
+            ) {
+                w_ok = true;
             }
         }
-        if (!ok) {
+        if (!w_ok) {
             vscode.window.showErrorMessage(
-                Constants.USER_MESSAGES.MINIMUM_VERSION
+                Constants.USER_MESSAGES.MINIMUM_LEO_VERSION_STRING
             );
         }
     });
-
 }
 
 </t>
@@ -18241,6 +18243,16 @@ private _refreshDesc(): void {
         }
     }
 }
+
+</t>
+<t tx="felix.20221127172926.1">/**
+ * * Minimal Leo Editor and Leo server versions
+ */
+public static MIN_SERVER_VERSION_NUMBER = {
+    minMajor: 1,
+    minMinor: 0,
+    minPatch: 5
+};
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

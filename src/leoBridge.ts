@@ -199,7 +199,7 @@ export class LeoBridge {
                 if (this._updateWarningShown + 3 < w_timeStampSec) { // Limit to re-show for 3 sec.
                     this._updateWarningShown = w_timeStampSec;
                     vscode.window.showErrorMessage(
-                        Constants.USER_MESSAGES.MINIMUM_VERSION + " Command missing: " + w_action
+                        Constants.USER_MESSAGES.MINIMUM_LEO_VERSION_STRING + " Command missing: " + w_action
                     );
                 }
             }

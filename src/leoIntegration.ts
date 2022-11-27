@@ -901,23 +901,24 @@ export class LeoIntegration {
      * * Checks the server version and pops up a message to the user if an update is possible
      */
     public checkVersion(): void {
-
-        this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_result: LeoBridgePackage) => {
-            // major: 1, minor: 0, patch: 5
-            let ok = false;
-            if (p_result && p_result.major !== undefined && p_result.minor !== undefined && p_result.patch !== undefined) {
-                // 1.0.5
-                if (p_result.major >= 1 && p_result.minor >= 0 && p_result.patch >= 5) {
-                    ok = true;
+        this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_rv: LeoBridgePackage) => {
+            let w_ok = false;
+            let w_sv = Constants.MIN_SERVER_VERSION_NUMBER;
+            if (p_rv && p_rv.major !== undefined && p_rv.minor !== undefined && p_rv.patch !== undefined) {
+                if (
+                    p_rv.major > w_sv.minMajor ||
+                    p_rv.major === w_sv.minMajor && p_rv.minor > w_sv.minMinor ||
+                    p_rv.major === w_sv.minMajor && p_rv.minor === w_sv.minMinor && p_rv.patch >= w_sv.minPatch
+                ) {
+                    w_ok = true;
                 }
             }
-            if (!ok) {
+            if (!w_ok) {
                 vscode.window.showErrorMessage(
-                    Constants.USER_MESSAGES.MINIMUM_VERSION
+                    Constants.USER_MESSAGES.MINIMUM_LEO_VERSION_STRING
                 );
             }
         });
-
     }
 
     /**

@@ -70,6 +70,15 @@ export class Constants {
     public static LOG_ALERT_COLOR: string = 'red';
 
     /**
+     * * Minimal Leo Editor and Leo server versions
+     */
+    public static MIN_SERVER_VERSION_NUMBER = {
+        minMajor: 1,
+        minMinor: 0,
+        minPatch: 5
+    };
+
+    /**
      * * Find panel controls ids
      */
     public static FIND_INPUTS_IDS = {
@@ -205,7 +214,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_VERSION: "Please update: Leo 6.7.1 required.",
+        MINIMUM_LEO_VERSION_STRING: "Please update: Leo 6.7.1 required.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
