@@ -3829,7 +3829,7 @@
       {
         "command": "workbench.view.extension.leoIntegrationView",
         "key": "ctrl+shift+l",
-        "when": "config.leoIntegration.leoActivityViewShortcut && !inSearchEditor && focusedView != workbench.view.search"
+        "when": "config.leoIntegration.leoActivityViewShortcut && !editorHasSelection && !inSearchEditor && focusedView != workbench.view.search"
       }
     ],
     "resourceLabelFormatters": [

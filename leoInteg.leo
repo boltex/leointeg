@@ -938,7 +938,11 @@ public static CONFIG_DEFAULTS = {
     LEO_TREE_BROWSE: true,
     TREE_KEEP_FOCUS: true,
     TREE_KEEP_FOCUS_WHEN_ASIDE: false,
-    STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
+
+    COLLAPSE_ALL_SHORTCUT: true,
+    ACTIVITY_VIEW_SHORTCUT: true,
+
+    // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
     STATUSBAR_COLOR: "fb7c47",
     TREE_IN_EXPLORER: true,
     SHOW_OPEN_ASIDE: true,
@@ -5610,8 +5614,13 @@ public static CONFIG_NAMES = {
     LEO_TREE_BROWSE: "leoTreeBrowse",
     TREE_KEEP_FOCUS: "treeKeepFocus",
     TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
-    STATUSBAR_STRING: "statusBarString",
+
+    COLLAPSE_ALL_SHORTCUT: "leoCollapseAllShortcut",
+    ACTIVITY_VIEW_SHORTCUT: "leoActivityViewShortcut",
+
+    // STATUSBAR_STRING: "statusBarString",
     STATUSBAR_COLOR: "statusBarColor",
+
     TREE_IN_EXPLORER: "treeInExplorer",
     SHOW_OPEN_ASIDE: "showOpenAside",
     SHOW_EDIT: "showEditOnNodes",
@@ -5926,6 +5935,10 @@ export class Config implements ConfigMembers {
     public leoTreeBrowse: boolean = Constants.CONFIG_DEFAULTS.LEO_TREE_BROWSE;
     public treeKeepFocus: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS;
     public treeKeepFocusWhenAside: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE;
+
+    public leoCollapseAllShortcut: boolean = Constants.CONFIG_DEFAULTS.COLLAPSE_ALL_SHORTCUT;
+    public leoActivityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
+
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
     public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
@@ -5983,6 +5996,10 @@ public getConfig(): ConfigMembers {
         leoTreeBrowse: this.leoTreeBrowse,
         treeKeepFocus: this.treeKeepFocus,
         treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
+
+        leoCollapseAllShortcut: this.leoCollapseAllShortcut,
+        leoActivityViewShortcut: this.leoActivityViewShortcut,
+
         // statusBarString: this.statusBarString,
         statusBarColor: this.statusBarColor,
         treeInExplorer: this.treeInExplorer,
@@ -6081,6 +6098,10 @@ public buildFromSavedSettings(): void {
         this.leoTreeBrowse = GET(NAME).get(NAMES.LEO_TREE_BROWSE, DEFAULTS.LEO_TREE_BROWSE);
         this.treeKeepFocus = GET(NAME).get(NAMES.TREE_KEEP_FOCUS, DEFAULTS.TREE_KEEP_FOCUS);
         this.treeKeepFocusWhenAside = GET(NAME).get(NAMES.TREE_KEEP_FOCUS_WHEN_ASIDE, DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE);
+
+        this.leoCollapseAllShortcut = GET(NAME).get(NAMES.COLLAPSE_ALL_SHORTCUT, DEFAULTS.COLLAPSE_ALL_SHORTCUT);
+        this.leoActivityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
+
         // this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
         // if (this.statusBarString.length &gt; 8) {
         //     this.statusBarString = DEFAULTS.STATUSBAR_STRING;
@@ -8059,8 +8080,13 @@ export interface ConfigMembers {
     leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
+
+    leoCollapseAllShortcut: boolean;
+    leoActivityViewShortcut: boolean;
+
     // statusBarString: string;
     statusBarColor: string;
+
     treeInExplorer: boolean;
     showOpenAside: boolean;
     showEditOnNodes: boolean;
@@ -8862,7 +8888,6 @@ private _openLastFiles(): Promise&lt;LeoBridgePackage&gt; {
                             }
                             if (w_indexToSelect &gt;= 0) {
                                 // found it!
-                                console.log('found it!', w_indexToSelect);
 
                                 // Select from list if present, by index with "set opened file"
                                 return this.sendAction(
@@ -14070,7 +14095,7 @@ private _bodySaveDeactivate(
 {
   "command": "workbench.view.extension.leoIntegrationView",
   "key": "ctrl+shift+l",
-  "when": "config.leoIntegration.leoActivityViewShortcut &amp;&amp; !inSearchEditor &amp;&amp; focusedView != workbench.view.search"
+  "when": "config.leoIntegration.leoActivityViewShortcut &amp;&amp; !editorHasSelection &amp;&amp; !inSearchEditor &amp;&amp; focusedView != workbench.view.search"
 }</t>
 <t tx="felix.20210816230003.1">## 0.1.17
 
@@ -19127,7 +19152,7 @@ body &gt; div &gt; div &gt; label:active {
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Keep focus in the outline when selecting a node - overridden by "&lt;strong&gt;Leo
                   Tree
-                  Browsing"&lt;/strong&gt;&lt;/span&gt;
+                  Browsing&lt;/strong&gt;"&lt;/span&gt;
             &lt;/div&gt;
 
             &lt;div class="setting"&gt;
@@ -19139,6 +19164,32 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;label for="treeKeepFocusWhenAside"&gt;Keep focus when opening on the side&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Keep focus in the outline when opening a body pane on the side&lt;/span&gt;
+            &lt;/div&gt;
+
+            &lt;div class="break"&gt;&lt;/div&gt;
+
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="leoCollapseAllShortcut"
+                       name="leoCollapseAllShortcut"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="leoCollapseAllShortcut"&gt;Enable collapse-all shortcut for explorer&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Allows the &lt;strong&gt;[alt+'-'] keyboard shortcut&lt;/strong&gt;
+                to collapse folders in the file explorer&lt;/span&gt;
+            &lt;/div&gt;
+
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="leoActivityViewShortcut"
+                       name="leoActivityViewShortcut"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="leoActivityViewShortcut"&gt;Enable 'Show LeoInteg view' shortcut&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Allows the &lt;strong&gt;[Ctrl+Shift+L] keyboard shortcut&lt;/strong&gt;
+                to reveal the Leointeg Activity View&lt;/span&gt;
             &lt;/div&gt;
 
           &lt;/div&gt;
@@ -19186,6 +19237,7 @@ body &gt; div &gt; div &gt; label:active {
             &lt;/p&gt;
           &lt;/div&gt;
         &lt;/div&gt;
+        &lt;div class="break"&gt;&lt;/div&gt; &lt;!-- Make sure to break line after this short title. --&gt;
         &lt;div class="section__preview"&gt;
           &lt;img class="image__preview"
                src="#{root}/resources/showOpenAsideDisabled.png" /&gt;
@@ -21224,6 +21276,11 @@ fieldset {
   flex-wrap: wrap;
   // align-items: baseline;
   // justify-content: space-between;
+}
+
+.break {
+  flex-basis: 100%;
+  height: 0;
 }
 
 .settings--fixed {
