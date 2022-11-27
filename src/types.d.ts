@@ -18,8 +18,13 @@ export interface ConfigMembers {
     leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
+
+    leoCollapseAllShortcut: boolean;
+    leoActivityViewShortcut: boolean;
+
     // statusBarString: string;
     statusBarColor: string;
+
     treeInExplorer: boolean;
     showOpenAside: boolean;
     showEditOnNodes: boolean;

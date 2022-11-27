@@ -61,9 +61,12 @@
           is an open-source extension created by
           <a class="bold"
              title="My github user page"
-             href="https://boltex.github.io/">Félix</a> that integrates <a class="bold"
+             href="https://boltex.github.io/">Félix</a>
+          that integrates
+          <a class="bold"
              title="Learn more about Leo"
-             href="https://leoeditor.com/">Leo</a> into VS Code.
+             href="https://leoeditor.com/">Leo</a>
+          into VS Code.
           <!--
           LeoInteg is designed to <b>provide Leo's functionality</b>
           and can be <b>customized</b> to meet your needs.
@@ -283,7 +286,7 @@
               </div>
               <span class="setting__hint">Keep focus in the outline when selecting a node - overridden by "<strong>Leo
                   Tree
-                  Browsing"</strong></span>
+                  Browsing</strong>"</span>
             </div>
 
             <div class="setting">
@@ -295,6 +298,32 @@
                 <label for="treeKeepFocusWhenAside">Keep focus when opening on the side</label>
               </div>
               <span class="setting__hint">Keep focus in the outline when opening a body pane on the side</span>
+            </div>
+
+            <div class="break"></div>
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="leoCollapseAllShortcut"
+                       name="leoCollapseAllShortcut"
+                       type="checkbox"
+                       data-setting />
+                <label for="leoCollapseAllShortcut">Enable collapse-all shortcut for explorer</label>
+              </div>
+              <span class="setting__hint">Allows the <strong>[alt+'-'] keyboard shortcut</strong>
+                to collapse folders in the file explorer</span>
+            </div>
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="leoActivityViewShortcut"
+                       name="leoActivityViewShortcut"
+                       type="checkbox"
+                       data-setting />
+                <label for="leoActivityViewShortcut">Enable 'Show LeoInteg view' shortcut</label>
+              </div>
+              <span class="setting__hint">Allows the <strong>[Ctrl+Shift+L] keyboard shortcut</strong>
+                to reveal the Leointeg Activity View</span>
             </div>
 
           </div>
@@ -342,6 +371,7 @@
             </p>
           </div>
         </div>
+        <div class="break"></div> <!-- Make sure to break line after this short title. -->
         <div class="section__preview">
           <img class="image__preview"
                src="#{root}/resources/showOpenAsideDisabled.png" />

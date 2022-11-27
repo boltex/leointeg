@@ -3831,6 +3831,18 @@ print('done')
   "type": "boolean",
   "description": "Specifies whether to keep focus in the outline when opening a body pane on the side"
 },
+"leoIntegration.leoCollapseAllShortcut": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Enables the alt+minus keyboard shortcut for collapsing all folders in the Explorer View"
+},
+"leoIntegration.leoActivityViewShortcut": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Enables the Ctrl+Shift+L keyboard shortcut for showing the LeoIntegration view"
+},
 </t>
 <t tx="ekr.20200815123601.40">{
   "view": "leoButtons",
@@ -14053,9 +14065,13 @@ private _bodySaveDeactivate(
 <t tx="felix.20210812004050.1">{
   "command": "workbench.files.action.collapseExplorerFolders",
   "key": "alt+-",
-  "when": "!inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == untitled || !inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == file || !inSearchEditor &amp;&amp; explorerViewletFocus"
-}
-</t>
+  "when": "config.leoIntegration.leoCollapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == untitled || config.leoIntegration.leoCollapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == file || config.leoIntegration.leoCollapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; explorerViewletFocus"
+},
+{
+  "command": "workbench.view.extension.leoIntegrationView",
+  "key": "ctrl+shift+l",
+  "when": "config.leoIntegration.leoActivityViewShortcut &amp;&amp; !inSearchEditor &amp;&amp; focusedView != workbench.view.search"
+}</t>
 <t tx="felix.20210816230003.1">## 0.1.17
 
 - Saves recently opened Leo files list per workspace, instead of globally.
@@ -18886,9 +18902,12 @@ body &gt; div &gt; div &gt; label:active {
           is an open-source extension created by
           &lt;a class="bold"
              title="My github user page"
-             href="https://boltex.github.io/"&gt;Félix&lt;/a&gt; that integrates &lt;a class="bold"
+             href="https://boltex.github.io/"&gt;Félix&lt;/a&gt;
+          that integrates
+          &lt;a class="bold"
              title="Learn more about Leo"
-             href="https://leoeditor.com/"&gt;Leo&lt;/a&gt; into VS Code.
+             href="https://leoeditor.com/"&gt;Leo&lt;/a&gt;
+          into VS Code.
           &lt;!--
           LeoInteg is designed to &lt;b&gt;provide Leo's functionality&lt;/b&gt;
           and can be &lt;b&gt;customized&lt;/b&gt; to meet your needs.
