@@ -96,6 +96,18 @@
           "type": "boolean",
           "description": "Specifies whether to keep focus in the outline when opening a body pane on the side"
         },
+        "leoIntegration.leoCollapseAllShortcut": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Enables the alt+minus keyboard shortcut for collapsing all folders in the Explorer View"
+        },
+        "leoIntegration.leoActivityViewShortcut": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Enables the Ctrl+Shift+L keyboard shortcut for showing the LeoIntegration view"
+        },
         "leoIntegration.statusBarColor": {
           "scope": "application",
           "default": "fb7c47",
@@ -3812,7 +3824,12 @@
       {
         "command": "workbench.files.action.collapseExplorerFolders",
         "key": "alt+-",
-        "when": "!inSearchEditor && !sideBarFocus && resourceScheme == untitled || !inSearchEditor && !sideBarFocus && resourceScheme == file || !inSearchEditor && explorerViewletFocus"
+        "when": "config.leoIntegration.leoCollapseAllShortcut && !inSearchEditor && !sideBarFocus && resourceScheme == untitled || config.leoIntegration.leoCollapseAllShortcut && !inSearchEditor && !sideBarFocus && resourceScheme == file || config.leoIntegration.leoCollapseAllShortcut && !inSearchEditor && explorerViewletFocus"
+      },
+      {
+        "command": "workbench.view.extension.leoIntegrationView",
+        "key": "ctrl+shift+l",
+        "when": "config.leoIntegration.leoActivityViewShortcut && !inSearchEditor && focusedView != workbench.view.search"
       }
     ],
     "resourceLabelFormatters": [

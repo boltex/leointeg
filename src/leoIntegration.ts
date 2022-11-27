@@ -1001,7 +1001,6 @@ export class LeoIntegration {
                                 }
                                 if (w_indexToSelect >= 0) {
                                     // found it!
-                                    console.log('found it!', w_indexToSelect);
 
                                     // Select from list if present, by index with "set opened file"
                                     return this.sendAction(

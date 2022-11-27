@@ -270,8 +270,13 @@ export class Constants {
         LEO_TREE_BROWSE: "leoTreeBrowse",
         TREE_KEEP_FOCUS: "treeKeepFocus",
         TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
-        STATUSBAR_STRING: "statusBarString",
+
+        COLLAPSE_ALL_SHORTCUT: "leoCollapseAllShortcut",
+        ACTIVITY_VIEW_SHORTCUT: "leoActivityViewShortcut",
+
+        // STATUSBAR_STRING: "statusBarString",
         STATUSBAR_COLOR: "statusBarColor",
+
         TREE_IN_EXPLORER: "treeInExplorer",
         SHOW_OPEN_ASIDE: "showOpenAside",
         SHOW_EDIT: "showEditOnNodes",
@@ -314,7 +319,11 @@ export class Constants {
         LEO_TREE_BROWSE: true,
         TREE_KEEP_FOCUS: true,
         TREE_KEEP_FOCUS_WHEN_ASIDE: false,
-        STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
+
+        COLLAPSE_ALL_SHORTCUT: true,
+        ACTIVITY_VIEW_SHORTCUT: true,
+
+        // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
         STATUSBAR_COLOR: "fb7c47",
         TREE_IN_EXPLORER: true,
         SHOW_OPEN_ASIDE: true,
