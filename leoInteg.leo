@@ -433,6 +433,7 @@
 <v t="felix.20220222014050.4"><vh>getTextFromClipboard</vh></v>
 </v>
 <v t="felix.20220308213523.1"><vh>Nav</vh>
+<v t="felix.20221202003550.1"><vh>gotoAnywhere</vh></v>
 <v t="felix.20220714002222.1"><vh>chapterSelect</vh></v>
 <v t="felix.20220308213538.1"><vh>findQuick</vh></v>
 <v t="felix.20220308213547.1"><vh>findQuickSelected</vh></v>
@@ -440,7 +441,7 @@
 <v t="felix.20220308213557.1"><vh>findQuickChanged</vh></v>
 <v t="felix.20220308213600.1"><vh>findQuickHistory</vh></v>
 <v t="felix.20220308213605.1"><vh>findQuick_marked</vh></v>
-<v t="felix.20220308213619.1"><vh>findQuickGoAnywhere</vh></v>
+<v t="felix.20220308213619.1"><vh>showGotoPane</vh></v>
 <v t="felix.20220309215616.1"><vh>gotoNavEntry</vh></v>
 <v t="felix.20220903192048.1"><vh>navigateNavEntry</vh></v>
 </v>
@@ -2152,7 +2153,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.FIND_QUICK_CHANGED, () =&gt; w_leo.findQuickChanged()],
 [CMD.FIND_QUICK_HISTORY, () =&gt; w_leo.findQuickHistory()],
 [CMD.FIND_QUICK_MARKED, () =&gt; w_leo.findQuickMarked()],
-[CMD.FIND_QUICK_GO_ANYWHERE, () =&gt; w_leo.findQuickGoAnywhere()],
+[CMD.FIND_QUICK_GO_ANYWHERE, () =&gt; w_leo.gotoAnywhere()],
 
 [CMD.GOTO_NAV_PREV, () =&gt; w_leo.navigateNavEntry(LeoGotoNavKey.prev)],
 [CMD.GOTO_NAV_NEXT, () =&gt; w_leo.navigateNavEntry(LeoGotoNavKey.next)],
@@ -5114,6 +5115,8 @@ public static LEOBRIDGE = {
     FIND_QUICK_MARKED: "!find_quick_marked",
     GOTO_NAV_ENTRY: "!goto_nav_entry",
 
+    GET_ALL_POSITIONS: "!get_all_positions",
+    GET_POSITION_DATA: "!get_position_data",
     GET_SEARCH_SETTINGS: "!get_search_settings",
     SET_SEARCH_SETTINGS: "!set_search_settings",
     START_SEARCH: "!start_search",
@@ -5542,6 +5545,7 @@ public static USER_MESSAGES = {
     YES_ALL: "Yes to all",
     NO_ALL: "No to all",
     CHOOSE_BUTTON: "Choose @button or @rclick",
+    SEARCH_POSITION_BY_HEADLINE: "Search positions by headline",
     MINIBUFFER_PROMPT: "Minibuffer Full Command",
     SELECT_CHAPTER_PROMPT: "Select chapter",
     SET_UA_NAME_TITLE: "Set ua",
@@ -7938,6 +7942,8 @@ export interface LeoBridgePackage {
         changed: boolean,
         fileName: string;
     }
+    "position-data-list"?: ArchivedPosition[];
+    "position-data-dict"?: { [key: string]: ArchivedPosition };
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
@@ -15271,7 +15277,7 @@ public async navEnter(): Promise&lt;LeoBridgePackage&gt; {
         Constants.LEOBRIDGE.NAV_SEARCH
     );
     this._leoGotoProvider.refreshTreeRoot();
-    this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+    this.showGotoPane({ preserveFocus: true }); // show but dont change focus
     return w_package;
 }
 
@@ -15285,7 +15291,7 @@ public async navTextChange(): Promise&lt;LeoBridgePackage&gt; {
         Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH
     );
     this._leoGotoProvider.refreshTreeRoot();
-    this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+    this.showGotoPane({ preserveFocus: true }); // show but dont change focus
     return w_package;
 }
 
@@ -15455,7 +15461,7 @@ public findQuickSelected(): Thenable&lt;unknown&gt; {
 public async findQuickTimeline(): Promise&lt;unknown&gt; {
     await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE);
     this._leoGotoProvider.refreshTreeRoot();
-    return this.findQuickGoAnywhere();
+    return this.showGotoPane();
 }
 
 </t>
@@ -15466,7 +15472,7 @@ public async findQuickTimeline(): Promise&lt;unknown&gt; {
 public async findQuickChanged(): Promise&lt;unknown&gt; {
     await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED);
     this._leoGotoProvider.refreshTreeRoot();
-    return this.findQuickGoAnywhere();
+    return this.showGotoPane();
 }
 
 </t>
@@ -15476,7 +15482,7 @@ public async findQuickChanged(): Promise&lt;unknown&gt; {
 public async findQuickHistory(): Promise&lt;unknown&gt; {
     await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY);
     this._leoGotoProvider.refreshTreeRoot();
-    return this.findQuickGoAnywhere();
+    return this.showGotoPane();
 }
 
 </t>
@@ -15486,14 +15492,14 @@ public async findQuickHistory(): Promise&lt;unknown&gt; {
 public async findQuickMarked(): Promise&lt;unknown&gt; {
     await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
     this._leoGotoProvider.refreshTreeRoot();
-    return this.findQuickGoAnywhere();
+    return this.showGotoPane();
 }
 
 </t>
 <t tx="felix.20220308213619.1">/**
  * * Opens goto and focus in depending on passed options
  */
-public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt;unknown&gt; {
+public showGotoPane(p_options?: { preserveFocus?: boolean }): Thenable&lt;unknown&gt; {
     let w_panel = "";
     if (this._lastTreeView === this._leoTreeExView) {
         w_panel = Constants.GOTO_EXPLORER_ID;
@@ -15540,7 +15546,7 @@ public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
         setTimeout(async () =&gt; {
             await this.sendAction(Constants.LEOBRIDGE.NAV_SEARCH);
             this._leoGotoProvider.refreshTreeRoot();
-            await this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+            await this.showGotoPane({ preserveFocus: true }); // show but dont change focus
         }, 10);
 
     } else if (p_node.entryType !== 'generic' &amp;&amp; p_node.entryType !== 'parent') {
@@ -18233,6 +18239,66 @@ public static MIN_SERVER_VERSION_NUMBER = {
     minMinor: 0,
     minPatch: 5
 };
+
+</t>
+<t tx="felix.20221202003550.1">/**
+ * * Mimic vscode's CTRL+P to find any position by it's headline
+ */
+public async gotoAnywhere(): Promise&lt;unknown&gt; {
+    await this._isBusyTriggerSave(false);
+
+    const q_positions: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
+        Constants.LEOBRIDGE.GET_POSITION_DATA
+    ).then((p_result: LeoBridgePackage) =&gt; {
+        if (p_result["position-data-dict"]) {
+            // const allPositions: vscode.QuickPickItem[] = [];
+            const allPositions: { label: string; position?: string; }[] = [];
+            console.log('p_result', p_result);
+
+            Object.values(p_result["position-data-dict"]).forEach(p_position =&gt; {
+                allPositions.push({
+                    label: p_position.headline,
+                    // position: p_position.archivedPos
+                });
+            });
+
+            return allPositions;
+        } else {
+            return [];
+        }
+    });
+
+    // Add Nav tab special commands
+    const w_options: vscode.QuickPickOptions = {
+        placeHolder: Constants.USER_MESSAGES.SEARCH_POSITION_BY_HEADLINE
+    };
+
+    const p_picked = await vscode.window.showQuickPick(q_positions, w_options);
+
+    if (p_picked &amp;&amp; p_picked.label) {
+        return this.sendAction(
+            //Constants.LEOBRIDGE.SET_SELECTED_NODE,
+            Constants.LEOBRIDGE.DO_NOTHING,
+            { a: 'b' } //  { position: (p_picked as any).position } // TODO : CLEAN UP !!
+        ).then((p_resultTag: LeoBridgePackage) =&gt; {
+            this.setupRefresh(
+                Focus.NoChange,
+                {
+                    tree: true,
+                    body: true,
+                    // documents: false,
+                    // buttons: false,
+                    states: true,
+                },
+                p_resultTag.node
+            );
+            this.launchRefresh();
+        });
+    }
+
+    return Promise.resolve(undefined); // Canceled
+
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

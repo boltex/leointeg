@@ -212,6 +212,8 @@ export interface LeoBridgePackage {
         changed: boolean,
         fileName: string;
     }
+    "position-data-list"?: ArchivedPosition[];
+    "position-data-dict"?: { [key: string]: ArchivedPosition };
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous

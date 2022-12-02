@@ -202,6 +202,7 @@ export class Constants {
         YES_ALL: "Yes to all",
         NO_ALL: "No to all",
         CHOOSE_BUTTON: "Choose @button or @rclick",
+        SEARCH_POSITION_BY_HEADLINE: "Search positions by headline",
         MINIBUFFER_PROMPT: "Minibuffer Full Command",
         SELECT_CHAPTER_PROMPT: "Select chapter",
         SET_UA_NAME_TITLE: "Set ua",
@@ -636,6 +637,8 @@ export class Constants {
         FIND_QUICK_MARKED: "!find_quick_marked",
         GOTO_NAV_ENTRY: "!goto_nav_entry",
 
+        GET_ALL_POSITIONS: "!get_all_positions",
+        GET_POSITION_DATA: "!get_position_data",
         GET_SEARCH_SETTINGS: "!get_search_settings",
         SET_SEARCH_SETTINGS: "!set_search_settings",
         START_SEARCH: "!start_search",

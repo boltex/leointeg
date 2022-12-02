@@ -3802,6 +3802,65 @@ export class LeoIntegration {
     }
 
     /**
+     * * Mimic vscode's CTRL+P to find any position by it's headline
+     */
+    public async gotoAnywhere(): Promise<unknown> {
+        await this._isBusyTriggerSave(false);
+
+        const q_positions: Thenable<vscode.QuickPickItem[]> = this.sendAction(
+            Constants.LEOBRIDGE.GET_POSITION_DATA
+        ).then((p_result: LeoBridgePackage) => {
+            if (p_result["position-data-dict"]) {
+                // const allPositions: vscode.QuickPickItem[] = [];
+                const allPositions: { label: string; position?: string; }[] = [];
+                console.log('p_result', p_result);
+
+                Object.values(p_result["position-data-dict"]).forEach(p_position => {
+                    allPositions.push({
+                        label: p_position.headline,
+                        // position: p_position.archivedPos
+                    });
+                });
+
+                return allPositions;
+            } else {
+                return [];
+            }
+        });
+
+        // Add Nav tab special commands
+        const w_options: vscode.QuickPickOptions = {
+            placeHolder: Constants.USER_MESSAGES.SEARCH_POSITION_BY_HEADLINE
+        };
+
+        const p_picked = await vscode.window.showQuickPick(q_positions, w_options);
+
+        if (p_picked && p_picked.label) {
+            return this.sendAction(
+                //Constants.LEOBRIDGE.SET_SELECTED_NODE,
+                Constants.LEOBRIDGE.DO_NOTHING,
+                { a: 'b' } //  { position: (p_picked as any).position } // TODO : CLEAN UP !!
+            ).then((p_resultTag: LeoBridgePackage) => {
+                this.setupRefresh(
+                    Focus.NoChange,
+                    {
+                        tree: true,
+                        body: true,
+                        // documents: false,
+                        // buttons: false,
+                        states: true,
+                    },
+                    p_resultTag.node
+                );
+                this.launchRefresh();
+            });
+        }
+
+        return Promise.resolve(undefined); // Canceled
+
+    }
+
+    /**
      * * Opens user interface to choose chapter
      * Offers choices of chapters below the input dialog to choose from,
      * and selects the chosen - or typed - chapter
@@ -3914,7 +3973,7 @@ export class LeoIntegration {
     public async findQuickTimeline(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE);
         this._leoGotoProvider.refreshTreeRoot();
-        return this.findQuickGoAnywhere();
+        return this.showGotoPane();
     }
 
 
@@ -3924,7 +3983,7 @@ export class LeoIntegration {
     public async findQuickChanged(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED);
         this._leoGotoProvider.refreshTreeRoot();
-        return this.findQuickGoAnywhere();
+        return this.showGotoPane();
     }
 
     /**
@@ -3933,7 +3992,7 @@ export class LeoIntegration {
     public async findQuickHistory(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY);
         this._leoGotoProvider.refreshTreeRoot();
-        return this.findQuickGoAnywhere();
+        return this.showGotoPane();
     }
 
     /**
@@ -3942,13 +4001,13 @@ export class LeoIntegration {
     public async findQuickMarked(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
         this._leoGotoProvider.refreshTreeRoot();
-        return this.findQuickGoAnywhere();
+        return this.showGotoPane();
     }
 
     /**
      * * Opens goto and focus in depending on passed options
      */
-    public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable<unknown> {
+    public showGotoPane(p_options?: { preserveFocus?: boolean }): Thenable<unknown> {
         let w_panel = "";
         if (this._lastTreeView === this._leoTreeExView) {
             w_panel = Constants.GOTO_EXPLORER_ID;
@@ -3994,7 +4053,7 @@ export class LeoIntegration {
             setTimeout(async () => {
                 await this.sendAction(Constants.LEOBRIDGE.NAV_SEARCH);
                 this._leoGotoProvider.refreshTreeRoot();
-                await this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+                await this.showGotoPane({ preserveFocus: true }); // show but dont change focus
             }, 10);
 
         } else if (p_node.entryType !== 'generic' && p_node.entryType !== 'parent') {
@@ -4053,7 +4112,7 @@ export class LeoIntegration {
             Constants.LEOBRIDGE.NAV_SEARCH
         );
         this._leoGotoProvider.refreshTreeRoot();
-        this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+        this.showGotoPane({ preserveFocus: true }); // show but dont change focus
         return w_package;
     }
 
@@ -4066,7 +4125,7 @@ export class LeoIntegration {
             Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH
         );
         this._leoGotoProvider.refreshTreeRoot();
-        this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+        this.showGotoPane({ preserveFocus: true }); // show but dont change focus
         return w_package;
     }
 
