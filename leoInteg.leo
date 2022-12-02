@@ -10271,7 +10271,7 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
             // console.log('WRAP: ', w_wrap);
 
             // Replace language string if in 'exceptions' array
-            w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
+            w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
 
             let w_debugMessage = "";
             let w_needRefreshFlag = false;
@@ -14076,7 +14076,8 @@ private _bodySaveDeactivate(
   "command": "workbench.view.extension.leoIntegrationView",
   "key": "ctrl+shift+l",
   "when": "config.leoIntegration.leoActivityViewShortcut &amp;&amp; !editorHasSelection &amp;&amp; !inSearchEditor &amp;&amp; focusedView != workbench.view.search"
-}</t>
+}
+</t>
 <t tx="felix.20210816230003.1">## 0.1.17
 
 - Saves recently opened Leo files list per workspace, instead of globally.

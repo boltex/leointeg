@@ -2840,7 +2840,7 @@ export class LeoIntegration {
                 // console.log('WRAP: ', w_wrap);
 
                 // Replace language string if in 'exceptions' array
-                w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
+                w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
 
                 let w_debugMessage = "";
                 let w_needRefreshFlag = false;
