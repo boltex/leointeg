@@ -19,6 +19,7 @@ export class Config implements ConfigMembers {
 
     public leoCollapseAllShortcut: boolean = Constants.CONFIG_DEFAULTS.COLLAPSE_ALL_SHORTCUT;
     public leoActivityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
+    public leoGoAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
     public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
@@ -77,6 +78,7 @@ export class Config implements ConfigMembers {
 
             leoCollapseAllShortcut: this.leoCollapseAllShortcut,
             leoActivityViewShortcut: this.leoActivityViewShortcut,
+            leoGoAnywhereShortcut: this.leoGoAnywhereShortcut,
 
             // statusBarString: this.statusBarString,
             statusBarColor: this.statusBarColor,
@@ -298,6 +300,7 @@ export class Config implements ConfigMembers {
 
             this.leoCollapseAllShortcut = GET(NAME).get(NAMES.COLLAPSE_ALL_SHORTCUT, DEFAULTS.COLLAPSE_ALL_SHORTCUT);
             this.leoActivityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
+            this.leoGoAnywhereShortcut = GET(NAME).get(NAMES.GO_ANYWHERE_SHORTCUT, DEFAULTS.GO_ANYWHERE_SHORTCUT);
 
             // this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
             // if (this.statusBarString.length > 8) {
