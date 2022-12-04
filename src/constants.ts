@@ -283,6 +283,7 @@ export class Constants {
 
         COLLAPSE_ALL_SHORTCUT: "leoCollapseAllShortcut",
         ACTIVITY_VIEW_SHORTCUT: "leoActivityViewShortcut",
+        GO_ANYWHERE_SHORTCUT: "leoGoAnywhereShortcut",
 
         // STATUSBAR_STRING: "statusBarString",
         STATUSBAR_COLOR: "statusBarColor",
@@ -332,6 +333,7 @@ export class Constants {
 
         COLLAPSE_ALL_SHORTCUT: true,
         ACTIVITY_VIEW_SHORTCUT: true,
+        GO_ANYWHERE_SHORTCUT: true,
 
         // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
         STATUSBAR_COLOR: "fb7c47",

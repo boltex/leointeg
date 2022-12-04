@@ -304,13 +304,26 @@
 
             <div class="setting">
               <div class="setting__input">
+                <input id="leoGoAnywhereShortcut"
+                       name="leoGoAnywhereShortcut"
+                       type="checkbox"
+                       data-setting />
+                <label for="leoGoAnywhereShortcut">Replace 'Go to File' shortcut with 'Go Anywhere'</label>
+              </div>
+              <span class="setting__hint">
+                Make <strong>[Ctrl+P]</strong> call Leo's <strong>Go Anywhere</strong>
+                instead of VSCode's <strong>Go to File</strong> when focus in the body or outline
+            </div>
+
+            <div class="setting">
+              <div class="setting__input">
                 <input id="leoCollapseAllShortcut"
                        name="leoCollapseAllShortcut"
                        type="checkbox"
                        data-setting />
                 <label for="leoCollapseAllShortcut">Enable collapse-all shortcut for explorer</label>
               </div>
-              <span class="setting__hint">Allows the <strong>[alt+'-'] keyboard shortcut</strong>
+              <span class="setting__hint">Allows the <strong>[Alt+'-'] keyboard shortcut</strong>
                 to collapse folders in the file explorer</span>
             </div>
 

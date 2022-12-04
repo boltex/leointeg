@@ -21,6 +21,7 @@ export interface ConfigMembers {
 
     leoCollapseAllShortcut: boolean;
     leoActivityViewShortcut: boolean;
+    leoGoAnywhereShortcut: boolean;
 
     // statusBarString: string;
     statusBarColor: string;
@@ -414,6 +415,10 @@ export interface runInfoMessageDialogParameters {
  */
 export interface AskMessageItem extends vscode.MessageItem {
     value: string;
+}
+
+export interface ChosePositionItem extends vscode.QuickPickItem {
+    position: ArchivedPosition;
 }
 
 /**

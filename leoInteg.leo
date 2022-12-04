@@ -602,6 +602,7 @@
 <v t="felix.20200718194857.17"><vh>runWarnMessageDialogParameters</vh></v>
 <v t="felix.20200718194857.18"><vh>runInfoMessageDialogParameters</vh></v>
 <v t="felix.20200718194857.19"><vh>AskMessageItem</vh></v>
+<v t="felix.20221204000406.1"><vh>ChoosePositionItem</vh></v>
 <v t="felix.20200718194857.20"><vh>ChooseDocumentItem</vh></v>
 <v t="felix.20220220191549.1"><vh>ChooseRClickItem</vh></v>
 <v t="felix.20220221001803.1"><vh>RClick</vh></v>
@@ -943,6 +944,7 @@ public static CONFIG_DEFAULTS = {
 
     COLLAPSE_ALL_SHORTCUT: true,
     ACTIVITY_VIEW_SHORTCUT: true,
+    GO_ANYWHERE_SHORTCUT: true,
 
     // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
     STATUSBAR_COLOR: "fb7c47",
@@ -2683,7 +2685,7 @@ print('done')
   "command": "leointeg.stopServer",
   "category": "Leo",
   "title": "Stop the Leo Server",
-  "enablement": "leoServerStarted",
+  "enablement": "leoServerStarted &amp;&amp; !leoTreeOpened",
   "icon": {
     "light": "resources/light/close-server.svg",
     "dark": "resources/dark/close-server.svg"
@@ -3821,11 +3823,17 @@ print('done')
   "type": "boolean",
   "description": "Specifies whether to keep focus in the outline when opening a body pane on the side"
 },
+"leoIntegration.leoGoAnywhereShortcut": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Enables Leo's 'Go Anywhere' to replace 'Go to file' with the Ctrl+P keyboard shortcut when focus in in outline or body"
+},
 "leoIntegration.leoCollapseAllShortcut": {
   "scope": "application",
   "default": true,
   "type": "boolean",
-  "description": "Enables the alt+minus keyboard shortcut for collapsing all folders in the Explorer View"
+  "description": "Enables the Alt+'-' keyboard shortcut for collapsing all folders in the Explorer View"
 },
 "leoIntegration.leoActivityViewShortcut": {
   "scope": "application",
@@ -5601,6 +5609,7 @@ public static CONFIG_NAMES = {
 
     COLLAPSE_ALL_SHORTCUT: "leoCollapseAllShortcut",
     ACTIVITY_VIEW_SHORTCUT: "leoActivityViewShortcut",
+    GO_ANYWHERE_SHORTCUT: "leoGoAnywhereShortcut",
 
     // STATUSBAR_STRING: "statusBarString",
     STATUSBAR_COLOR: "statusBarColor",
@@ -5922,6 +5931,7 @@ export class Config implements ConfigMembers {
 
     public leoCollapseAllShortcut: boolean = Constants.CONFIG_DEFAULTS.COLLAPSE_ALL_SHORTCUT;
     public leoActivityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
+    public leoGoAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
     public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
@@ -5983,6 +5993,7 @@ public getConfig(): ConfigMembers {
 
         leoCollapseAllShortcut: this.leoCollapseAllShortcut,
         leoActivityViewShortcut: this.leoActivityViewShortcut,
+        leoGoAnywhereShortcut: this.leoGoAnywhereShortcut,
 
         // statusBarString: this.statusBarString,
         statusBarColor: this.statusBarColor,
@@ -6085,6 +6096,7 @@ public buildFromSavedSettings(): void {
 
         this.leoCollapseAllShortcut = GET(NAME).get(NAMES.COLLAPSE_ALL_SHORTCUT, DEFAULTS.COLLAPSE_ALL_SHORTCUT);
         this.leoActivityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
+        this.leoGoAnywhereShortcut = GET(NAME).get(NAMES.GO_ANYWHERE_SHORTCUT, DEFAULTS.GO_ANYWHERE_SHORTCUT);
 
         // this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
         // if (this.statusBarString.length &gt; 8) {
@@ -8069,6 +8081,7 @@ export interface ConfigMembers {
 
     leoCollapseAllShortcut: boolean;
     leoActivityViewShortcut: boolean;
+    leoGoAnywhereShortcut: boolean;
 
     // statusBarString: string;
     statusBarColor: string;
@@ -8806,7 +8819,8 @@ import {
     LeoSearchSettings,
     ChooseRClickItem,
     RClick,
-    LeoGotoNavKey
+    LeoGotoNavKey,
+    ChosePositionItem
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -12561,6 +12575,12 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
 }
 </t>
 <t tx="felix.20210517004335.1">{
+  "command": "leointeg.goAnywhere",
+  "key": "ctrl+p",
+  "mac": "cmd+p",
+  "when": "config.leoIntegration.leoGoAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || config.leoIntegration.leoGoAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
   "command": "leointeg.startSearch",
   "key": "ctrl+f",
   "mac": "cmd+f",
@@ -18251,14 +18271,27 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
         Constants.LEOBRIDGE.GET_POSITION_DATA
     ).then((p_result: LeoBridgePackage) =&gt; {
         if (p_result["position-data-dict"]) {
-            // const allPositions: vscode.QuickPickItem[] = [];
-            const allPositions: { label: string; position?: string; }[] = [];
-            console.log('p_result', p_result);
+
+            const allPositions: ChosePositionItem[] = [];
+            // Options for date to look like : Saturday, September 17, 2016
+            const w_dateOptions: Intl.DateTimeFormatOptions = { weekday: "long", year: 'numeric', month: "long", day: 'numeric' };
 
             Object.values(p_result["position-data-dict"]).forEach(p_position =&gt; {
+                let w_description = p_position.gnx; // Defaults as gnx.
+                const w_gnxParts = w_description.split('.');
+                if (w_gnxParts.length === 3 &amp;&amp; w_gnxParts[1].length === 14) {
+                    // legit 3 part gnx
+                    const dateString = w_gnxParts[1];
+                    const w_year = +dateString.substring(0, 4); // unary + operator to convert the strings to numbers.
+                    const w_month = +dateString.substring(4, 6);
+                    const w_day = +dateString.substring(6, 8);
+                    const w_date = new Date(w_year, w_month - 1, w_day);
+                    w_description = `by ${w_gnxParts[0]} on ${w_date.toLocaleDateString("en-US", w_dateOptions)}`;
+                }
                 allPositions.push({
                     label: p_position.headline,
-                    // position: p_position.archivedPos
+                    position: p_position,
+                    description: w_description
                 });
             });
 
@@ -18268,7 +18301,6 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
         }
     });
 
-    // Add Nav tab special commands
     const w_options: vscode.QuickPickOptions = {
         placeHolder: Constants.USER_MESSAGES.SEARCH_POSITION_BY_HEADLINE
     };
@@ -18277,12 +18309,11 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
 
     if (p_picked &amp;&amp; p_picked.label) {
         return this.sendAction(
-            //Constants.LEOBRIDGE.SET_SELECTED_NODE,
-            Constants.LEOBRIDGE.DO_NOTHING,
-            { a: 'b' } //  { position: (p_picked as any).position } // TODO : CLEAN UP !!
+            Constants.LEOBRIDGE.SET_SELECTED_NODE,
+            utils.buildNodeCommand((p_picked as ChosePositionItem).position)
         ).then((p_resultTag: LeoBridgePackage) =&gt; {
             this.setupRefresh(
-                Focus.NoChange,
+                Focus.Body, // Finish in body pane given explicitly because last focus was in input box.
                 {
                     tree: true,
                     body: true,
@@ -18298,6 +18329,11 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
 
     return Promise.resolve(undefined); // Canceled
 
+}
+
+</t>
+<t tx="felix.20221204000406.1">export interface ChosePositionItem extends vscode.QuickPickItem {
+    position: ArchivedPosition;
 }
 
 </t>
@@ -19228,13 +19264,26 @@ body &gt; div &gt; div &gt; label:active {
 
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
+                &lt;input id="leoGoAnywhereShortcut"
+                       name="leoGoAnywhereShortcut"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="leoGoAnywhereShortcut"&gt;Replace 'Go to File' shortcut with 'Go Anywhere'&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;
+                Make &lt;strong&gt;[Ctrl+P]&lt;/strong&gt; call Leo's &lt;strong&gt;Go Anywhere&lt;/strong&gt;
+                instead of VSCode's &lt;strong&gt;Go to File&lt;/strong&gt; when focus in the body or outline
+            &lt;/div&gt;
+
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
                 &lt;input id="leoCollapseAllShortcut"
                        name="leoCollapseAllShortcut"
                        type="checkbox"
                        data-setting /&gt;
                 &lt;label for="leoCollapseAllShortcut"&gt;Enable collapse-all shortcut for explorer&lt;/label&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Allows the &lt;strong&gt;[alt+'-'] keyboard shortcut&lt;/strong&gt;
+              &lt;span class="setting__hint"&gt;Allows the &lt;strong&gt;[Alt+'-'] keyboard shortcut&lt;/strong&gt;
                 to collapse folders in the file explorer&lt;/span&gt;
             &lt;/div&gt;
 

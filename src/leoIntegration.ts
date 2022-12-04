@@ -20,7 +20,8 @@ import {
     LeoSearchSettings,
     ChooseRClickItem,
     RClick,
-    LeoGotoNavKey
+    LeoGotoNavKey,
+    ChosePositionItem
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -3811,14 +3812,27 @@ export class LeoIntegration {
             Constants.LEOBRIDGE.GET_POSITION_DATA
         ).then((p_result: LeoBridgePackage) => {
             if (p_result["position-data-dict"]) {
-                // const allPositions: vscode.QuickPickItem[] = [];
-                const allPositions: { label: string; position?: string; }[] = [];
-                console.log('p_result', p_result);
+
+                const allPositions: ChosePositionItem[] = [];
+                // Options for date to look like : Saturday, September 17, 2016
+                const w_dateOptions: Intl.DateTimeFormatOptions = { weekday: "long", year: 'numeric', month: "long", day: 'numeric' };
 
                 Object.values(p_result["position-data-dict"]).forEach(p_position => {
+                    let w_description = p_position.gnx; // Defaults as gnx.
+                    const w_gnxParts = w_description.split('.');
+                    if (w_gnxParts.length === 3 && w_gnxParts[1].length === 14) {
+                        // legit 3 part gnx
+                        const dateString = w_gnxParts[1];
+                        const w_year = +dateString.substring(0, 4); // unary + operator to convert the strings to numbers.
+                        const w_month = +dateString.substring(4, 6);
+                        const w_day = +dateString.substring(6, 8);
+                        const w_date = new Date(w_year, w_month - 1, w_day);
+                        w_description = `by ${w_gnxParts[0]} on ${w_date.toLocaleDateString("en-US", w_dateOptions)}`;
+                    }
                     allPositions.push({
                         label: p_position.headline,
-                        // position: p_position.archivedPos
+                        position: p_position,
+                        description: w_description
                     });
                 });
 
@@ -3828,7 +3842,6 @@ export class LeoIntegration {
             }
         });
 
-        // Add Nav tab special commands
         const w_options: vscode.QuickPickOptions = {
             placeHolder: Constants.USER_MESSAGES.SEARCH_POSITION_BY_HEADLINE
         };
@@ -3837,12 +3850,11 @@ export class LeoIntegration {
 
         if (p_picked && p_picked.label) {
             return this.sendAction(
-                //Constants.LEOBRIDGE.SET_SELECTED_NODE,
-                Constants.LEOBRIDGE.DO_NOTHING,
-                { a: 'b' } //  { position: (p_picked as any).position } // TODO : CLEAN UP !!
+                Constants.LEOBRIDGE.SET_SELECTED_NODE,
+                utils.buildNodeCommand((p_picked as ChosePositionItem).position)
             ).then((p_resultTag: LeoBridgePackage) => {
                 this.setupRefresh(
-                    Focus.NoChange,
+                    Focus.Body, // Finish in body pane given explicitly because last focus was in input box.
                     {
                         tree: true,
                         body: true,

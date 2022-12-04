@@ -96,11 +96,17 @@
           "type": "boolean",
           "description": "Specifies whether to keep focus in the outline when opening a body pane on the side"
         },
+        "leoIntegration.leoGoAnywhereShortcut": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Enables Leo's 'Go Anywhere' to replace 'Go to file' with the Ctrl+P keyboard shortcut when focus in in outline or body"
+        },
         "leoIntegration.leoCollapseAllShortcut": {
           "scope": "application",
           "default": true,
           "type": "boolean",
-          "description": "Enables the alt+minus keyboard shortcut for collapsing all folders in the Explorer View"
+          "description": "Enables the Alt+'-' keyboard shortcut for collapsing all folders in the Explorer View"
         },
         "leoIntegration.leoActivityViewShortcut": {
           "scope": "application",
@@ -676,7 +682,7 @@
         "command": "leointeg.stopServer",
         "category": "Leo",
         "title": "Stop the Leo Server",
-        "enablement": "leoServerStarted",
+        "enablement": "leoServerStarted && !leoTreeOpened",
         "icon": {
           "light": "resources/light/close-server.svg",
           "dark": "resources/dark/close-server.svg"
@@ -3685,6 +3691,12 @@
         "key": "ctrl+shift+z",
         "mac": "cmd+shift+z",
         "when": "leoFindFocus || leoTreeOpened && sideBarFocus && !inputFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoUndos|^leoDocuments|^leoButtons/"
+      },
+      {
+        "command": "leointeg.goAnywhere",
+        "key": "ctrl+p",
+        "mac": "cmd+p",
+        "when": "config.leoIntegration.leoGoAnywhereShortcut && leoTreeOpened && sideBarFocus && !editorFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || config.leoIntegration.leoGoAnywhereShortcut && leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.startSearch",
