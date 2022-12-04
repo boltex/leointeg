@@ -7,6 +7,11 @@
 - Added icons to the undo pane.
 - Added asterisk to outline title to flag 'changed' document.
 - Added branch info, and opened-file description to outline title: requires Leo 6.7.1
+- Improved page-up/page-down behavior when already on first/last sibling.
+- Added a keyboard shortcut to reveal the 'LeoInteg' view in the activity bar. (Can be toggled via config setting)
+- The Alt+'-' keyboard shortcut that also applies by default to vscode's explorer view when focus is outside LeoInteg's panels, can now be toggled via config setting.
+- Changed the behavior of the 'Go Anywhere' command to offer a quick-input search control to search headlines.
+- The 'Go Anywhere' command is also now exposed as the Ctrl+P keyboard shortcut, replacing vscode's 'Go to File' command when focus is in any LeoInteg's panel. (Can be toggled via config setting)
 
 ## 1.0.9
 
