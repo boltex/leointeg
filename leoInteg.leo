@@ -8380,7 +8380,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.7 or later\
+- Leo Editor 6.7.1 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -8454,9 +8454,11 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 | Tree Navigation    |     |                 |                             |
 | :----------------- | :-- | :-------------- | :-------------------------- |
-| `Alt + Home`       | or  | `Home` \*       | Scroll to top of outline    |
-|                    |     | `End` \*        | Scroll to bottom of outline |
-| `PgUp / pgDn`      |     |                 | Tree page up/down           |
+| `Ctrl+Shift+L`     |     |                 | Show the LeoInteg View      |
+| `Ctrl+Shift+P`     |     |                 | Go Anywhere                 |
+| `Alt + Home`       | or  | `Home` \*       | Scroll to Top of Outline    |
+|                    |     | `End` \*        | Scroll to Bottom of Outline |
+| `PgUp / pgDn`      |     |                 | 'Tree' Page-Up/Down         |
 | `Alt + End`        |     |                 | Go To Last Sibling          |
 | `Alt + N`          |     |                 | Go To Next Clone            |
 | `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree                 |
@@ -18171,7 +18173,7 @@ public async navTextClear(): Promise&lt;LeoBridgePackage&gt; {
 - Added asterisk to outline title to flag 'changed' document.
 - Added branch info, and opened-file description to outline title: requires Leo 6.7.1
 - Improved page-up/page-down behavior when already on first/last sibling.
-- Added a keyboard shortcut to reveal the 'LeoInteg' view in the activity bar. (Can be toggled via config setting)
+- Added the Ctrl+Shift+L keyboard shortcut to reveal the 'LeoInteg' view in the activity bar. (Can be toggled via config setting)
 - The Alt+'-' keyboard shortcut that also applies by default to vscode's explorer view when focus is outside LeoInteg's panels, can now be toggled via config setting.
 - Changed the behavior of the 'Go Anywhere' command to offer a quick-input search control to search headlines.
 - The 'Go Anywhere' command is also now exposed as the Ctrl+P keyboard shortcut, replacing vscode's 'Go to File' command when focus is in any LeoInteg's panel. (Can be toggled via config setting)
