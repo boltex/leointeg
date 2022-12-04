@@ -4920,6 +4920,7 @@ print('done')
       "id": "leoGotoPanel",
       "contextualTitle": "Leo",
       "name": "Goto",
+      "when": "leoTreeOpened",
       "visibility": "collapsed"
     },
     {
