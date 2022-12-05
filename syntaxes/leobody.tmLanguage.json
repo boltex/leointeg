@@ -16,6 +16,9 @@
             "include": "#leo-section-delims"
         },
         {
+            "include": "#leo-no-color"
+        },
+        {
             "include": "#leo-comments"
         }
     ],
@@ -39,9 +42,29 @@
                 }
             ]
         },
+        "leo-no-color": {
+            "patterns": [
+                {
+                    "name": "documentation.block.leobody",
+                    "begin": "^(@nocolor)($|\\s+)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "keyword"
+                        }
+                    },
+                    "end": "^(@color)($|\\s+)",
+                    "endCaptures": {
+                        "1": {
+                            "name": "keyword"
+                        }
+                    }
+                }
+            ]
+        },
         "leo-section-delims": {
             "patterns": [
                 {
+                    "name": "markup.inline.raw",
                     "begin": "^(@raw)($|\\s+)",
                     "end": "^(@end_raw)($|\\s+)",
                     "beginCaptures": {
@@ -53,21 +76,20 @@
                         "0": {
                             "name": "invalid"
                         }
-                    },
-                    "name": "markup.inline.raw"
+                    }
                 }
             ]
         },
         "leo-sectionref": {
             "patterns": [
                 {
-                    "match": "(<<)([\\sa-zA-Z0-9_\\-]+)(>>)",
+                    "match": "(<<)(.*?)(>>)",
                     "captures": {
                         "1": {
                             "name": "punctuation.section.embedded"
                         },
                         "2": {
-                            "name": "markup.underline"
+                            "name": "markup.underline.link.markdown"
                         },
                         "3": {
                             "name": "punctuation.section.embedded"
@@ -91,7 +113,7 @@
                     "name": "keyword"
                 },
                 {
-                    "match": "^(@color|@killcolor|@nocolor|@nocolor\\-node)($|\\s+)",
+                    "match": "^(@killcolor|@nocolor\\-node)($|\\s+)",
                     "name": "keyword"
                 },
                 {
