@@ -16,6 +16,11 @@ export class Config implements ConfigMembers {
     public leoTreeBrowse: boolean = Constants.CONFIG_DEFAULTS.LEO_TREE_BROWSE;
     public treeKeepFocus: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS;
     public treeKeepFocusWhenAside: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE;
+
+    public leoCollapseAllShortcut: boolean = Constants.CONFIG_DEFAULTS.COLLAPSE_ALL_SHORTCUT;
+    public leoActivityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
+    public leoGoAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
+
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
     public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
@@ -70,6 +75,11 @@ export class Config implements ConfigMembers {
             leoTreeBrowse: this.leoTreeBrowse,
             treeKeepFocus: this.treeKeepFocus,
             treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
+
+            leoCollapseAllShortcut: this.leoCollapseAllShortcut,
+            leoActivityViewShortcut: this.leoActivityViewShortcut,
+            leoGoAnywhereShortcut: this.leoGoAnywhereShortcut,
+
             // statusBarString: this.statusBarString,
             statusBarColor: this.statusBarColor,
             treeInExplorer: this.treeInExplorer,
@@ -287,6 +297,11 @@ export class Config implements ConfigMembers {
             this.leoTreeBrowse = GET(NAME).get(NAMES.LEO_TREE_BROWSE, DEFAULTS.LEO_TREE_BROWSE);
             this.treeKeepFocus = GET(NAME).get(NAMES.TREE_KEEP_FOCUS, DEFAULTS.TREE_KEEP_FOCUS);
             this.treeKeepFocusWhenAside = GET(NAME).get(NAMES.TREE_KEEP_FOCUS_WHEN_ASIDE, DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE);
+
+            this.leoCollapseAllShortcut = GET(NAME).get(NAMES.COLLAPSE_ALL_SHORTCUT, DEFAULTS.COLLAPSE_ALL_SHORTCUT);
+            this.leoActivityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
+            this.leoGoAnywhereShortcut = GET(NAME).get(NAMES.GO_ANYWHERE_SHORTCUT, DEFAULTS.GO_ANYWHERE_SHORTCUT);
+
             // this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
             // if (this.statusBarString.length > 8) {
             //     this.statusBarString = DEFAULTS.STATUSBAR_STRING;
@@ -298,11 +313,12 @@ export class Config implements ConfigMembers {
             this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
             this.showOpenAside = GET(NAME).get(NAMES.SHOW_OPEN_ASIDE, DEFAULTS.SHOW_OPEN_ASIDE);
             this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
-            // this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
             this.showAddOnNodes = GET(NAME).get(NAMES.SHOW_ADD, DEFAULTS.SHOW_ADD);
             this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
             this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
             this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
+
+            // this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
 
             // this.showEditionOnBody = GET(NAME).get(NAMES.SHOW_EDITION_BODY, DEFAULTS.SHOW_EDITION_BODY);
             // this.showClipboardOnBody = GET(NAME).get(NAMES.SHOW_CLIPBOARD_BODY, DEFAULTS.SHOW_CLIPBOARD_BODY);
@@ -330,15 +346,17 @@ export class Config implements ConfigMembers {
             if (this._leoIntegration.leoStates.leoBridgeReady) {
                 this._leoIntegration.sendConfigToServer(this.getConfig());
             }
-            utils.setContext(FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
-            utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
-            utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
-            utils.setContext(FLAGS.SHOW_EDIT, this.showEditOnNodes);
+
+            // utils.setContext(FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
+            // utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
+            // utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
+            // utils.setContext(FLAGS.SHOW_EDIT, this.showEditOnNodes);
+            // utils.setContext(FLAGS.SHOW_ADD, this.showAddOnNodes);
+            // utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
+            // utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
+            // utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
+
             // utils.setContext(FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
-            utils.setContext(FLAGS.SHOW_ADD, this.showAddOnNodes);
-            utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
-            utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
-            utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
 
             // utils.setContext(FLAGS.SHOW_EDITION_BODY, this.showEditionOnBody);
             // utils.setContext(FLAGS.SHOW_CLIPBOARD_BODY, this.showClipboardOnBody);

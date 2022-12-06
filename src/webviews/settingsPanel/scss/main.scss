@@ -1075,6 +1075,11 @@ fieldset {
   // justify-content: space-between;
 }
 
+.break {
+  flex-basis: 100%;
+  height: 0;
+}
+
 .settings--fixed {
   display: block;
 }

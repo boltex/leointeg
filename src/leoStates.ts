@@ -63,6 +63,11 @@ export class LeoStates {
         this._leoIntegration.setTreeViewTitle(
             p_value ? Constants.GUI.TREEVIEW_TITLE : Constants.GUI.TREEVIEW_TITLE_INTEGRATION
         );
+        if (p_value) {
+            this._leoIntegration.serverOpenedFileName = this._leoOpenedFileName; // will trigger outline pane title decorations
+        } else {
+            this._leoIntegration.serverOpenedFileName = "";
+        }
     }
 
     // * Currently opened Leo file path and name, empty string if new unsaved file.
@@ -71,6 +76,15 @@ export class LeoStates {
         return this._leoOpenedFileName;
     }
     set leoOpenedFileName(p_name: string) {
+
+        if (!p_name) {
+            p_name = "";
+        }
+        if (p_name === this._leoOpenedFileName) {
+            // same!
+            return;
+        }
+
         if (p_name && p_name.length) {
             this._leoOpenedFileName = p_name;
             this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, true);
@@ -78,6 +92,8 @@ export class LeoStates {
             this._leoOpenedFileName = "";
             this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, false);
         }
+        // is new so make sure it's also the same.
+        this._leoIntegration.serverOpenedFileName = p_name; // will trigger outline pane title decorations
     }
 
     // * 'states' flags for currently opened tree view
@@ -91,6 +107,7 @@ export class LeoStates {
             this._leoIntegration.refreshDocumentsPane();
         }
         this._leoChanged = p_value;
+        this._leoIntegration.setTreeViewTitle(); // Will refresh the '*' to signify document changed.
         this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_CHANGED, p_value);
     }
 

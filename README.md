@@ -16,7 +16,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Requirements
 
-- Leo Editor 6.7 or later\
+- Leo Editor 6.7.1 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -88,10 +88,12 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 | Tree Navigation    |     |                 |                             |
 | :----------------- | :-- | :-------------- | :-------------------------- |
-| `Alt + Home`       | or  | `Home` \*       | Scroll to top of outline    |
-|                    |     | `End` \*        | Scroll to bottom of outline |
-|                    |     | `PgUp` \*       | Go To First Sibling          |
-| `Alt + End`        | or  | `PdDn` \*       | Go To Last Sibling          |
+| `Ctrl+Shift+L`     |     |                 | Show the LeoInteg View      |
+| `Ctrl+Shift+P`     |     |                 | Go Anywhere                 |
+| `Alt + Home`       | or  | `Home` \*       | Scroll to Top of Outline    |
+|                    |     | `End` \*        | Scroll to Bottom of Outline |
+| `PgUp / pgDn`      |     |                 | 'Tree' Page-Up/Down         |
+| `Alt + End`        |     |                 | Go To Last Sibling          |
 | `Alt + N`          |     |                 | Go To Next Clone            |
 | `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree                 |
 | `Alt + G`          |     |                 | Go To Global Line           |

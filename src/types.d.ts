@@ -18,8 +18,14 @@ export interface ConfigMembers {
     leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
+
+    leoCollapseAllShortcut: boolean;
+    leoActivityViewShortcut: boolean;
+    leoGoAnywhereShortcut: boolean;
+
     // statusBarString: string;
     statusBarColor: string;
+
     treeInExplorer: boolean;
     showOpenAside: boolean;
     showEditOnNodes: boolean;
@@ -195,6 +201,8 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
+    branch?: string;
+    commit?: string;
     chapters?: string[], // get_chapters
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
@@ -205,6 +213,8 @@ export interface LeoBridgePackage {
         changed: boolean,
         fileName: string;
     }
+    "position-data-list"?: ArchivedPosition[];
+    "position-data-dict"?: { [key: string]: ArchivedPosition };
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
@@ -325,8 +335,8 @@ export interface LeoGuiFindTabManagerSettings {
  * * Icon path names used in leoNodes for rendering in treeview
  */
 export interface Icon {
-    light: string;
-    dark: string;
+    light: string | vscode.Uri;
+    dark: string | vscode.Uri;
 }
 
 /**
@@ -405,6 +415,10 @@ export interface runInfoMessageDialogParameters {
  */
 export interface AskMessageItem extends vscode.MessageItem {
     value: string;
+}
+
+export interface ChosePositionItem extends vscode.QuickPickItem {
+    position: ArchivedPosition;
 }
 
 /**

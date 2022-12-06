@@ -1,5 +1,19 @@
 # Change Log
 
+## 1.0.10
+
+- Added 'navigation' flag to 'goto_next_clone' and 'goto_next_marked' commands to force open body and outline if not visible.
+- fixed icon path string generation.
+- Added icons to the undo pane.
+- Added asterisk to outline title to flag 'changed' document.
+- Added branch info, and opened-file description to outline title: requires Leo 6.7.1
+- Improved page-up/page-down behavior when already on first/last sibling.
+- Added the Ctrl+Shift+L keyboard shortcut to reveal the 'LeoInteg' view in the activity bar. (Can be toggled via config setting)
+- The Alt+'-' keyboard shortcut that also applies by default to vscode's explorer view when focus is outside LeoInteg's panels, can now be toggled via config setting.
+- Changed the behavior of the 'Go Anywhere' command to offer a quick-input search control to search headlines.
+- The 'Go Anywhere' command is also now exposed as the Ctrl+P keyboard shortcut, replacing vscode's 'Go to File' command when focus is in any LeoInteg's panel. (Can be toggled via config setting)
+- Fixed colorization of section references, along with support for @color and @nocolor directives.
+
 ## 1.0.9
 
 - Fixed minibuffer history order.

@@ -20,7 +20,8 @@ import {
     LeoSearchSettings,
     ChooseRClickItem,
     RClick,
-    LeoGotoNavKey
+    LeoGotoNavKey,
+    ChosePositionItem
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -64,6 +65,7 @@ export class LeoIntegration {
 
     // * Icon Paths
     public nodeIcons: Icon[] = []; // Singleton static array of all icon paths used for rendering in treeview
+    public undoIcons: Icon[] = [];
     public documentIcons: Icon[] = [];
     public buttonIcons: Icon[] = [];
     public gotoIcons: Icon[] = [];
@@ -93,8 +95,41 @@ export class LeoIntegration {
     }
 
     public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
-    public serverOpenedFileName: string = ""; // Server last reported opened file name.
-    public serverOpenedNode: ArchivedPosition | undefined; // Server last reported opened file name.
+    private _serverOpenedFileName: string = ""; // Server last reported opened file name.
+    get serverOpenedFileName(): string {
+        return this._serverOpenedFileName;
+    }
+    set serverOpenedFileName(s: string) {
+        let w_isNew = false;
+        if (this._serverOpenedFileName !== s) {
+            this._serverOpenedFileName = s;
+            this.leoStates.leoOpenedFileName = s; // In case context flag not set yet.
+            w_isNew = true;
+        }
+
+        // Add to desc.
+        let w_desc = "";
+        const w_filename = s ? utils.getFileFromPath(s) : Constants.UNTITLED_FILE_NAME;
+        let w_path = "";
+        const n = s ? s.lastIndexOf(w_filename) : -1;
+        if (n >= 0 && n + w_filename.length >= s.length) {
+            w_path = s.substring(0, n);
+        }
+        w_desc = w_filename + (w_path ? " in " + w_path : '');
+
+        if (this._titleDesc !== w_desc) {
+            this._titleDesc = w_desc;
+            this.refreshDesc();
+        }
+        if (w_isNew && s) {
+            // save to workspace 'last active file' momento.
+            utils.setGlobalLastActiveFile(this._context, s);
+        }
+
+    }
+    private _titleDesc = "";
+
+    public serverOpenedNode: ArchivedPosition | undefined; // Server last reported opened node.
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
     // * Outline Pane
@@ -219,6 +254,9 @@ export class LeoIntegration {
     private _bodyLastChangedDocument: vscode.TextDocument | undefined; // Only set in _onDocumentChanged
     private _bodyLastChangedDocumentSaved: boolean = true; // don't use 'isDirty' of the document!
 
+    // * Debounced method used to refresh the outline-tree title desc
+    public refreshDesc: (() => void);
+
     // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
     public getStates: (() => void);
 
@@ -228,7 +266,7 @@ export class LeoIntegration {
     // * Debounced method used to get content of the at-buttons pane
     public refreshButtonsPane: (() => void);
 
-    // * Debounced method used to get content of the at-buttons pane
+    // * Debounced method used to get content of the goto pane
     public refreshGotoPane: (() => void);
 
     // * Debounced method used to get content of the undos pane
@@ -262,6 +300,7 @@ export class LeoIntegration {
 
         // * Build Icon filename paths
         this.nodeIcons = utils.buildNodeIconPaths(_context);
+        this.undoIcons = utils.buildUndoIconPaths(_context);
         this.documentIcons = utils.buildDocumentIconPaths(_context);
         this.buttonIcons = utils.buildButtonsIconPaths(_context);
         this.gotoIcons = utils.buildGotoIconPaths(_context);
@@ -489,40 +528,37 @@ export class LeoIntegration {
             )
         );
         // * Debounced refresh flags and UI parts, other than the tree and body
+        this.refreshDesc = debounce(
+            this._refreshDesc,
+            Constants.OUTLINE_DESC_DEBOUNCE_DELAY
+        );
         this.getStates = debounce(
             this._triggerGetStates,
-            Constants.STATES_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.STATES_DEBOUNCE_DELAY
         );
         this.refreshDocumentsPane = debounce(
             this._refreshDocumentsPane,
-            Constants.DOCUMENTS_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.DOCUMENTS_DEBOUNCE_DELAY
         );
         this.refreshButtonsPane = debounce(
             this._refreshButtonsPane,
-            Constants.BUTTONS_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.BUTTONS_DEBOUNCE_DELAY
         );
         this.refreshGotoPane = debounce(
             this._refreshGotoPane,
-            Constants.GOTO_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.GOTO_DEBOUNCE_DELAY
         );
         this.refreshUndoPane = debounce(
             this._refreshUndoPane,
-            Constants.UNDOS_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.UNDOS_DEBOUNCE_DELAY
         );
         this.setUndoSelection = debounce(
             this._setUndoSelection,
-            Constants.UNDOS_REVEAL_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.UNDOS_REVEAL_DEBOUNCE_DELAY
         );
         this.launchRefresh = debounce(
             this._launchRefresh,
-            Constants.REFRESH_DEBOUNCE_DELAY,
-            { leading: false, trailing: true }
+            Constants.REFRESH_DEBOUNCE_DELAY
         );
 
     }
@@ -866,23 +902,24 @@ export class LeoIntegration {
      * * Checks the server version and pops up a message to the user if an update is possible
      */
     public checkVersion(): void {
-
-        this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_result: LeoBridgePackage) => {
-            // major: 1, minor: 0, patch: 4
-            let ok = false;
-            if (p_result && p_result.major !== undefined && p_result.minor !== undefined && p_result.patch !== undefined) {
-                // 1.0.4
-                if (p_result.major >= 1 && p_result.minor >= 0 && p_result.patch >= 4) {
-                    ok = true;
+        this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_rv: LeoBridgePackage) => {
+            let w_ok = false;
+            let w_sv = Constants.MIN_SERVER_VERSION_NUMBER;
+            if (p_rv && p_rv.major !== undefined && p_rv.minor !== undefined && p_rv.patch !== undefined) {
+                if (
+                    p_rv.major > w_sv.minMajor ||
+                    p_rv.major === w_sv.minMajor && p_rv.minor > w_sv.minMinor ||
+                    p_rv.major === w_sv.minMajor && p_rv.minor === w_sv.minMinor && p_rv.patch >= w_sv.minPatch
+                ) {
+                    w_ok = true;
                 }
             }
-            if (!ok) {
+            if (!w_ok) {
                 vscode.window.showErrorMessage(
-                    Constants.USER_MESSAGES.MINIMUM_VERSION
+                    Constants.USER_MESSAGES.MINIMUM_LEO_VERSION_STRING
                 );
             }
         });
-
     }
 
     /**
@@ -940,25 +977,70 @@ export class LeoIntegration {
                     this.leoStates.leoStartupFinished = true;
 
                     if (p_openFileResult.total) {
-                        this.serverHasOpenedFile = true;
-                        this.serverOpenedFileName = p_openFileResult.filename!;
-                        this.serverOpenedNode = p_openFileResult.node!;
 
-                        this.loadSearchSettings();
-                        this.setupRefresh(
-                            this.finalFocus,
-                            {
-                                tree: true,
-                                body: true,
-                                documents: true,
-                                buttons: true,
-                                states: true,
-                                goto: true,
-                            },
-                            p_openFileResult.node
-                        );
-                        this.launchRefresh();
-                        return p_openFileResult;
+                        let q_finalResult: Promise<LeoBridgePackage>;
+
+                        // Check for last active Leo document
+                        const w_lastActive = utils.getGlobalLastActiveFile(this._context);
+
+                        //  Need to switch ?
+                        if (w_lastActive && p_openFileResult.filename! !== w_lastActive) {
+                            // Call server "get all opened commanders"
+                            q_finalResult = this.sendAction(
+                                Constants.LEOBRIDGE.GET_OPENED_FILES
+                            ).then((p_openedFiles) => {
+                                const w_files: LeoDocument[] = p_openedFiles.files || [];
+                                let w_index: number = 0;
+                                let w_indexToSelect: number = -1;
+                                if (w_files && w_files.length) {
+                                    w_files.forEach((i_file: LeoDocument) => {
+                                        i_file.index = w_index;
+                                        if (i_file.name === w_lastActive) {
+                                            w_indexToSelect = w_index;
+                                        }
+                                        w_index++;
+                                    });
+                                }
+                                if (w_indexToSelect >= 0) {
+                                    // found it!
+
+                                    // Select from list if present, by index with "set opened file"
+                                    return this.sendAction(
+                                        Constants.LEOBRIDGE.SET_OPENED_FILE, { index: w_indexToSelect }
+                                    );
+                                } else {
+                                    // return default package
+                                    return p_openedFiles;
+                                }
+                            });
+                        } else {
+                            q_finalResult = Promise.resolve(p_openFileResult);
+                        }
+
+                        q_finalResult.then((p_fileResult) => {
+
+                            this.serverHasOpenedFile = true;
+                            this.serverOpenedFileName = p_fileResult.filename!;
+                            this.serverOpenedNode = p_fileResult.node!;
+
+                            this.loadSearchSettings();
+                            this.setupRefresh(
+                                this.finalFocus,
+                                {
+                                    tree: true,
+                                    body: true,
+                                    documents: true,
+                                    buttons: true,
+                                    states: true,
+                                    goto: true,
+                                },
+                                p_fileResult.node
+                            );
+                            this.launchRefresh();
+                            return p_fileResult;
+                        });
+
+                        return q_finalResult;
 
                     } else {
                         this.serverHasOpenedFile = false;
@@ -1142,10 +1224,12 @@ export class LeoIntegration {
         this.leoStates.fileOpenedReady = false;
         this._bodyTextDocument = undefined;
         this.lastSelectedNode = undefined;
+        utils.setGlobalLastActiveFile(this._context, "");
         this._refreshOutline(false, RevealType.NoReveal);
         this.refreshDocumentsPane();
         this.refreshButtonsPane();
         this.refreshUndoPane();
+        this._leoStatusBar.hide();
         this.closeBody();
     }
 
@@ -1188,7 +1272,7 @@ export class LeoIntegration {
         }
 
         this._leoStatusBar.update(true, 0, true);
-        this._leoStatusBar.show(); // Just selected a node
+        this._leoStatusBar.show();
         this.sendConfigToServer(this.config.getConfig());
         this.loadSearchSettings();
 
@@ -1567,6 +1651,40 @@ export class LeoIntegration {
     }
 
     /**
+     * * Refresh the outline's description (debounced):
+     * <branch>: <filename> in <path>
+     */
+    private _refreshDesc(): void {
+        if (this.leoStates.fileOpenedReady) {
+
+            this.sendAction(
+                Constants.LEOBRIDGE.GET_BRANCH
+            ).then(
+                (p_result: LeoBridgePackage) => {
+                    let w_branch = "";
+                    if (p_result && p_result.branch) {
+                        w_branch = p_result.branch + ": ";
+                    }
+
+                    if (this._leoTreeView) {
+                        this._leoTreeView.description = w_branch + this._titleDesc;
+                    }
+                    if (this._leoTreeExView) {
+                        this._leoTreeExView.description = w_branch + this._titleDesc;
+                    }
+                }
+            );
+        } else {
+            if (this._leoTreeView) {
+                this._leoTreeView.description = "";
+            }
+            if (this._leoTreeExView) {
+                this._leoTreeExView.description = "";
+            }
+        }
+    }
+
+    /**
      * * Capture instance for further calls on find panel webview
      * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
      */
@@ -1724,6 +1842,7 @@ export class LeoIntegration {
 
     /**
      * * Sets the outline pane top bar string message or refreshes with existing title if no title passed
+     * * This includes the '*' asterisk that signifies 'document changed'
      * @param p_title new string to replace the current title
      */
     public setTreeViewTitle(p_title?: string): void {
@@ -1731,13 +1850,15 @@ export class LeoIntegration {
             this._currentOutlineTitle = p_title;
         }
         // * Set/Change outline pane title e.g. "INTEGRATION", "OUTLINE"
+        const w_changed = this.leoStates.fileOpenedReady && this._serverOpenedFileName && this.leoStates.leoChanged ? "*" : "";
         if (this._leoTreeView) {
-            this._leoTreeView.title = this._currentOutlineTitle;
+            this._leoTreeView.title = this._currentOutlineTitle + w_changed;
         }
         if (this._leoTreeExView) {
             this._leoTreeExView.title =
-                Constants.GUI.EXPLORER_TREEVIEW_PREFIX + this._currentOutlineTitle;
+                Constants.GUI.EXPLORER_TREEVIEW_PREFIX + this._currentOutlineTitle + w_changed;
         }
+        this.refreshDesc();
     }
 
     /**
@@ -1913,6 +2034,17 @@ export class LeoIntegration {
             }
         };
         const q_result = this._commandStack.add(w_command);
+
+        if (q_result) {
+            q_result.then((p_doNothingPackage) => {
+                if (p_doNothingPackage.commander) {
+                    p_doNothingPackage.filename = p_doNothingPackage.commander.fileName;
+                    this.serverOpenedFileName = p_doNothingPackage.filename;
+                    this.serverOpenedNode = p_doNothingPackage.node!;
+                }
+            });
+        }
+
         return q_result;
     }
 
@@ -2709,7 +2841,7 @@ export class LeoIntegration {
                 // console.log('WRAP: ', w_wrap);
 
                 // Replace language string if in 'exceptions' array
-                w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
+                w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
 
                 let w_debugMessage = "";
                 let w_needRefreshFlag = false;
@@ -3671,6 +3803,76 @@ export class LeoIntegration {
     }
 
     /**
+     * * Mimic vscode's CTRL+P to find any position by it's headline
+     */
+    public async gotoAnywhere(): Promise<unknown> {
+        await this._isBusyTriggerSave(false);
+
+        const q_positions: Thenable<vscode.QuickPickItem[]> = this.sendAction(
+            Constants.LEOBRIDGE.GET_POSITION_DATA
+        ).then((p_result: LeoBridgePackage) => {
+            if (p_result["position-data-dict"]) {
+
+                const allPositions: ChosePositionItem[] = [];
+                // Options for date to look like : Saturday, September 17, 2016
+                const w_dateOptions: Intl.DateTimeFormatOptions = { weekday: "long", year: 'numeric', month: "long", day: 'numeric' };
+
+                Object.values(p_result["position-data-dict"]).forEach(p_position => {
+                    let w_description = p_position.gnx; // Defaults as gnx.
+                    const w_gnxParts = w_description.split('.');
+                    if (w_gnxParts.length === 3 && w_gnxParts[1].length === 14) {
+                        // legit 3 part gnx
+                        const dateString = w_gnxParts[1];
+                        const w_year = +dateString.substring(0, 4); // unary + operator to convert the strings to numbers.
+                        const w_month = +dateString.substring(4, 6);
+                        const w_day = +dateString.substring(6, 8);
+                        const w_date = new Date(w_year, w_month - 1, w_day);
+                        w_description = `by ${w_gnxParts[0]} on ${w_date.toLocaleDateString("en-US", w_dateOptions)}`;
+                    }
+                    allPositions.push({
+                        label: p_position.headline,
+                        position: p_position,
+                        description: w_description
+                    });
+                });
+
+                return allPositions;
+            } else {
+                return [];
+            }
+        });
+
+        const w_options: vscode.QuickPickOptions = {
+            placeHolder: Constants.USER_MESSAGES.SEARCH_POSITION_BY_HEADLINE
+        };
+
+        const p_picked = await vscode.window.showQuickPick(q_positions, w_options);
+
+        if (p_picked && p_picked.label) {
+            return this.sendAction(
+                Constants.LEOBRIDGE.SET_SELECTED_NODE,
+                utils.buildNodeCommand((p_picked as ChosePositionItem).position)
+            ).then((p_resultTag: LeoBridgePackage) => {
+                this.setupRefresh(
+                    Focus.Body, // Finish in body pane given explicitly because last focus was in input box.
+                    {
+                        tree: true,
+                        body: true,
+                        // documents: false,
+                        // buttons: false,
+                        states: true,
+                    },
+                    p_resultTag.node
+                );
+                this.launchRefresh();
+            });
+        }
+
+        return Promise.resolve(undefined); // Canceled
+
+    }
+
+    /**
      * * Opens user interface to choose chapter
      * Offers choices of chapters below the input dialog to choose from,
      * and selects the chosen - or typed - chapter
@@ -3783,7 +3985,7 @@ export class LeoIntegration {
     public async findQuickTimeline(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE);
         this._leoGotoProvider.refreshTreeRoot();
-        return this.findQuickGoAnywhere();
+        return this.showGotoPane();
     }
 
 
@@ -3793,7 +3995,7 @@ export class LeoIntegration {
     public async findQuickChanged(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED);
         this._leoGotoProvider.refreshTreeRoot();
-        return this.findQuickGoAnywhere();
+        return this.showGotoPane();
     }
 
     /**
@@ -3802,7 +4004,7 @@ export class LeoIntegration {
     public async findQuickHistory(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY);
         this._leoGotoProvider.refreshTreeRoot();
-        return this.findQuickGoAnywhere();
+        return this.showGotoPane();
     }
 
     /**
@@ -3811,13 +4013,13 @@ export class LeoIntegration {
     public async findQuickMarked(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
         this._leoGotoProvider.refreshTreeRoot();
-        return this.findQuickGoAnywhere();
+        return this.showGotoPane();
     }
 
     /**
      * * Opens goto and focus in depending on passed options
      */
-    public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable<unknown> {
+    public showGotoPane(p_options?: { preserveFocus?: boolean }): Thenable<unknown> {
         let w_panel = "";
         if (this._lastTreeView === this._leoTreeExView) {
             w_panel = Constants.GOTO_EXPLORER_ID;
@@ -3863,7 +4065,7 @@ export class LeoIntegration {
             setTimeout(async () => {
                 await this.sendAction(Constants.LEOBRIDGE.NAV_SEARCH);
                 this._leoGotoProvider.refreshTreeRoot();
-                await this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+                await this.showGotoPane({ preserveFocus: true }); // show but dont change focus
             }, 10);
 
         } else if (p_node.entryType !== 'generic' && p_node.entryType !== 'parent') {
@@ -3922,7 +4124,7 @@ export class LeoIntegration {
             Constants.LEOBRIDGE.NAV_SEARCH
         );
         this._leoGotoProvider.refreshTreeRoot();
-        this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+        this.showGotoPane({ preserveFocus: true }); // show but dont change focus
         return w_package;
     }
 
@@ -3935,7 +4137,7 @@ export class LeoIntegration {
             Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH
         );
         this._leoGotoProvider.refreshTreeRoot();
-        this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+        this.showGotoPane({ preserveFocus: true }); // show but dont change focus
         return w_package;
     }
 

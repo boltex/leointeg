@@ -109,12 +109,6 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             finalFocus: Focus.Body
         })],
-        [CMD.REFRESH_FROM_DISK_SELECTION_FO, () => w_leo.nodeCommand({
-            action: BRIDGE.REFRESH_FROM_DISK_PNODE,
-            node: U,
-            refreshType: REFRESH_TREE_BODY,
-            finalFocus: Focus.Outline
-        })],
 
         [CMD.WRITE_AT_FILE_NODES, () => w_leo.nodeCommand({
             action: BRIDGE.WRITE_AT_FILE_NODES,
@@ -225,26 +219,26 @@ export function activate(p_context: vscode.ExtensionContext) {
             node: p_ap,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
         [CMD.GOTO_NEXT_CLONE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: U,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Body
-        })],
+        }, true)],
         [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: U,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
 
         [CMD.GOTO_NEXT_MARKED, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_MARKED,
             node: U,
             refreshType: REFRESH_NODE_BODY,
             finalFocus: Focus.Outline
-        })],
+        }, true)],
         [CMD.GOTO_FIRST_SIBLING, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_FIRST_SIBLING,
             node: U,
@@ -364,7 +358,8 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.CLONE_PNODE,
             node: p_ap,
             refreshType: REFRESH_TREE_BODY,
-            finalFocus: Focus.Outline
+            finalFocus: Focus.Outline,
+            keepSelection: true
         })],
         [CMD.CLONE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.CLONE_PNODE,
@@ -665,7 +660,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.FIND_QUICK_CHANGED, () => w_leo.findQuickChanged()],
         [CMD.FIND_QUICK_HISTORY, () => w_leo.findQuickHistory()],
         [CMD.FIND_QUICK_MARKED, () => w_leo.findQuickMarked()],
-        [CMD.FIND_QUICK_GO_ANYWHERE, () => w_leo.findQuickGoAnywhere()],
+        [CMD.FIND_QUICK_GO_ANYWHERE, () => w_leo.gotoAnywhere()],
 
         [CMD.GOTO_NAV_PREV, () => w_leo.navigateNavEntry(LeoGotoNavKey.prev)],
         [CMD.GOTO_NAV_NEXT, () => w_leo.navigateNavEntry(LeoGotoNavKey.next)],

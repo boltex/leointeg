@@ -43,6 +43,7 @@ export class Constants {
     public static UNTITLED_FILE_NAME: string = "untitled";
     public static RECENT_FILES_KEY: string = "leoRecentFiles";
     public static LAST_FILES_KEY: string = "leoLastFiles";
+    public static LAST_ACTIVE_FILE_KEY: string = "leoLastActiveFile";
 
     public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";
@@ -63,9 +64,19 @@ export class Constants {
     public static REFRESH_DEBOUNCE_DELAY: number = 50;
     public static STATES_DEBOUNCE_DELAY: number = 100;
     public static BODY_STATES_DEBOUNCE_DELAY: number = 140;
+    public static OUTLINE_DESC_DEBOUNCE_DELAY: number = 250;
     public static GOTO_DEBOUNCE_DELAY: number = 50;
 
     public static LOG_ALERT_COLOR: string = 'red';
+
+    /**
+     * * Minimal Leo Editor and Leo server versions
+     */
+    public static MIN_SERVER_VERSION_NUMBER = {
+        minMajor: 1,
+        minMinor: 0,
+        minPatch: 5
+    };
 
     /**
      * * Find panel controls ids
@@ -100,6 +111,15 @@ export class Constants {
         ICON_LIGHT_TAG: "resources/light/tag.svg",
         ICON_DARK_TAG: "resources/dark/tag.svg",
 
+        ICON_LIGHT_UNDO_ACTIVE: "resources/light/undo.svg",
+        ICON_DARK_UNDO_ACTIVE: "resources/dark/undo.svg",
+        ICON_LIGHT_UNDO: "resources/dark/undo.svg",
+        ICON_DARK_UNDO: "resources/light/undo.svg",
+        ICON_LIGHT_REDO_ACTIVE: "resources/light/redo.svg",
+        ICON_DARK_REDO_ACTIVE: "resources/dark/redo.svg",
+        ICON_LIGHT_REDO: "resources/dark/redo.svg",
+        ICON_DARK_REDO: "resources/light/redo.svg",
+
         ICON_LIGHT_DOCUMENT: "resources/light/document.svg",
         ICON_DARK_DOCUMENT: "resources/dark/document.svg",
         ICON_LIGHT_DOCUMENT_DIRTY: "resources/light/document-dirty.svg",
@@ -124,7 +144,6 @@ export class Constants {
         TREEVIEW_TITLE_INTEGRATION: "INTEGRATION",
         BODY_TITLE: "LEO BODY",
         LOG_PANE_TITLE: "Leo Log Window",
-        TERMINAL_PANE_TITLE: "LeoBridge Server",
         THEME_STATUSBAR: "statusBar.foreground"
     };
 
@@ -183,6 +202,7 @@ export class Constants {
         YES_ALL: "Yes to all",
         NO_ALL: "No to all",
         CHOOSE_BUTTON: "Choose @button or @rclick",
+        SEARCH_POSITION_BY_HEADLINE: "Search positions by headline",
         MINIBUFFER_PROMPT: "Minibuffer Full Command",
         SELECT_CHAPTER_PROMPT: "Select chapter",
         SET_UA_NAME_TITLE: "Set ua",
@@ -195,7 +215,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_VERSION: "Please update: Leo 6.7 required.",
+        MINIMUM_LEO_VERSION_STRING: "Please update: Leo 6.7.1 required.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
@@ -260,27 +280,33 @@ export class Constants {
         LEO_TREE_BROWSE: "leoTreeBrowse",
         TREE_KEEP_FOCUS: "treeKeepFocus",
         TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
-        STATUSBAR_STRING: "statusBarString",
+
+        COLLAPSE_ALL_SHORTCUT: "leoCollapseAllShortcut",
+        ACTIVITY_VIEW_SHORTCUT: "leoActivityViewShortcut",
+        GO_ANYWHERE_SHORTCUT: "leoGoAnywhereShortcut",
+
+        // STATUSBAR_STRING: "statusBarString",
         STATUSBAR_COLOR: "statusBarColor",
+
         TREE_IN_EXPLORER: "treeInExplorer",
         SHOW_OPEN_ASIDE: "showOpenAside",
         SHOW_EDIT: "showEditOnNodes",
-        SHOW_ARROWS: "showArrowsOnNodes",
+        // SHOW_ARROWS: "showArrowsOnNodes",
         SHOW_ADD: "showAddOnNodes",
         SHOW_MARK: "showMarkOnNodes",
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
 
-        SHOW_EDITION_BODY: "showEditionOnBody",
-        SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
-        SHOW_PROMOTE_BODY: "showPromoteOnBody",
-        SHOW_EXECUTE_BODY: "showExecuteOnBody",
-        SHOW_EXTRACT_BODY: "showExtractOnBody",
-        SHOW_IMPORT_BODY: "showImportOnBody",
-        SHOW_REFRESH_BODY: "showRefreshOnBody",
-        SHOW_HOIST_BODY: "showHoistOnBody",
-        SHOW_MARK_BODY: "showMarkOnBody",
-        SHOW_SORT_BODY: "showSortOnBody",
+        // SHOW_EDITION_BODY: "showEditionOnBody",
+        // SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
+        // SHOW_PROMOTE_BODY: "showPromoteOnBody",
+        // SHOW_EXECUTE_BODY: "showExecuteOnBody",
+        // SHOW_EXTRACT_BODY: "showExtractOnBody",
+        // SHOW_IMPORT_BODY: "showImportOnBody",
+        // SHOW_REFRESH_BODY: "showRefreshOnBody",
+        // SHOW_HOIST_BODY: "showHoistOnBody",
+        // SHOW_MARK_BODY: "showMarkOnBody",
+        // SHOW_SORT_BODY: "showSortOnBody",
 
         INVERT_NODES: "invertNodeContrast",
         LEO_EDITOR_PATH: "leoEditorPath",
@@ -304,7 +330,12 @@ export class Constants {
         LEO_TREE_BROWSE: true,
         TREE_KEEP_FOCUS: true,
         TREE_KEEP_FOCUS_WHEN_ASIDE: false,
-        STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
+
+        COLLAPSE_ALL_SHORTCUT: true,
+        ACTIVITY_VIEW_SHORTCUT: true,
+        GO_ANYWHERE_SHORTCUT: true,
+
+        // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
         STATUSBAR_COLOR: "fb7c47",
         TREE_IN_EXPLORER: true,
         SHOW_OPEN_ASIDE: true,
@@ -391,28 +422,31 @@ export class Constants {
         DOCUMENT_UNTITLED: "leoDocumentUntitled",
 
         // Flags that match specific LeoInteg config settings
-        LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
-        TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
-        SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
-        SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,              // Hover Icons on outline nodes
-        SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,           // Hover Icons on outline nodes
-        SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                 // Hover Icons on outline nodes
-        SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,               // Hover Icons on outline nodes
-        SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
-        SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
-        AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
-        AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
+        // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
+        // TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
+        // SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
+        // SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,              // Hover Icons on outline nodes
+        // SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,           // Hover Icons on outline nodes
+        // SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                 // Hover Icons on outline nodes
+        // SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,               // Hover Icons on outline nodes
+        // SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
+        // SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
+        // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
+        // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
 
-        SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
-        SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
-        SHOW_PROMOTE_BODY: Constants.CONFIG_NAMES.SHOW_PROMOTE_BODY,
-        SHOW_EXECUTE_BODY: Constants.CONFIG_NAMES.SHOW_EXECUTE_BODY,
-        SHOW_EXTRACT_BODY: Constants.CONFIG_NAMES.SHOW_EXTRACT_BODY,
-        SHOW_IMPORT_BODY: Constants.CONFIG_NAMES.SHOW_IMPORT_BODY,
-        SHOW_REFRESH_BODY: Constants.CONFIG_NAMES.SHOW_REFRESH_BODY,
-        SHOW_HOIST_BODY: Constants.CONFIG_NAMES.SHOW_HOIST_BODY,
-        SHOW_MARK_BODY: Constants.CONFIG_NAMES.SHOW_MARK_BODY,
-        SHOW_SORT_BODY: Constants.CONFIG_NAMES.SHOW_SORT_BODY
+        AUTO_CONNECT: 'leoAutoConnect',             // Used at startup by 'views-welcome'
+        AUTO_START_SERVER: 'leoAutoStartServer',   // Used at startup by 'views-welcome'
+
+        // SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
+        // SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
+        // SHOW_PROMOTE_BODY: Constants.CONFIG_NAMES.SHOW_PROMOTE_BODY,
+        // SHOW_EXECUTE_BODY: Constants.CONFIG_NAMES.SHOW_EXECUTE_BODY,
+        // SHOW_EXTRACT_BODY: Constants.CONFIG_NAMES.SHOW_EXTRACT_BODY,
+        // SHOW_IMPORT_BODY: Constants.CONFIG_NAMES.SHOW_IMPORT_BODY,
+        // SHOW_REFRESH_BODY: Constants.CONFIG_NAMES.SHOW_REFRESH_BODY,
+        // SHOW_HOIST_BODY: Constants.CONFIG_NAMES.SHOW_HOIST_BODY,
+        // SHOW_MARK_BODY: Constants.CONFIG_NAMES.SHOW_MARK_BODY,
+        // SHOW_SORT_BODY: Constants.CONFIG_NAMES.SHOW_SORT_BODY
 
     };
 
@@ -507,6 +541,7 @@ export class Constants {
         // * Leo Documents
         GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles",
         SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile",
+        GET_BRANCH: "!get_branch",
         OPEN_FILE: "!open_file", // "openFile",
         OPEN_FILES: "!open_files", //  "openFiles",
         CLOSE_FILE: "!close_file", // "closeFile",
@@ -604,6 +639,8 @@ export class Constants {
         FIND_QUICK_MARKED: "!find_quick_marked",
         GOTO_NAV_ENTRY: "!goto_nav_entry",
 
+        GET_ALL_POSITIONS: "!get_all_positions",
+        GET_POSITION_DATA: "!get_position_data",
         GET_SEARCH_SETTINGS: "!get_search_settings",
         SET_SEARCH_SETTINGS: "!set_search_settings",
         START_SEARCH: "!start_search",
@@ -776,7 +813,6 @@ export class Constants {
         CLONE_SELECTION_FO: Constants.NAME + ".cloneNodeSelectionFromOutline",
         PROMOTE_SELECTION_FO: Constants.NAME + ".promoteSelectionFromOutline",
         DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
-        REFRESH_FROM_DISK_SELECTION_FO: Constants.NAME + ".refreshFromDiskSelectionFromOutline",
         HOIST: Constants.NAME + ".hoistNode",
         HOIST_SELECTION: Constants.NAME + ".hoistSelection",
         HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",

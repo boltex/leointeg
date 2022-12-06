@@ -37,7 +37,7 @@
       <section id="welcome"
                class="section--full mb-0">
         <h2 class="section__title section__title--primary">
-          Welcome to <span class="highlight">LeoInteg 1.0.9</span>
+          Welcome to <span class="highlight">LeoInteg 1.0.10</span>
         </h2>
         <div class="center mt-1">
           <a class="button button--flat is-sidebar-hidden "
@@ -48,7 +48,7 @@
           <a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features">
-            See What's New in LeoInteg 1.0.9
+            See What's New in LeoInteg 1.0.10
           </a>
         </div>
         <p class="blurb center ml-0 mr-0">
@@ -61,9 +61,12 @@
           is an open-source extension created by
           <a class="bold"
              title="My github user page"
-             href="https://boltex.github.io/">Félix</a> that integrates <a class="bold"
+             href="https://boltex.github.io/">Félix</a>
+          that integrates
+          <a class="bold"
              title="Learn more about Leo"
-             href="https://leoeditor.com/">Leo</a> into VS Code.
+             href="https://leoeditor.com/">Leo</a>
+          into VS Code.
           <!--
           LeoInteg is designed to <b>provide Leo's functionality</b>
           and can be <b>customized</b> to meet your needs.
@@ -283,7 +286,7 @@
               </div>
               <span class="setting__hint">Keep focus in the outline when selecting a node - overridden by "<strong>Leo
                   Tree
-                  Browsing"</strong></span>
+                  Browsing</strong>"</span>
             </div>
 
             <div class="setting">
@@ -295,6 +298,45 @@
                 <label for="treeKeepFocusWhenAside">Keep focus when opening on the side</label>
               </div>
               <span class="setting__hint">Keep focus in the outline when opening a body pane on the side</span>
+            </div>
+
+            <div class="break"></div>
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="leoGoAnywhereShortcut"
+                       name="leoGoAnywhereShortcut"
+                       type="checkbox"
+                       data-setting />
+                <label for="leoGoAnywhereShortcut">Replace 'Go to File' shortcut with 'Go Anywhere'</label>
+              </div>
+              <span class="setting__hint">
+                Make <strong>[Ctrl+P]</strong> call Leo's <strong>Go Anywhere</strong>
+                instead of VSCode's <strong>Go to File</strong> when focus in the body or outline
+            </div>
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="leoCollapseAllShortcut"
+                       name="leoCollapseAllShortcut"
+                       type="checkbox"
+                       data-setting />
+                <label for="leoCollapseAllShortcut">Enable collapse-all shortcut for explorer</label>
+              </div>
+              <span class="setting__hint">Allows the <strong>[Alt+'-'] keyboard shortcut</strong>
+                to collapse folders in the file explorer</span>
+            </div>
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="leoActivityViewShortcut"
+                       name="leoActivityViewShortcut"
+                       type="checkbox"
+                       data-setting />
+                <label for="leoActivityViewShortcut">Enable 'Show LeoInteg view' shortcut</label>
+              </div>
+              <span class="setting__hint">Allows the <strong>[Ctrl+Shift+L] keyboard shortcut</strong>
+                to reveal the Leointeg Activity View</span>
             </div>
 
           </div>
@@ -342,6 +384,7 @@
             </p>
           </div>
         </div>
+        <div class="break"></div> <!-- Make sure to break line after this short title. -->
         <div class="section__preview">
           <img class="image__preview"
                src="#{root}/resources/showOpenAsideDisabled.png" />
