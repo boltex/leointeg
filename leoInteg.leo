@@ -11955,7 +11955,7 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.openAside",
-    "when": "leoIntegration.showOpenAside &amp;&amp; viewItem =~ /^leoNode/",
+    "when": "config.leoIntegration.showOpenAside &amp;&amp; viewItem =~ /^leoNode/",
     "group": "leoNodeContext1@1"
   },
   {

@@ -3042,7 +3042,7 @@
         },
         {
           "command": "leointeg.openAside",
-          "when": "leoIntegration.showOpenAside && viewItem =~ /^leoNode/",
+          "when": "config.leoIntegration.showOpenAside && viewItem =~ /^leoNode/",
           "group": "leoNodeContext1@1"
         },
         {
