@@ -3,6 +3,7 @@
 ## 1.0.11
 
 - Fixed 'openAside' context menu entry in explorer.
+- Fixed context variables used for views-welcome in package.json.
 
 ## 1.0.10
 

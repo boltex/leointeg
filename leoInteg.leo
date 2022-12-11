@@ -18353,6 +18353,7 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
 <t tx="felix.20221208001059.1">## 1.0.11
 
 - Fixed 'openAside' context menu entry in explorer.
+- Fixed context variables used for views-welcome in package.json.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
