@@ -47,15 +47,11 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                         break;
                     }
                     case 'gotFocus': {
-                        // utils.setContext("sideBarFocus", true);
-                        // utils.setContext("focusedView", "leoFindPanel");
-                        utils.setContext("leoFindFocus", true);
+                        utils.setContext(Constants.CONTEXT_FLAGS.FOCUS_FIND, true);
                         break;
                     }
                     case 'lostFocus': {
-                        // utils.setContext("sideBarFocus", false);
-                        // utils.setContext("focusedView", "");
-                        utils.setContext("leoFindFocus", false);
+                        utils.setContext(Constants.CONTEXT_FLAGS.FOCUS_FIND, false);
                         break;
                     }
                     case 'leoFindNext': {

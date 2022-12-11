@@ -346,16 +346,16 @@ export class Constants {
         SHOW_CLONE: false,
         SHOW_COPY: false,
 
-        SHOW_EDITION_BODY: true,
-        SHOW_CLIPBOARD_BODY: true,
-        SHOW_PROMOTE_BODY: true,
-        SHOW_EXECUTE_BODY: true,
-        SHOW_EXTRACT_BODY: true,
-        SHOW_IMPORT_BODY: true,
-        SHOW_REFRESH_BODY: true,
-        SHOW_HOIST_BODY: true,
-        SHOW_MARK_BODY: true,
-        SHOW_SORT_BODY: true,
+        // SHOW_EDITION_BODY: true,
+        // SHOW_CLIPBOARD_BODY: true,
+        // SHOW_PROMOTE_BODY: true,
+        // SHOW_EXECUTE_BODY: true,
+        // SHOW_EXTRACT_BODY: true,
+        // SHOW_IMPORT_BODY: true,
+        // SHOW_REFRESH_BODY: true,
+        // SHOW_HOIST_BODY: true,
+        // SHOW_MARK_BODY: true,
+        // SHOW_SORT_BODY: true,
 
         INVERT_NODES: false,
         LEO_PYTHON_COMMAND: "",
@@ -420,6 +420,9 @@ export class Constants {
         DOCUMENT_TITLED: "leoDocumentTitled",
         DOCUMENT_SELECTED_UNTITLED: "leoDocumentSelectedUntitled",
         DOCUMENT_UNTITLED: "leoDocumentUntitled",
+
+        // Flags for focus context
+        FOCUS_FIND: "leoFindFocus",
 
         // Flags that match specific LeoInteg config settings
         // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
