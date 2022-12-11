@@ -958,16 +958,16 @@ public static CONFIG_DEFAULTS = {
     SHOW_CLONE: false,
     SHOW_COPY: false,
 
-    SHOW_EDITION_BODY: true,
-    SHOW_CLIPBOARD_BODY: true,
-    SHOW_PROMOTE_BODY: true,
-    SHOW_EXECUTE_BODY: true,
-    SHOW_EXTRACT_BODY: true,
-    SHOW_IMPORT_BODY: true,
-    SHOW_REFRESH_BODY: true,
-    SHOW_HOIST_BODY: true,
-    SHOW_MARK_BODY: true,
-    SHOW_SORT_BODY: true,
+    // SHOW_EDITION_BODY: true,
+    // SHOW_CLIPBOARD_BODY: true,
+    // SHOW_PROMOTE_BODY: true,
+    // SHOW_EXECUTE_BODY: true,
+    // SHOW_EXTRACT_BODY: true,
+    // SHOW_IMPORT_BODY: true,
+    // SHOW_REFRESH_BODY: true,
+    // SHOW_HOIST_BODY: true,
+    // SHOW_MARK_BODY: true,
+    // SHOW_SORT_BODY: true,
 
     INVERT_NODES: false,
     LEO_PYTHON_COMMAND: "",
@@ -3730,34 +3730,34 @@ print('done')
 <t tx="ekr.20200815123601.30">{
   "view": "leoIntegration",
   "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !leoAutoStartServer &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting"
+  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !config.leoIntegration.startServerAutomatically &amp;&amp; !config.leoIntegration.connectToServerAutomatically &amp;&amp; !leoConnecting"
 },
 {
   "view": "leoIntegrationExplorer",
   "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !leoAutoStartServer &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting"
+  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !config.leoIntegration.startServerAutomatically &amp;&amp; !config.leoIntegration.connectToServerAutomatically &amp;&amp; !leoConnecting"
 },
 </t>
 <t tx="ekr.20200815123601.31">{
   "view": "leoIntegration",
   "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoAutoStartServer &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; config.leoIntegration.startServerAutomatically &amp;&amp; !config.leoIntegration.connectToServerAutomatically &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !config.leoIntegration.connectToServerAutomatically &amp;&amp; !leoConnecting"
 },
 {
   "view": "leoIntegrationExplorer",
   "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoAutoStartServer &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !leoAutoConnect &amp;&amp; !leoConnecting"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; config.leoIntegration.startServerAutomatically &amp;&amp; !config.leoIntegration.connectToServerAutomatically &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !config.leoIntegration.connectToServerAutomatically &amp;&amp; !leoConnecting"
 },
 </t>
 <t tx="ekr.20200815123601.33">{
   "view": "leoIntegration",
   "contents": "Connecting...",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoAutoConnect &amp;&amp; !leoConnecting &amp;&amp; !leoStartupFinished"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; config.leoIntegration.connectToServerAutomatically &amp;&amp; !leoConnecting &amp;&amp; !leoStartupFinished"
 },
 {
   "view": "leoIntegrationExplorer",
   "contents": "Connecting...",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoAutoConnect &amp;&amp; !leoConnecting &amp;&amp; !leoStartupFinished"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; config.leoIntegration.connectToServerAutomatically &amp;&amp; !leoConnecting &amp;&amp; !leoStartupFinished"
 },
 </t>
 <t tx="ekr.20200815123601.34">{
@@ -5699,6 +5699,9 @@ public static CONTEXT_FLAGS = {
     DOCUMENT_TITLED: "leoDocumentTitled",
     DOCUMENT_SELECTED_UNTITLED: "leoDocumentSelectedUntitled",
     DOCUMENT_UNTITLED: "leoDocumentUntitled",
+
+    // Flags for focus context
+    FOCUS_FIND: "leoFindFocus",
 
     // Flags that match specific LeoInteg config settings
     // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
@@ -18535,15 +18538,11 @@ import * as utils from "../utils";
                     break;
                 }
                 case 'gotFocus': {
-                    // utils.setContext("sideBarFocus", true);
-                    // utils.setContext("focusedView", "leoFindPanel");
-                    utils.setContext("leoFindFocus", true);
+                    utils.setContext(Constants.CONTEXT_FLAGS.FOCUS_FIND, true);
                     break;
                 }
                 case 'lostFocus': {
-                    // utils.setContext("sideBarFocus", false);
-                    // utils.setContext("focusedView", "");
-                    utils.setContext("leoFindFocus", false);
+                    utils.setContext(Constants.CONTEXT_FLAGS.FOCUS_FIND, false);
                     break;
                 }
                 case 'leoFindNext': {

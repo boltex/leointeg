@@ -2180,32 +2180,32 @@
       {
         "view": "leoIntegration",
         "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting || !leoBridgeReady && !leoServerStarted && !leoAutoStartServer && !leoAutoConnect && !leoConnecting"
+        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting || !leoBridgeReady && !leoServerStarted && !config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting"
       },
       {
         "view": "leoIntegrationExplorer",
         "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting || !leoBridgeReady && !leoServerStarted && !leoAutoStartServer && !leoAutoConnect && !leoConnecting"
+        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting || !leoBridgeReady && !leoServerStarted && !config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting"
       },
       {
         "view": "leoIntegration",
         "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && !leoTreeOpened && leoAutoStartServer && !leoAutoConnect && !leoConnecting || !leoBridgeReady && leoServerStarted && !leoAutoConnect && !leoConnecting"
+        "when": "!leoBridgeReady && !leoTreeOpened && config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting || !leoBridgeReady && leoServerStarted && !config.leoIntegration.connectToServerAutomatically && !leoConnecting"
       },
       {
         "view": "leoIntegrationExplorer",
         "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && !leoTreeOpened && leoAutoStartServer && !leoAutoConnect && !leoConnecting || !leoBridgeReady && leoServerStarted && !leoAutoConnect && !leoConnecting"
+        "when": "!leoBridgeReady && !leoTreeOpened && config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting || !leoBridgeReady && leoServerStarted && !config.leoIntegration.connectToServerAutomatically && !leoConnecting"
       },
       {
         "view": "leoIntegration",
         "contents": "Connecting...",
-        "when": "!leoBridgeReady && !leoTreeOpened && leoConnecting || !leoBridgeReady && !leoTreeOpened && leoAutoConnect && !leoConnecting && !leoStartupFinished"
+        "when": "!leoBridgeReady && !leoTreeOpened && leoConnecting || !leoBridgeReady && !leoTreeOpened && config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartupFinished"
       },
       {
         "view": "leoIntegrationExplorer",
         "contents": "Connecting...",
-        "when": "!leoBridgeReady && !leoTreeOpened && leoConnecting || !leoBridgeReady && !leoTreeOpened && leoAutoConnect && !leoConnecting && !leoStartupFinished"
+        "when": "!leoBridgeReady && !leoTreeOpened && leoConnecting || !leoBridgeReady && !leoTreeOpened && config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartupFinished"
       },
       {
         "view": "leoIntegration",
