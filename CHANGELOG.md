@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.12
+
+- Fixed undo pane's context menu for unchanged document.
+
 ## 1.0.11
 
 - Fixed 'openAside' context menu entry in explorer.
