@@ -68,6 +68,7 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
                                 p_bead || "unknown",
                                 w_description,
                                 (this._beadId++).toString(),
+                                "leoUndoNode",
                                 i - bead, // 0 is same (no undo) +/- undo redo.
                                 this._leoIntegration.undoIcons[w_icon]
                             );
@@ -85,6 +86,7 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
                             "Unchanged",
                             "",
                             (this._beadId++).toString(),
+                            "leoNoUndoNode",
                             0
                         );
                         w_children.push(w_node);
@@ -117,14 +119,11 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
  */
 export class LeoUndoNode extends vscode.TreeItem {
 
-    // Context string is checked in package.json with 'when' clauses
-    public contextValue: string = "leoUndoNode";
-
     constructor(
         public label: string,
         public description: string,
         public id: string,
-        // public contextValue: string,
+        public contextValue: string,
         public beadIndex: number,
         public iconPath?: Icon
 
