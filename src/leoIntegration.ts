@@ -1417,9 +1417,6 @@ export class LeoIntegration {
         p_event: vscode.TreeViewVisibilityChangeEvent,
         p_explorerView: boolean
     ): void {
-
-        if (p_explorerView) {
-        } // (Facultative/unused) Do something different if explorer view is used
         if (p_event.visible) {
             this._leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
             // this.refreshGotoPane();  // No need to refresh because no selection needs to be set
@@ -1461,12 +1458,10 @@ export class LeoIntegration {
                 this._lastFindView = this._findPanelWebviewExplorerView;
                 this.checkForceFindFocus(false);
             }
-
         } else {
             if (this._findPanelWebviewView?.visible) {
                 this._lastFindView = this._findPanelWebviewView;
                 this.checkForceFindFocus(false);
-
             }
         }
     }
@@ -4157,7 +4152,7 @@ export class LeoIntegration {
      * * Opens the find panel and focuses on the "find/replace" field, selecting all it's content.
      */
     public startSearch(): void {
-
+        this._isBusyTriggerSave(false, true);
         // already instantiated & shown ?
         let w_panel: vscode.WebviewView | undefined;
 
@@ -5996,7 +5991,7 @@ export class LeoIntegration {
      * * Reverts to a particular undo bead state
      */
     public async revertToUndo(p_undo: LeoUndoNode): Promise<any> {
-        if (p_undo.label === 'Unchanged') {
+        if (p_undo.contextValue !== 'leoUndoNode') {
             return Promise.resolve();
         }
         let action = Constants.LEOBRIDGE.REDO;

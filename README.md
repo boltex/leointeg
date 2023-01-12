@@ -71,25 +71,25 @@ Here are the most useful Commands. Most of Leo's other commands are also availab
 
 _Move Outline commands need the 'Alt' key modifier only when focus is on body pane._
 
-| Common Operations  |     |           |                     |
-| :----------------- | :-- | :-------- | :------------------ |
-| `Ctrl + T`         |     |           | Toggle Outline/Body |
-| `Tab`              | or  | `Alt + D` | Focus on Body       |
-| `Alt + T`          |     |           | Focus on Outline    |
-| `Alt + -`          |     |           | Contract All        |
-| `Ctrl + B`         |     |           | Execute Script      |
-| `Ctrl + Shift + D` |     |           | Extract             |
-| `Ctrl + Shift + N` |     |           | Extract Names       |
-| `Alt + A`          |     |           | Sort Siblings       |
-| `Ctrl + F`         |     |           | Start Search        |
-| `F3`               |     |           | Find Next           |
-| `F2`               |     |           | Find Previous       |
-| `Alt + X`          |     |           | Minibuffer Palette  |
+| Common Operations  |     |          |     |           |    |            |                     |
+| :----------------- | :-- | :------- | :-- | :-------- |:-- | :--------- | :------------------ |
+| `Ctrl + T`         |     |          |     |           |    |            | Toggle Outline/Body |
+| `Tab`              | or  | `Enter`  | or  | `Alt + D` |or  | `Ctrl + G` | Focus on Body       |
+| `Alt + T`          |     |          |     |           |    |            | Focus on Outline    |
+| `Alt + -`          |     |          |     |           |    |            | Contract All        |
+| `Ctrl + B`         |     |          |     |           |    |            | Execute Script      |
+| `Ctrl + Shift + D` |     |          |     |           |    |            | Extract             |
+| `Ctrl + Shift + N` |     |          |     |           |    |            | Extract Names       |
+| `Alt + A`          |     |          |     |           |    |            | Sort Siblings       |
+| `Ctrl + F`         |     |          |     |           |    |            | Start Search        |
+| `F3`               |     |          |     |           |    |            | Find Next           |
+| `F2`               |     |          |     |           |    |            | Find Previous       |
+| `Alt + X`          |     |          |     |           |    |            | Minibuffer Palette  |
 
 | Tree Navigation    |     |                 |                             |
 | :----------------- | :-- | :-------------- | :-------------------------- |
 | `Ctrl+Shift+L`     |     |                 | Show the LeoInteg View      |
-| `Ctrl+Shift+P`     |     |                 | Go Anywhere                 |
+| `Ctrl+P`           |     |                 | Go Anywhere                 |
 | `Alt + Home`       | or  | `Home` \*       | Scroll to Top of Outline    |
 |                    |     | `End` \*        | Scroll to Bottom of Outline |
 | `PgUp / pgDn`      |     |                 | 'Tree' Page-Up/Down         |

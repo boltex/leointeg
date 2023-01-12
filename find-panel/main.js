@@ -11,12 +11,9 @@
     let timer; // for debouncing sending the settings from this webview to leointeg
     let dirty = false; // all but nav input
     let navTextDirty = false;
-    let showNavElements = true;
 
     let firstTabElId = 'searchOptions'; // used to be 'findText' before nav inputs
     let lastTabElId = 'searchBody';
-    let firstTabEl;
-    let lastTabEl;
 
     /**
      * * Flag for freezing the nav 'search as you type' headlines (concept from original nav plugin)
@@ -29,7 +26,7 @@
     if (frozenEl) {
         frozenEl.style.display = 'none';
     }
-    let navSearchTimer // for debouncing the search-headline while typing if unfrozen
+    let navSearchTimer; // for debouncing the search-headline while typing if unfrozen
 
     // * LeoSearchSettings Type
     let searchSettings = {
@@ -67,7 +64,7 @@
     function navTextChange() {
         // cancel timer, reset 'debounced' timer after checks, if still needed
         if (navSearchTimer) {
-            clearTimeout(navSearchTimer)
+            clearTimeout(navSearchTimer);
         }
 
         // * Needed Checks
@@ -79,7 +76,7 @@
                     if (navTextDirty) {
                         navTextDirty = false;
                         if (navSearchTimer) {
-                            clearTimeout(navSearchTimer)
+                            clearTimeout(navSearchTimer);
                         }
                         sendSearchConfig();
                     }
@@ -99,7 +96,7 @@
             if (navTextDirty) {
                 navTextDirty = false;
                 if (navSearchTimer) {
-                    clearTimeout(navSearchTimer)
+                    clearTimeout(navSearchTimer);
                 }
                 sendSearchConfig();
             }
@@ -154,9 +151,8 @@
             searchSettings["searchOptions"] = p_settings["searchOptions"];
         } else {
             // ! Not at least Leo 6.6 final : hide top elements !
-            showNavElements = false;
             firstTabElId = 'findText';
-            var elements = document.getElementsByClassName("nav-element")
+            var elements = document.getElementsByClassName("nav-element");
 
             for (var i = 0; i < elements.length; i++) {
                 // @ts-expect-error
@@ -244,7 +240,7 @@
                     p_event.preventDefault();
                     p_event.stopPropagation();
                     p_event.stopImmediatePropagation();
-                    lastTabEl = document.getElementById(lastTabElId);
+                    var lastTabEl = document.getElementById(lastTabElId);
                     if (lastTabEl) {
                         lastTabEl.focus();
                     }
@@ -319,8 +315,10 @@
     let navTextEl = document.getElementById('navText');
     if (navTextEl) {
         navTextEl.onkeypress = function (p_event) {
-            // @ts-expect-error
-            if (!p_event) p_event = window.event;
+            if (!p_event) {
+                // @ts-expect-error
+                p_event = window.event;
+            }
             var keyCode = p_event.code || p_event.key;
             if (keyCode === 'Enter') {
                 if (searchSettings.navText.length >= 3 || searchSettings.isTag) {
@@ -331,13 +329,13 @@
                             clearTimeout(timer);
                         }
                         if (navSearchTimer) {
-                            clearTimeout(navSearchTimer)
+                            clearTimeout(navSearchTimer);
                         }
                         sendSearchConfig();
                     }
                     vscode.postMessage({ type: 'leoNavEnter' });
                 }
-                if(searchSettings.navText.length===0){
+                if (searchSettings.navText.length === 0) {
                     vscode.postMessage({ type: 'leoNavClear' });
                 }
                 return false;
@@ -395,8 +393,10 @@
         inputEl = document.getElementById(p_inputId);
         if (inputEl) {
             inputEl.onkeypress = function (p_event) {
-                // @ts-expect-error
-                if (!p_event) p_event = window.event;
+                if (!p_event) {
+                    // @ts-expect-error
+                    p_event = window.event
+                };
                 var keyCode = p_event.code || p_event.key;
                 if (keyCode === 'Enter') {
                     if (timer) {

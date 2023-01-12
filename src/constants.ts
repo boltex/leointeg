@@ -183,10 +183,10 @@ export class Constants {
         TITLE_TAG_NODE: "Tag Node",
         PLACEHOLDER_TAG: "<tag>",
         PROMPT_TAG: "Enter a tag name",
-
         TITLE_FIND_TAG: "Find Tag",
         PLACEHOLDER_CLONE_FIND_TAG: "<tag>",
         PROMPT_CLONE_FIND_TAG: "Enter a tag name",
+
         START_SERVER_ERROR: "Error - Cannot start server: ",
         CONNECT_FAILED: "Leo Server Connection Failed",
         CONNECT_ERROR: "Leo Server Connection Error: Incorrect id",
@@ -656,16 +656,20 @@ export class Constants {
         REPLACE_THEN_FIND: "!replace_then_find",
         REPLACE_ALL: "!replace_all",
         GOTO_GLOBAL_LINE: "!goto_global_line",
+
         TAG_CHILDREN: "!tag_children",
         TAG_NODE: "!tag_node",
         REMOVE_TAG: "!remove_tag",
         REMOVE_TAGS: "!remove_tags",
+
         CLONE_FIND_TAG: "!clone_find_tag",
+
         CLONE_FIND_ALL: "!clone_find_all",
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
         CLONE_FIND_MARKED: "!clone_find_all_marked",
         CLONE_FIND_FLATTENED_MARKED: "!clone_find_all_flattened_marked",
         CLONE_FIND_PARENTS: "-clone-find-parents",
+
         GOTO_PREV_HISTORY: "goToPrevHistory",
         GOTO_NEXT_HISTORY: "goToNextHistory"
     };

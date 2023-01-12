@@ -5140,16 +5140,20 @@ public static LEOBRIDGE = {
     REPLACE_THEN_FIND: "!replace_then_find",
     REPLACE_ALL: "!replace_all",
     GOTO_GLOBAL_LINE: "!goto_global_line",
+
     TAG_CHILDREN: "!tag_children",
     TAG_NODE: "!tag_node",
     REMOVE_TAG: "!remove_tag",
     REMOVE_TAGS: "!remove_tags",
+
     CLONE_FIND_TAG: "!clone_find_tag",
+
     CLONE_FIND_ALL: "!clone_find_all",
     CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
     CLONE_FIND_MARKED: "!clone_find_all_marked",
     CLONE_FIND_FLATTENED_MARKED: "!clone_find_all_flattened_marked",
     CLONE_FIND_PARENTS: "-clone-find-parents",
+
     GOTO_PREV_HISTORY: "goToPrevHistory",
     GOTO_NEXT_HISTORY: "goToNextHistory"
 };
@@ -5537,10 +5541,10 @@ public static USER_MESSAGES = {
     TITLE_TAG_NODE: "Tag Node",
     PLACEHOLDER_TAG: "&lt;tag&gt;",
     PROMPT_TAG: "Enter a tag name",
-
     TITLE_FIND_TAG: "Find Tag",
     PLACEHOLDER_CLONE_FIND_TAG: "&lt;tag&gt;",
     PROMPT_CLONE_FIND_TAG: "Enter a tag name",
+
     START_SERVER_ERROR: "Error - Cannot start server: ",
     CONNECT_FAILED: "Leo Server Connection Failed",
     CONNECT_ERROR: "Leo Server Connection Error: Incorrect id",
@@ -8442,25 +8446,25 @@ Here are the most useful Commands. Most of Leo's other commands are also availab
 
 _Move Outline commands need the 'Alt' key modifier only when focus is on body pane._
 
-| Common Operations  |     |           |                     |
-| :----------------- | :-- | :-------- | :------------------ |
-| `Ctrl + T`         |     |           | Toggle Outline/Body |
-| `Tab`              | or  | `Alt + D` | Focus on Body       |
-| `Alt + T`          |     |           | Focus on Outline    |
-| `Alt + -`          |     |           | Contract All        |
-| `Ctrl + B`         |     |           | Execute Script      |
-| `Ctrl + Shift + D` |     |           | Extract             |
-| `Ctrl + Shift + N` |     |           | Extract Names       |
-| `Alt + A`          |     |           | Sort Siblings       |
-| `Ctrl + F`         |     |           | Start Search        |
-| `F3`               |     |           | Find Next           |
-| `F2`               |     |           | Find Previous       |
-| `Alt + X`          |     |           | Minibuffer Palette  |
+| Common Operations  |     |          |     |           |    |            |                     |
+| :----------------- | :-- | :------- | :-- | :-------- |:-- | :--------- | :------------------ |
+| `Ctrl + T`         |     |          |     |           |    |            | Toggle Outline/Body |
+| `Tab`              | or  | `Enter`  | or  | `Alt + D` |or  | `Ctrl + G` | Focus on Body       |
+| `Alt + T`          |     |          |     |           |    |            | Focus on Outline    |
+| `Alt + -`          |     |          |     |           |    |            | Contract All        |
+| `Ctrl + B`         |     |          |     |           |    |            | Execute Script      |
+| `Ctrl + Shift + D` |     |          |     |           |    |            | Extract             |
+| `Ctrl + Shift + N` |     |          |     |           |    |            | Extract Names       |
+| `Alt + A`          |     |          |     |           |    |            | Sort Siblings       |
+| `Ctrl + F`         |     |          |     |           |    |            | Start Search        |
+| `F3`               |     |          |     |           |    |            | Find Next           |
+| `F2`               |     |          |     |           |    |            | Find Previous       |
+| `Alt + X`          |     |          |     |           |    |            | Minibuffer Palette  |
 
 | Tree Navigation    |     |                 |                             |
 | :----------------- | :-- | :-------------- | :-------------------------- |
 | `Ctrl+Shift+L`     |     |                 | Show the LeoInteg View      |
-| `Ctrl+Shift+P`     |     |                 | Go Anywhere                 |
+| `Ctrl+P`           |     |                 | Go Anywhere                 |
 | `Alt + Home`       | or  | `Home` \*       | Scroll to Top of Outline    |
 |                    |     | `End` \*        | Scroll to Bottom of Outline |
 | `PgUp / pgDn`      |     |                 | 'Tree' Page-Up/Down         |
@@ -12163,7 +12167,7 @@ private _checkPreviewMode(p_editor: vscode.TextEditor): void {
  * * Opens the find panel and focuses on the "find/replace" field, selecting all it's content.
  */
 public startSearch(): void {
-
+    this._isBusyTriggerSave(false, true);
     // already instantiated &amp; shown ?
     let w_panel: vscode.WebviewView | undefined;
 
@@ -14813,12 +14817,9 @@ public getTextFromClipboard(): string {
     let timer; // for debouncing sending the settings from this webview to leointeg
     let dirty = false; // all but nav input
     let navTextDirty = false;
-    let showNavElements = true;
 
     let firstTabElId = 'searchOptions'; // used to be 'findText' before nav inputs
     let lastTabElId = 'searchBody';
-    let firstTabEl;
-    let lastTabEl;
 
     /**
      * * Flag for freezing the nav 'search as you type' headlines (concept from original nav plugin)
@@ -14831,7 +14832,7 @@ public getTextFromClipboard(): string {
     if (frozenEl) {
         frozenEl.style.display = 'none';
     }
-    let navSearchTimer // for debouncing the search-headline while typing if unfrozen
+    let navSearchTimer; // for debouncing the search-headline while typing if unfrozen
 
     // * LeoSearchSettings Type
     let searchSettings = {
@@ -14869,7 +14870,7 @@ public getTextFromClipboard(): string {
     function navTextChange() {
         // cancel timer, reset 'debounced' timer after checks, if still needed
         if (navSearchTimer) {
-            clearTimeout(navSearchTimer)
+            clearTimeout(navSearchTimer);
         }
 
         // * Needed Checks
@@ -14881,7 +14882,7 @@ public getTextFromClipboard(): string {
                     if (navTextDirty) {
                         navTextDirty = false;
                         if (navSearchTimer) {
-                            clearTimeout(navSearchTimer)
+                            clearTimeout(navSearchTimer);
                         }
                         sendSearchConfig();
                     }
@@ -14901,7 +14902,7 @@ public getTextFromClipboard(): string {
             if (navTextDirty) {
                 navTextDirty = false;
                 if (navSearchTimer) {
-                    clearTimeout(navSearchTimer)
+                    clearTimeout(navSearchTimer);
                 }
                 sendSearchConfig();
             }
@@ -14956,9 +14957,8 @@ public getTextFromClipboard(): string {
             searchSettings["searchOptions"] = p_settings["searchOptions"];
         } else {
             // ! Not at least Leo 6.6 final : hide top elements !
-            showNavElements = false;
             firstTabElId = 'findText';
-            var elements = document.getElementsByClassName("nav-element")
+            var elements = document.getElementsByClassName("nav-element");
 
             for (var i = 0; i &lt; elements.length; i++) {
                 // @ts-expect-error
@@ -15046,7 +15046,7 @@ public getTextFromClipboard(): string {
                     p_event.preventDefault();
                     p_event.stopPropagation();
                     p_event.stopImmediatePropagation();
-                    lastTabEl = document.getElementById(lastTabElId);
+                    var lastTabEl = document.getElementById(lastTabElId);
                     if (lastTabEl) {
                         lastTabEl.focus();
                     }
@@ -15121,8 +15121,10 @@ public getTextFromClipboard(): string {
     let navTextEl = document.getElementById('navText');
     if (navTextEl) {
         navTextEl.onkeypress = function (p_event) {
-            // @ts-expect-error
-            if (!p_event) p_event = window.event;
+            if (!p_event) {
+                // @ts-expect-error
+                p_event = window.event;
+            }
             var keyCode = p_event.code || p_event.key;
             if (keyCode === 'Enter') {
                 if (searchSettings.navText.length &gt;= 3 || searchSettings.isTag) {
@@ -15133,13 +15135,13 @@ public getTextFromClipboard(): string {
                             clearTimeout(timer);
                         }
                         if (navSearchTimer) {
-                            clearTimeout(navSearchTimer)
+                            clearTimeout(navSearchTimer);
                         }
                         sendSearchConfig();
                     }
                     vscode.postMessage({ type: 'leoNavEnter' });
                 }
-                if(searchSettings.navText.length===0){
+                if (searchSettings.navText.length === 0) {
                     vscode.postMessage({ type: 'leoNavClear' });
                 }
                 return false;
@@ -15197,8 +15199,10 @@ public getTextFromClipboard(): string {
         inputEl = document.getElementById(p_inputId);
         if (inputEl) {
             inputEl.onkeypress = function (p_event) {
-                // @ts-expect-error
-                if (!p_event) p_event = window.event;
+                if (!p_event) {
+                    // @ts-expect-error
+                    p_event = window.event
+                };
                 var keyCode = p_event.code || p_event.key;
                 if (keyCode === 'Enter') {
                     if (timer) {
@@ -15627,9 +15631,6 @@ private _onGotoTreeViewVisibilityChanged(
     p_event: vscode.TreeViewVisibilityChangeEvent,
     p_explorerView: boolean
 ): void {
-
-    if (p_explorerView) {
-    } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
         this._leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
         // this.refreshGotoPane();  // No need to refresh because no selection needs to be set
@@ -16306,7 +16307,7 @@ private _setUndoSelection(p_node: LeoUndoNode): void {
  * * Reverts to a particular undo bead state
  */
 public async revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
-    if (p_undo.label === 'Unchanged') {
+    if (p_undo.contextValue !== 'leoUndoNode') {
         return Promise.resolve();
     }
     let action = Constants.LEOBRIDGE.REDO;
@@ -17785,12 +17786,10 @@ private _onFindViewVisibilityChanged(p_explorerView: boolean): void {
             this._lastFindView = this._findPanelWebviewExplorerView;
             this.checkForceFindFocus(false);
         }
-
     } else {
         if (this._findPanelWebviewView?.visible) {
             this._lastFindView = this._findPanelWebviewView;
             this.checkForceFindFocus(false);
-
         }
     }
 }
@@ -17871,12 +17870,10 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
         switch (p_nav.valueOf()) {
             case LeoGotoNavKey.first:
                 this._selectedNodeIndex = 0;
-                this._leoIntegration.gotoNavEntry(this._nodeList[this._selectedNodeIndex]);
                 break;
 
             case LeoGotoNavKey.last:
                 this._selectedNodeIndex = this._nodeList.length - 1;
-                this._leoIntegration.gotoNavEntry(this._nodeList[this._selectedNodeIndex]);
                 break;
 
             case LeoGotoNavKey.next:
