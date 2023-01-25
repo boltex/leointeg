@@ -62,7 +62,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
                 break;
 
         }
-        this._lastGotoView?.reveal(this._nodeList[this._selectedNodeIndex]);
+        this._lastGotoView?.reveal(this._nodeList[this._selectedNodeIndex], { select: true, focus: true });
         this._leoIntegration.gotoNavEntry(this._nodeList[this._selectedNodeIndex]);
     }
 
