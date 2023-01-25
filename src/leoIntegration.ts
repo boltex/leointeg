@@ -3255,7 +3255,7 @@ export class LeoIntegration {
         }
         // * Ok, it was really a minibuffer command
         if (p_picked && p_picked.label) {
-            this._minibufferHistory.push(p_picked.label); // Add to minibuffer history
+            this._minibufferHistory.unshift(p_picked.label); // Add to minibuffer history
             const w_commandResult = this.nodeCommand({
                 action: "-" + p_picked.label,
                 node: undefined,
