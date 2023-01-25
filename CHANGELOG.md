@@ -3,6 +3,9 @@
 ## 1.0.12
 
 - Fixed undo pane's context menu for unchanged document.
+- Fixed minibuffer history item order that had unordered entries in some cases.
+- Fixed keyboard navigation in the 'Goto Panel'.
+- Added support for @killcolor and @nocolor-node color suppression directives.
 
 ## 1.0.11
 

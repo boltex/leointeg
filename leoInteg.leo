@@ -5699,6 +5699,10 @@ public static CONTEXT_FLAGS = {
     NODE_ROOT: "leoNodeRoot",
     NODE_NOT_ROOT: "leoNodeNotRoot",
 
+    // Flags for undo nodes
+    UNDO_BEAD: "leoUndoNode",
+    NOT_UNDO_BEAD: "leoNoUndoNode",
+
     // Flags for Leo documents tree view icons and hover node command buttons
     DOCUMENT_SELECTED_TITLED: "leoDocumentSelectedTitled",
     DOCUMENT_TITLED: "leoDocumentTitled",
@@ -9226,6 +9230,7 @@ export class LeoIntegration {
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
 
     private _languageFlagged: string[] = [];
+    private _killcolor_re: RegExp = new RegExp('(^@nocolor-node|^@killcolor)', 'm');
 
     private _bodyPreviewMode: boolean = true;
 
@@ -9876,7 +9881,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
             w_textEditor.selections.forEach(p_selection =&gt; {
                 // if line starts with @
                 let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
-                if (w_line.trim().startsWith('@')) {
+                if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
                     w_needsRefresh = true;
                 }
             });
@@ -13203,6 +13208,8 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     "history": Constants.COMMANDS.FIND_QUICK_HISTORY,
     "marked-list": Constants.COMMANDS.FIND_QUICK_MARKED,
 
+    "goto-global-line": Constants.COMMANDS.GOTO_GLOBAL_LINE,
+
     "goto-prev-history-node": Constants.COMMANDS.PREV_NODE_FO,
     "goto-next-history-node": Constants.COMMANDS.NEXT_NODE_FO,
 
@@ -14546,6 +14553,10 @@ public debouncedRefreshBodyStates() {
  * * Sets vscode's body-pane editor's language
  */
 private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): Thenable&lt;vscode.TextDocument&gt; {
+    // check for kill-color
+    if (this._killcolor_re.test(p_document.getText())) {
+        p_language = 'plain';
+    }
     return vscode.languages.setTextDocumentLanguage(p_document, p_language).then(
         (p_mewDocument) =&gt; { return p_mewDocument; }, // ok - language found
         (p_error) =&gt; {
@@ -16148,7 +16159,7 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
                                 p_bead || "unknown",
                                 w_description,
                                 (this._beadId++).toString(),
-                                "leoUndoNode",
+                                Constants.CONTEXT_FLAGS.UNDO_BEAD,
                                 i - bead, // 0 is same (no undo) +/- undo redo.
                                 this._leoIntegration.undoIcons[w_icon]
                             );
@@ -16166,7 +16177,7 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
                             "Unchanged",
                             "",
                             (this._beadId++).toString(),
-                            "leoNoUndoNode",
+                            Constants.CONTEXT_FLAGS.NOT_UNDO_BEAD,
                             0
                         );
                         w_children.push(w_node);
@@ -16190,6 +16201,9 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
 
     public resolveTreeItem(item: LeoUndoNode, element: LeoUndoNode, token: vscode.CancellationToken): vscode.ProviderResult&lt;LeoUndoNode&gt; {
         // item.tooltip = "TODO Undo Tooltip";
+        if (item.contextValue === Constants.CONTEXT_FLAGS.UNDO_BEAD) {
+            item.tooltip = "Undo Bead #" + item.beadIndex;
+        }
         return item;
     }
 }
@@ -18350,6 +18364,9 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
 <t tx="felix.20221208001059.1">## 1.0.12
 
 - Fixed undo pane's context menu for unchanged document.
+- Fixed minibuffer history item order that had unordered entries in some cases.
+- Fixed keyboard navigation in the 'Goto Panel'.
+- Added support for @killcolor and @nocolor-node color suppression directives.
 
 </t>
 <t tx="felix.20221212232224.1">## 1.0.11

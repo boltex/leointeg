@@ -415,6 +415,10 @@ export class Constants {
         NODE_ROOT: "leoNodeRoot",
         NODE_NOT_ROOT: "leoNodeNotRoot",
 
+        // Flags for undo nodes
+        UNDO_BEAD: "leoUndoNode",
+        NOT_UNDO_BEAD: "leoNoUndoNode",
+
         // Flags for Leo documents tree view icons and hover node command buttons
         DOCUMENT_SELECTED_TITLED: "leoDocumentSelectedTitled",
         DOCUMENT_TITLED: "leoDocumentTitled",
@@ -952,6 +956,8 @@ export class Constants {
         "find-quick-changed": Constants.COMMANDS.FIND_QUICK_CHANGED,
         "history": Constants.COMMANDS.FIND_QUICK_HISTORY,
         "marked-list": Constants.COMMANDS.FIND_QUICK_MARKED,
+
+        "goto-global-line": Constants.COMMANDS.GOTO_GLOBAL_LINE,
 
         "goto-prev-history-node": Constants.COMMANDS.PREV_NODE_FO,
         "goto-next-history-node": Constants.COMMANDS.NEXT_NODE_FO,

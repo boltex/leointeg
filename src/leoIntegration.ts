@@ -203,6 +203,7 @@ export class LeoIntegration {
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
 
     private _languageFlagged: string[] = [];
+    private _killcolor_re: RegExp = new RegExp('(^@nocolor-node|^@killcolor)', 'm');
 
     private _bodyPreviewMode: boolean = true;
 
@@ -1633,7 +1634,7 @@ export class LeoIntegration {
                 w_textEditor.selections.forEach(p_selection => {
                     // if line starts with @
                     let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
-                    if (w_line.trim().startsWith('@')) {
+                    if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
                         w_needsRefresh = true;
                     }
                 });
@@ -3037,6 +3038,10 @@ export class LeoIntegration {
      * * Sets vscode's body-pane editor's language
      */
     private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): Thenable<vscode.TextDocument> {
+        // check for kill-color
+        if (this._killcolor_re.test(p_document.getText())) {
+            p_language = 'plain';
+        }
         return vscode.languages.setTextDocumentLanguage(p_document, p_language).then(
             (p_mewDocument) => { return p_mewDocument; }, // ok - language found
             (p_error) => {
