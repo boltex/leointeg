@@ -12627,7 +12627,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.replace",
   "key": "ctrl+=",
   "mac": "cmd+=",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.replaceFromOutline",
@@ -12639,7 +12639,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.replaceThenFind",
   "key": "ctrl+-",
   "mac": "cmd+-",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.replaceThenFindFromOutline",
@@ -18367,6 +18367,7 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
 - Fixed minibuffer history item order that had unordered entries in some cases.
 - Fixed keyboard navigation in the 'Goto Panel'.
 - Added support for @killcolor and @nocolor-node color suppression directives.
+- Fixed 'when' condition for keybindings of 'replace' &amp; 'replace-then-find'.
 
 </t>
 <t tx="felix.20221212232224.1">## 1.0.11

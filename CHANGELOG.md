@@ -6,6 +6,7 @@
 - Fixed minibuffer history item order that had unordered entries in some cases.
 - Fixed keyboard navigation in the 'Goto Panel'.
 - Added support for @killcolor and @nocolor-node color suppression directives.
+- Fixed 'when' condition for keybindings of 'replace' & 'replace-then-find'.
 
 ## 1.0.11
 
