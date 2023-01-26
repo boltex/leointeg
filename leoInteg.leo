@@ -9218,6 +9218,9 @@ export class LeoIntegration {
     private _lastFindView: vscode.WebviewView | undefined;  // ? Maybe unused ?
     private _findNeedsFocus: boolean = false;
     private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
+    public findFocusTree = false;
+    public findHeadlineRange: [number, number] = [0, 0];
+    public findHeadlinePosition: ArchivedPosition | undefined;
 
     // * Leo Find Panel
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
@@ -10549,6 +10552,25 @@ public selectTreeNode(
         utils.buildNodeCommand(p_node)
     ).then((p_setSelectedResult) =&gt; {
         if (!p_internalCall) {
+            if (this.findFocusTree) {
+                // had a range but now refresh from other than find/replace
+                // So make sure tree is also refreshed.
+                this.findFocusTree = false;
+                this.setupRefresh(
+                    Focus.Outline,
+                    {
+                        tree: true,
+                        body: true,
+                        // documents: false,
+                        // buttons: false,
+                        // states: false,
+                    }
+                );
+                this._launchRefresh();
+                return p_setSelectedResult;
+            }
+
+
             this._refreshType.states = true;
             this.getStates();
         }
@@ -15576,11 +15598,17 @@ public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
         }
         await vscode.commands.executeCommand(w_panelID + '.focus');
 
+        if (this._findPanelWebviewView &amp;&amp; this._findPanelWebviewView.visible) {
+            w_panel = this._findPanelWebviewView;
+        } else if (this._findPanelWebviewExplorerView &amp;&amp; this._findPanelWebviewExplorerView.visible) {
+            w_panel = this._findPanelWebviewExplorerView;
+        }
+
         if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
             w_panel.show(false);
         }
         const w_message: { [key: string]: string; } = { type: 'selectNav' };
-        if (w_string &amp;&amp; w_string?.trim()) {
+        if (w_string &amp;&amp; w_string.trim()) {
             w_message["text"] = w_string.trim();
         }
         await w_panel!.webview.postMessage(w_message);
@@ -16504,7 +16532,7 @@ import { ArchivedPosition, Icon, LeoBridgePackage } from './types';
 
     if (!item.description) {
         // No ua's nor node tags.
-        item.tooltip = item.label;
+        item.tooltip = item.label.label;
         return item;
     }
 
@@ -16531,7 +16559,7 @@ import { ArchivedPosition, Icon, LeoBridgePackage } from './types';
             }
 
         } else {
-            item.tooltip = item.label;
+            item.tooltip = item.label.label;
         }
         return item;
 
@@ -16543,7 +16571,7 @@ import { ArchivedPosition, Icon, LeoBridgePackage } from './types';
 <t tx="felix.20220721204822.11">export class LeoApOutlineNode extends vscode.TreeItem {
 
     constructor(
-        public label: string, // Node headline
+        public label: vscode.TreeItemLabel, // Node headline
         public collapsibleState: vscode.TreeItemCollapsibleState,
         public position: ArchivedPosition, // Pointer/reference for leo's node ArchivedPosition
         public description: string,
@@ -16657,8 +16685,15 @@ public incTreeId(): void {
         }
     }
 
+    let w_hl: [number, number] = [0, 0];
+    if (element.selected &amp;&amp; this._leoIntegration.findFocusTree) {
+        if (this._leoIntegration.findHeadlinePosition &amp;&amp; utils.isApEqual(this._leoIntegration.findHeadlinePosition, element)) {
+            w_hl = this._leoIntegration.findHeadlineRange;
+        }
+    }
+
     const w_leoNode = new LeoApOutlineNode(
-        element.headline,
+        { label: element.headline, highlights: [w_hl] },
         w_collapse,
         element, // ArchivedPosition
         desc,

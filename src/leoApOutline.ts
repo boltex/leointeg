@@ -99,8 +99,15 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
             }
         }
 
+        let w_hl: [number, number] = [0, 0];
+        if (element.selected && this._leoIntegration.findFocusTree) {
+            if (this._leoIntegration.findHeadlinePosition && utils.isApEqual(this._leoIntegration.findHeadlinePosition, element)) {
+                w_hl = this._leoIntegration.findHeadlineRange;
+            }
+        }
+
         const w_leoNode = new LeoApOutlineNode(
-            element.headline,
+            { label: element.headline, highlights: [w_hl] },
             w_collapse,
             element, // ArchivedPosition
             desc,
@@ -173,7 +180,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
 
         if (!item.description) {
             // No ua's nor node tags.
-            item.tooltip = item.label;
+            item.tooltip = item.label.label;
             return item;
         }
 
@@ -200,7 +207,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
                 }
 
             } else {
-                item.tooltip = item.label;
+                item.tooltip = item.label.label;
             }
             return item;
 
@@ -213,7 +220,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
 export class LeoApOutlineNode extends vscode.TreeItem {
 
     constructor(
-        public label: string, // Node headline
+        public label: vscode.TreeItemLabel, // Node headline
         public collapsibleState: vscode.TreeItemCollapsibleState,
         public position: ArchivedPosition, // Pointer/reference for leo's node ArchivedPosition
         public description: string,
