@@ -16349,7 +16349,7 @@ private _setUndoSelection(p_node: LeoUndoNode): void {
  * * Reverts to a particular undo bead state
  */
 public async revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
-    if (p_undo.contextValue !== 'leoUndoNode') {
+    if (p_undo.contextValue !== Constants.CONTEXT_FLAGS.UNDO_BEAD) {
         return Promise.resolve();
     }
     let action = Constants.LEOBRIDGE.REDO;

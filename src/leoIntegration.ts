@@ -6024,7 +6024,7 @@ export class LeoIntegration {
      * * Reverts to a particular undo bead state
      */
     public async revertToUndo(p_undo: LeoUndoNode): Promise<any> {
-        if (p_undo.contextValue !== 'leoUndoNode') {
+        if (p_undo.contextValue !== Constants.CONTEXT_FLAGS.UNDO_BEAD) {
             return Promise.resolve();
         }
         let action = Constants.LEOBRIDGE.REDO;
