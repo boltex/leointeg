@@ -14456,7 +14456,7 @@ function closeLeoTextEditors(): Thenable&lt;unknown&gt; {
  */
 public async gotoScript(p_node: LeoButtonNode): Promise&lt;any&gt; {
     await this._isBusyTriggerSave(false);
-    await this.sendAction(
+    this.sendAction(
         Constants.LEOBRIDGE.GOTO_SCRIPT,
         { index: p_node.button.index }
     );

@@ -6030,7 +6030,7 @@ export class LeoIntegration {
      */
     public async gotoScript(p_node: LeoButtonNode): Promise<any> {
         await this._isBusyTriggerSave(false);
-        await this.sendAction(
+        this.sendAction(
             Constants.LEOBRIDGE.GOTO_SCRIPT,
             { index: p_node.button.index }
         );
