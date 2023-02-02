@@ -245,7 +245,8 @@
 </v>
 <v t="felix.20200718040540.1"><vh>@clean src/leoBody.ts</vh>
 <v t="felix.20200718040540.2"><vh>class LeoBodyProvider</vh>
-<v t="felix.20200718040540.3"><vh>setBodyTime</vh></v>
+<v t="felix.20230130154800.1"><vh>setNewBodyUriTime</vh></v>
+<v t="felix.20230130154806.1"><vh>_setOpenedBodyTime</vh></v>
 <v t="felix.20200718040540.5"><vh>fireRefreshFile</vh></v>
 <v t="felix.20200718040540.6"><vh>refreshPossibleGnxList</vh></v>
 <v t="felix.20200718040540.8"><vh>watch</vh></v>
@@ -406,6 +407,7 @@
 <v t="felix.20200719025231.49"><vh>closeBody</vh></v>
 <v t="felix.20210718155134.1"><vh>cleanupBody</vh></v>
 <v t="felix.20200719025231.50"><vh>showBody</vh></v>
+<v t="felix.20230130165938.1"><vh>_checkForKillColor</vh></v>
 <v t="felix.20220215235325.1"><vh>_setBodyLanguage</vh></v>
 <v t="felix.20211111214657.1"><vh>refreshBodyStates</vh></v>
 <v t="felix.20211111233213.1"><vh>debouncedRefreshBodyStates</vh></v>
@@ -5447,7 +5449,7 @@ public static UNDOS_DEBOUNCE_DELAY: number = 180;
 public static UNDOS_REVEAL_DEBOUNCE_DELAY: number = 50;
 public static REFRESH_DEBOUNCE_DELAY: number = 50;
 public static STATES_DEBOUNCE_DELAY: number = 100;
-public static BODY_STATES_DEBOUNCE_DELAY: number = 140;
+public static BODY_STATES_DEBOUNCE_DELAY: number = 120;
 public static OUTLINE_DESC_DEBOUNCE_DELAY: number = 250;
 public static GOTO_DEBOUNCE_DELAY: number = 50;
 
@@ -6057,14 +6059,6 @@ public setLeoIntegSettings(p_changes: ConfigSetting[]): Promise&lt;void&gt; {
     const w_promises: Thenable&lt;void&gt;[] = [];
     const w_vscodeConfig = vscode.workspace.getConfiguration(Constants.CONFIG_NAME);
     p_changes.forEach(i_change =&gt; {
-        if (i_change &amp;&amp; i_change.code.includes(Constants.CONFIG_REFRESH_MATCH)) {
-            // Check if tree refresh is required for hover-icons to be displayed or hidden accordingly
-            this._needsTreeRefresh = true;
-        }
-        if (i_change &amp;&amp; i_change.code === Constants.CONFIG_NAMES.INVERT_NODES) {
-            // Check if tree refresh is required for hover-icons to be displayed or hidden accordingly
-            this._needsTreeRefresh = true;
-        }
         if (w_vscodeConfig.inspect(i_change.code)!.defaultValue === i_change.value) {
             // Set as undefined - same as default
             w_promises.push(w_vscodeConfig.update(i_change.code, undefined, true));
@@ -6074,12 +6068,6 @@ public setLeoIntegSettings(p_changes: ConfigSetting[]): Promise&lt;void&gt; {
         }
     });
     return Promise.all(w_promises).then(() =&gt; {
-        if (this._needsTreeRefresh) {
-            this._needsTreeRefresh = false;
-            setTimeout(() =&gt; {
-                this._leoIntegration.configTreeRefresh();
-            }, 200);
-        }
         this._isBusySettingConfig = false;
         this.buildFromSavedSettings();
         return Promise.resolve();
@@ -6598,24 +6586,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     @others
 }
 </t>
-<t tx="felix.20200718040540.3">/**
- * * Sets selected node body's modified time for this gnx virtual file
- * @param p_uri URI of file for which to set made-up modified time
- */
-public setBodyTime(p_uri: vscode.Uri): void {
-    const w_gnx = utils.leoUriToStr(p_uri);
-    this._lastBodyTimeGnx = w_gnx;
-    if (!this._openedBodiesGnx.includes(w_gnx)) {
-        this._openedBodiesGnx.push(w_gnx);
-    }
-    const w_now = new Date().getTime();
-    this._openedBodiesInfo[w_gnx] = {
-        ctime: w_now,
-        mtime: w_now
-    };
-}
-
-</t>
 <t tx="felix.20200718040540.5">/**
  * * Refresh the body pane for a particular gnx by telling vscode that the file from the Leo file provider has changed
  * @param p_gnx Gnx of body associated with this virtual file, mostly Leo's selected node
@@ -6625,11 +6595,9 @@ public fireRefreshFile(p_gnx: string): void {
         console.log("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", p_gnx);
         this._openedBodiesGnx.push(p_gnx);
     }
-    const w_now = new Date().getTime();
-    this._openedBodiesInfo[p_gnx] = {
-        ctime: w_now,
-        mtime: w_now
-    };
+
+    this._setOpenedBodyTime(p_gnx);
+
     this._onDidChangeFileEmitter.fire([{
         type: vscode.FileChangeType.Changed,
         uri: utils.strToLeoUri(p_gnx)
@@ -9248,7 +9216,7 @@ export class LeoIntegration {
         return this._bodyUri;
     }
     set bodyUri(p_uri: vscode.Uri) {
-        this._leoFileSystem.setBodyTime(p_uri);
+        this._leoFileSystem.setNewBodyUriTime(p_uri);
         this._bodyUri = p_uri;
     }
 
@@ -9410,14 +9378,31 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
         this.config.buildFromSavedSettings();
     }
 
+    if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
+        this.config.buildFromSavedSettings(); // If the config setting started with 'leojs'
+        if (
+            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.INVERT_NODES) ||
+            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_EDIT) ||
+            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_ADD) ||
+            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_MARK) ||
+            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_CLONE) ||
+            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
+        ) {
+            this.configTreeRefresh();
+        }
+    }
+
     // also check if workbench.editor.enablePreview
     this._bodyEnablePreview = !!vscode.workspace
         .getConfiguration('workbench.editor')
         .get('enablePreview');
 
     // Check For "workbench.editor.enablePreview" to be true.
-    this.config.checkEnablePreview();
-    this.config.checkCloseEmptyGroups();
+    // Leave small delay for multiple possible forced changes at startup
+    setTimeout(() =&gt; {
+        this.config.checkEnablePreview();
+        this.config.checkCloseEmptyGroups();
+    }, 150);
 }
 
 </t>
@@ -9427,13 +9412,13 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
  * @param p_expand True if it was an expand, false if it was a collapse event
  * @param p_treeView Pointer to the treeview itself, either the standalone treeview or the one under the explorer
  */
-private _onChangeCollapsedState(
+private async _onChangeCollapsedState(
     p_event: vscode.TreeViewExpansionEvent&lt;ArchivedPosition&gt;,
     p_expand: boolean,
     p_treeView: vscode.TreeView&lt;ArchivedPosition&gt;
-): void {
+): Promise&lt;unknown&gt; {
     // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
-    this.triggerBodySave(true);
+    await this.triggerBodySave(true);
     // * Set expanded flag even on leointeg's vscode side of things, mostly for 'insert node'.
     if (p_expand) {
         p_event.element.expanded = true;
@@ -9453,7 +9438,7 @@ private _onChangeCollapsedState(
     }
 
     // * vscode will update its tree by itself, but we need to change Leo's model of its outline
-    this.sendAction(
+    return this.sendAction(
         p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE,
         utils.buildNodeCommand(p_event.element)
     );
@@ -9890,7 +9875,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
             });
         }
         if (w_needsRefresh) {
-            this.debouncedRefreshBodyStates();
+            this.debouncedRefreshBodyStates(Constants.BODY_STATES_DEBOUNCE_DELAY);
         }
 
     }
@@ -9929,6 +9914,8 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
         q_savePromise = this._bodySaveSelection();  // just save selection if it's changed
     }
     return q_savePromise.then((p_result) =&gt; {
+        // this.debouncedRefreshBodyStates(); // ! test this !
+
         return p_result;
     }, (p_reason) =&gt; {
         console.log('BodySave rejected :', p_reason);
@@ -10312,10 +10299,13 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
 
             // Replace language string if in 'exceptions' array
             w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
+            if (this._checkForKillColor(w_openedDocument.getText())) {
+                // ! VERIFY PROPER BEHAVIOR
+                // w_language = 'plain'; // TODO
+            }
 
             let w_debugMessage = "";
             let w_needRefreshFlag = false;
-
 
             // Apply language if the selected node is still the same after all those events
             if (!w_openedDocument.isClosed) {
@@ -14525,6 +14515,12 @@ public refreshBodyStates(): void {
 
         // Replace language string if in 'exceptions' array
         w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
+
+        if (this._bodyTextDocument &amp;&amp; this._checkForKillColor(this._bodyTextDocument.getText())) {
+            // ! VERIFY PROPER BEHAVIOR
+            // w_language = 'plain'; // TODO
+        }
+
         // Apply language if the selected node is still the same after all those events
         if (this._bodyTextDocument &amp;&amp;
             !this._bodyTextDocument.isClosed &amp;&amp;
@@ -14532,6 +14528,9 @@ public refreshBodyStates(): void {
             w_language !== this._bodyTextDocument.languageId &amp;&amp;
             utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
         ) {
+            console.log('refreshBodyStates language was : ', this._bodyTextDocument.languageId);
+            console.log('setting language: ', w_language);
+
             this._setBodyLanguage(this._bodyTextDocument, w_language);
         }
     });
@@ -14541,15 +14540,29 @@ public refreshBodyStates(): void {
 <t tx="felix.20211111233213.1">/**
  * * Refresh body states after a small debounced delay.
  */
-public debouncedRefreshBodyStates() {
+public debouncedRefreshBodyStates(p_delay?: number) {
+
+    if (!p_delay) {
+        p_delay = 0;
+    }
+
     if (this._bodyStatesTimer) {
         clearTimeout(this._bodyStatesTimer);
     }
-    this._bodyStatesTimer = setTimeout(() =&gt; {
-        // this.triggerBodySave(true);
-        this._bodySaveDocument(this._bodyLastChangedDocument!);
-        this.refreshBodyStates();
-    }, Constants.BODY_STATES_DEBOUNCE_DELAY);
+    if (p_delay === 0) {
+        if (this._bodyLastChangedDocument &amp;&amp; this.leoStates.fileOpenedReady) {
+            this._bodySaveDocument(this._bodyLastChangedDocument);
+            this.refreshBodyStates();
+        }
+    } else {
+        this._bodyStatesTimer = setTimeout(() =&gt; {
+            if (this._bodyLastChangedDocument &amp;&amp; this.leoStates.fileOpenedReady) {
+                this._bodySaveDocument(this._bodyLastChangedDocument);
+                this.refreshBodyStates();
+            }
+        }, p_delay);
+    }
+
 }
 
 </t>
@@ -14575,13 +14588,11 @@ public debouncedRefreshBodyStates() {
  * * Sets vscode's body-pane editor's language
  */
 private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): Thenable&lt;vscode.TextDocument&gt; {
-    // check for kill-color
-    if (this._killcolor_re.test(p_document.getText())) {
-        p_language = 'plain';
-    }
+
     return vscode.languages.setTextDocumentLanguage(p_document, p_language).then(
         (p_mewDocument) =&gt; { return p_mewDocument; }, // ok - language found
         (p_error) =&gt; {
+            // ERROR: Output error info
             let w_langName: string = p_error.toString().split('\n')[0];
             if (w_langName.length &gt; 36 &amp;&amp; w_langName.includes(Constants.LEO_LANGUAGE_PREFIX)) {
                 w_langName = w_langName.substring(36);
@@ -18409,6 +18420,47 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
 
 - Fixed 'openAside' context menu entry in explorer.
 - Fixed context variables used for views-welcome in package.json.
+
+</t>
+<t tx="felix.20230130154800.1">/**
+ * * Sets selected node body's modified time for this gnx virtual file
+ * @param p_uri URI of file for which to set made-up modified time
+ */
+public setNewBodyUriTime(p_uri: vscode.Uri): void {
+    const w_gnx = utils.leoUriToStr(p_uri);
+    this._lastBodyTimeGnx = w_gnx;
+    this._setOpenedBodyTime(w_gnx);
+}
+
+</t>
+<t tx="felix.20230130154806.1">/**
+ * * Adds entries in _openedBodiesGnx and _openedBodiesInfo if needed
+ * * and sets the modified time of an opened body.
+ */
+private _setOpenedBodyTime(p_gnx: string): void {
+    const w_now = new Date().getTime();
+    let w_created = w_now;
+    if (!this._openedBodiesGnx.includes(p_gnx)) {
+        this._openedBodiesGnx.push(p_gnx);
+    } else {
+        w_created = this._openedBodiesInfo[p_gnx].ctime; // Already created?
+    }
+    this._openedBodiesInfo[p_gnx] = {
+        ctime: w_created, // w_now, // maybe kept.
+        mtime: w_now // new 'modified' time for sure.
+    };
+}
+
+</t>
+<t tx="felix.20230130165938.1">/**
+ * Checks body string for kill color keywords
+ */
+private _checkForKillColor(p_body: string): boolean {
+    if (this._killcolor_re.test(p_body)) {
+        return true;
+    }
+    return false;
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

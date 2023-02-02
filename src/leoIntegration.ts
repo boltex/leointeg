@@ -221,7 +221,7 @@ export class LeoIntegration {
         return this._bodyUri;
     }
     set bodyUri(p_uri: vscode.Uri) {
-        this._leoFileSystem.setBodyTime(p_uri);
+        this._leoFileSystem.setNewBodyUriTime(p_uri);
         this._bodyUri = p_uri;
     }
 
@@ -1291,14 +1291,31 @@ export class LeoIntegration {
             this.config.buildFromSavedSettings();
         }
 
+        if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
+            this.config.buildFromSavedSettings(); // If the config setting started with 'leojs'
+            if (
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.INVERT_NODES) ||
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_EDIT) ||
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_ADD) ||
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_MARK) ||
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_CLONE) ||
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
+            ) {
+                this.configTreeRefresh();
+            }
+        }
+
         // also check if workbench.editor.enablePreview
         this._bodyEnablePreview = !!vscode.workspace
             .getConfiguration('workbench.editor')
             .get('enablePreview');
 
         // Check For "workbench.editor.enablePreview" to be true.
-        this.config.checkEnablePreview();
-        this.config.checkCloseEmptyGroups();
+        // Leave small delay for multiple possible forced changes at startup
+        setTimeout(() => {
+            this.config.checkEnablePreview();
+            this.config.checkCloseEmptyGroups();
+        }, 150);
     }
 
     /**
@@ -1327,13 +1344,13 @@ export class LeoIntegration {
      * @param p_expand True if it was an expand, false if it was a collapse event
      * @param p_treeView Pointer to the treeview itself, either the standalone treeview or the one under the explorer
      */
-    private _onChangeCollapsedState(
+    private async _onChangeCollapsedState(
         p_event: vscode.TreeViewExpansionEvent<ArchivedPosition>,
         p_expand: boolean,
         p_treeView: vscode.TreeView<ArchivedPosition>
-    ): void {
+    ): Promise<unknown> {
         // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
-        this.triggerBodySave(true);
+        await this.triggerBodySave(true);
         // * Set expanded flag even on leointeg's vscode side of things, mostly for 'insert node'.
         if (p_expand) {
             p_event.element.expanded = true;
@@ -1353,7 +1370,7 @@ export class LeoIntegration {
         }
 
         // * vscode will update its tree by itself, but we need to change Leo's model of its outline
-        this.sendAction(
+        return this.sendAction(
             p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE,
             utils.buildNodeCommand(p_event.element)
         );
@@ -1643,7 +1660,7 @@ export class LeoIntegration {
                 });
             }
             if (w_needsRefresh) {
-                this.debouncedRefreshBodyStates();
+                this.debouncedRefreshBodyStates(Constants.BODY_STATES_DEBOUNCE_DELAY);
             }
 
         }
@@ -1740,6 +1757,8 @@ export class LeoIntegration {
             q_savePromise = this._bodySaveSelection();  // just save selection if it's changed
         }
         return q_savePromise.then((p_result) => {
+            // this.debouncedRefreshBodyStates(); // ! test this !
+
             return p_result;
         }, (p_reason) => {
             console.log('BodySave rejected :', p_reason);
@@ -2841,10 +2860,13 @@ export class LeoIntegration {
 
                 // Replace language string if in 'exceptions' array
                 w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
+                if (this._checkForKillColor(w_openedDocument.getText())) {
+                    // ! VERIFY PROPER BEHAVIOR
+                    // w_language = 'plain'; // TODO
+                }
 
                 let w_debugMessage = "";
                 let w_needRefreshFlag = false;
-
 
                 // Apply language if the selected node is still the same after all those events
                 if (!w_openedDocument.isClosed) {
@@ -3038,16 +3060,24 @@ export class LeoIntegration {
     }
 
     /**
+     * Checks body string for kill color keywords
+     */
+    private _checkForKillColor(p_body: string): boolean {
+        if (this._killcolor_re.test(p_body)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * * Sets vscode's body-pane editor's language
      */
     private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): Thenable<vscode.TextDocument> {
-        // check for kill-color
-        if (this._killcolor_re.test(p_document.getText())) {
-            p_language = 'plain';
-        }
+
         return vscode.languages.setTextDocumentLanguage(p_document, p_language).then(
             (p_mewDocument) => { return p_mewDocument; }, // ok - language found
             (p_error) => {
+                // ERROR: Output error info
                 let w_langName: string = p_error.toString().split('\n')[0];
                 if (w_langName.length > 36 && w_langName.includes(Constants.LEO_LANGUAGE_PREFIX)) {
                     w_langName = w_langName.substring(36);
@@ -3103,6 +3133,12 @@ export class LeoIntegration {
 
             // Replace language string if in 'exceptions' array
             w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
+
+            if (this._bodyTextDocument && this._checkForKillColor(this._bodyTextDocument.getText())) {
+                // ! VERIFY PROPER BEHAVIOR
+                // w_language = 'plain'; // TODO
+            }
+
             // Apply language if the selected node is still the same after all those events
             if (this._bodyTextDocument &&
                 !this._bodyTextDocument.isClosed &&
@@ -3110,6 +3146,9 @@ export class LeoIntegration {
                 w_language !== this._bodyTextDocument.languageId &&
                 utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
             ) {
+                console.log('refreshBodyStates language was : ', this._bodyTextDocument.languageId);
+                console.log('setting language: ', w_language);
+
                 this._setBodyLanguage(this._bodyTextDocument, w_language);
             }
         });
@@ -3118,15 +3157,29 @@ export class LeoIntegration {
     /**
      * * Refresh body states after a small debounced delay.
      */
-    public debouncedRefreshBodyStates() {
+    public debouncedRefreshBodyStates(p_delay?: number) {
+
+        if (!p_delay) {
+            p_delay = 0;
+        }
+
         if (this._bodyStatesTimer) {
             clearTimeout(this._bodyStatesTimer);
         }
-        this._bodyStatesTimer = setTimeout(() => {
-            // this.triggerBodySave(true);
-            this._bodySaveDocument(this._bodyLastChangedDocument!);
-            this.refreshBodyStates();
-        }, Constants.BODY_STATES_DEBOUNCE_DELAY);
+        if (p_delay === 0) {
+            if (this._bodyLastChangedDocument && this.leoStates.fileOpenedReady) {
+                this._bodySaveDocument(this._bodyLastChangedDocument);
+                this.refreshBodyStates();
+            }
+        } else {
+            this._bodyStatesTimer = setTimeout(() => {
+                if (this._bodyLastChangedDocument && this.leoStates.fileOpenedReady) {
+                    this._bodySaveDocument(this._bodyLastChangedDocument);
+                    this.refreshBodyStates();
+                }
+            }, p_delay);
+        }
+
     }
 
     /**

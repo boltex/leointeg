@@ -44,16 +44,27 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
      * * Sets selected node body's modified time for this gnx virtual file
      * @param p_uri URI of file for which to set made-up modified time
      */
-    public setBodyTime(p_uri: vscode.Uri): void {
+    public setNewBodyUriTime(p_uri: vscode.Uri): void {
         const w_gnx = utils.leoUriToStr(p_uri);
         this._lastBodyTimeGnx = w_gnx;
-        if (!this._openedBodiesGnx.includes(w_gnx)) {
-            this._openedBodiesGnx.push(w_gnx);
-        }
+        this._setOpenedBodyTime(w_gnx);
+    }
+
+    /**
+     * * Adds entries in _openedBodiesGnx and _openedBodiesInfo if needed
+     * * and sets the modified time of an opened body.
+     */
+    private _setOpenedBodyTime(p_gnx: string): void {
         const w_now = new Date().getTime();
-        this._openedBodiesInfo[w_gnx] = {
-            ctime: w_now,
-            mtime: w_now
+        let w_created = w_now;
+        if (!this._openedBodiesGnx.includes(p_gnx)) {
+            this._openedBodiesGnx.push(p_gnx);
+        } else {
+            w_created = this._openedBodiesInfo[p_gnx].ctime; // Already created?
+        }
+        this._openedBodiesInfo[p_gnx] = {
+            ctime: w_created, // w_now, // maybe kept.
+            mtime: w_now // new 'modified' time for sure.
         };
     }
 
@@ -66,11 +77,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             console.log("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", p_gnx);
             this._openedBodiesGnx.push(p_gnx);
         }
-        const w_now = new Date().getTime();
-        this._openedBodiesInfo[p_gnx] = {
-            ctime: w_now,
-            mtime: w_now
-        };
+
+        this._setOpenedBodyTime(p_gnx);
+
         this._onDidChangeFileEmitter.fire([{
             type: vscode.FileChangeType.Changed,
             uri: utils.strToLeoUri(p_gnx)
