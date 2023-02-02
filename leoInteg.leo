@@ -16558,10 +16558,10 @@ import { ArchivedPosition, Icon, LeoBridgePackage } from './types';
 
             if (tagQty) {
                 // list tags instead
-                item.tooltip = item.label + "\n\u{1F3F7} " + p_package.ua.__node_tags.join('\n\u{1F3F7} ') + "\n";
+                item.tooltip = item.label.label + "\n\u{1F3F7} " + p_package.ua.__node_tags.join('\n\u{1F3F7} ') + "\n";
                 delete p_package.ua.__node_tags;
             } else {
-                item.tooltip = item.label + "\n";
+                item.tooltip = item.label.label + "\n";
             }
 
             // Recalculate
