@@ -75,7 +75,7 @@ export class Constants {
     public static MIN_SERVER_VERSION_NUMBER = {
         minMajor: 1,
         minMinor: 0,
-        minPatch: 5
+        minPatch: 6
     };
 
     /**
@@ -178,6 +178,26 @@ export class Constants {
         PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
         PROMPT_GOTO_GLOBAL_LINE: "Line number",
 
+        REPLACE_TITLE: "Replace with",
+        REPLACE_PROMPT: "Type text to replace with and press enter.",
+        REPLACE_PLACEHOLDER: "Replace pattern here",
+
+        SEARCH_TITLE: "Search for",
+        SEARCH_PROMPT: "Type text to search for and press enter.",
+        SEARCH_PLACEHOLDER: "Find pattern here",
+
+        INT_SEARCH_TITLE: "Search",
+        INT_SEARCH_PROMPT: "'Enter' to search",
+        INT_SEARCH_BACKWARD: " Backward", // Leading space intended
+        INT_SEARCH_REGEXP: "Regexp ", // Trailing space intended
+        INT_SEARCH_WORD: "Word ", // Trailing space intended
+
+        SEARCH_NOT_FOUND: "Not found",
+        FIND_PATTERN_HERE: "<find pattern here>",
+
+        TAGS_CHARACTERS_ERROR: "Cannot add tags containing any of these characters: &|^-",
+        NO_TAGS_ON_NODE: "No tags on node: ", // Trailing space intended
+
         TITLE_TAG_CHILDREN: "Tag Children",
         TITLE_REMOVE_TAG: "Remove Tag",
         TITLE_TAG_NODE: "Tag Node",
@@ -215,7 +235,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_LEO_VERSION_STRING: "Please update: Leo 6.7.1 required.",
+        MINIMUM_LEO_VERSION_STRING: "Please update: Leo 6.7.2 required.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
@@ -650,7 +670,8 @@ export class Constants {
         GET_POSITION_DATA: "!get_position_data",
         GET_SEARCH_SETTINGS: "!get_search_settings",
         SET_SEARCH_SETTINGS: "!set_search_settings",
-        START_SEARCH: "!start_search",
+        INTERACTIVE_SEARCH: "!interactive_search",
+
         FIND_ALL: "!find_all",
         FIND_NEXT: "!find_next",
         FIND_PREVIOUS: "!find_previous",
@@ -859,6 +880,12 @@ export class Constants {
         GOTO_NAV_LAST: Constants.NAME + ".gotoNavLast",
 
         START_SEARCH: Constants.NAME + ".startSearch",
+        SEARCH_BACKWARD: Constants.NAME + ".searchBackward",
+        RE_SEARCH: Constants.NAME + ".reSearch",
+        RE_SEARCH_BACKWARD: Constants.NAME + ".reSearchBackward",
+        WORD_SEARCH: Constants.NAME + ".wordSearch",
+        WORD_SEARCH_BACKWARD: Constants.NAME + ".wordSearchBackward",
+
         FIND_ALL: Constants.NAME + ".findAll",
         FIND_NEXT: Constants.NAME + ".findNext",
         FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
@@ -930,13 +957,7 @@ export class Constants {
     ];
 
     public static unsupportedMinibufferCommands: string[] = [
-        're-search',
-        're-search-forward',
-        're-search-backward',
-        'search-backward',
-        'word-search',
-        'word-search-forward',
-        'restart-leo'
+        'restart-leo' // added to bad list for leoserver 1.0.6. (Can be removed in next leointeg version)
     ];
 
     /**
@@ -1042,8 +1063,16 @@ export class Constants {
         'start-search': Constants.COMMANDS.START_SEARCH,
         'find-next': Constants.COMMANDS.FIND_NEXT,
         'find-prev': Constants.COMMANDS.FIND_PREVIOUS,
-        'search-backward': Constants.COMMANDS.FIND_PREVIOUS,
-        'search-forward': Constants.COMMANDS.FIND_NEXT,
+
+        'search-forward': Constants.COMMANDS.START_SEARCH, // In Leo also, this is like ctrl+F.
+        'search-backward': Constants.COMMANDS.SEARCH_BACKWARD,
+        're-search': Constants.COMMANDS.RE_SEARCH,
+        're-search-forward': Constants.COMMANDS.RE_SEARCH,
+        're-search-backward': Constants.COMMANDS.RE_SEARCH_BACKWARD,
+        'word-search': Constants.COMMANDS.WORD_SEARCH,
+        'word-search-forward': Constants.COMMANDS.WORD_SEARCH,
+        'word-search-backward': Constants.COMMANDS.WORD_SEARCH_BACKWARD,
+
         'find-var': Constants.COMMANDS.FIND_VAR,
         'find-def': Constants.COMMANDS.FIND_DEF,
         'replace': Constants.COMMANDS.REPLACE,

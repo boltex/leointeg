@@ -670,6 +670,12 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.GOTO_NAV_ENTRY, (p_node: LeoGotoNode) => w_leo.gotoNavEntry(p_node)],
 
         [CMD.START_SEARCH, () => w_leo.startSearch()],
+        [CMD.SEARCH_BACKWARD, () => w_leo.interactiveSearch(true, false, false)],
+        [CMD.RE_SEARCH, () => w_leo.interactiveSearch(false, true, false)],
+        [CMD.RE_SEARCH_BACKWARD, () => w_leo.interactiveSearch(true, true, false)],
+        [CMD.WORD_SEARCH, () => w_leo.interactiveSearch(false, false, true)],
+        [CMD.WORD_SEARCH_BACKWARD, () => w_leo.interactiveSearch(true, false, true)],
+
         [CMD.FIND_ALL, () => w_leo.findAll(false)],
         [CMD.FIND_NEXT, () => w_leo.find(false, false)],
         [CMD.FIND_NEXT_FO, () => w_leo.find(true, false)],

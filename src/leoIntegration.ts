@@ -80,6 +80,7 @@ export class LeoIntegration {
     public finalFocus: Focus = Focus.NoChange; // Set in _setupRefresh : Last command issued had focus on outline, as opposed to the body
     public showBodyIfClosed: boolean = false;
     public showOutlineIfClosed: boolean = false;
+    public refreshPreserveRange = false; // this makes the next refresh cycle preserve the "findFocusTree" flag once.
 
     private _refreshType: ReqRefresh = {}; // Set in _setupRefresh : Flags for commands to require parts of UI to refresh
 
@@ -194,6 +195,10 @@ export class LeoIntegration {
     public findFocusTree = false;
     public findHeadlineRange: [number, number] = [0, 0];
     public findHeadlinePosition: ArchivedPosition | undefined;
+    private _lastCommandFindEndOutline: number = 0; // Means that last command resolved as a find operation with selection on outline
+
+    // * Interactive Find Input
+    private _interactiveSearchInputBox: vscode.InputBox | undefined;
 
     // * Leo Find Panel
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
@@ -1614,6 +1619,17 @@ export class LeoIntegration {
                 const w_hasBody = !!p_textDocumentChange.document.getText().length;
                 const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
 
+                // TODO : uncomment and test this to fix replace / replace-then-find!!
+                if (
+                    this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
+                    p_textDocumentChange.document.getText() === this._leoFileSystem.lastBodyData
+                ) {
+                    // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
+                    // Set proper cursor insertion point and selection range.
+                    this.showBody(false, true, true);
+                    return;
+                }
+
                 if (!this.leoStates.leoChanged || w_iconChanged) {
                     if (this.preventIconChange) {
                         this.preventIconChange = false;
@@ -1933,7 +1949,10 @@ export class LeoIntegration {
      * @param p_refreshType Refresh flags for each UI part
      * @param p_node The AP node to be refreshed if refresh type 'node' only is set
      */
-    public setupRefresh(p_finalFocus: Focus, p_refreshType: ReqRefresh, p_node?: ArchivedPosition): void {
+    public setupRefresh(p_finalFocus: Focus, p_refreshType: ReqRefresh, p_node?: ArchivedPosition, p_preserveRange?: boolean): void {
+        if (p_preserveRange) {
+            this.refreshPreserveRange = true; // Will be cleared after a refresh cycle.
+        }
         // Set final "focus-placement" EITHER true or false
         this.finalFocus = p_finalFocus;
         // Set all properties WITHOUT clearing others.
@@ -1949,6 +1968,22 @@ export class LeoIntegration {
      * * Launches refresh for UI components: treeviews, body, and context states
      */
     private async _launchRefresh(): Promise<unknown> {
+
+        if (this._lastCommandFindEndOutline) {
+            this._lastCommandFindEndOutline--; // decrement from 2 to 1 the first time, keeping the flag for 1 refresh.
+        }
+
+        if (!this.refreshPreserveRange) {
+            if (this.findFocusTree) {
+                // had a range but now refresh from other than find/replace
+                // So make sure tree is also refreshed.
+                this._refreshType.tree = true;
+            }
+            // Clear no matter what.
+            this.findFocusTree = false;
+        } else {
+            this.refreshPreserveRange = false; // preserved once, now cleared.
+        }
 
         // check states for having at least a document opened
         if (!this.serverHasOpenedFile && this.leoStates.leoBridgeReady && this.leoStates.fileOpenedReady) {
@@ -2796,7 +2831,7 @@ export class LeoIntegration {
      * @param p_preventTakingFocus flag that when true will stop the editor from taking focus once opened
      * @returns a promise of an editor, or void if body had been changed again in the meantime.
      */
-    public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise<vscode.TextEditor | void> {
+    public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean, p_preventReveal?: boolean): Promise<vscode.TextEditor | void> {
 
         const w_openedDocumentTS = performance.now();
         const w_openedDocumentGnx = utils.leoUriToStr(this.bodyUri);
@@ -2917,7 +2952,7 @@ export class LeoIntegration {
         }
 
         // Find body pane's position if already opened with same gnx (language still needs to be set per position)
-        let w_foundOpened = false;
+        let w_foundDocOpened = false;
         vscode.window.tabGroups.all.forEach((p_tabGroup) => {
             p_tabGroup.tabs.forEach((p_tab) => {
 
@@ -2928,13 +2963,24 @@ export class LeoIntegration {
                         if (p_textDocument.uri.fsPath === (p_tab.input as vscode.TabInputText).uri.fsPath) {
                             this._bodyTextDocument = p_textDocument; // vscode.workspace.openTextDocument
                             this._bodyMainSelectionColumn = p_tab.group.viewColumn;
-                            w_foundOpened = true;
+                            if (p_preventReveal) {
+                                if (p_tab.isActive) {
+                                    w_foundDocOpened = true;
+                                }
+                            } else {
+                                w_foundDocOpened = true;
+                            }
                         }
                     });
                 }
             });
         });
-        if (w_foundOpened && !q_saved) {
+
+        if (!w_foundDocOpened && p_preventReveal) {
+            return; // ! HAD PREVENT REVEAL !
+        }
+
+        if (w_foundDocOpened && !q_saved) {
             // Was the same and was asked to show body (and did not already had to fake-save and refresh)
             this.preventIconChange = true;
             this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
@@ -4157,7 +4203,7 @@ export class LeoIntegration {
             );
 
             if (!p_navEntryResult.focus) {
-                return vscode.window.showInformationMessage('Not found');
+                return vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
             } else {
                 let w_revealTarget = Focus.Body;
                 const w_focus = p_navEntryResult.focus.toLowerCase();
@@ -4291,13 +4337,19 @@ export class LeoIntegration {
     /**
      * * Get a find pattern string input from the user
      * @param p_replace flag for doing a 'replace' instead of a 'find'
+     * @param p_uniqueRegex flag for using the "all unique regex" commands
      * @returns Promise of string or undefined if cancelled
      */
-    private _inputFindPattern(p_replace?: boolean): Thenable<string | undefined> {
+    private _inputFindPattern(p_replace?: boolean, p_value?: string): Thenable<string | undefined> {
+        let w_title, w_prompt, w_placeHolder;
+        w_title = p_replace ? Constants.USER_MESSAGES.REPLACE_TITLE : Constants.USER_MESSAGES.SEARCH_TITLE;
+        w_prompt = p_replace ? Constants.USER_MESSAGES.REPLACE_PROMPT : Constants.USER_MESSAGES.SEARCH_PROMPT;
+        w_placeHolder = p_replace ? Constants.USER_MESSAGES.REPLACE_PLACEHOLDER : Constants.USER_MESSAGES.SEARCH_PLACEHOLDER;
         return vscode.window.showInputBox({
-            title: p_replace ? "Replace with" : "Search for",
-            prompt: p_replace ? "Type text to replace with and press enter." : "Type text to search for and press enter.",
-            placeHolder: p_replace ? "Replace pattern here" : "Find pattern here",
+            title: w_title,
+            prompt: w_prompt,
+            value: p_value,
+            placeHolder: w_placeHolder,
         });
     }
 
@@ -4316,16 +4368,24 @@ export class LeoIntegration {
 
         const p_findResult = await this.sendAction(w_action, { fromOutline: !!p_fromOutline });
 
+        this.findFocusTree = false; // Reset flag for headline range
+
         if (!p_findResult.found || !p_findResult.focus) {
-            vscode.window.showInformationMessage('Not found');
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
         } else {
             let w_finalFocus = Focus.Body;
             const w_focus = p_findResult.focus.toLowerCase();
             if (w_focus.includes('tree') || w_focus.includes('head')) {
                 // tree
+                this._lastCommandFindEndOutline = 2;
                 w_finalFocus = Focus.Outline;
                 this.showOutlineIfClosed = true;
-
+                // * SETUP HEADLINE RANGE
+                this.findFocusTree = true;
+                // Default to 0,0 if range not available
+                const range = p_findResult.range ? p_findResult.range : [0, 0];
+                this.findHeadlineRange = [range[0], range[1]];
+                this.findHeadlinePosition = p_findResult.node;
             } else {
                 this.showBodyIfClosed = true;
             }
@@ -4339,7 +4399,8 @@ export class LeoIntegration {
                     // buttons: false,
                     states: true,
                 },
-                p_findResult.node!
+                p_findResult.node!,
+                this.findFocusTree
             );
             this.launchRefresh();
         }
@@ -4360,7 +4421,7 @@ export class LeoIntegration {
         const p_findResult = await this.sendAction(w_action, { fromOutline: false });
 
         if (!p_findResult.found || !p_findResult.focus) {
-            vscode.window.showInformationMessage('Not found');
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
         } else {
             let w_finalFocus = Focus.Body;
             const w_focus = p_findResult.focus.toLowerCase();
@@ -4398,28 +4459,164 @@ export class LeoIntegration {
 
         const w_replaceResult = await this.sendAction(w_action, { fromOutline: !!p_fromOutline });
 
-        if (!w_replaceResult.found || !w_replaceResult.focus) {
-            vscode.window.showInformationMessage('Not found');
+        this.findFocusTree = false; // Reset flag for headline range
+
+        let w_finalFocus = Focus.Body;
+        let w_focus = w_replaceResult.focus ? w_replaceResult.focus : "body";
+        w_focus = w_focus.toLowerCase();
+        if (w_focus.includes('tree') || w_focus.includes('head')) {
+            // tree
+            this._lastCommandFindEndOutline = 2;
+            w_finalFocus = Focus.Outline;
+            this.showOutlineIfClosed = true;
+            // * SETUP HEADLINE RANGE
+            this.findFocusTree = true;
+            // Default to 0,0 if range not available
+            const range = w_replaceResult.range ? w_replaceResult.range : [0, 0];
+            this.findHeadlineRange = [range[0], range[1]];
+            this.findHeadlinePosition = w_replaceResult.node;
         } else {
-            let w_finalFocus = Focus.Body;
-            const w_focus = w_replaceResult.focus.toLowerCase();
-            if (w_focus.includes('tree') || w_focus.includes('head')) {
-                // tree
-                w_finalFocus = Focus.Outline;
-            }
-            this.setupRefresh(
-                w_finalFocus,
-                {
-                    tree: true,
-                    body: true,
-                    scroll: true,
-                    // documents: false,
-                    // buttons: false,
-                    states: true,
-                }
-            );
-            this.launchRefresh();
+            this.showBodyIfClosed = true;
         }
+        this.setupRefresh(
+            w_finalFocus, // ! Unlike gotoNavEntry, this sets focus in outline -or- body.
+            {
+                tree: true, // HAVE to refresh tree because find folds/unfolds only result outline paths
+                body: true,
+                scroll: w_replaceResult.found && w_finalFocus === Focus.Body,
+                // documents: false,
+                // buttons: false,
+                states: true,
+            },
+            w_replaceResult.node!,
+            this.findFocusTree
+        );
+        this.launchRefresh();
+    }
+
+    /**
+     * Interactive Search to implement search-backward, re-search, word-search. etc.
+     * HAS SPECIAL SYSTEM WITH _lastCommandFindEndOutline TO FAKE FOCUS ZONE PROVENANCE DETECTION
+     */
+    public async interactiveSearch(p_backward: boolean, p_regex: boolean, p_word: boolean): Promise<unknown> {
+
+        this._isBusyTriggerSave(false, true);
+
+        if (p_regex && p_word) {
+            console.error('interactiveSearch called with both "WORD" and "REGEX"');
+            return;
+        }
+
+        let w_searchTitle = Constants.USER_MESSAGES.INT_SEARCH_TITLE;
+        let w_searchPrompt = Constants.USER_MESSAGES.INT_SEARCH_PROMPT;
+        let w_searchPlaceholder = Constants.USER_MESSAGES.SEARCH_PLACEHOLDER;
+
+        if (p_backward) {
+            w_searchTitle += Constants.USER_MESSAGES.INT_SEARCH_BACKWARD;
+        }
+        if (p_regex) {
+            w_searchTitle = Constants.USER_MESSAGES.INT_SEARCH_REGEXP + w_searchTitle;
+        }
+        if (p_word) {
+            w_searchTitle = Constants.USER_MESSAGES.INT_SEARCH_WORD + w_searchTitle;
+        }
+
+        const disposables: vscode.Disposable[] = [];
+
+        // Get value from find panel input
+        const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
+
+        try {
+            return await new Promise<unknown>((resolve, reject) => {
+                const input = vscode.window.createInputBox();
+                input.title = w_searchTitle;
+                input.value = w_startValue;
+                input.prompt = w_searchPrompt;
+                input.placeholder = w_searchPlaceholder;
+
+                disposables.push(
+                    input.onDidAccept(async () => {
+                        if (!input.value) {
+                            input.hide();
+                            return resolve(true); // Cancelled with escape or empty string.
+                        }
+                        const value = input.value; // maybe this was replace.
+
+                        const w_action: string = Constants.LEOBRIDGE.INTERACTIVE_SEARCH;
+
+                        const w_options: { [key: string]: any } = {
+                            findText: value,
+                            word: p_word,
+                            regex: p_regex,
+                            backward: p_backward,
+                        };
+
+                        // KEEP undefined to re-use last starting focus zone (outline in this case)
+                        if (!this._lastCommandFindEndOutline) {
+                            // TODO : Send real parameter when possible (vscode prevents focus detection)
+                            w_options.fromOutline = "false"; // Not from a find ending on outline, so set to false.
+                        }
+                        const p_findResult = await this.sendAction(
+                            w_action,
+                            w_options
+                        );
+
+                        this.findFocusTree = false; // Reset flag for headline range
+
+                        if (!p_findResult.found || !p_findResult.focus) {
+                            vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
+                            input.hide();
+                        } else {
+                            let w_finalFocus = Focus.Body;
+                            const w_focus = p_findResult.focus.toLowerCase();
+                            if (w_focus.includes('tree') || w_focus.includes('head')) {
+                                // tree
+                                this._lastCommandFindEndOutline = 2;
+                                w_finalFocus = Focus.Outline;
+                                this.showOutlineIfClosed = true;
+                                // * SETUP HEADLINE RANGE
+                                this.findFocusTree = true;
+                                // Default to 0,0 if range not available
+                                const range = p_findResult.range ? p_findResult.range : [0, 0];
+                                this.findHeadlineRange = [range[0], range[1]];
+                                this.findHeadlinePosition = p_findResult.node;
+                            } else {
+                                this.showBodyIfClosed = true;
+                            }
+                            this.loadSearchSettings();
+                            this.setupRefresh(
+                                w_finalFocus, // ! Unlike gotoNavEntry, this sets focus in outline -or- body.
+                                {
+                                    tree: true, // HAVE to refresh tree because find folds/unfolds only result outline paths
+                                    body: true,
+                                    scroll: p_findResult.found && w_finalFocus === Focus.Body,
+                                    // documents: false,
+                                    // buttons: false,
+                                    states: true,
+                                },
+                                p_findResult.node!,
+                                this.findFocusTree
+                            );
+                            this.launchRefresh();
+                            input.hide();
+                        }
+
+                    }),
+                    input.onDidHide(() => {
+                        return resolve(true);
+                    })
+                );
+                if (this._interactiveSearchInputBox) {
+                    this._interactiveSearchInputBox.dispose(); // just in case.
+                }
+                this._interactiveSearchInputBox = input;
+                this._interactiveSearchInputBox.show();
+            });
+        } finally {
+            disposables.forEach(d => d.dispose());
+            this._interactiveSearchInputBox?.hide();
+        }
+
     }
 
     /**
@@ -4434,16 +4631,19 @@ export class LeoIntegration {
         let w_searchString: string = this._lastSettingsUsed!.findText;
         let w_replaceString: string = this._lastSettingsUsed!.replaceText;
 
+        const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
+        const w_startReplace = this._lastSettingsUsed?.replaceText;
+
         return this._isBusyTriggerSave(false, true)
             .then((p_saveResult) => {
-                return this._inputFindPattern()
+                return this._inputFindPattern(false, w_startValue)
                     .then((p_findString) => {
                         if (!p_findString) {
                             return true; // Cancelled with escape or empty string.
                         }
                         w_searchString = p_findString;
                         if (p_replace) {
-                            return this._inputFindPattern(true).then((p_replaceString) => {
+                            return this._inputFindPattern(true, w_startReplace).then((p_replaceString) => {
                                 if (p_replaceString === undefined) {
                                     return true;
                                 }
@@ -4513,9 +4713,11 @@ export class LeoIntegration {
             }) || Promise.resolve();
         }
 
+        const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
+
         return this._isBusyTriggerSave(false, true)
             .then(() => {
-                return this._inputFindPattern()
+                return this._inputFindPattern(false, w_startValue)
                     .then((p_findString) => {
                         if (!p_findString) {
                             return true; // Cancelled with escape or empty string.
@@ -4709,7 +4911,7 @@ export class LeoIntegration {
                     p_inputResult = p_inputResult.trim();
                     // check for special chars first
                     if (p_inputResult.split(/(&|\||-|\^)/).length > 1) {
-                        vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &|^-');
+                        vscode.window.showInformationMessage(Constants.USER_MESSAGES.TAGS_CHARACTERS_ERROR);
                         return;
                     }
                     this.sendAction(
@@ -4751,7 +4953,7 @@ export class LeoIntegration {
                     p_inputResult = p_inputResult.trim();
                     // check for special chars first
                     if (p_inputResult.split(/(&|\||-|\^)/).length > 1) {
-                        vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &|^-');
+                        vscode.window.showInformationMessage(Constants.USER_MESSAGES.TAGS_CHARACTERS_ERROR);
                         return;
                     }
                     this.sendAction(
@@ -4837,7 +5039,7 @@ export class LeoIntegration {
                     }
                 });
         } else if (this.lastSelectedNode) {
-            vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.headline);
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.NO_TAGS_ON_NODE + this.lastSelectedNode.headline);
         } else {
             return;
         }
@@ -4868,7 +5070,7 @@ export class LeoIntegration {
                     });
                 });
         } else if (this.lastSelectedNode) {
-            vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.headline);
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.NO_TAGS_ON_NODE + this.lastSelectedNode.headline);
         } else {
             return;
         }

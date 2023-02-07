@@ -1753,6 +1753,36 @@
         "title": "Start Search"
       },
       {
+        "command": "leointeg.searchBackward",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Search Backward"
+      },
+      {
+        "command": "leointeg.reSearch",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Regexp Search"
+      },
+      {
+        "command": "leointeg.reSearchBackward",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Regexp Search Backward"
+      },
+      {
+        "command": "leointeg.wordSearch",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Word Search"
+      },
+      {
+        "command": "leointeg.wordSearchBackward",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Word Search Backward"
+      },
+      {
         "command": "leointeg.findAll",
         "category": "Leo",
         "enablement": "leoTreeOpened",

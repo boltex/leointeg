@@ -459,6 +459,7 @@
 <v t="felix.20210516234059.1"><vh>find</vh></v>
 <v t="felix.20210713000442.1"><vh>findSymbol</vh></v>
 <v t="felix.20210530223726.1"><vh>replace &amp; replaceThenFind</vh></v>
+<v t="felix.20230204150552.1"><vh>interactiveSearch</vh></v>
 <v t="felix.20210530230354.1"><vh>findAll &amp; replaceAll</vh></v>
 <v t="felix.20210530230400.1"><vh>cloneFind</vh></v>
 <v t="felix.20210530225306.1"><vh>setSearchOption</vh></v>
@@ -1236,6 +1237,22 @@ private _revealNode(
  * * Launches refresh for UI components: treeviews, body, and context states
  */
 private async _launchRefresh(): Promise&lt;unknown&gt; {
+
+    if (this._lastCommandFindEndOutline) {
+        this._lastCommandFindEndOutline--; // decrement from 2 to 1 the first time, keeping the flag for 1 refresh.
+    }
+
+    if (!this.refreshPreserveRange) {
+        if (this.findFocusTree) {
+            // had a range but now refresh from other than find/replace
+            // So make sure tree is also refreshed.
+            this._refreshType.tree = true;
+        }
+        // Clear no matter what.
+        this.findFocusTree = false;
+    } else {
+        this.refreshPreserveRange = false; // preserved once, now cleared.
+    }
 
     // check states for having at least a document opened
     if (!this.serverHasOpenedFile &amp;&amp; this.leoStates.leoBridgeReady &amp;&amp; this.leoStates.fileOpenedReady) {
@@ -2169,6 +2186,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.GOTO_NAV_ENTRY, (p_node: LeoGotoNode) =&gt; w_leo.gotoNavEntry(p_node)],
 
 [CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
+[CMD.SEARCH_BACKWARD, () =&gt; w_leo.interactiveSearch(true, false, false)],
+[CMD.RE_SEARCH, () =&gt; w_leo.interactiveSearch(false, true, false)],
+[CMD.RE_SEARCH_BACKWARD, () =&gt; w_leo.interactiveSearch(true, true, false)],
+[CMD.WORD_SEARCH, () =&gt; w_leo.interactiveSearch(false, false, true)],
+[CMD.WORD_SEARCH_BACKWARD, () =&gt; w_leo.interactiveSearch(true, false, true)],
+
 [CMD.FIND_ALL, () =&gt; w_leo.findAll(false)],
 [CMD.FIND_NEXT, () =&gt; w_leo.find(false, false)],
 [CMD.FIND_NEXT_FO, () =&gt; w_leo.find(true, false)],
@@ -5132,7 +5155,8 @@ public static LEOBRIDGE = {
     GET_POSITION_DATA: "!get_position_data",
     GET_SEARCH_SETTINGS: "!get_search_settings",
     SET_SEARCH_SETTINGS: "!set_search_settings",
-    START_SEARCH: "!start_search",
+    INTERACTIVE_SEARCH: "!interactive_search",
+
     FIND_ALL: "!find_all",
     FIND_NEXT: "!find_next",
     FIND_PREVIOUS: "!find_previous",
@@ -5342,6 +5366,12 @@ public static COMMANDS = {
     GOTO_NAV_LAST: Constants.NAME + ".gotoNavLast",
 
     START_SEARCH: Constants.NAME + ".startSearch",
+    SEARCH_BACKWARD: Constants.NAME + ".searchBackward",
+    RE_SEARCH: Constants.NAME + ".reSearch",
+    RE_SEARCH_BACKWARD: Constants.NAME + ".reSearchBackward",
+    WORD_SEARCH: Constants.NAME + ".wordSearch",
+    WORD_SEARCH_BACKWARD: Constants.NAME + ".wordSearchBackward",
+
     FIND_ALL: Constants.NAME + ".findAll",
     FIND_NEXT: Constants.NAME + ".findNext",
     FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
@@ -5538,6 +5568,26 @@ public static USER_MESSAGES = {
     PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
     PROMPT_GOTO_GLOBAL_LINE: "Line number",
 
+    REPLACE_TITLE: "Replace with",
+    REPLACE_PROMPT: "Type text to replace with and press enter.",
+    REPLACE_PLACEHOLDER: "Replace pattern here",
+
+    SEARCH_TITLE: "Search for",
+    SEARCH_PROMPT: "Type text to search for and press enter.",
+    SEARCH_PLACEHOLDER: "Find pattern here",
+
+    INT_SEARCH_TITLE: "Search",
+    INT_SEARCH_PROMPT: "'Enter' to search",
+    INT_SEARCH_BACKWARD: " Backward", // Leading space intended
+    INT_SEARCH_REGEXP: "Regexp ", // Trailing space intended
+    INT_SEARCH_WORD: "Word ", // Trailing space intended
+
+    SEARCH_NOT_FOUND: "Not found",
+    FIND_PATTERN_HERE: "&lt;find pattern here&gt;",
+
+    TAGS_CHARACTERS_ERROR: "Cannot add tags containing any of these characters: &amp;|^-",
+    NO_TAGS_ON_NODE: "No tags on node: ", // Trailing space intended
+
     TITLE_TAG_CHILDREN: "Tag Children",
     TITLE_REMOVE_TAG: "Remove Tag",
     TITLE_TAG_NODE: "Tag Node",
@@ -5575,7 +5625,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_LEO_VERSION_STRING: "Please update: Leo 6.7.1 required.",
+    MINIMUM_LEO_VERSION_STRING: "Please update: Leo 6.7.2 required.",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
     MINIBUFFER_BUTTON_START: "@button-",
@@ -6369,11 +6419,11 @@ import { BodyTimeInfo } from "./types";
         const w_gnx = utils.leoUriToStr(p_uri);
         if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
             return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-        } else if (w_gnx === this._lastGnx &amp;&amp; this._openedBodiesGnx.includes(this._lastGnx)) {
+        } else if (w_gnx === this.lastGnx &amp;&amp; this._openedBodiesGnx.includes(this.lastGnx)) {
             return {
                 type: vscode.FileType.File,
-                ctime: this._openedBodiesInfo[this._lastGnx].ctime,
-                mtime: this._openedBodiesInfo[this._lastGnx].mtime,
+                ctime: this._openedBodiesInfo[this.lastGnx].ctime,
+                mtime: this._openedBodiesInfo[this.lastGnx].mtime,
                 size: this._lastBodyLength
             };
         } else if (this._openedBodiesGnx.includes(w_gnx)) {
@@ -6421,33 +6471,33 @@ import { BodyTimeInfo } from "./types";
                 // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
 
                 this._errorRefreshFlag = false; // got body so reset possible flag!
-                if (this._lastGnx === w_gnx &amp;&amp; this._lastBodyData === p_result.body) {
+                if (this.lastGnx === w_gnx &amp;&amp; this.lastBodyData === p_result.body) {
                     // If EXACT SAME body has refreshed, clear prevent preventIconChange
                     // (because _onDocumentChanged will not be triggered)
                     // Otherwise, changing a character wont change the icon, until the next change.
                     this._leoIntegration.preventIconChange = false;
                 }
 
-                this._lastGnx = w_gnx;
-                this._lastBodyData = p_result.body;
+                this.lastGnx = w_gnx;
+                this.lastBodyData = p_result.body;
                 w_buffer = Buffer.from(p_result.body);
                 this._lastBodyLength = w_buffer.byteLength;
 
             } else if (p_result.body === "") {
                 // console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
 
-                this._lastGnx = w_gnx;
+                this.lastGnx = w_gnx;
                 this._lastBodyLength = 0;
-                this._lastBodyData = "";
+                this.lastBodyData = "";
                 w_buffer = Buffer.from("");
             } else {
                 if (!this._errorRefreshFlag) {
                     this._leoIntegration.fullRefresh();
                 }
-                if (this._lastGnx === w_gnx) {
+                if (this.lastGnx === w_gnx) {
                     // was last gnx of closed file about to be switched to new document selected
                     console.log('Passed in not found: ' + w_gnx);
-                    w_buffer = Buffer.from(this._lastBodyData);
+                    w_buffer = Buffer.from(this.lastBodyData);
                 } else {
                     console.error("ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
                     //  throw vscode.FileSystemError.FileNotFound();
@@ -6558,8 +6608,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     private _errorRefreshFlag: boolean = false;
 
     // * Last file read data with the readFile method
-    private _lastGnx: string = ""; // gnx of last file read
-    private _lastBodyData: string = ""; // body content of last file read
+    public lastGnx: string = ""; // gnx of last file read
+    public lastBodyData: string = ""; // body content of last file read
     private _lastBodyLength: number = 0; // length of last file read
 
     // * List of currently opened body panes gnx (from 'watch' &amp; 'dispose' methods)
@@ -7942,6 +7992,7 @@ export interface LeoBridgePackage {
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
     found?: boolean // find_next, find_previous
+    range?: [number, number] // find_next, find_previous
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     wrap?: boolean; // get_body_states
@@ -8335,7 +8386,7 @@ _If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.gi
 &gt; Leo is a fundamentally different way of using and organizing data, programs and scripts.\
 &gt; [Introduction Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
 
-See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
+See Leo, the Literate Editor with Outline, at [leo-editor.github.io/leo-editor](https://leo-editor.github.io/leo-editor/)
 or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.visualstudio.com](https://code.visualstudio.com/).
 
 ![Screenshot](https://raw.githubusercontent.com/boltex/leointeg/master/resources/animated-screenshot.gif)
@@ -8363,7 +8414,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 
 - Leo Editor 6.7.1 or later\
   _Install with :_ `pip install leo`\
-   _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
+   _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
 - Websocket Python Library\
   _Install with :_ `pip install websockets`\
@@ -8376,7 +8427,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
-- **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
+- **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
 - **Find panel** that responds to Leo's original keybindings, Ctrl+F, F2, F3... when focus is set in the outline or body panes
 - **Nav and Tag panel** controls are integrated in the Find panel
 - **Goto Anywhere panel** to navigate directly from a list of nodes
@@ -8534,7 +8585,7 @@ So select at least one character to use the previously assigned original keyboar
 Leo integration into VS Code is done by starting
 a [python server script](https://github.com/leo-editor/leo-editor/blob/devel/leo/core/leoserver.py) and connecting to it via
 a [websocket](https://websockets.readthedocs.io/en/stable/intro.html)
-to exchange JSON data. The server script leverages [leoBridge](https://leoeditor.com/leoBridge.html)
+to exchange JSON data. The server script leverages [leoBridge](https://leo-editor.github.io/leo-editor/leoBridge.html)
 and re-uses code from the [leoflexx.py plugin](https://github.com/leo-editor/leo-editor/blob/devel/leo/plugins/leoflexx.py#L893).
 
 The outline pane is made by implementing a
@@ -8549,7 +8600,7 @@ and using the outline's selected node 'gnx' as identifier.
 
 ### _Thanks to_
 
-- [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
+- [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leo-editor.github.io/leo-editor/)
 - [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
 - [Vitalije](https://github.com/vitalije) for his contributions and support
 - [Arjan](https://github.com/ar-jan) for his suggestions and ideas
@@ -8661,7 +8712,7 @@ _Note: This editable body panel does not affect Leo file yet._
 <t tx="felix.20200718222445.1">## 0.0.1
 
 - Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
-- Implemented [leoBridge](https://leoeditor.com/leoBridge.html) interaction.
+- Implemented [leoBridge](https://leo-editor.github.io/leo-editor/leoBridge.html) interaction.
 
 ![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp96px.png)
 </t>
@@ -8760,7 +8811,7 @@ On Linux:
 For more details about all possible arguments, run it from a command prompt with the 'help' argument like so:\
 **`...leo-editor/leo/core/leoserver.py --help`**
 
-For more information about the Leo server see [Using leoserver.py](https://leoeditor.com/leoserver.html) from Leo's official documentation.
+For more information about the Leo server see [Using leoserver.py](https://leo-editor.github.io/leo-editor/leoserver.html) from Leo's official documentation.
 
 ### Using Anaconda or other custom python installations
 
@@ -9075,6 +9126,7 @@ export class LeoIntegration {
     public finalFocus: Focus = Focus.NoChange; // Set in _setupRefresh : Last command issued had focus on outline, as opposed to the body
     public showBodyIfClosed: boolean = false;
     public showOutlineIfClosed: boolean = false;
+    public refreshPreserveRange = false; // this makes the next refresh cycle preserve the "findFocusTree" flag once.
 
     private _refreshType: ReqRefresh = {}; // Set in _setupRefresh : Flags for commands to require parts of UI to refresh
 
@@ -9189,6 +9241,10 @@ export class LeoIntegration {
     public findFocusTree = false;
     public findHeadlineRange: [number, number] = [0, 0];
     public findHeadlinePosition: ArchivedPosition | undefined;
+    private _lastCommandFindEndOutline: number = 0; // Means that last command resolved as a find operation with selection on outline
+
+    // * Interactive Find Input
+    private _interactiveSearchInputBox: vscode.InputBox | undefined;
 
     // * Leo Find Panel
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
@@ -9829,6 +9885,17 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
             const w_hasBody = !!p_textDocumentChange.document.getText().length;
             const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
 
+            // TODO : uncomment and test this to fix replace / replace-then-find!!
+            if (
+                this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &amp;&amp;
+                p_textDocumentChange.document.getText() === this._leoFileSystem.lastBodyData
+            ) {
+                // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
+                // Set proper cursor insertion point and selection range.
+                this.showBody(false, true, true);
+                return;
+            }
+
             if (!this.leoStates.leoChanged || w_iconChanged) {
                 if (this.preventIconChange) {
                     this.preventIconChange = false;
@@ -10235,7 +10302,7 @@ public sendAction(
  * @param p_preventTakingFocus flag that when true will stop the editor from taking focus once opened
  * @returns a promise of an editor, or void if body had been changed again in the meantime.
  */
-public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise&lt;vscode.TextEditor | void&gt; {
+public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean, p_preventReveal?: boolean): Promise&lt;vscode.TextEditor | void&gt; {
 
     const w_openedDocumentTS = performance.now();
     const w_openedDocumentGnx = utils.leoUriToStr(this.bodyUri);
@@ -10356,7 +10423,7 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
     }
 
     // Find body pane's position if already opened with same gnx (language still needs to be set per position)
-    let w_foundOpened = false;
+    let w_foundDocOpened = false;
     vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
         p_tabGroup.tabs.forEach((p_tab) =&gt; {
 
@@ -10367,13 +10434,24 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise
                     if (p_textDocument.uri.fsPath === (p_tab.input as vscode.TabInputText).uri.fsPath) {
                         this._bodyTextDocument = p_textDocument; // vscode.workspace.openTextDocument
                         this._bodyMainSelectionColumn = p_tab.group.viewColumn;
-                        w_foundOpened = true;
+                        if (p_preventReveal) {
+                            if (p_tab.isActive) {
+                                w_foundDocOpened = true;
+                            }
+                        } else {
+                            w_foundDocOpened = true;
+                        }
                     }
                 });
             }
         });
     });
-    if (w_foundOpened &amp;&amp; !q_saved) {
+
+    if (!w_foundDocOpened &amp;&amp; p_preventReveal) {
+        return; // ! HAD PREVENT REVEAL !
+    }
+
+    if (w_foundDocOpened &amp;&amp; !q_saved) {
         // Was the same and was asked to show body (and did not already had to fake-save and refresh)
         this.preventIconChange = true;
         this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
@@ -12228,16 +12306,24 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
 
     const p_findResult = await this.sendAction(w_action, { fromOutline: !!p_fromOutline });
 
+    this.findFocusTree = false; // Reset flag for headline range
+
     if (!p_findResult.found || !p_findResult.focus) {
-        vscode.window.showInformationMessage('Not found');
+        vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
     } else {
         let w_finalFocus = Focus.Body;
         const w_focus = p_findResult.focus.toLowerCase();
         if (w_focus.includes('tree') || w_focus.includes('head')) {
             // tree
+            this._lastCommandFindEndOutline = 2;
             w_finalFocus = Focus.Outline;
             this.showOutlineIfClosed = true;
-
+            // * SETUP HEADLINE RANGE
+            this.findFocusTree = true;
+            // Default to 0,0 if range not available
+            const range = p_findResult.range ? p_findResult.range : [0, 0];
+            this.findHeadlineRange = [range[0], range[1]];
+            this.findHeadlinePosition = p_findResult.node;
         } else {
             this.showBodyIfClosed = true;
         }
@@ -12251,7 +12337,8 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
                 // buttons: false,
                 states: true,
             },
-            p_findResult.node!
+            p_findResult.node!,
+            this.findFocusTree
         );
         this.launchRefresh();
     }
@@ -12263,6 +12350,36 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "category": "Leo",
   "enablement": "leoTreeOpened",
   "title": "Start Search"
+},
+{
+  "command": "leointeg.searchBackward",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Search Backward"
+},
+{
+  "command": "leointeg.reSearch",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Regexp Search"
+},
+{
+  "command": "leointeg.reSearchBackward",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Regexp Search Backward"
+},
+{
+  "command": "leointeg.wordSearch",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Word Search"
+},
+{
+  "command": "leointeg.wordSearchBackward",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Word Search Backward"
 },
 {
   "command": "leointeg.findAll",
@@ -12967,28 +13084,39 @@ public async replace(p_fromOutline: boolean, p_thenFind: boolean): Promise&lt;an
 
     const w_replaceResult = await this.sendAction(w_action, { fromOutline: !!p_fromOutline });
 
-    if (!w_replaceResult.found || !w_replaceResult.focus) {
-        vscode.window.showInformationMessage('Not found');
+    this.findFocusTree = false; // Reset flag for headline range
+
+    let w_finalFocus = Focus.Body;
+    let w_focus = w_replaceResult.focus ? w_replaceResult.focus : "body";
+    w_focus = w_focus.toLowerCase();
+    if (w_focus.includes('tree') || w_focus.includes('head')) {
+        // tree
+        this._lastCommandFindEndOutline = 2;
+        w_finalFocus = Focus.Outline;
+        this.showOutlineIfClosed = true;
+        // * SETUP HEADLINE RANGE
+        this.findFocusTree = true;
+        // Default to 0,0 if range not available
+        const range = w_replaceResult.range ? w_replaceResult.range : [0, 0];
+        this.findHeadlineRange = [range[0], range[1]];
+        this.findHeadlinePosition = w_replaceResult.node;
     } else {
-        let w_finalFocus = Focus.Body;
-        const w_focus = w_replaceResult.focus.toLowerCase();
-        if (w_focus.includes('tree') || w_focus.includes('head')) {
-            // tree
-            w_finalFocus = Focus.Outline;
-        }
-        this.setupRefresh(
-            w_finalFocus,
-            {
-                tree: true,
-                body: true,
-                scroll: true,
-                // documents: false,
-                // buttons: false,
-                states: true,
-            }
-        );
-        this.launchRefresh();
+        this.showBodyIfClosed = true;
     }
+    this.setupRefresh(
+        w_finalFocus, // ! Unlike gotoNavEntry, this sets focus in outline -or- body.
+        {
+            tree: true, // HAVE to refresh tree because find folds/unfolds only result outline paths
+            body: true,
+            scroll: w_replaceResult.found &amp;&amp; w_finalFocus === Focus.Body,
+            // documents: false,
+            // buttons: false,
+            states: true,
+        },
+        w_replaceResult.node!,
+        this.findFocusTree
+    );
+    this.launchRefresh();
 }
 
 </t>
@@ -13020,16 +13148,19 @@ public findAll(p_replace: boolean): Promise&lt;any&gt; {
     let w_searchString: string = this._lastSettingsUsed!.findText;
     let w_replaceString: string = this._lastSettingsUsed!.replaceText;
 
+    const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
+    const w_startReplace = this._lastSettingsUsed?.replaceText;
+
     return this._isBusyTriggerSave(false, true)
         .then((p_saveResult) =&gt; {
-            return this._inputFindPattern()
+            return this._inputFindPattern(false, w_startValue)
                 .then((p_findString) =&gt; {
                     if (!p_findString) {
                         return true; // Cancelled with escape or empty string.
                     }
                     w_searchString = p_findString;
                     if (p_replace) {
-                        return this._inputFindPattern(true).then((p_replaceString) =&gt; {
+                        return this._inputFindPattern(true, w_startReplace).then((p_replaceString) =&gt; {
                             if (p_replaceString === undefined) {
                                 return true;
                             }
@@ -13100,9 +13231,11 @@ public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
         }) || Promise.resolve();
     }
 
+    const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
+
     return this._isBusyTriggerSave(false, true)
         .then(() =&gt; {
-            return this._inputFindPattern()
+            return this._inputFindPattern(false, w_startValue)
                 .then((p_findString) =&gt; {
                     if (!p_findString) {
                         return true; // Cancelled with escape or empty string.
@@ -13305,8 +13438,16 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'start-search': Constants.COMMANDS.START_SEARCH,
     'find-next': Constants.COMMANDS.FIND_NEXT,
     'find-prev': Constants.COMMANDS.FIND_PREVIOUS,
-    'search-backward': Constants.COMMANDS.FIND_PREVIOUS,
-    'search-forward': Constants.COMMANDS.FIND_NEXT,
+
+    'search-forward': Constants.COMMANDS.START_SEARCH, // In Leo also, this is like ctrl+F.
+    'search-backward': Constants.COMMANDS.SEARCH_BACKWARD,
+    're-search': Constants.COMMANDS.RE_SEARCH,
+    're-search-forward': Constants.COMMANDS.RE_SEARCH,
+    're-search-backward': Constants.COMMANDS.RE_SEARCH_BACKWARD,
+    'word-search': Constants.COMMANDS.WORD_SEARCH,
+    'word-search-forward': Constants.COMMANDS.WORD_SEARCH,
+    'word-search-backward': Constants.COMMANDS.WORD_SEARCH_BACKWARD,
+
     'find-var': Constants.COMMANDS.FIND_VAR,
     'find-def': Constants.COMMANDS.FIND_DEF,
     'replace': Constants.COMMANDS.REPLACE,
@@ -13655,13 +13796,19 @@ export function findNextAvailablePort(p_startingPort: number): Promise&lt;number
 <t tx="felix.20210613205741.1">/**
  * * Get a find pattern string input from the user
  * @param p_replace flag for doing a 'replace' instead of a 'find'
+ * @param p_uniqueRegex flag for using the "all unique regex" commands
  * @returns Promise of string or undefined if cancelled
  */
-private _inputFindPattern(p_replace?: boolean): Thenable&lt;string | undefined&gt; {
+private _inputFindPattern(p_replace?: boolean, p_value?: string): Thenable&lt;string | undefined&gt; {
+    let w_title, w_prompt, w_placeHolder;
+    w_title = p_replace ? Constants.USER_MESSAGES.REPLACE_TITLE : Constants.USER_MESSAGES.SEARCH_TITLE;
+    w_prompt = p_replace ? Constants.USER_MESSAGES.REPLACE_PROMPT : Constants.USER_MESSAGES.SEARCH_PROMPT;
+    w_placeHolder = p_replace ? Constants.USER_MESSAGES.REPLACE_PLACEHOLDER : Constants.USER_MESSAGES.SEARCH_PLACEHOLDER;
     return vscode.window.showInputBox({
-        title: p_replace ? "Replace with" : "Search for",
-        prompt: p_replace ? "Type text to replace with and press enter." : "Type text to search for and press enter.",
-        placeHolder: p_replace ? "Replace pattern here" : "Find pattern here",
+        title: w_title,
+        prompt: w_prompt,
+        value: p_value,
+        placeHolder: w_placeHolder,
     });
 }
 
@@ -13723,7 +13870,7 @@ public tagChildren(): void {
                 p_inputResult = p_inputResult.trim();
                 // check for special chars first
                 if (p_inputResult.split(/(&amp;|\||-|\^)/).length &gt; 1) {
-                    vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &amp;|^-');
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.TAGS_CHARACTERS_ERROR);
                     return;
                 }
                 this.sendAction(
@@ -13816,7 +13963,7 @@ public async findSymbol(p_def: boolean): Promise&lt;any&gt; {
     const p_findResult = await this.sendAction(w_action, { fromOutline: false });
 
     if (!p_findResult.found || !p_findResult.focus) {
-        vscode.window.showInformationMessage('Not found');
+        vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
     } else {
         let w_finalFocus = Focus.Body;
         const w_focus = p_findResult.focus.toLowerCase();
@@ -14253,7 +14400,7 @@ Although the Leo integration has one instance of the leoserver script per vscode
 window by default, the server settings also has features that allows you to use the same instance
 of Leo in multiple client (vscode) windows simultaneously, with real-time updates and interaction.
 
-(See [Multiple concurrent connections](https://leoeditor.com/leoserver.html#multiple-concurrent-connections))
+(See [Multiple concurrent connections](https://leo-editor.github.io/leo-editor/leoserver.html#multiple-concurrent-connections))
 
 ### Auto Start
 
@@ -14270,7 +14417,7 @@ multi-user interaction over a network/internet, and more.
 Run the server directly with the '--help' argument like so for more details:\
 **`...leo-editor/leo/core/leoserver.py --help`**
 
-For more information about the Leo server see [Using leoserver.py](https://leoeditor.com/leoserver.html) from Leo's official documentation.
+For more information about the Leo server see [Using leoserver.py](https://leo-editor.github.io/leo-editor/leoserver.html) from Leo's official documentation.
 
 </t>
 <t tx="felix.20210901215735.1">## 0.1.19
@@ -15639,7 +15786,7 @@ public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
         );
 
         if (!p_navEntryResult.focus) {
-            return vscode.window.showInformationMessage('Not found');
+            return vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
         } else {
             let w_revealTarget = Focus.Body;
             const w_focus = p_navEntryResult.focus.toLowerCase();
@@ -15706,7 +15853,7 @@ public tagNode(): void {
                 p_inputResult = p_inputResult.trim();
                 // check for special chars first
                 if (p_inputResult.split(/(&amp;|\||-|\^)/).length &gt; 1) {
-                    vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &amp;|^-');
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.TAGS_CHARACTERS_ERROR);
                     return;
                 }
                 this.sendAction(
@@ -15793,7 +15940,7 @@ public removeTag(): void {
                 }
             });
     } else if (this.lastSelectedNode) {
-        vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.headline);
+        vscode.window.showInformationMessage(Constants.USER_MESSAGES.NO_TAGS_ON_NODE + this.lastSelectedNode.headline);
     } else {
         return;
     }
@@ -15825,7 +15972,7 @@ public removeTags(): void {
                 });
             });
     } else if (this.lastSelectedNode) {
-        vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.headline);
+        vscode.window.showInformationMessage(Constants.USER_MESSAGES.NO_TAGS_ON_NODE + this.lastSelectedNode.headline);
     } else {
         return;
     }
@@ -15873,7 +16020,7 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
   - Marked nodes
   - Nav search with currently selected body text
 - Made those same commands available through vscode command palettes and user keybindings.
-- Added leoID check upon connection, and implemented a dialog to capture and set the leoID on the server, equivalent to &lt;https://leoeditor.com/running.html?highlight=leoid#running-leo-the-first-time&gt;
+- Added leoID check upon connection, and implemented a dialog to capture and set the leoID on the server, equivalent to &lt;https://leo-editor.github.io/leo-editor/running.html?highlight=leoid#running-leo-the-first-time&gt;
 
 </t>
 <t tx="felix.20220321211021.1">public static addMinibufferCommands: { label: string, detail: string }[] = [
@@ -16390,13 +16537,7 @@ public async revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
 
 </t>
 <t tx="felix.20220709005340.1">public static unsupportedMinibufferCommands: string[] = [
-    're-search',
-    're-search-forward',
-    're-search-backward',
-    'search-backward',
-    'word-search',
-    'word-search-forward',
-    'restart-leo'
+    'restart-leo' // added to bad list for leoserver 1.0.6. (Can be removed in next leointeg version)
 ];
 
 </t>
@@ -16892,7 +17033,10 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
  * @param p_refreshType Refresh flags for each UI part
  * @param p_node The AP node to be refreshed if refresh type 'node' only is set
  */
-public setupRefresh(p_finalFocus: Focus, p_refreshType: ReqRefresh, p_node?: ArchivedPosition): void {
+public setupRefresh(p_finalFocus: Focus, p_refreshType: ReqRefresh, p_node?: ArchivedPosition, p_preserveRange?: boolean): void {
+    if (p_preserveRange) {
+        this.refreshPreserveRange = true; // Will be cleared after a refresh cycle.
+    }
     // Set final "focus-placement" EITHER true or false
     this.finalFocus = p_finalFocus;
     // Set all properties WITHOUT clearing others.
@@ -18327,7 +18471,7 @@ private _refreshDesc(): void {
 public static MIN_SERVER_VERSION_NUMBER = {
     minMajor: 1,
     minMinor: 0,
-    minPatch: 5
+    minPatch: 6
 };
 
 </t>
@@ -18414,6 +18558,9 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
 - Fixed keyboard navigation in the 'Goto Panel'.
 - Added support for @killcolor and @nocolor-node color suppression directives.
 - Fixed 'when' condition for keybindings of 'replace' &amp; 'replace-then-find'.
+- Completed set of search commands: re-search, word-search and their backward variants.
+- Fixed defaults set as placeholders in search commands.
+- Added support for search commands to leave selection range in tree headlines: requires Leo 6.7.2
 
 </t>
 <t tx="felix.20221212232224.1">## 1.0.11
@@ -18460,6 +18607,132 @@ private _checkForKillColor(p_body: string): boolean {
         return true;
     }
     return false;
+}
+
+</t>
+<t tx="felix.20230204150552.1">/**
+ * Interactive Search to implement search-backward, re-search, word-search. etc.
+ * HAS SPECIAL SYSTEM WITH _lastCommandFindEndOutline TO FAKE FOCUS ZONE PROVENANCE DETECTION
+ */
+public async interactiveSearch(p_backward: boolean, p_regex: boolean, p_word: boolean): Promise&lt;unknown&gt; {
+
+    this._isBusyTriggerSave(false, true);
+
+    if (p_regex &amp;&amp; p_word) {
+        console.error('interactiveSearch called with both "WORD" and "REGEX"');
+        return;
+    }
+
+    let w_searchTitle = Constants.USER_MESSAGES.INT_SEARCH_TITLE;
+    let w_searchPrompt = Constants.USER_MESSAGES.INT_SEARCH_PROMPT;
+    let w_searchPlaceholder = Constants.USER_MESSAGES.SEARCH_PLACEHOLDER;
+
+    if (p_backward) {
+        w_searchTitle += Constants.USER_MESSAGES.INT_SEARCH_BACKWARD;
+    }
+    if (p_regex) {
+        w_searchTitle = Constants.USER_MESSAGES.INT_SEARCH_REGEXP + w_searchTitle;
+    }
+    if (p_word) {
+        w_searchTitle = Constants.USER_MESSAGES.INT_SEARCH_WORD + w_searchTitle;
+    }
+
+    const disposables: vscode.Disposable[] = [];
+
+    // Get value from find panel input
+    const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
+
+    try {
+        return await new Promise&lt;unknown&gt;((resolve, reject) =&gt; {
+            const input = vscode.window.createInputBox();
+            input.title = w_searchTitle;
+            input.value = w_startValue;
+            input.prompt = w_searchPrompt;
+            input.placeholder = w_searchPlaceholder;
+
+            disposables.push(
+                input.onDidAccept(async () =&gt; {
+                    if (!input.value) {
+                        input.hide();
+                        return resolve(true); // Cancelled with escape or empty string.
+                    }
+                    const value = input.value; // maybe this was replace.
+
+                    const w_action: string = Constants.LEOBRIDGE.INTERACTIVE_SEARCH;
+
+                    const w_options: { [key: string]: any } = {
+                        findText: value,
+                        word: p_word,
+                        regex: p_regex,
+                        backward: p_backward,
+                    };
+
+                    // KEEP undefined to re-use last starting focus zone (outline in this case)
+                    if (!this._lastCommandFindEndOutline) {
+                        // TODO : Send real parameter when possible (vscode prevents focus detection)
+                        w_options.fromOutline = "false"; // Not from a find ending on outline, so set to false.
+                    }
+                    const p_findResult = await this.sendAction(
+                        w_action,
+                        w_options
+                    );
+
+                    this.findFocusTree = false; // Reset flag for headline range
+
+                    if (!p_findResult.found || !p_findResult.focus) {
+                        vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
+                        input.hide();
+                    } else {
+                        let w_finalFocus = Focus.Body;
+                        const w_focus = p_findResult.focus.toLowerCase();
+                        if (w_focus.includes('tree') || w_focus.includes('head')) {
+                            // tree
+                            this._lastCommandFindEndOutline = 2;
+                            w_finalFocus = Focus.Outline;
+                            this.showOutlineIfClosed = true;
+                            // * SETUP HEADLINE RANGE
+                            this.findFocusTree = true;
+                            // Default to 0,0 if range not available
+                            const range = p_findResult.range ? p_findResult.range : [0, 0];
+                            this.findHeadlineRange = [range[0], range[1]];
+                            this.findHeadlinePosition = p_findResult.node;
+                        } else {
+                            this.showBodyIfClosed = true;
+                        }
+                        this.loadSearchSettings();
+                        this.setupRefresh(
+                            w_finalFocus, // ! Unlike gotoNavEntry, this sets focus in outline -or- body.
+                            {
+                                tree: true, // HAVE to refresh tree because find folds/unfolds only result outline paths
+                                body: true,
+                                scroll: p_findResult.found &amp;&amp; w_finalFocus === Focus.Body,
+                                // documents: false,
+                                // buttons: false,
+                                states: true,
+                            },
+                            p_findResult.node!,
+                            this.findFocusTree
+                        );
+                        this.launchRefresh();
+                        input.hide();
+                    }
+
+                }),
+                input.onDidHide(() =&gt; {
+                    return resolve(true);
+                })
+            );
+            if (this._interactiveSearchInputBox) {
+                this._interactiveSearchInputBox.dispose(); // just in case.
+            }
+            this._interactiveSearchInputBox = input;
+            this._interactiveSearchInputBox.show();
+        });
+    } finally {
+        disposables.forEach(d =&gt; d.dispose());
+        this._interactiveSearchInputBox?.hide();
+    }
+
 }
 
 </t>
@@ -19147,7 +19420,7 @@ body &gt; div &gt; div &gt; label:active {
           that integrates
           &lt;a class="bold"
              title="Learn more about Leo"
-             href="https://leoeditor.com/"&gt;Leo&lt;/a&gt;
+             href="https://leo-editor.github.io/leo-editor/"&gt;Leo&lt;/a&gt;
           into VS Code.
           &lt;!--
           LeoInteg is designed to &lt;b&gt;provide Leo's functionality&lt;/b&gt;
@@ -19282,7 +19555,7 @@ body &gt; div &gt; div &gt; label:active {
               &lt;/div&gt;
               &lt;br&gt;
               &lt;p&gt;For a standalone, persistent, or multi-user server
-                see &lt;a href="https://leoeditor.com/leoserver.html"
+                see &lt;a href="https://leo-editor.github.io/leo-editor/leoserver.html"
                    title="Leo server documentation"&gt;Using leoserver.py&lt;/a&gt;
                 from Leo's documentation.
               &lt;/p&gt;
@@ -19946,12 +20219,12 @@ body &gt; div &gt; div &gt; label:active {
         &lt;h2&gt;About Leo&lt;/h2&gt;
         &lt;ul&gt;
           &lt;li&gt;
-            &lt;a href="https://leoeditor.com/"
-               title="Leo’s Home Page"&gt;Home Page&lt;/a&gt;
+            &lt;a href="https://leo-editor.github.io/leo-editor/"
+               title="Leo's Home Page"&gt;Home Page&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://leoeditor.com/leo_toc.html"
-               title="Leo’s Documentation Page"&gt;Documentation&lt;/a&gt;
+            &lt;a href="https://leo-editor.github.io/leo-editor/leo_toc.html"
+               title="Leo's Documentation Page"&gt;Documentation&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
             &lt;a href="https://groups.google.com/forum/#!forum/leo-editor"
