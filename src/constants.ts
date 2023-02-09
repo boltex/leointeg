@@ -56,7 +56,7 @@ export class Constants {
 
     public static ERROR_PACKAGE_ID: number = 0;
     public static STARTING_PACKAGE_ID: number = 1;
-    public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
+    // public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
     public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
     public static BUTTONS_DEBOUNCE_DELAY: number = 80;
     public static UNDOS_DEBOUNCE_DELAY: number = 180;
@@ -306,7 +306,7 @@ export class Constants {
         GO_ANYWHERE_SHORTCUT: "leoGoAnywhereShortcut",
 
         // STATUSBAR_STRING: "statusBarString",
-        STATUSBAR_COLOR: "statusBarColor",
+        // STATUSBAR_COLOR: "statusBarColor",
 
         TREE_IN_EXPLORER: "treeInExplorer",
         SHOW_OPEN_ASIDE: "showOpenAside",
@@ -356,7 +356,7 @@ export class Constants {
         GO_ANYWHERE_SHORTCUT: true,
 
         // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
-        STATUSBAR_COLOR: "fb7c47",
+        // STATUSBAR_COLOR: "fb7c47",
         TREE_IN_EXPLORER: true,
         SHOW_OPEN_ASIDE: true,
         SHOW_EDIT: true,
@@ -707,7 +707,7 @@ export class Constants {
         // * Access to the Settings/Welcome Webview
         SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
         SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
-        STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
+        // STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
         // * LeoBridge
         CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
         START_SERVER: Constants.NAME + ".startServer",

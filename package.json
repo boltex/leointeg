@@ -114,12 +114,6 @@
           "type": "boolean",
           "description": "Enables the Ctrl+Shift+L keyboard shortcut for showing the LeoIntegration view"
         },
-        "leoIntegration.statusBarColor": {
-          "scope": "application",
-          "default": "fb7c47",
-          "type": "string",
-          "description": "Specifies the hexadecimal color string for the Status Bar Indicator"
-        },
         "leoIntegration.treeInExplorer": {
           "scope": "application",
           "default": true,

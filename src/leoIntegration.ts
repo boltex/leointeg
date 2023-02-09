@@ -29,7 +29,7 @@ import { LeoApOutlineProvider } from './leoApOutline';
 import { LeoBodyProvider } from './leoBody';
 import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
-import { LeoStatusBar } from './leoStatusBar';
+// import { LeoStatusBar } from './leoStatusBar';  // removed until proper API for knowing focus placement
 import { CommandStack } from './commandStack';
 import { LeoDocumentsProvider, LeoDocumentNode } from './leoDocuments';
 import { LeoStates } from './leoStates';
@@ -211,7 +211,6 @@ export class LeoIntegration {
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
 
     private _languageFlagged: string[] = [];
-    private _killcolor_re: RegExp = new RegExp('(^@nocolor-node|^@killcolor)', 'm');
 
     private _bodyPreviewMode: boolean = true;
 
@@ -245,7 +244,7 @@ export class LeoIntegration {
     private _leoLogPane: vscode.OutputChannel;
 
     // * Status Bar
-    private _leoStatusBar: LeoStatusBar;
+    // private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
 
     // * Edit/Insert Headline Input Box options instance, setup so clicking outside cancels the headline change
     private _headlineInputOptions: vscode.InputBoxOptions = {
@@ -464,8 +463,7 @@ export class LeoIntegration {
         this._bodyMainSelectionColumn = 1;
 
         // * Create Status bar Entry
-        this._leoStatusBar = new LeoStatusBar(_context, this);
-
+        // this._leoStatusBar = new LeoStatusBar(_context, this); // removed until proper API for knowing focus placement
         // * Automatic server start service
         this._serverService = new ServerService(_context, this);
 
@@ -795,7 +793,7 @@ export class LeoIntegration {
         this.leoStates.fileOpenedReady = false;
         this.leoStates.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
-        this._leoStatusBar.update(false);
+        // this._leoStatusBar.update(false); // removed until proper API for knowing focus placement
         this._refreshOutline(false, RevealType.NoReveal);
     }
 
@@ -1238,7 +1236,7 @@ export class LeoIntegration {
         this.refreshDocumentsPane();
         this.refreshButtonsPane();
         this.refreshUndoPane();
-        this._leoStatusBar.hide();
+        // this._leoStatusBar.hide(); // removed until proper API for knowing focus placement
         this.closeBody();
     }
 
@@ -1280,8 +1278,8 @@ export class LeoIntegration {
             this._bodyFileSystemStarted = true;
         }
 
-        this._leoStatusBar.update(true, 0, true);
-        this._leoStatusBar.show();
+        // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
+        // this._leoStatusBar.show();
         this.sendConfigToServer(this.config.getConfig());
         this.loadSearchSettings();
 
@@ -1510,19 +1508,20 @@ export class LeoIntegration {
         if (!p_internalCall) {
             this.triggerBodySave(true); // Save in case edits were pending
         }
-        // * Status flag check
-        if (!p_editor && this._leoStatusBar.statusBarFlag) {
-            return;
-            // this._leoStatusBar.update(false);
-        }
-        // * Status flag check
-        setTimeout(() => {
-            if (vscode.window.activeTextEditor) {
-                this._leoStatusBar.update(
-                    vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME
-                );
-            }
-        }, 0);
+        // removed until proper API for knowing focus placement
+        // // * Status flag check
+        // if (!p_editor && this._leoStatusBar.statusBarFlag) {
+        //     return;
+        //     // this._leoStatusBar.update(false);
+        // }
+        // // * Status flag check
+        // setTimeout(() => {
+        //     if (vscode.window.activeTextEditor) {
+        //         this._leoStatusBar.update(
+        //             vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME
+        //         );
+        //     }
+        // }, 0);
     }
 
     /**
@@ -1666,10 +1665,11 @@ export class LeoIntegration {
 
             const w_textEditor = vscode.window.activeTextEditor;
 
+            // TODO : Make this check more intelligent by keeping all lines for an interval, and check all them after delay.
             if (w_textEditor && p_textDocumentChange.document.uri.fsPath === w_textEditor.document.uri.fsPath) {
                 w_textEditor.selections.forEach(p_selection => {
                     // if line starts with @
-                    let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
+                    let w_line = w_textEditor.document.lineAt(p_selection.active.line).text.toLowerCase();
                     if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
                         w_needsRefresh = true;
                     }
@@ -2895,10 +2895,6 @@ export class LeoIntegration {
 
                 // Replace language string if in 'exceptions' array
                 w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
-                if (this._checkForKillColor(w_openedDocument.getText())) {
-                    // ! VERIFY PROPER BEHAVIOR
-                    // w_language = 'plain'; // TODO
-                }
 
                 let w_debugMessage = "";
                 let w_needRefreshFlag = false;
@@ -3106,16 +3102,6 @@ export class LeoIntegration {
     }
 
     /**
-     * Checks body string for kill color keywords
-     */
-    private _checkForKillColor(p_body: string): boolean {
-        if (this._killcolor_re.test(p_body)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * * Sets vscode's body-pane editor's language
      */
     private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): Thenable<vscode.TextDocument> {
@@ -3179,11 +3165,6 @@ export class LeoIntegration {
 
             // Replace language string if in 'exceptions' array
             w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
-
-            if (this._bodyTextDocument && this._checkForKillColor(this._bodyTextDocument.getText())) {
-                // ! VERIFY PROPER BEHAVIOR
-                // w_language = 'plain'; // TODO
-            }
 
             // Apply language if the selected node is still the same after all those events
             if (this._bodyTextDocument &&
@@ -3426,7 +3407,10 @@ export class LeoIntegration {
         }
 
         this.leoStates.setSelectedNodeFlags(p_node);
-        this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
+
+        // removed until proper API for knowing focus placement
+        // this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
+
         const w_showBodyKeepFocus = p_aside
             ? this.config.treeKeepFocusWhenAside
             : this.config.treeKeepFocus;
@@ -5192,7 +5176,7 @@ export class LeoIntegration {
                         name: p_chosenLeoFile,
                     });
                     this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                    this._leoStatusBar.update(true, 0, true);
+                    // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
                     this._addRecentAndLastFile(p_chosenLeoFile.trim());
                     if (q_commandResult) {
                         return q_commandResult;
@@ -5246,7 +5230,7 @@ export class LeoIntegration {
                         name: p_chosenLeoFile,
                     });
                     this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                    this._leoStatusBar.update(true, 0, true);
+                    // this._leoStatusBar.update(true, 0, true);// removed until proper API for knowing focus placement
                     this._addRecentAndLastFile(p_chosenLeoFile.trim());
                     if (q_commandResult) {
                         return q_commandResult;
@@ -6043,7 +6027,7 @@ export class LeoIntegration {
                     name: p_chosenLeoFile,
                 });
                 this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                this._leoStatusBar.update(true, 0, true);
+                // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
                 this._addRecentAndLastFile(p_chosenLeoFile.trim());
                 if (q_commandResult) {
                     return q_commandResult;

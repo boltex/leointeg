@@ -10,6 +10,7 @@
 - Completed set of search commands: re-search, word-search and their backward variants.
 - Fixed defaults set as placeholders in search commands.
 - Added support for search commands to leave selection range in tree headlines: requires Leo 6.7.2
+- Removed status-bar indicator and related settings until vscode's API allows for focus detection.
 
 ## 1.0.11
 

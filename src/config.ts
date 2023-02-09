@@ -22,7 +22,7 @@ export class Config implements ConfigMembers {
     public leoGoAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
-    public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
+    // public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
     public showOpenAside: boolean = Constants.CONFIG_DEFAULTS.SHOW_OPEN_ASIDE;
     public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
@@ -81,7 +81,7 @@ export class Config implements ConfigMembers {
             leoGoAnywhereShortcut: this.leoGoAnywhereShortcut,
 
             // statusBarString: this.statusBarString,
-            statusBarColor: this.statusBarColor,
+            // statusBarColor: this.statusBarColor,
             treeInExplorer: this.treeInExplorer,
             showOpenAside: this.showOpenAside,
             showEditOnNodes: this.showEditOnNodes,
@@ -292,10 +292,10 @@ export class Config implements ConfigMembers {
             // if (this.statusBarString.length > 8) {
             //     this.statusBarString = DEFAULTS.STATUSBAR_STRING;
             // }
-            this.statusBarColor = GET(NAME).get(NAMES.STATUSBAR_COLOR, DEFAULTS.STATUSBAR_COLOR);
-            if (!utils.isHexColor(this.statusBarColor)) {
-                this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
-            }
+            // this.statusBarColor = GET(NAME).get(NAMES.STATUSBAR_COLOR, DEFAULTS.STATUSBAR_COLOR);
+            // if (!utils.isHexColor(this.statusBarColor)) {
+            //     this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
+            // }
             this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
             this.showOpenAside = GET(NAME).get(NAMES.SHOW_OPEN_ASIDE, DEFAULTS.SHOW_OPEN_ASIDE);
             this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);

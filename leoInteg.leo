@@ -407,7 +407,6 @@
 <v t="felix.20200719025231.49"><vh>closeBody</vh></v>
 <v t="felix.20210718155134.1"><vh>cleanupBody</vh></v>
 <v t="felix.20200719025231.50"><vh>showBody</vh></v>
-<v t="felix.20230130165938.1"><vh>_checkForKillColor</vh></v>
 <v t="felix.20220215235325.1"><vh>_setBodyLanguage</vh></v>
 <v t="felix.20211111214657.1"><vh>refreshBodyStates</vh></v>
 <v t="felix.20211111233213.1"><vh>debouncedRefreshBodyStates</vh></v>
@@ -952,7 +951,7 @@ public static CONFIG_DEFAULTS = {
     GO_ANYWHERE_SHORTCUT: true,
 
     // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
-    STATUSBAR_COLOR: "fb7c47",
+    // STATUSBAR_COLOR: "fb7c47",
     TREE_IN_EXPLORER: true,
     SHOW_OPEN_ASIDE: true,
     SHOW_EDIT: true,
@@ -1572,7 +1571,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 </t>
 <t tx="ekr.20200815113156.1">// * Define entries for all commands
 [CMD.MINIBUFFER, () =&gt; w_leo.minibuffer()], // Is referenced in package.json
-[CMD.STATUS_BAR, () =&gt; w_leo.statusBarOnClick()],
+// [CMD.STATUS_BAR, () =&gt; w_leo.statusBarOnClick()],
 [CMD.EXECUTE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.EXECUTE_SCRIPT,
     node: U,
@@ -3899,13 +3898,7 @@ print('done')
   @others
 ],
 </t>
-<t tx="ekr.20200815123601.5">"leoIntegration.statusBarColor": {
-  "scope": "application",
-  "default": "fb7c47",
-  "type": "string",
-  "description": "Specifies the hexadecimal color string for the Status Bar Indicator"
-},
-</t>
+<t tx="ekr.20200815123601.5"></t>
 <t tx="ekr.20200815123601.58">{
   "command": "leointeg.gotoScript",
   "when": "false"
@@ -5193,7 +5186,7 @@ public static COMMANDS = {
     // * Access to the Settings/Welcome Webview
     SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
     SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
-    STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
+    // STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
     // * LeoBridge
     CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
     START_SERVER: Constants.NAME + ".startServer",
@@ -5472,7 +5465,7 @@ public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
 
 public static ERROR_PACKAGE_ID: number = 0;
 public static STARTING_PACKAGE_ID: number = 1;
-public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
+// public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
 public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
 public static BUTTONS_DEBOUNCE_DELAY: number = 80;
 public static UNDOS_DEBOUNCE_DELAY: number = 180;
@@ -5671,7 +5664,7 @@ public static CONFIG_NAMES = {
     GO_ANYWHERE_SHORTCUT: "leoGoAnywhereShortcut",
 
     // STATUSBAR_STRING: "statusBarString",
-    STATUSBAR_COLOR: "statusBarColor",
+    // STATUSBAR_COLOR: "statusBarColor",
 
     TREE_IN_EXPLORER: "treeInExplorer",
     SHOW_OPEN_ASIDE: "showOpenAside",
@@ -6000,7 +5993,7 @@ export class Config implements ConfigMembers {
     public leoGoAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
-    public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
+    // public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
     public showOpenAside: boolean = Constants.CONFIG_DEFAULTS.SHOW_OPEN_ASIDE;
     public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
@@ -6062,7 +6055,7 @@ public getConfig(): ConfigMembers {
         leoGoAnywhereShortcut: this.leoGoAnywhereShortcut,
 
         // statusBarString: this.statusBarString,
-        statusBarColor: this.statusBarColor,
+        // statusBarColor: this.statusBarColor,
         treeInExplorer: this.treeInExplorer,
         showOpenAside: this.showOpenAside,
         showEditOnNodes: this.showEditOnNodes,
@@ -6154,10 +6147,10 @@ public buildFromSavedSettings(): void {
         // if (this.statusBarString.length &gt; 8) {
         //     this.statusBarString = DEFAULTS.STATUSBAR_STRING;
         // }
-        this.statusBarColor = GET(NAME).get(NAMES.STATUSBAR_COLOR, DEFAULTS.STATUSBAR_COLOR);
-        if (!utils.isHexColor(this.statusBarColor)) {
-            this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
-        }
+        // this.statusBarColor = GET(NAME).get(NAMES.STATUSBAR_COLOR, DEFAULTS.STATUSBAR_COLOR);
+        // if (!utils.isHexColor(this.statusBarColor)) {
+        //     this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
+        // }
         this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
         this.showOpenAside = GET(NAME).get(NAMES.SHOW_OPEN_ASIDE, DEFAULTS.SHOW_OPEN_ASIDE);
         this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
@@ -7386,9 +7379,9 @@ export class LeoStatusBar {
         private _leoIntegration: LeoIntegration
     ) {
         this._leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
-        this._leoStatusBarItem.color = this._leoIntegration.config.statusBarColor;
+        // this._leoStatusBarItem.color = this._leoIntegration.config.statusBarColor;
 
-        this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
+        // this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR;
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         this._context.subscriptions.push(this._leoStatusBarItem);
@@ -7461,7 +7454,7 @@ private _updateLeoObjectIndicator(): void {
 
     // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
     if (this.statusBarFlag &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) {
-        this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
+        // this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
     } else {
         this._leoStatusBarItem.color = this._statusbarNormalColor;
@@ -8117,7 +8110,7 @@ export interface ConfigMembers {
     leoGoAnywhereShortcut: boolean;
 
     // statusBarString: string;
-    statusBarColor: string;
+    // statusBarColor: string;
 
     treeInExplorer: boolean;
     showOpenAside: boolean;
@@ -8423,15 +8416,15 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718222035.1">## Features
 
-- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body pane**, **opened documents selector**, **find panel**, along with a **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector**, **find panel**, along with a **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
-- **Find panel** that responds to Leo's original keybindings, Ctrl+F, F2, F3... when focus is set in the outline or body panes
+- **Find panel** that reacts to Leo's typical keybindings, Ctrl+F, F2, F3... when focus is in the outline or body pane
 - **Nav and Tag panel** controls are integrated in the Find panel
-- **Goto Anywhere panel** to navigate directly from a list of nodes
-- **Undo History panel** , showing all actions and allowing going back, or forward, to any undo states.
+- **Goto Anywhere panel** to navigate directly from list of nodes, such as the results of Nav or Tag searches
+- **Undo History panel**, showing all actions and allowing going back, or forward, to any undo states.
 - Access **Leo commands** with context menus, hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
   - Outline editing commands
@@ -8526,15 +8519,7 @@ A **notification** will inform you of the action taken instead.
 ![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
 
 </t>
-<t tx="felix.20200718222058.1">## Status Bar Indicator
-
-A customizable keyboard status bar indicator is shown when this extension is activated.
-It will turn orange (or your choice of text and color), when leo's **keyboard shortcuts** are active.
-This occurs when an outline node or a body pane has focus:
-
-![Statusbar](https://raw.githubusercontent.com/boltex/leointeg/master/resources/statusbar-keyboard.gif)
-
-</t>
+<t tx="felix.20200718222058.1"></t>
 <t tx="felix.20200718222102.1">## Extension Settings
 
 ### Open the command palette `Ctrl+Shift+P` and start typing `leo settings` to access LeoInteg's welcome/settings screen
@@ -8863,7 +8848,7 @@ import { LeoApOutlineProvider } from './leoApOutline';
 import { LeoBodyProvider } from './leoBody';
 import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
-import { LeoStatusBar } from './leoStatusBar';
+// import { LeoStatusBar } from './leoStatusBar';  // removed until proper API for knowing focus placement
 import { CommandStack } from './commandStack';
 import { LeoDocumentsProvider, LeoDocumentNode } from './leoDocuments';
 import { LeoStates } from './leoStates';
@@ -9257,7 +9242,6 @@ export class LeoIntegration {
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
 
     private _languageFlagged: string[] = [];
-    private _killcolor_re: RegExp = new RegExp('(^@nocolor-node|^@killcolor)', 'm');
 
     private _bodyPreviewMode: boolean = true;
 
@@ -9291,7 +9275,7 @@ export class LeoIntegration {
     private _leoLogPane: vscode.OutputChannel;
 
     // * Status Bar
-    private _leoStatusBar: LeoStatusBar;
+    // private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
 
     // * Edit/Insert Headline Input Box options instance, setup so clicking outside cancels the headline change
     private _headlineInputOptions: vscode.InputBoxOptions = {
@@ -9374,7 +9358,7 @@ private _setupNoOpenedLeoDocument(): void {
     this.refreshDocumentsPane();
     this.refreshButtonsPane();
     this.refreshUndoPane();
-    this._leoStatusBar.hide();
+    // this._leoStatusBar.hide(); // removed until proper API for knowing focus placement
     this.closeBody();
 }
 
@@ -9417,8 +9401,8 @@ private _setupOpenedLeoDocument(): void {
         this._bodyFileSystemStarted = true;
     }
 
-    this._leoStatusBar.update(true, 0, true);
-    this._leoStatusBar.show();
+    // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
+    // this._leoStatusBar.show();
     this.sendConfigToServer(this.config.getConfig());
     this.loadSearchSettings();
 
@@ -9558,19 +9542,20 @@ private _onActiveEditorChanged(
     if (!p_internalCall) {
         this.triggerBodySave(true); // Save in case edits were pending
     }
-    // * Status flag check
-    if (!p_editor &amp;&amp; this._leoStatusBar.statusBarFlag) {
-        return;
-        // this._leoStatusBar.update(false);
-    }
-    // * Status flag check
-    setTimeout(() =&gt; {
-        if (vscode.window.activeTextEditor) {
-            this._leoStatusBar.update(
-                vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME
-            );
-        }
-    }, 0);
+    // removed until proper API for knowing focus placement
+    // // * Status flag check
+    // if (!p_editor &amp;&amp; this._leoStatusBar.statusBarFlag) {
+    //     return;
+    //     // this._leoStatusBar.update(false);
+    // }
+    // // * Status flag check
+    // setTimeout(() =&gt; {
+    //     if (vscode.window.activeTextEditor) {
+    //         this._leoStatusBar.update(
+    //             vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME
+    //         );
+    //     }
+    // }, 0);
 }
 
 </t>
@@ -9751,8 +9736,7 @@ private _onActiveEditorChanged(
     this._bodyMainSelectionColumn = 1;
 
     // * Create Status bar Entry
-    this._leoStatusBar = new LeoStatusBar(_context, this);
-
+    // this._leoStatusBar = new LeoStatusBar(_context, this); // removed until proper API for knowing focus placement
     // * Automatic server start service
     this._serverService = new ServerService(_context, this);
 
@@ -9932,10 +9916,11 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
 
         const w_textEditor = vscode.window.activeTextEditor;
 
+        // TODO : Make this check more intelligent by keeping all lines for an interval, and check all them after delay.
         if (w_textEditor &amp;&amp; p_textDocumentChange.document.uri.fsPath === w_textEditor.document.uri.fsPath) {
             w_textEditor.selections.forEach(p_selection =&gt; {
                 // if line starts with @
-                let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
+                let w_line = w_textEditor.document.lineAt(p_selection.active.line).text.toLowerCase();
                 if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
                     w_needsRefresh = true;
                 }
@@ -10366,10 +10351,6 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean, p_preven
 
             // Replace language string if in 'exceptions' array
             w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
-            if (this._checkForKillColor(w_openedDocument.getText())) {
-                // ! VERIFY PROPER BEHAVIOR
-                // w_language = 'plain'; // TODO
-            }
 
             let w_debugMessage = "";
             let w_needRefreshFlag = false;
@@ -10599,7 +10580,10 @@ public selectTreeNode(
     }
 
     this.leoStates.setSelectedNodeFlags(p_node);
-    this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
+
+    // removed until proper API for knowing focus placement
+    // this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
+
     const w_showBodyKeepFocus = p_aside
         ? this.config.treeKeepFocusWhenAside
         : this.config.treeKeepFocus;
@@ -10834,7 +10818,7 @@ public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | und
                     name: p_chosenLeoFile,
                 });
                 this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                this._leoStatusBar.update(true, 0, true);
+                // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
                 this._addRecentAndLastFile(p_chosenLeoFile.trim());
                 if (q_commandResult) {
                     return q_commandResult;
@@ -11445,7 +11429,7 @@ public cancelConnect(p_message?: string): void {
     this.leoStates.fileOpenedReady = false;
     this.leoStates.leoBridgeReady = false;
     this._leoBridgeReadyPromise = undefined;
-    this._leoStatusBar.update(false);
+    // this._leoStatusBar.update(false); // removed until proper API for knowing focus placement
     this._refreshOutline(false, RevealType.NoReveal);
 }
 
@@ -14469,7 +14453,7 @@ public saveAsLeoJsFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | u
                     name: p_chosenLeoFile,
                 });
                 this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                this._leoStatusBar.update(true, 0, true);
+                // this._leoStatusBar.update(true, 0, true);// removed until proper API for knowing focus placement
                 this._addRecentAndLastFile(p_chosenLeoFile.trim());
                 if (q_commandResult) {
                     return q_commandResult;
@@ -14662,11 +14646,6 @@ public refreshBodyStates(): void {
 
         // Replace language string if in 'exceptions' array
         w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
-
-        if (this._bodyTextDocument &amp;&amp; this._checkForKillColor(this._bodyTextDocument.getText())) {
-            // ! VERIFY PROPER BEHAVIOR
-            // w_language = 'plain'; // TODO
-        }
 
         // Apply language if the selected node is still the same after all those events
         if (this._bodyTextDocument &amp;&amp;
@@ -17661,7 +17640,7 @@ public writeFileFromNode(): Thenable&lt;unknown&gt; {
                 name: p_chosenLeoFile,
             });
             this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-            this._leoStatusBar.update(true, 0, true);
+            // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
             this._addRecentAndLastFile(p_chosenLeoFile.trim());
             if (q_commandResult) {
                 return q_commandResult;
@@ -18561,6 +18540,7 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
 - Completed set of search commands: re-search, word-search and their backward variants.
 - Fixed defaults set as placeholders in search commands.
 - Added support for search commands to leave selection range in tree headlines: requires Leo 6.7.2
+- Removed status-bar indicator and related settings until vscode's API allows for focus detection.
 
 </t>
 <t tx="felix.20221212232224.1">## 1.0.11
@@ -18596,17 +18576,6 @@ private _setOpenedBodyTime(p_gnx: string): void {
         ctime: w_created, // w_now, // maybe kept.
         mtime: w_now // new 'modified' time for sure.
     };
-}
-
-</t>
-<t tx="felix.20230130165938.1">/**
- * Checks body string for kill color keywords
- */
-private _checkForKillColor(p_body: string): boolean {
-    if (this._killcolor_re.test(p_body)) {
-        return true;
-    }
-    return false;
 }
 
 </t>
@@ -20098,7 +20067,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/section&gt;
-
+      &lt;!--
       &lt;section id="statusbar-indicator"
                class="section--settings"&gt;
         &lt;div class="section__content"&gt;
@@ -20117,7 +20086,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;/div&gt;
 
           &lt;div class="settings"&gt;
-            &lt;!--  &lt;div class="setting"&gt;
+             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="statusBarString"&gt;Status Bar Keyboard indicator&lt;/label&gt;
                 &lt;input id="statusBarString"
@@ -20128,7 +20097,7 @@ body &gt; div &gt; div &gt; label:active {
                        data-setting /&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Leo's keybindings 'on/off' indicator text message&lt;/span&gt;
-            &lt;/div&gt; --&gt;
+            &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="statusBarColor"&gt;Status Bar Color&lt;/label&gt;
@@ -20144,6 +20113,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/section&gt;
+       --&gt;
     &lt;/div&gt;
 
     &lt;div class="sidebar"&gt;
@@ -20196,10 +20166,10 @@ body &gt; div &gt; div &gt; label:active {
             &lt;a href="#font-sizes"
                title="Font size settings"&gt;Font Sizes&lt;/a&gt;
           &lt;/li&gt;
-          &lt;li&gt;
+          &lt;!-- &lt;li&gt;
             &lt;a href="#statusbar-indicator"
                title="Statusbar settings"&gt;Statusbar Indicator&lt;/a&gt;
-          &lt;/li&gt;
+          &lt;/li&gt; --&gt;
         &lt;/ul&gt;
       &lt;/div&gt;
 
