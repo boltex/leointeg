@@ -15037,6 +15037,19 @@ public getTextFromClipboard(): string {
     ];
     let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly', 'fileOnly'];
 
+    function resetTagNav() {
+        navSearchTimer = setTimeout(() =&gt; {
+            if (navTextDirty) {
+                navTextDirty = false;
+                if (navSearchTimer) {
+                    clearTimeout(navSearchTimer);
+                }
+                sendSearchConfig();
+            }
+            vscode.postMessage({ type: 'leoNavTextChange' });
+        }, 250); // quarter second
+    }
+
     function navTextChange() {
         // cancel timer, reset 'debounced' timer after checks, if still needed
         if (navSearchTimer) {
@@ -15048,16 +15061,7 @@ public getTextFromClipboard(): string {
             setFrozen(false);
             // if tagging but empty: SEND SEARCH LIST-ALL-TAGS COMMAND
             if (searchSettings.isTag) {
-                navSearchTimer = setTimeout(() =&gt; {
-                    if (navTextDirty) {
-                        navTextDirty = false;
-                        if (navSearchTimer) {
-                            clearTimeout(navSearchTimer);
-                        }
-                        sendSearchConfig();
-                    }
-                    vscode.postMessage({ type: 'leoNavTextChange' });
-                }, 250); // quarter second
+                return resetTagNav();
             }
 
         }
@@ -15297,22 +15301,27 @@ public getTextFromClipboard(): string {
             }
             var keyCode = p_event.code || p_event.key;
             if (keyCode === 'Enter') {
-                if (searchSettings.navText.length &gt;= 3 || searchSettings.isTag) {
-                    setFrozen(true);
-                    if (navTextDirty) {
-                        navTextDirty = false;
-                        if (timer) {
-                            clearTimeout(timer);
+                if (searchSettings.navText.length === 0 &amp;&amp; searchSettings.isTag) {
+                    setFrozen(false);
+                    resetTagNav();
+                } else {
+                    if (searchSettings.navText.length &gt;= 3 || searchSettings.isTag) {
+                        setFrozen(true);
+                        if (navTextDirty) {
+                            navTextDirty = false;
+                            if (timer) {
+                                clearTimeout(timer);
+                            }
+                            if (navSearchTimer) {
+                                clearTimeout(navSearchTimer);
+                            }
+                            sendSearchConfig();
                         }
-                        if (navSearchTimer) {
-                            clearTimeout(navSearchTimer);
-                        }
-                        sendSearchConfig();
+                        vscode.postMessage({ type: 'leoNavEnter' });
                     }
-                    vscode.postMessage({ type: 'leoNavEnter' });
-                }
-                if (searchSettings.navText.length === 0) {
-                    vscode.postMessage({ type: 'leoNavClear' });
+                    if (searchSettings.navText.length === 0) {
+                        vscode.postMessage({ type: 'leoNavClear' });
+                    }
                 }
                 return false;
             }
