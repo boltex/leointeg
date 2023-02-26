@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/boltex/leointeg#readme",
   "engines": {
-    "vscode": "^1.68.0"
+    "vscode": "^1.75.1"
   },
   "keywords": [
     "leo",
@@ -2233,12 +2233,12 @@
       },
       {
         "view": "leoIntegration",
-        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady && !leoTreeOpened"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady && !leoTreeOpened"
       },
       {

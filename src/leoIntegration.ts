@@ -1618,6 +1618,8 @@ export class LeoIntegration {
                 const w_hasBody = !!p_textDocumentChange.document.getText().length;
                 const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
 
+                let w_skipSave = false;
+
                 // TODO : uncomment and test this to fix replace / replace-then-find!!
                 if (
                     this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
@@ -1625,20 +1627,35 @@ export class LeoIntegration {
                 ) {
                     // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
                     // Set proper cursor insertion point and selection range.
+
+                    // ALSO check if the icon would change!
                     this.showBody(false, true, true);
-                    return;
+                    // w_skipSave = true;
+                    // return; // ! TEST WITH \ WITHOUT RETURN !
                 }
 
                 if (!this.leoStates.leoChanged || w_iconChanged) {
-                    if (this.preventIconChange) {
-                        this.preventIconChange = false;
+                    // console.log('need to change icon');
+
+                    if (this.preventIconChange && !w_skipSave) {
+                        // TODO : CLEANUP "preventIconChange" IF NOT NEEDED !
+                        // this.preventIconChange = false;
+
                     } else {
-                        // Document pane icon needs refresh (changed) and/or outline icon changed
-                        this._bodySaveDocument(p_textDocumentChange.document).then(() => {
-                            if (this.lastSelectedNode) {
-                                this.lastSelectedNode.dirty = true;
-                                this.lastSelectedNode.hasBody = w_hasBody;
-                            }
+                        // this.preventIconChange = false;
+                        if (this.lastSelectedNode) {
+                            this.lastSelectedNode.dirty = true;
+                            this.lastSelectedNode.hasBody = w_hasBody;
+                        }
+
+                        let q_save = Promise.resolve(true);
+                        if (w_skipSave && w_iconChanged) {
+                            q_save = Promise.resolve(true);
+                        } else {
+                            // Document pane icon needs refresh (changed) and/or outline icon changed
+                            q_save = this._bodySaveDocument(p_textDocumentChange.document);
+                        }
+                        q_save.then(() => {
                             if (w_iconChanged) {
                                 // NOT incrementing this.treeID to keep ids intact
                                 // NoReveal since we're keeping the same id.
@@ -1646,6 +1663,7 @@ export class LeoIntegration {
                             }
                         });
                     }
+                    this.preventIconChange = false; // SET FALSE AFTER NO MATTER WHAT
 
                     if (!this.leoStates.leoChanged) {
                         // also refresh document panel (icon may be dirty now)
@@ -1721,7 +1739,7 @@ export class LeoIntegration {
      * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
      */
     public setFindPanel(p_panel: vscode.WebviewView): void {
-        if (p_panel.viewType === "leoFindPanelExplorer") {
+        if (p_panel.viewType === Constants.FIND_EXPLORER_ID) {
             // Explorer find panel
             this._lastFindView = this._findPanelWebviewExplorerView;
             this._findPanelWebviewExplorerView = p_panel;
@@ -2434,11 +2452,11 @@ export class LeoIntegration {
      * @param p_preventTakingFocus Flag used to keep focus where it was instead of forcing in body
      * @returns a text editor of the p_node parameter's gnx (As 'leo' file scheme). Or rejects if interrupted.
      */
-    private async _tryApplyNodeToBody(
+    private _tryApplyNodeToBody(
         p_node: ArchivedPosition,
         p_aside: boolean,
         p_preventTakingFocus: boolean,
-    ): Promise<void | vscode.TextEditor> {
+    ): Thenable<void | vscode.TextEditor> {
 
         this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
         this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
@@ -2978,7 +2996,7 @@ export class LeoIntegration {
 
         if (w_foundDocOpened && !q_saved) {
             // Was the same and was asked to show body (and did not already had to fake-save and refresh)
-            this.preventIconChange = true;
+            // this.preventIconChange = true; // ? NEEDED ?
             this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
         }
 
@@ -3336,14 +3354,14 @@ export class LeoIntegration {
         if (p_picked &&
             p_picked.label &&
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
-            this._minibufferHistory.unshift(p_picked.label); // Add to minibuffer history
+            this._addToMinibufferHistory(p_picked.label);
             return vscode.commands.executeCommand(
                 Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
             );
         }
         // * Ok, it was really a minibuffer command
         if (p_picked && p_picked.label) {
-            this._minibufferHistory.unshift(p_picked.label); // Add to minibuffer history
+            this._addToMinibufferHistory(p_picked.label);
             const w_commandResult = this.nodeCommand({
                 action: "-" + p_picked.label,
                 node: undefined,
@@ -3361,6 +3379,19 @@ export class LeoIntegration {
             // Canceled
             return Promise.resolve(undefined);
         }
+    }
+
+    /**
+     * Add to the minibuffer history (without duplicating entries)
+     */
+    private _addToMinibufferHistory(p_commandName: string): void {
+        const w_found = this._minibufferHistory.indexOf(p_commandName);
+        // If found, will be removed (and placed on top)
+        if (w_found >= 0) {
+            this._minibufferHistory.splice(w_found, 1);
+        }
+        // Add to top of minibuffer history
+        this._minibufferHistory.unshift(p_commandName);
     }
 
     /**

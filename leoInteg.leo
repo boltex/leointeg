@@ -112,7 +112,7 @@
 <v t="ekr.20200815123601.30"><vh>Not Ready: [start], [connect] and settings</vh></v>
 <v t="ekr.20200815123601.31"><vh>Not Ready : [connect] and settings</vh></v>
 <v t="ekr.20200815123601.33"><vh>Not Ready: Connecting...</vh></v>
-<v t="ekr.20200815123601.34"><vh>Ready: [open] and settings</vh></v>
+<v t="ekr.20200815123601.34"><vh>Ready: [open], [new] and settings</vh></v>
 </v>
 <v t="ekr.20200815123601.35"><vh>Leo Documents</vh>
 <v t="ekr.20200815123601.36"><vh>Not Ready</vh></v>
@@ -415,6 +415,7 @@
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
 <v t="felix.20220824144905.1"><vh>minibufferHistory</vh></v>
 <v t="felix.20220825004838.1"><vh>_doMinibufferCommand</vh></v>
+<v t="felix.20230222213432.1"><vh>_addToMinibufferHistory</vh></v>
 <v t="felix.20220806151009.1"><vh>prevNextNode</vh></v>
 <v t="felix.20200719025231.52"><vh>selectTreeNode</vh></v>
 <v t="ekr.20200815090400.1"><vh>nodeCommand</vh></v>
@@ -1347,11 +1348,11 @@ private async _launchRefresh(): Promise&lt;unknown&gt; {
  * @param p_preventTakingFocus Flag used to keep focus where it was instead of forcing in body
  * @returns a text editor of the p_node parameter's gnx (As 'leo' file scheme). Or rejects if interrupted.
  */
-private async _tryApplyNodeToBody(
+private _tryApplyNodeToBody(
     p_node: ArchivedPosition,
     p_aside: boolean,
     p_preventTakingFocus: boolean,
-): Promise&lt;void | vscode.TextEditor&gt; {
+): Thenable&lt;void | vscode.TextEditor&gt; {
 
     this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
     this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
@@ -3787,12 +3788,12 @@ print('done')
 </t>
 <t tx="ekr.20200815123601.34">{
   "view": "leoIntegration",
-  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
   "when": "leoBridgeReady &amp;&amp; !leoTreeOpened"
 },
 {
   "view": "leoIntegrationExplorer",
-  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
   "when": "leoBridgeReady &amp;&amp; !leoTreeOpened"
 },
 </t>
@@ -8405,7 +8406,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.7.1 or later\
+- Leo Editor 6.7.2 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
@@ -9867,7 +9868,11 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
             utils.leoUriToStr(p_textDocumentChange.document.uri) === this.lastSelectedNode.gnx
         ) {
             const w_hasBody = !!p_textDocumentChange.document.getText().length;
+            // console.log(this.lastSelectedNode.gnx + '  checking has body: ', w_hasBody);
+
             const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
+
+            let w_skipSave = false;
 
             // TODO : uncomment and test this to fix replace / replace-then-find!!
             if (
@@ -9876,20 +9881,38 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
             ) {
                 // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
                 // Set proper cursor insertion point and selection range.
+                // console.log('Abort to showBody ??? (try return with/without!)');
+
+                // ALSO check if the icon would change!
+
                 this.showBody(false, true, true);
-                return;
+                // w_skipSave = true;
+                // return; // ! TEST WITH \ WITHOUT RETURN !
             }
 
             if (!this.leoStates.leoChanged || w_iconChanged) {
-                if (this.preventIconChange) {
-                    this.preventIconChange = false;
+                // console.log('need to change icon');
+
+                if (this.preventIconChange &amp;&amp; !w_skipSave) {
+                    // TODO : CLEANUP "preventIconChange" IF NOT NEEDED !
+                    // this.preventIconChange = false;
+                    // console.log('prevented Icon Change!!!!');
+
                 } else {
-                    // Document pane icon needs refresh (changed) and/or outline icon changed
-                    this._bodySaveDocument(p_textDocumentChange.document).then(() =&gt; {
-                        if (this.lastSelectedNode) {
-                            this.lastSelectedNode.dirty = true;
-                            this.lastSelectedNode.hasBody = w_hasBody;
-                        }
+                    // this.preventIconChange = false;
+                    if (this.lastSelectedNode) {
+                        this.lastSelectedNode.dirty = true;
+                        this.lastSelectedNode.hasBody = w_hasBody;
+                    }
+
+                    let q_save = Promise.resolve(true);
+                    if (w_skipSave &amp;&amp; w_iconChanged) {
+                        q_save = Promise.resolve(true);
+                    } else {
+                        // Document pane icon needs refresh (changed) and/or outline icon changed
+                        q_save = this._bodySaveDocument(p_textDocumentChange.document);
+                    }
+                    q_save.then(() =&gt; {
                         if (w_iconChanged) {
                             // NOT incrementing this.treeID to keep ids intact
                             // NoReveal since we're keeping the same id.
@@ -9897,6 +9920,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                         }
                     });
                 }
+                this.preventIconChange = false; // SET FALSE AFTER NO MATTER WHAT
 
                 if (!this.leoStates.leoChanged) {
                     // also refresh document panel (icon may be dirty now)
@@ -10434,7 +10458,9 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean, p_preven
 
     if (w_foundDocOpened &amp;&amp; !q_saved) {
         // Was the same and was asked to show body (and did not already had to fake-save and refresh)
-        this.preventIconChange = true;
+        // console.log('SHOWBODY : Was the same and was asked to show body (and did not already had to fake-save and refresh)');
+
+        // this.preventIconChange = true; // NEEDED ??
         this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
     }
 
@@ -14518,7 +14544,8 @@ function closeLeoTextEditors(): Thenable&lt;unknown&gt; {
         p_tabGroup.tabs.forEach((p_tab) =&gt; {
             if (p_tab.input &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri &amp;&amp;
-                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
+                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &amp;&amp;
+                !p_tab.isDirty
             ) {
                 w_foundTabs.push(p_tab);
             }
@@ -14988,7 +15015,7 @@ public getTextFromClipboard(): string {
     let dirty = false; // all but nav input
     let navTextDirty = false;
 
-    let firstTabElId = 'searchOptions'; // used to be 'findText' before nav inputs
+    let firstTabElId = 'searchOptions'; // The first tabbable element used to be 'findText' before nav inputs
     let lastTabElId = 'searchBody';
 
     /**
@@ -15421,6 +15448,17 @@ public getTextFromClipboard(): string {
             });
         }
     });
+
+    const w_findTextsEl = document.getElementById('findText');
+    if (w_findTextsEl) {
+        w_findTextsEl.addEventListener('click', function () {
+            // @ts-expect-error
+            if (w_findTextsEl.value === "&lt;find pattern here&gt;") {
+                // @ts-expect-error
+                w_findTextsEl.select();
+            }
+        });
+    }
 
     document.onkeydown = checkKeyDown;
 
@@ -17222,7 +17260,7 @@ public async prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise&lt;
  * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
  */
 public setFindPanel(p_panel: vscode.WebviewView): void {
-    if (p_panel.viewType === "leoFindPanelExplorer") {
+    if (p_panel.viewType === Constants.FIND_EXPLORER_ID) {
         // Explorer find panel
         this._lastFindView = this._findPanelWebviewExplorerView;
         this._findPanelWebviewExplorerView = p_panel;
@@ -17916,14 +17954,14 @@ private async _doMinibufferCommand(p_picked: vscode.QuickPickItem | undefined): 
     if (p_picked &amp;&amp;
         p_picked.label &amp;&amp;
         Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
-        this._minibufferHistory.unshift(p_picked.label); // Add to minibuffer history
+        this._addToMinibufferHistory(p_picked.label);
         return vscode.commands.executeCommand(
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
         );
     }
     // * Ok, it was really a minibuffer command
     if (p_picked &amp;&amp; p_picked.label) {
-        this._minibufferHistory.unshift(p_picked.label); // Add to minibuffer history
+        this._addToMinibufferHistory(p_picked.label);
         const w_commandResult = this.nodeCommand({
             action: "-" + p_picked.label,
             node: undefined,
@@ -18711,6 +18749,20 @@ public async interactiveSearch(p_backward: boolean, p_regex: boolean, p_word: bo
         this._interactiveSearchInputBox?.hide();
     }
 
+}
+
+</t>
+<t tx="felix.20230222213432.1">/**
+ * Add to the minibuffer history (without duplicating entries)
+ */
+private _addToMinibufferHistory(p_commandName: string): void {
+    const w_found = this._minibufferHistory.indexOf(p_commandName);
+    // If found, will be removed (and placed on top)
+    if (w_found &gt;= 0) {
+        this._minibufferHistory.splice(w_found, 1);
+    }
+    // Add to top of minibuffer history
+    this._minibufferHistory.unshift(p_commandName);
 }
 
 </t>
