@@ -51,7 +51,6 @@ export class LeoIntegration {
 
     // * State flags
     public leoStates: LeoStates;
-    private _startingServer: boolean = false; // Used to prevent re-starting while starting until success of fail
 
     // * General integration usage variables
     private _clipboardContent: string = "";
@@ -620,10 +619,10 @@ export class LeoIntegration {
      * * Starts an instance of a leoBridge server, and may connect to it afterwards, based on configuration flags.
      */
     public startServer(): void {
-        if (this._startingServer) {
+        if (this.leoStates.leoStartingServer) {
             return;
         }
-        this._startingServer = true;
+        this.leoStates.leoStartingServer = true;
         this.leoStates.leoStartupFinished = false;
         this.showLogPane();
         this._serverService
@@ -639,18 +638,18 @@ export class LeoIntegration {
                         setTimeout(() => {
                             // wait a few milliseconds
                             this.connect();
-                            this._startingServer = false;
+                            this.leoStates.leoStartingServer = false;
                         }, 1500);
                     } else {
-                        this._startingServer = false;
+                        this.leoStates.leoStartingServer = false;
                         this.leoStates.leoStartupFinished = true;
                     }
                 },
                 (p_reason) => {
                     // This context flag will remove the 'connecting' welcome view
-                    this._startingServer = false;
-                    utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-                    utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+                    this.leoStates.leoStartingServer = false;
+                    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
+                    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
                     if (
                         [Constants.USER_MESSAGES.LEO_PATH_MISSING,
                         Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT].includes(p_reason)
@@ -721,7 +720,7 @@ export class LeoIntegration {
                             this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
                         if (w_lastFiles.length && !this.serverHasOpenedFile) {
                             // This context flag will trigger 'Connecting...' placeholder
-                            utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
+                            // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
 
                             setTimeout(() => {
                                 this._openLastFiles(); // Try to open last opened files, if any
@@ -786,7 +785,7 @@ export class LeoIntegration {
 
         // to change the 'viewsWelcome' content.
         // bring back to !leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
-        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
+        // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
         // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
         this.leoStates.leoStartupFinished = true;
         this.leoStates.leoConnecting = false;
@@ -978,10 +977,6 @@ export class LeoIntegration {
                 { files: w_lastFiles }
             ).then(
                 (p_openFileResult: LeoBridgePackage) => {
-                    // set connecting false
-                    this.leoStates.leoConnecting = false;
-                    this.leoStates.leoBridgeReady = true;
-                    this.leoStates.leoStartupFinished = true;
 
                     if (p_openFileResult.total) {
 
@@ -1029,6 +1024,7 @@ export class LeoIntegration {
                             this.serverHasOpenedFile = true;
                             this.serverOpenedFileName = p_fileResult.filename!;
                             this.serverOpenedNode = p_fileResult.node!;
+                            this._finishOpenLastFiles();
 
                             this.loadSearchSettings();
                             this.setupRefresh(
@@ -1053,18 +1049,14 @@ export class LeoIntegration {
                         this.serverHasOpenedFile = false;
                         this.serverOpenedFileName = "";
                         this.serverOpenedNode = undefined;
-
+                        this._finishOpenLastFiles();
                         this.launchRefresh();
                         return Promise.reject('Recent files list is empty');
-
                     }
 
                 },
                 (p_errorOpen) => {
-                    // set connecting false
-                    this.leoStates.leoConnecting = false;
-                    this.leoStates.leoBridgeReady = true;
-                    this.leoStates.leoStartupFinished = true;
+                    this._finishOpenLastFiles();
                     this.launchRefresh();
 
                     console.log('in .then not opened or already opened');
@@ -1076,6 +1068,18 @@ export class LeoIntegration {
         }
     }
 
+    /**
+     * Setup flags for end of opening last-files.
+     */
+    private _finishOpenLastFiles(): void {
+        // set connecting false and other flags to finish 'open last files'
+        this.leoStates.leoBridgeReady = true;
+        this.leoStates.leoStartupFinished = true;
+        setTimeout(() => {
+            this.leoStates.leoConnecting = false;
+        }, 100);
+
+    }
     /**
      * * Adds to the context.workspaceState.<xxx>files if not already in there (no duplicates)
      * @param p_file path+file name string

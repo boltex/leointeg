@@ -57,7 +57,7 @@ export class Config implements ConfigMembers {
     // public uAsNumber: boolean = true;
 
     private _isBusySettingConfig: boolean = false;
-    private _needsTreeRefresh: boolean = false;
+    // private _needsTreeRefresh: boolean = false;
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -355,14 +355,14 @@ export class Config implements ConfigMembers {
             // utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
             // utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
 
-            utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
+            // utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
 
             if (!this._leoIntegration.leoStates.leoStartupFinished && this.leoEditorPath) {
                 // Only relevant 'viewWelcome' content at startup.
-                utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically);  // ok
+                // utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically);  // ok
                 // utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
             } else {
-                utils.setContext(FLAGS.AUTO_START_SERVER, false); // Save option but not context flag
+                // utils.setContext(FLAGS.AUTO_START_SERVER, false); // Save option but not context flag
                 //utils.setContext(FLAGS.AUTO_CONNECT, false);
             }
         }

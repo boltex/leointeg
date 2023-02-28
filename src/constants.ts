@@ -396,6 +396,7 @@ export class Constants {
     public static CONTEXT_FLAGS = {
         // Main flags for connection and opened file
         STARTUP_FINISHED: "leoStartupFinished", // Initial extension finished auto-server-start-connect
+        STARTING_SERVER: "leoStartingServer",
         CONNECTING: "leoConnecting", // Initial extension finished auto-server-start-connect
         BRIDGE_READY: "leoBridgeReady", // Connected to leoBridge
         TREE_OPENED: "leoTreeOpened", // At least one Leo file opened
@@ -461,8 +462,8 @@ export class Constants {
         // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
         // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
 
-        AUTO_CONNECT: 'leoAutoConnect',             // Used at startup by 'views-welcome'
-        AUTO_START_SERVER: 'leoAutoStartServer',   // Used at startup by 'views-welcome'
+        // AUTO_CONNECT: 'leoAutoConnect',             // Used at startup by 'views-welcome'
+        // AUTO_START_SERVER: 'leoAutoStartServer',   // Used at startup by 'views-welcome'
 
         // SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
         // SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
