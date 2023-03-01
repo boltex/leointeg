@@ -773,15 +773,10 @@ export class LeoIntegration {
      */
     public cancelConnect(p_message?: string): void {
         // 'disconnect error' versus 'failed to connect'
-        if (this.leoStates.leoBridgeReady) {
-            vscode.window.showErrorMessage(
-                p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED
-            );
-        } else {
-            vscode.window.showInformationMessage(
-                p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED
-            );
-        }
+        const showMessageFn = this.leoStates.leoBridgeReady ? vscode.window.showErrorMessage : vscode.window.showInformationMessage;
+        showMessageFn(
+            p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED
+        );
 
         // to change the 'viewsWelcome' content.
         // bring back to !leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
