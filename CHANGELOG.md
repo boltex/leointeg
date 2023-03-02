@@ -4,16 +4,17 @@
 
 - Fixed undo pane's context menu for unchanged document.
 - Fixed minibuffer history item order that had unordered entries in some cases. Also keeps unique entries as per Leo's original behavior.
-- Fixed keyboard navigation in the 'Goto Panel'.
+- Fixed keyboard navigation in the 'Goto Panel'. Arrow navigation is now possible.
 - Added support for @killcolor and @nocolor-node color suppression directives: requires Leo 6.7.2
 - Fixed 'when' condition for keybindings of 'replace' & 'replace-then-find'.
 - Completed set of search commands: re-search, word-search and their backward variants.
-- Fixed defaults set as placeholders in search commands.
+- Fixed defaults set as placeholders in search commands that use an input box.
 - Added support for search commands to leave selection range in tree headlines: requires Leo 6.7.2
 - Removed status-bar indicator and related settings until vscode's API allows for focus detection.
 - Clicking on the \<find pattern here\> text of the find panel selects all the text to replace easily.
 - Fixed auto-closing/restoring body panes at vscode's startup which would cause the 'Cannot save / newer file' error.
 - Fixed 'on document changed' logic which would leave the node icon in the wrong 'has-body-content' visual state.
+- Trying to open an already opened Leo document now selects that document properly.
 
 ## 1.0.11
 
