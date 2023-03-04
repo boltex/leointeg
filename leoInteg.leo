@@ -21,9 +21,13 @@
 <v t="felix.20200718222043.1"><vh>Keybindings</vh></v>
 <v t="felix.20200718222048.1"><vh>Derive External Files</vh></v>
 <v t="felix.20200718222053.1"><vh>Automate Synchronization</vh></v>
-<v t="felix.20200718222058.1"><vh>Status Bar Indicator</vh></v>
 <v t="felix.20200718222102.1"><vh>Extension Settings</vh></v>
 <v t="felix.20210829192609.1"><vh>Server Settings</vh></v>
+<v t="felix.20230304182746.1"><vh>Goto Anywhere</vh></v>
+<v t="felix.20230304182753.1"><vh>Find Commands</vh></v>
+<v t="felix.20230304182757.1"><vh>Nav and the Goto Panel</vh></v>
+<v t="felix.20230304182803.1"><vh>Using Tags</vh></v>
+<v t="felix.20230304182815.1"><vh>Undo Panel</vh></v>
 <v t="felix.20200718222108.1"><vh>Issues</vh></v>
 <v t="felix.20200718222113.1"><vh>How it works</vh></v>
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
@@ -8449,7 +8453,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 ![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
 </t>
-<t tx="felix.20200718222043.1">## Leo Commands and Keybindings
+<t tx="felix.20200718222043.1"># Leo Commands and Keybindings
 
 Here are the most useful Commands. Most of Leo's other commands are also available with their original keybindings.
 
@@ -8516,7 +8520,7 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 ---
 
 </t>
-<t tx="felix.20200718222048.1">## Derive External Files
+<t tx="felix.20200718222048.1"># Derive External Files
 
 Use the **Save Leo File** command to derive external files.
 
@@ -8533,7 +8537,6 @@ A **notification** will inform you of the action taken instead.
 ![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
 
 </t>
-<t tx="felix.20200718222058.1"></t>
 <t tx="felix.20200718222102.1">## Extension Settings
 
 ### Open the command palette `Ctrl+Shift+P` and start typing `leo settings` to access LeoInteg's welcome/settings screen
@@ -8550,11 +8553,11 @@ A **notification** will inform you of the action taken instead.
 ![Settings](https://raw.githubusercontent.com/boltex/leointeg/master/resources/welcome-settings.gif)
 
 </t>
-<t tx="felix.20200718222108.1">## Issues
+<t tx="felix.20200718222108.1"># Issues
 
 Common issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
 
-### Linux Keybindings
+## Linux Keybindings
 
 If you're experiencing trouble with the keyboard shortcuts for
 the 'Clone Node' or the 'Promote' and 'Demote' commands,
@@ -8562,7 +8565,7 @@ set **"keyboard.dispatch": "keyCode"** in your vscode settings and restart vscod
 See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Keybinding-Issues#troubleshoot-linux-keybindings)
 for more information.
 
-### Keybindings Conflicts Resolution
+## Keybindings Conflicts Resolution
 
 If you have a keybinding conflict for a command that you would like **not** to be resolved by Leo when the focus is on the body pane,
 add **`&amp;&amp; resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
@@ -14397,7 +14400,7 @@ public clearCloseEmptyGroups(): Thenable&lt;void&gt; {
   }
 ]
 </t>
-<t tx="felix.20210829192609.1">## Server Settings
+<t tx="felix.20210829192609.1"># Server Settings
 
 Although the Leo integration has one instance of the leoserver script per vscode 'project'
 window by default, the server settings also has features that allows you to use the same instance
@@ -14405,7 +14408,7 @@ of Leo in multiple client (vscode) windows simultaneously, with real-time update
 
 (See [Multiple concurrent connections](https://leo-editor.github.io/leo-editor/leoserver.html#multiple-concurrent-connections))
 
-### Auto Start
+## Auto Start
 
 **When auto-start is set, a vscode window will start a new instance of Leo server for itself on the next available network port.**
 If the connection limit is set to anything above the default of one (1),
@@ -18786,6 +18789,21 @@ private _finishOpenLastFiles(): void {
     }, 100);
 
 }
+</t>
+<t tx="felix.20230304182746.1">## Goto Anywhere
+
+</t>
+<t tx="felix.20230304182753.1">## Find Commands
+
+</t>
+<t tx="felix.20230304182757.1">## Nav and the Goto Panel
+
+</t>
+<t tx="felix.20230304182803.1">## Using Tags
+
+</t>
+<t tx="felix.20230304182815.1">## Undo Panel
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

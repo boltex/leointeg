@@ -44,7 +44,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
-## Leo Commands and Keybindings
+# Leo Commands and Keybindings
 
 Here are the most useful Commands. Most of Leo's other commands are also available with their original keybindings.
 
@@ -110,7 +110,7 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 ---
 
-## Derive External Files
+# Derive External Files
 
 Use the **Save Leo File** command to derive external files.
 
@@ -140,7 +140,7 @@ A **notification** will inform you of the action taken instead.
 
 ![Settings](https://raw.githubusercontent.com/boltex/leointeg/master/resources/welcome-settings.gif)
 
-## Server Settings
+# Server Settings
 
 Although the Leo integration has one instance of the leoserver script per vscode 'project'
 window by default, the server settings also has features that allows you to use the same instance
@@ -148,7 +148,7 @@ of Leo in multiple client (vscode) windows simultaneously, with real-time update
 
 (See [Multiple concurrent connections](https://leo-editor.github.io/leo-editor/leoserver.html#multiple-concurrent-connections))
 
-### Auto Start
+## Auto Start
 
 **When auto-start is set, a vscode window will start a new instance of Leo server for itself on the next available network port.**
 If the connection limit is set to anything above the default of one (1),
@@ -165,11 +165,21 @@ Run the server directly with the '--help' argument like so for more details:\
 
 For more information about the Leo server see [Using leoserver.py](https://leo-editor.github.io/leo-editor/leoserver.html) from Leo's official documentation.
 
-## Issues
+## Goto Anywhere
+
+## Find Commands
+
+## Nav and the Goto Panel
+
+## Using Tags
+
+## Undo Panel
+
+# Issues
 
 Common issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
 
-### Linux Keybindings
+## Linux Keybindings
 
 If you're experiencing trouble with the keyboard shortcuts for
 the 'Clone Node' or the 'Promote' and 'Demote' commands,
@@ -177,7 +187,7 @@ set **"keyboard.dispatch": "keyCode"** in your vscode settings and restart vscod
 See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Keybinding-Issues#troubleshoot-linux-keybindings)
 for more information.
 
-### Keybindings Conflicts Resolution
+## Keybindings Conflicts Resolution
 
 If you have a keybinding conflict for a command that you would like **not** to be resolved by Leo when the focus is on the body pane,
 add **`&& resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
