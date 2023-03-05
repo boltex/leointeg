@@ -24,7 +24,7 @@ export interface ConfigMembers {
     leoGoAnywhereShortcut: boolean;
 
     // statusBarString: string;
-    statusBarColor: string;
+    // statusBarColor: string;
 
     treeInExplorer: boolean;
     showOpenAside: boolean;
@@ -219,6 +219,7 @@ export interface LeoBridgePackage {
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
     found?: boolean // find_next, find_previous
+    range?: [number, number] // find_next, find_previous
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     wrap?: boolean; // get_body_states

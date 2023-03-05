@@ -22,7 +22,7 @@ export class Config implements ConfigMembers {
     public leoGoAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
-    public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
+    // public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
     public showOpenAside: boolean = Constants.CONFIG_DEFAULTS.SHOW_OPEN_ASIDE;
     public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
@@ -57,7 +57,7 @@ export class Config implements ConfigMembers {
     // public uAsNumber: boolean = true;
 
     private _isBusySettingConfig: boolean = false;
-    private _needsTreeRefresh: boolean = false;
+    // private _needsTreeRefresh: boolean = false;
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -81,7 +81,7 @@ export class Config implements ConfigMembers {
             leoGoAnywhereShortcut: this.leoGoAnywhereShortcut,
 
             // statusBarString: this.statusBarString,
-            statusBarColor: this.statusBarColor,
+            // statusBarColor: this.statusBarColor,
             treeInExplorer: this.treeInExplorer,
             showOpenAside: this.showOpenAside,
             showEditOnNodes: this.showEditOnNodes,
@@ -146,14 +146,6 @@ export class Config implements ConfigMembers {
         const w_promises: Thenable<void>[] = [];
         const w_vscodeConfig = vscode.workspace.getConfiguration(Constants.CONFIG_NAME);
         p_changes.forEach(i_change => {
-            if (i_change && i_change.code.includes(Constants.CONFIG_REFRESH_MATCH)) {
-                // Check if tree refresh is required for hover-icons to be displayed or hidden accordingly
-                this._needsTreeRefresh = true;
-            }
-            if (i_change && i_change.code === Constants.CONFIG_NAMES.INVERT_NODES) {
-                // Check if tree refresh is required for hover-icons to be displayed or hidden accordingly
-                this._needsTreeRefresh = true;
-            }
             if (w_vscodeConfig.inspect(i_change.code)!.defaultValue === i_change.value) {
                 // Set as undefined - same as default
                 w_promises.push(w_vscodeConfig.update(i_change.code, undefined, true));
@@ -163,12 +155,6 @@ export class Config implements ConfigMembers {
             }
         });
         return Promise.all(w_promises).then(() => {
-            if (this._needsTreeRefresh) {
-                this._needsTreeRefresh = false;
-                setTimeout(() => {
-                    this._leoIntegration.configTreeRefresh();
-                }, 200);
-            }
             this._isBusySettingConfig = false;
             this.buildFromSavedSettings();
             return Promise.resolve();
@@ -306,10 +292,10 @@ export class Config implements ConfigMembers {
             // if (this.statusBarString.length > 8) {
             //     this.statusBarString = DEFAULTS.STATUSBAR_STRING;
             // }
-            this.statusBarColor = GET(NAME).get(NAMES.STATUSBAR_COLOR, DEFAULTS.STATUSBAR_COLOR);
-            if (!utils.isHexColor(this.statusBarColor)) {
-                this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
-            }
+            // this.statusBarColor = GET(NAME).get(NAMES.STATUSBAR_COLOR, DEFAULTS.STATUSBAR_COLOR);
+            // if (!utils.isHexColor(this.statusBarColor)) {
+            //     this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
+            // }
             this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
             this.showOpenAside = GET(NAME).get(NAMES.SHOW_OPEN_ASIDE, DEFAULTS.SHOW_OPEN_ASIDE);
             this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
@@ -369,14 +355,14 @@ export class Config implements ConfigMembers {
             // utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
             // utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
 
-            utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
+            // utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
 
             if (!this._leoIntegration.leoStates.leoStartupFinished && this.leoEditorPath) {
                 // Only relevant 'viewWelcome' content at startup.
-                utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically);  // ok
+                // utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically);  // ok
                 // utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
             } else {
-                utils.setContext(FLAGS.AUTO_START_SERVER, false); // Save option but not context flag
+                // utils.setContext(FLAGS.AUTO_START_SERVER, false); // Save option but not context flag
                 //utils.setContext(FLAGS.AUTO_CONNECT, false);
             }
         }

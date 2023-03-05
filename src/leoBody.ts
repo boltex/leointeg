@@ -15,8 +15,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     private _errorRefreshFlag: boolean = false;
 
     // * Last file read data with the readFile method
-    private _lastGnx: string = ""; // gnx of last file read
-    private _lastBodyData: string = ""; // body content of last file read
+    public lastGnx: string = ""; // gnx of last file read
+    public lastBodyData: string = ""; // body content of last file read
     private _lastBodyLength: number = 0; // length of last file read
 
     // * List of currently opened body panes gnx (from 'watch' & 'dispose' methods)
@@ -44,16 +44,27 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
      * * Sets selected node body's modified time for this gnx virtual file
      * @param p_uri URI of file for which to set made-up modified time
      */
-    public setBodyTime(p_uri: vscode.Uri): void {
+    public setNewBodyUriTime(p_uri: vscode.Uri): void {
         const w_gnx = utils.leoUriToStr(p_uri);
         this._lastBodyTimeGnx = w_gnx;
-        if (!this._openedBodiesGnx.includes(w_gnx)) {
-            this._openedBodiesGnx.push(w_gnx);
-        }
+        this._setOpenedBodyTime(w_gnx);
+    }
+
+    /**
+     * * Adds entries in _openedBodiesGnx and _openedBodiesInfo if needed
+     * * and sets the modified time of an opened body.
+     */
+    private _setOpenedBodyTime(p_gnx: string): void {
         const w_now = new Date().getTime();
-        this._openedBodiesInfo[w_gnx] = {
-            ctime: w_now,
-            mtime: w_now
+        let w_created = w_now;
+        if (!this._openedBodiesGnx.includes(p_gnx)) {
+            this._openedBodiesGnx.push(p_gnx);
+        } else {
+            w_created = this._openedBodiesInfo[p_gnx].ctime; // Already created?
+        }
+        this._openedBodiesInfo[p_gnx] = {
+            ctime: w_created, // w_now, // maybe kept.
+            mtime: w_now // new 'modified' time for sure.
         };
     }
 
@@ -66,11 +77,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             console.log("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", p_gnx);
             this._openedBodiesGnx.push(p_gnx);
         }
-        const w_now = new Date().getTime();
-        this._openedBodiesInfo[p_gnx] = {
-            ctime: w_now,
-            mtime: w_now
-        };
+
+        this._setOpenedBodyTime(p_gnx);
+
         this._onDidChangeFileEmitter.fire([{
             type: vscode.FileChangeType.Changed,
             uri: utils.strToLeoUri(p_gnx)
@@ -110,11 +119,11 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             const w_gnx = utils.leoUriToStr(p_uri);
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            } else if (w_gnx === this._lastGnx && this._openedBodiesGnx.includes(this._lastGnx)) {
+            } else if (w_gnx === this.lastGnx && this._openedBodiesGnx.includes(this.lastGnx)) {
                 return {
                     type: vscode.FileType.File,
-                    ctime: this._openedBodiesInfo[this._lastGnx].ctime,
-                    mtime: this._openedBodiesInfo[this._lastGnx].mtime,
+                    ctime: this._openedBodiesInfo[this.lastGnx].ctime,
+                    mtime: this._openedBodiesInfo[this.lastGnx].mtime,
                     size: this._lastBodyLength
                 };
             } else if (this._openedBodiesGnx.includes(w_gnx)) {
@@ -161,33 +170,33 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
 
                     this._errorRefreshFlag = false; // got body so reset possible flag!
-                    if (this._lastGnx === w_gnx && this._lastBodyData === p_result.body) {
+                    if (this.lastGnx === w_gnx && this.lastBodyData === p_result.body) {
                         // If EXACT SAME body has refreshed, clear prevent preventIconChange
                         // (because _onDocumentChanged will not be triggered)
                         // Otherwise, changing a character wont change the icon, until the next change.
                         this._leoIntegration.preventIconChange = false;
                     }
 
-                    this._lastGnx = w_gnx;
-                    this._lastBodyData = p_result.body;
+                    this.lastGnx = w_gnx;
+                    this.lastBodyData = p_result.body;
                     w_buffer = Buffer.from(p_result.body);
                     this._lastBodyLength = w_buffer.byteLength;
 
                 } else if (p_result.body === "") {
                     // console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
 
-                    this._lastGnx = w_gnx;
+                    this.lastGnx = w_gnx;
                     this._lastBodyLength = 0;
-                    this._lastBodyData = "";
+                    this.lastBodyData = "";
                     w_buffer = Buffer.from("");
                 } else {
                     if (!this._errorRefreshFlag) {
                         this._leoIntegration.fullRefresh();
                     }
-                    if (this._lastGnx === w_gnx) {
+                    if (this.lastGnx === w_gnx) {
                         // was last gnx of closed file about to be switched to new document selected
                         console.log('Passed in not found: ' + w_gnx);
-                        w_buffer = Buffer.from(this._lastBodyData);
+                        w_buffer = Buffer.from(this.lastBodyData);
                     } else {
                         console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
                         //  throw vscode.FileSystemError.FileNotFound();

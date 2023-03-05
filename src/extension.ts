@@ -56,7 +56,7 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         // * Define entries for all commands
         [CMD.MINIBUFFER, () => w_leo.minibuffer()], // Is referenced in package.json
-        [CMD.STATUS_BAR, () => w_leo.statusBarOnClick()],
+        // [CMD.STATUS_BAR, () => w_leo.statusBarOnClick()],
         [CMD.EXECUTE, () => w_leo.nodeCommand({
             action: BRIDGE.EXECUTE_SCRIPT,
             node: U,
@@ -670,6 +670,12 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.GOTO_NAV_ENTRY, (p_node: LeoGotoNode) => w_leo.gotoNavEntry(p_node)],
 
         [CMD.START_SEARCH, () => w_leo.startSearch()],
+        [CMD.SEARCH_BACKWARD, () => w_leo.interactiveSearch(true, false, false)],
+        [CMD.RE_SEARCH, () => w_leo.interactiveSearch(false, true, false)],
+        [CMD.RE_SEARCH_BACKWARD, () => w_leo.interactiveSearch(true, true, false)],
+        [CMD.WORD_SEARCH, () => w_leo.interactiveSearch(false, false, true)],
+        [CMD.WORD_SEARCH_BACKWARD, () => w_leo.interactiveSearch(true, false, true)],
+
         [CMD.FIND_ALL, () => w_leo.findAll(false)],
         [CMD.FIND_NEXT, () => w_leo.find(false, false)],
         [CMD.FIND_NEXT_FO, () => w_leo.find(true, false)],
@@ -779,7 +785,8 @@ function closeLeoTextEditors(): Thenable<unknown> {
         p_tabGroup.tabs.forEach((p_tab) => {
             if (p_tab.input &&
                 (p_tab.input as vscode.TabInputText).uri &&
-                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
+                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
+                !p_tab.isDirty
             ) {
                 w_foundTabs.push(p_tab);
             }

@@ -13,6 +13,16 @@ export class LeoStates {
 
     public qLastContextChange: Thenable<unknown>; // Promise that the last state change is applied
 
+    // * Currently starting up a server
+    private _leoStartingServer: boolean = false;
+    get leoStartingServer(): boolean {
+        return this._leoStartingServer;
+    }
+    set leoStartingServer(p_value: boolean) {
+        this._leoStartingServer = p_value;
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.STARTING_SERVER, p_value);
+    }
+
     // * Currently establishing connection to a server
     private _leoConnecting: boolean = false;
     get leoConnecting(): boolean {

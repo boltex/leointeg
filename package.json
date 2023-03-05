@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/boltex/leointeg#readme",
   "engines": {
-    "vscode": "^1.68.0"
+    "vscode": "^1.75.1"
   },
   "keywords": [
     "leo",
@@ -113,12 +113,6 @@
           "default": true,
           "type": "boolean",
           "description": "Enables the Ctrl+Shift+L keyboard shortcut for showing the LeoIntegration view"
-        },
-        "leoIntegration.statusBarColor": {
-          "scope": "application",
-          "default": "fb7c47",
-          "type": "string",
-          "description": "Specifies the hexadecimal color string for the Status Bar Indicator"
         },
         "leoIntegration.treeInExplorer": {
           "scope": "application",
@@ -1753,6 +1747,36 @@
         "title": "Start Search"
       },
       {
+        "command": "leointeg.searchBackward",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Search Backward"
+      },
+      {
+        "command": "leointeg.reSearch",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Regexp Search"
+      },
+      {
+        "command": "leointeg.reSearchBackward",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Regexp Search Backward"
+      },
+      {
+        "command": "leointeg.wordSearch",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Word Search"
+      },
+      {
+        "command": "leointeg.wordSearchBackward",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Word Search Backward"
+      },
+      {
         "command": "leointeg.findAll",
         "category": "Leo",
         "enablement": "leoTreeOpened",
@@ -2180,42 +2204,52 @@
       {
         "view": "leoIntegration",
         "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting || !leoBridgeReady && !leoServerStarted && !config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting"
+        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting && !leoStartingServer || !leoBridgeReady && !leoServerStarted && !config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer"
       },
       {
         "view": "leoIntegrationExplorer",
         "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting || !leoBridgeReady && !leoServerStarted && !config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting"
+        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting && !leoStartingServer || !leoBridgeReady && !leoServerStarted && !config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer"
+      },
+      {
+        "view": "leoIntegration",
+        "contents": "Starting Server...",
+        "when": "leoStartingServer || !leoBridgeReady && config.leoIntegration.startServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Starting Server...",
+        "when": "leoStartingServer || !leoBridgeReady && config.leoIntegration.startServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
       },
       {
         "view": "leoIntegration",
         "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && !leoTreeOpened && config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting || !leoBridgeReady && leoServerStarted && !config.leoIntegration.connectToServerAutomatically && !leoConnecting"
+        "when": "!leoBridgeReady && leoServerStarted && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer && !leoStartupFinished || leoStartupFinished && !leoBridgeReady && leoServerStarted && !leoConnecting && !leoStartingServer"
       },
       {
         "view": "leoIntegrationExplorer",
         "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && !leoTreeOpened && config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting || !leoBridgeReady && leoServerStarted && !config.leoIntegration.connectToServerAutomatically && !leoConnecting"
+        "when": "!leoBridgeReady && leoServerStarted && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer && !leoStartupFinished || leoStartupFinished && !leoBridgeReady && leoServerStarted && !leoConnecting && !leoStartingServer"
       },
       {
         "view": "leoIntegration",
         "contents": "Connecting...",
-        "when": "!leoBridgeReady && !leoTreeOpened && leoConnecting || !leoBridgeReady && !leoTreeOpened && config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartupFinished"
+        "when": "leoConnecting || !leoBridgeReady && !config.leoIntegration.startServerAutomatically && config.leoIntegration.connectToServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
       },
       {
         "view": "leoIntegrationExplorer",
         "contents": "Connecting...",
-        "when": "!leoBridgeReady && !leoTreeOpened && leoConnecting || !leoBridgeReady && !leoTreeOpened && config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartupFinished"
+        "when": "leoConnecting || !leoBridgeReady && !config.leoIntegration.startServerAutomatically && config.leoIntegration.connectToServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
       },
       {
         "view": "leoIntegration",
-        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "leoBridgeReady && !leoTreeOpened"
+        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "leoBridgeReady && !leoTreeOpened && !leoStartingServer && !leoConnecting && leoStartupFinished"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "leoBridgeReady && !leoTreeOpened"
+        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "leoBridgeReady && !leoTreeOpened && !leoStartingServer && !leoConnecting && leoStartupFinished"
       },
       {
         "view": "leoDocuments",
@@ -3729,7 +3763,7 @@
         "command": "leointeg.replace",
         "key": "ctrl+=",
         "mac": "cmd+=",
-        "when": "leoTreeOpened && editorTextFocus && editorHasSelection && resourceScheme == leo"
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.replaceFromOutline",
@@ -3741,7 +3775,7 @@
         "command": "leointeg.replaceThenFind",
         "key": "ctrl+-",
         "mac": "cmd+-",
-        "when": "leoTreeOpened && editorTextFocus && editorHasSelection && resourceScheme == leo"
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.replaceThenFindFromOutline",

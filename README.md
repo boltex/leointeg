@@ -7,34 +7,34 @@ _If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.gi
 ### Break your code down into sections structured as an outline, to derive or parse back your files
 
 > Leo is a fundamentally different way of using and organizing data, programs and scripts.\
-> [Introduction Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
+> [Introduction Video 🎥](https://www.youtube.com/watch?v=SYwlfdEukD4)
 
-See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
+See Leo, the Literate Editor with Outline, at [leo-editor.github.io/leo-editor](https://leo-editor.github.io/leo-editor/)
 or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.visualstudio.com](https://code.visualstudio.com/).
 
 ![Screenshot](https://raw.githubusercontent.com/boltex/leointeg/master/resources/animated-screenshot.gif)
 
-## Requirements
+## Requirements 📃
 
-- Leo Editor 6.7.1 or later\
+- Leo Editor 6.7.2 or later\
   _Install with :_ `pip install leo`\
-   _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
+   _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
 - Websocket Python Library\
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/](https://websockets.readthedocs.io/))
 
-## Features
+## Features 🎉
 
-- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body pane**, **opened documents selector**, **find panel**, along with a **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector**, **find panel**, along with a **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
 - A **welcome screen** that also gives access to this extension's **settings**.
-- **Derived files change detection**. See [External Files](#derive-external-files) below for more details
-- **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
-- **Find panel** that responds to Leo's original keybindings, Ctrl+F, F2, F3... when focus is set in the outline or body panes
+- **Derived files change detection**. See [External Files](#derive-external-files-💾) below for more details
+- **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
+- **Find panel** that reacts to Leo's typical keybindings, Ctrl+F, F2, F3... when focus is in the outline or body pane
 - **Nav and Tag panel** controls are integrated in the Find panel
-- **Goto Anywhere panel** to navigate directly from a list of nodes
-- **Undo History panel** , showing all actions and allowing going back, or forward, to any undo states.
+- **Goto Anywhere panel** to navigate directly from list of nodes, such as the results of Nav or Tag searches
+- **Undo History panel**, showing all actions and allowing going back, or forward, to any undo states.
 - Access **Leo commands** with context menus, hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
   - Outline editing commands
@@ -44,7 +44,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
-## Leo Commands and Keybindings
+## Leo Commands and Keybindings ⌨️
 
 Here are the most useful Commands. Most of Leo's other commands are also available with their original keybindings.
 
@@ -71,25 +71,25 @@ Here are the most useful Commands. Most of Leo's other commands are also availab
 
 _Move Outline commands need the 'Alt' key modifier only when focus is on body pane._
 
-| Common Operations  |     |           |                     |
-| :----------------- | :-- | :-------- | :------------------ |
-| `Ctrl + T`         |     |           | Toggle Outline/Body |
-| `Tab`              | or  | `Alt + D` | Focus on Body       |
-| `Alt + T`          |     |           | Focus on Outline    |
-| `Alt + -`          |     |           | Contract All        |
-| `Ctrl + B`         |     |           | Execute Script      |
-| `Ctrl + Shift + D` |     |           | Extract             |
-| `Ctrl + Shift + N` |     |           | Extract Names       |
-| `Alt + A`          |     |           | Sort Siblings       |
-| `Ctrl + F`         |     |           | Start Search        |
-| `F3`               |     |           | Find Next           |
-| `F2`               |     |           | Find Previous       |
-| `Alt + X`          |     |           | Minibuffer Palette  |
+| Common Operations  |     |          |     |           |    |            |                     |
+| :----------------- | :-- | :------- | :-- | :-------- |:-- | :--------- | :------------------ |
+| `Ctrl + T`         |     |          |     |           |    |            | Toggle Outline/Body |
+| `Tab`              | or  | `Enter`  | or  | `Alt + D` |or  | `Ctrl + G` | Focus on Body       |
+| `Alt + T`          |     |          |     |           |    |            | Focus on Outline    |
+| `Alt + -`          |     |          |     |           |    |            | Contract All        |
+| `Ctrl + B`         |     |          |     |           |    |            | Execute Script      |
+| `Ctrl + Shift + D` |     |          |     |           |    |            | Extract             |
+| `Ctrl + Shift + N` |     |          |     |           |    |            | Extract Names       |
+| `Alt + A`          |     |          |     |           |    |            | Sort Siblings       |
+| `Ctrl + F`         |     |          |     |           |    |            | Start Search        |
+| `F3`               |     |          |     |           |    |            | Find Next           |
+| `F2`               |     |          |     |           |    |            | Find Previous       |
+| `Alt + X`          |     |          |     |           |    |            | Minibuffer Palette  |
 
 | Tree Navigation    |     |                 |                             |
 | :----------------- | :-- | :-------------- | :-------------------------- |
 | `Ctrl+Shift+L`     |     |                 | Show the LeoInteg View      |
-| `Ctrl+Shift+P`     |     |                 | Go Anywhere                 |
+| `Ctrl+P`           |     |                 | Go Anywhere                 |
 | `Alt + Home`       | or  | `Home` \*       | Scroll to Top of Outline    |
 |                    |     | `End` \*        | Scroll to Bottom of Outline |
 | `PgUp / pgDn`      |     |                 | 'Tree' Page-Up/Down         |
@@ -110,30 +110,22 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 ---
 
-## Derive External Files
+## Derive External Files 💾
 
-Use the **Save Leo File** command to derive external files.
+Use the **Save Leo File** command to derive external files for any type of **@file** nodes.
 
 Leo will detect derived file changes and will ask to either **refresh from disk** or **ignore the changes**.
 
 ![derive files](https://raw.githubusercontent.com/boltex/leointeg/master/resources/derived-file.gif)
 
-## Automate Synchronization
+## Automate External Files Synchronization 🤖
 
 The **change detection** process can be automated to always refresh, or ignore file changes:
 A **notification** will inform you of the action taken instead.
 
 ![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
 
-## Status Bar Indicator
-
-A customizable keyboard status bar indicator is shown when this extension is activated.
-It will turn orange (or your choice of text and color), when leo's **keyboard shortcuts** are active.
-This occurs when an outline node or a body pane has focus:
-
-![Statusbar](https://raw.githubusercontent.com/boltex/leointeg/master/resources/statusbar-keyboard.gif)
-
-## Extension Settings
+## Extension Settings 🔧
 
 ### Open the command palette `Ctrl+Shift+P` and start typing `leo settings` to access LeoInteg's welcome/settings screen
 
@@ -148,13 +140,13 @@ This occurs when an outline node or a body pane has focus:
 
 ![Settings](https://raw.githubusercontent.com/boltex/leointeg/master/resources/welcome-settings.gif)
 
-## Server Settings
+## Server Settings 🔌
 
 Although the Leo integration has one instance of the leoserver script per vscode 'project'
 window by default, the server settings also has features that allows you to use the same instance
 of Leo in multiple client (vscode) windows simultaneously, with real-time updates and interaction.
 
-(See [Multiple concurrent connections](https://leoeditor.com/leoserver.html#multiple-concurrent-connections))
+(See [Multiple concurrent connections](https://leo-editor.github.io/leo-editor/leoserver.html#multiple-concurrent-connections))
 
 ### Auto Start
 
@@ -168,12 +160,54 @@ The server, located in your Leo-Editor installation folder, also has other optio
 LeoInteg that allows you to create a stand-alone internet server for other uses such as
 multi-user interaction over a network/internet, and more.
 
-Run the server directly with the '--help' argument like so for more details:\
-**`...leo-editor/leo/core/leoserver.py --help`**
+Run the server directly with the '--help' argument to view all server options and capabilities:\
+`.../leo-editor/leo/core/leoserver.py --help`
 
-For more information about the Leo server see [Using leoserver.py](https://leoeditor.com/leoserver.html) from Leo's official documentation.
+For more information about the Leo server see [Using leoserver.py](https://leo-editor.github.io/leo-editor/leoserver.html) from Leo's official documentation.
 
-## Issues
+## Navigating a Leo Document 🧭
+
+Arrow keys, home/end, page up/down are used for basic navigation. But in order to **find and goto specific nodes directly**, use the methods described below.
+
+### Goto Anywhere Command
+
+Normally in vscode, the the **`Ctrl+P`**  shortcut allows you to switch to any project file, but when the focus is in one of Leo's panels, the **`Ctrl+P`** keybinding allows you to switch to a node directly by typing (part of) it's headline.
+
+![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/goto-anywhere.gif)
+
+### Find Commands
+
+With focus in Leo's outline or body pane, Hit **`Ctrl+F`** to open the _find panel_.
+
+Enter your search term directly in the **\<find pattern here\>** field. Press **`Enter`** to find the first match starting from your current position.
+
+Hitting **`F3`** repeatedly will find the subsequent matches. (**`F2`** for previous matches)
+
+![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/find-in-headlines.gif)
+
+### Nav and the Goto Panel
+
+Type your search term in the **Nav** field instead to see all results show up below in leo's **Goto Pane**. This will show the headlines as you type.
+
+Press **`Enter`** to freeze the results and show results also found in **body text of any node**. This will add a snowflake icon ❄️ to the **Nav** field.
+
+From the **Goto Pane**, you can use the arrow keys, home/end, page up/down to cycle directly to any of those matches.
+
+![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-goto-pane.gif)
+
+### Using Tags
+
+If you check the **Tag** option, the **Nav** field and **Goto Pane** are then used to find nodes by their tag 🏷 _ua_ (user attribute).
+
+![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-tags.gif)
+
+## Undo Panel  🔄
+
+Use the undo / redo icons above the outline or above the undo pane itself. You can also right-click on an undo step to directly switch to that specific state!
+
+![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/undo-pane.gif)
+
+## Issues 🚧
 
 Common issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
 
@@ -201,12 +235,12 @@ So select at least one character to use the previously assigned original keyboar
 
 > Refer to the [issue tracker](https://github.com/boltex/leointeg/issues) page to learn more about the known issues, or to contribute with additional information if you encounter some yourself.
 
-## How It Works
+## How It Works 🚀
 
 Leo integration into VS Code is done by starting
 a [python server script](https://github.com/leo-editor/leo-editor/blob/devel/leo/core/leoserver.py) and connecting to it via
 a [websocket](https://websockets.readthedocs.io/en/stable/intro.html)
-to exchange JSON data. The server script leverages [leoBridge](https://leoeditor.com/leoBridge.html)
+to exchange JSON data. The server script leverages [leoBridge](https://leo-editor.github.io/leo-editor/leoBridge.html)
 and re-uses code from the [leoflexx.py plugin](https://github.com/leo-editor/leo-editor/blob/devel/leo/plugins/leoflexx.py#L893).
 
 The outline pane is made by implementing a
@@ -216,11 +250,11 @@ and using the outline's selected node 'gnx' as identifier.
 
 ---
 
-## Acknowledgments
+## Acknowledgments 🏅
 
 ### _Thanks to_
 
-- [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
+- [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leo-editor.github.io/leo-editor/)
 - [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
 - [Vitalije](https://github.com/vitalije) for his contributions and support
 - [Arjan](https://github.com/ar-jan) for his suggestions and ideas
@@ -233,4 +267,4 @@ and using the outline's selected node 'gnx' as identifier.
 
 ---
 
-**🤍 To sponsor, donate or contribute see my [user page](https://boltex.github.io/) 🦁 Enjoy!**
+## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)

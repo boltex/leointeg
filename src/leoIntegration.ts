@@ -29,7 +29,7 @@ import { LeoApOutlineProvider } from './leoApOutline';
 import { LeoBodyProvider } from './leoBody';
 import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
-import { LeoStatusBar } from './leoStatusBar';
+// import { LeoStatusBar } from './leoStatusBar';  // removed until proper API for knowing focus placement
 import { CommandStack } from './commandStack';
 import { LeoDocumentsProvider, LeoDocumentNode } from './leoDocuments';
 import { LeoStates } from './leoStates';
@@ -51,7 +51,6 @@ export class LeoIntegration {
 
     // * State flags
     public leoStates: LeoStates;
-    private _startingServer: boolean = false; // Used to prevent re-starting while starting until success of fail
 
     // * General integration usage variables
     private _clipboardContent: string = "";
@@ -80,6 +79,7 @@ export class LeoIntegration {
     public finalFocus: Focus = Focus.NoChange; // Set in _setupRefresh : Last command issued had focus on outline, as opposed to the body
     public showBodyIfClosed: boolean = false;
     public showOutlineIfClosed: boolean = false;
+    public refreshPreserveRange = false; // this makes the next refresh cycle preserve the "findFocusTree" flag once.
 
     private _refreshType: ReqRefresh = {}; // Set in _setupRefresh : Flags for commands to require parts of UI to refresh
 
@@ -191,6 +191,13 @@ export class LeoIntegration {
     private _lastFindView: vscode.WebviewView | undefined;  // ? Maybe unused ?
     private _findNeedsFocus: boolean = false;
     private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
+    public findFocusTree = false;
+    public findHeadlineRange: [number, number] = [0, 0];
+    public findHeadlinePosition: ArchivedPosition | undefined;
+    private _lastCommandFindEndOutline: number = 0; // Means that last command resolved as a find operation with selection on outline
+
+    // * Interactive Find Input
+    private _interactiveSearchInputBox: vscode.InputBox | undefined;
 
     // * Leo Find Panel
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
@@ -217,7 +224,7 @@ export class LeoIntegration {
         return this._bodyUri;
     }
     set bodyUri(p_uri: vscode.Uri) {
-        this._leoFileSystem.setBodyTime(p_uri);
+        this._leoFileSystem.setNewBodyUriTime(p_uri);
         this._bodyUri = p_uri;
     }
 
@@ -236,7 +243,7 @@ export class LeoIntegration {
     private _leoLogPane: vscode.OutputChannel;
 
     // * Status Bar
-    private _leoStatusBar: LeoStatusBar;
+    // private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
 
     // * Edit/Insert Headline Input Box options instance, setup so clicking outside cancels the headline change
     private _headlineInputOptions: vscode.InputBoxOptions = {
@@ -455,8 +462,7 @@ export class LeoIntegration {
         this._bodyMainSelectionColumn = 1;
 
         // * Create Status bar Entry
-        this._leoStatusBar = new LeoStatusBar(_context, this);
-
+        // this._leoStatusBar = new LeoStatusBar(_context, this); // removed until proper API for knowing focus placement
         // * Automatic server start service
         this._serverService = new ServerService(_context, this);
 
@@ -613,10 +619,10 @@ export class LeoIntegration {
      * * Starts an instance of a leoBridge server, and may connect to it afterwards, based on configuration flags.
      */
     public startServer(): void {
-        if (this._startingServer) {
+        if (this.leoStates.leoStartingServer) {
             return;
         }
-        this._startingServer = true;
+        this.leoStates.leoStartingServer = true;
         this.leoStates.leoStartupFinished = false;
         this.showLogPane();
         this._serverService
@@ -632,18 +638,18 @@ export class LeoIntegration {
                         setTimeout(() => {
                             // wait a few milliseconds
                             this.connect();
-                            this._startingServer = false;
+                            this.leoStates.leoStartingServer = false;
                         }, 1500);
                     } else {
-                        this._startingServer = false;
+                        this.leoStates.leoStartingServer = false;
                         this.leoStates.leoStartupFinished = true;
                     }
                 },
                 (p_reason) => {
                     // This context flag will remove the 'connecting' welcome view
-                    this._startingServer = false;
-                    utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-                    utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+                    this.leoStates.leoStartingServer = false;
+                    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
+                    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
                     if (
                         [Constants.USER_MESSAGES.LEO_PATH_MISSING,
                         Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT].includes(p_reason)
@@ -714,7 +720,7 @@ export class LeoIntegration {
                             this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
                         if (w_lastFiles.length && !this.serverHasOpenedFile) {
                             // This context flag will trigger 'Connecting...' placeholder
-                            utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
+                            // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
 
                             setTimeout(() => {
                                 this._openLastFiles(); // Try to open last opened files, if any
@@ -767,26 +773,21 @@ export class LeoIntegration {
      */
     public cancelConnect(p_message?: string): void {
         // 'disconnect error' versus 'failed to connect'
-        if (this.leoStates.leoBridgeReady) {
-            vscode.window.showErrorMessage(
-                p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED
-            );
-        } else {
-            vscode.window.showInformationMessage(
-                p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED
-            );
-        }
+        const showMessageFn = this.leoStates.leoBridgeReady ? vscode.window.showErrorMessage : vscode.window.showInformationMessage;
+        showMessageFn(
+            p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED
+        );
 
         // to change the 'viewsWelcome' content.
         // bring back to !leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
-        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
+        // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
         // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
         this.leoStates.leoStartupFinished = true;
         this.leoStates.leoConnecting = false;
         this.leoStates.fileOpenedReady = false;
         this.leoStates.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
-        this._leoStatusBar.update(false);
+        // this._leoStatusBar.update(false); // removed until proper API for knowing focus placement
         this._refreshOutline(false, RevealType.NoReveal);
     }
 
@@ -971,10 +972,6 @@ export class LeoIntegration {
                 { files: w_lastFiles }
             ).then(
                 (p_openFileResult: LeoBridgePackage) => {
-                    // set connecting false
-                    this.leoStates.leoConnecting = false;
-                    this.leoStates.leoBridgeReady = true;
-                    this.leoStates.leoStartupFinished = true;
 
                     if (p_openFileResult.total) {
 
@@ -1022,6 +1019,7 @@ export class LeoIntegration {
                             this.serverHasOpenedFile = true;
                             this.serverOpenedFileName = p_fileResult.filename!;
                             this.serverOpenedNode = p_fileResult.node!;
+                            this._finishOpenLastFiles();
 
                             this.loadSearchSettings();
                             this.setupRefresh(
@@ -1046,18 +1044,14 @@ export class LeoIntegration {
                         this.serverHasOpenedFile = false;
                         this.serverOpenedFileName = "";
                         this.serverOpenedNode = undefined;
-
+                        this._finishOpenLastFiles();
                         this.launchRefresh();
                         return Promise.reject('Recent files list is empty');
-
                     }
 
                 },
                 (p_errorOpen) => {
-                    // set connecting false
-                    this.leoStates.leoConnecting = false;
-                    this.leoStates.leoBridgeReady = true;
-                    this.leoStates.leoStartupFinished = true;
+                    this._finishOpenLastFiles();
                     this.launchRefresh();
 
                     console.log('in .then not opened or already opened');
@@ -1069,6 +1063,18 @@ export class LeoIntegration {
         }
     }
 
+    /**
+     * Setup flags for end of opening last-files.
+     */
+    private _finishOpenLastFiles(): void {
+        // set connecting false and other flags to finish 'open last files'
+        this.leoStates.leoBridgeReady = true;
+        this.leoStates.leoStartupFinished = true;
+        setTimeout(() => {
+            this.leoStates.leoConnecting = false;
+        }, 100);
+
+    }
     /**
      * * Adds to the context.workspaceState.<xxx>files if not already in there (no duplicates)
      * @param p_file path+file name string
@@ -1229,7 +1235,7 @@ export class LeoIntegration {
         this.refreshDocumentsPane();
         this.refreshButtonsPane();
         this.refreshUndoPane();
-        this._leoStatusBar.hide();
+        // this._leoStatusBar.hide(); // removed until proper API for knowing focus placement
         this.closeBody();
     }
 
@@ -1271,8 +1277,8 @@ export class LeoIntegration {
             this._bodyFileSystemStarted = true;
         }
 
-        this._leoStatusBar.update(true, 0, true);
-        this._leoStatusBar.show();
+        // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
+        // this._leoStatusBar.show();
         this.sendConfigToServer(this.config.getConfig());
         this.loadSearchSettings();
 
@@ -1287,14 +1293,31 @@ export class LeoIntegration {
             this.config.buildFromSavedSettings();
         }
 
+        if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
+            this.config.buildFromSavedSettings(); // If the config setting started with 'leojs'
+            if (
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.INVERT_NODES) ||
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_EDIT) ||
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_ADD) ||
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_MARK) ||
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_CLONE) ||
+                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
+            ) {
+                this.configTreeRefresh();
+            }
+        }
+
         // also check if workbench.editor.enablePreview
         this._bodyEnablePreview = !!vscode.workspace
             .getConfiguration('workbench.editor')
             .get('enablePreview');
 
         // Check For "workbench.editor.enablePreview" to be true.
-        this.config.checkEnablePreview();
-        this.config.checkCloseEmptyGroups();
+        // Leave small delay for multiple possible forced changes at startup
+        setTimeout(() => {
+            this.config.checkEnablePreview();
+            this.config.checkCloseEmptyGroups();
+        }, 150);
     }
 
     /**
@@ -1323,13 +1346,13 @@ export class LeoIntegration {
      * @param p_expand True if it was an expand, false if it was a collapse event
      * @param p_treeView Pointer to the treeview itself, either the standalone treeview or the one under the explorer
      */
-    private _onChangeCollapsedState(
+    private async _onChangeCollapsedState(
         p_event: vscode.TreeViewExpansionEvent<ArchivedPosition>,
         p_expand: boolean,
         p_treeView: vscode.TreeView<ArchivedPosition>
-    ): void {
+    ): Promise<unknown> {
         // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
-        this.triggerBodySave(true);
+        await this.triggerBodySave(true);
         // * Set expanded flag even on leointeg's vscode side of things, mostly for 'insert node'.
         if (p_expand) {
             p_event.element.expanded = true;
@@ -1349,7 +1372,7 @@ export class LeoIntegration {
         }
 
         // * vscode will update its tree by itself, but we need to change Leo's model of its outline
-        this.sendAction(
+        return this.sendAction(
             p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE,
             utils.buildNodeCommand(p_event.element)
         );
@@ -1417,9 +1440,6 @@ export class LeoIntegration {
         p_event: vscode.TreeViewVisibilityChangeEvent,
         p_explorerView: boolean
     ): void {
-
-        if (p_explorerView) {
-        } // (Facultative/unused) Do something different if explorer view is used
         if (p_event.visible) {
             this._leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
             // this.refreshGotoPane();  // No need to refresh because no selection needs to be set
@@ -1461,12 +1481,10 @@ export class LeoIntegration {
                 this._lastFindView = this._findPanelWebviewExplorerView;
                 this.checkForceFindFocus(false);
             }
-
         } else {
             if (this._findPanelWebviewView?.visible) {
                 this._lastFindView = this._findPanelWebviewView;
                 this.checkForceFindFocus(false);
-
             }
         }
     }
@@ -1489,19 +1507,20 @@ export class LeoIntegration {
         if (!p_internalCall) {
             this.triggerBodySave(true); // Save in case edits were pending
         }
-        // * Status flag check
-        if (!p_editor && this._leoStatusBar.statusBarFlag) {
-            return;
-            // this._leoStatusBar.update(false);
-        }
-        // * Status flag check
-        setTimeout(() => {
-            if (vscode.window.activeTextEditor) {
-                this._leoStatusBar.update(
-                    vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME
-                );
-            }
-        }, 0);
+        // removed until proper API for knowing focus placement
+        // // * Status flag check
+        // if (!p_editor && this._leoStatusBar.statusBarFlag) {
+        //     return;
+        //     // this._leoStatusBar.update(false);
+        // }
+        // // * Status flag check
+        // setTimeout(() => {
+        //     if (vscode.window.activeTextEditor) {
+        //         this._leoStatusBar.update(
+        //             vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME
+        //         );
+        //     }
+        // }, 0);
     }
 
     /**
@@ -1598,16 +1617,44 @@ export class LeoIntegration {
                 const w_hasBody = !!p_textDocumentChange.document.getText().length;
                 const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
 
+                let w_skipSave = false;
+
+                // TODO : uncomment and test this to fix replace / replace-then-find!!
+                if (
+                    this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
+                    p_textDocumentChange.document.getText() === this._leoFileSystem.lastBodyData
+                ) {
+                    // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
+                    // Set proper cursor insertion point and selection range.
+
+                    // ALSO check if the icon would change!
+                    this.showBody(false, true, true);
+                    // w_skipSave = true;
+                    // return; // ! TEST WITH \ WITHOUT RETURN !
+                }
+
                 if (!this.leoStates.leoChanged || w_iconChanged) {
-                    if (this.preventIconChange) {
-                        this.preventIconChange = false;
+                    // console.log('need to change icon');
+
+                    if (this.preventIconChange && !w_skipSave) {
+                        // TODO : CLEANUP "preventIconChange" IF NOT NEEDED !
+                        // this.preventIconChange = false;
+
                     } else {
-                        // Document pane icon needs refresh (changed) and/or outline icon changed
-                        this._bodySaveDocument(p_textDocumentChange.document).then(() => {
-                            if (this.lastSelectedNode) {
-                                this.lastSelectedNode.dirty = true;
-                                this.lastSelectedNode.hasBody = w_hasBody;
-                            }
+                        // this.preventIconChange = false;
+                        if (this.lastSelectedNode) {
+                            this.lastSelectedNode.dirty = true;
+                            this.lastSelectedNode.hasBody = w_hasBody;
+                        }
+
+                        let q_save = Promise.resolve(true);
+                        if (w_skipSave && w_iconChanged) {
+                            q_save = Promise.resolve(true);
+                        } else {
+                            // Document pane icon needs refresh (changed) and/or outline icon changed
+                            q_save = this._bodySaveDocument(p_textDocumentChange.document);
+                        }
+                        q_save.then(() => {
                             if (w_iconChanged) {
                                 // NOT incrementing this.treeID to keep ids intact
                                 // NoReveal since we're keeping the same id.
@@ -1615,6 +1662,7 @@ export class LeoIntegration {
                             }
                         });
                     }
+                    this.preventIconChange = false; // SET FALSE AFTER NO MATTER WHAT
 
                     if (!this.leoStates.leoChanged) {
                         // also refresh document panel (icon may be dirty now)
@@ -1634,17 +1682,18 @@ export class LeoIntegration {
 
             const w_textEditor = vscode.window.activeTextEditor;
 
+            // TODO : Make this check more intelligent by keeping all lines for an interval, and check all them after delay.
             if (w_textEditor && p_textDocumentChange.document.uri.fsPath === w_textEditor.document.uri.fsPath) {
                 w_textEditor.selections.forEach(p_selection => {
                     // if line starts with @
-                    let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
-                    if (w_line.trim().startsWith('@')) {
+                    let w_line = w_textEditor.document.lineAt(p_selection.active.line).text.toLowerCase();
+                    if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
                         w_needsRefresh = true;
                     }
                 });
             }
             if (w_needsRefresh) {
-                this.debouncedRefreshBodyStates();
+                this.debouncedRefreshBodyStates(Constants.BODY_STATES_DEBOUNCE_DELAY);
             }
 
         }
@@ -1689,7 +1738,7 @@ export class LeoIntegration {
      * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
      */
     public setFindPanel(p_panel: vscode.WebviewView): void {
-        if (p_panel.viewType === "leoFindPanelExplorer") {
+        if (p_panel.viewType === Constants.FIND_EXPLORER_ID) {
             // Explorer find panel
             this._lastFindView = this._findPanelWebviewExplorerView;
             this._findPanelWebviewExplorerView = p_panel;
@@ -1741,6 +1790,8 @@ export class LeoIntegration {
             q_savePromise = this._bodySaveSelection();  // just save selection if it's changed
         }
         return q_savePromise.then((p_result) => {
+            // this.debouncedRefreshBodyStates(); // ! test this !
+
             return p_result;
         }, (p_reason) => {
             console.log('BodySave rejected :', p_reason);
@@ -1915,7 +1966,10 @@ export class LeoIntegration {
      * @param p_refreshType Refresh flags for each UI part
      * @param p_node The AP node to be refreshed if refresh type 'node' only is set
      */
-    public setupRefresh(p_finalFocus: Focus, p_refreshType: ReqRefresh, p_node?: ArchivedPosition): void {
+    public setupRefresh(p_finalFocus: Focus, p_refreshType: ReqRefresh, p_node?: ArchivedPosition, p_preserveRange?: boolean): void {
+        if (p_preserveRange) {
+            this.refreshPreserveRange = true; // Will be cleared after a refresh cycle.
+        }
         // Set final "focus-placement" EITHER true or false
         this.finalFocus = p_finalFocus;
         // Set all properties WITHOUT clearing others.
@@ -1931,6 +1985,22 @@ export class LeoIntegration {
      * * Launches refresh for UI components: treeviews, body, and context states
      */
     private async _launchRefresh(): Promise<unknown> {
+
+        if (this._lastCommandFindEndOutline) {
+            this._lastCommandFindEndOutline--; // decrement from 2 to 1 the first time, keeping the flag for 1 refresh.
+        }
+
+        if (!this.refreshPreserveRange) {
+            if (this.findFocusTree) {
+                // had a range but now refresh from other than find/replace
+                // So make sure tree is also refreshed.
+                this._refreshType.tree = true;
+            }
+            // Clear no matter what.
+            this.findFocusTree = false;
+        } else {
+            this.refreshPreserveRange = false; // preserved once, now cleared.
+        }
 
         // check states for having at least a document opened
         if (!this.serverHasOpenedFile && this.leoStates.leoBridgeReady && this.leoStates.fileOpenedReady) {
@@ -2381,11 +2451,11 @@ export class LeoIntegration {
      * @param p_preventTakingFocus Flag used to keep focus where it was instead of forcing in body
      * @returns a text editor of the p_node parameter's gnx (As 'leo' file scheme). Or rejects if interrupted.
      */
-    private async _tryApplyNodeToBody(
+    private _tryApplyNodeToBody(
         p_node: ArchivedPosition,
         p_aside: boolean,
         p_preventTakingFocus: boolean,
-    ): Promise<void | vscode.TextEditor> {
+    ): Thenable<void | vscode.TextEditor> {
 
         this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
         this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
@@ -2778,7 +2848,7 @@ export class LeoIntegration {
      * @param p_preventTakingFocus flag that when true will stop the editor from taking focus once opened
      * @returns a promise of an editor, or void if body had been changed again in the meantime.
      */
-    public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean): Promise<vscode.TextEditor | void> {
+    public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean, p_preventReveal?: boolean): Promise<vscode.TextEditor | void> {
 
         const w_openedDocumentTS = performance.now();
         const w_openedDocumentGnx = utils.leoUriToStr(this.bodyUri);
@@ -2846,7 +2916,6 @@ export class LeoIntegration {
                 let w_debugMessage = "";
                 let w_needRefreshFlag = false;
 
-
                 // Apply language if the selected node is still the same after all those events
                 if (!w_openedDocument.isClosed) {
                     // w_openedDocument still OPEN
@@ -2896,7 +2965,7 @@ export class LeoIntegration {
         }
 
         // Find body pane's position if already opened with same gnx (language still needs to be set per position)
-        let w_foundOpened = false;
+        let w_foundDocOpened = false;
         vscode.window.tabGroups.all.forEach((p_tabGroup) => {
             p_tabGroup.tabs.forEach((p_tab) => {
 
@@ -2907,15 +2976,26 @@ export class LeoIntegration {
                         if (p_textDocument.uri.fsPath === (p_tab.input as vscode.TabInputText).uri.fsPath) {
                             this._bodyTextDocument = p_textDocument; // vscode.workspace.openTextDocument
                             this._bodyMainSelectionColumn = p_tab.group.viewColumn;
-                            w_foundOpened = true;
+                            if (p_preventReveal) {
+                                if (p_tab.isActive) {
+                                    w_foundDocOpened = true;
+                                }
+                            } else {
+                                w_foundDocOpened = true;
+                            }
                         }
                     });
                 }
             });
         });
-        if (w_foundOpened && !q_saved) {
+
+        if (!w_foundDocOpened && p_preventReveal) {
+            return; // ! HAD PREVENT REVEAL !
+        }
+
+        if (w_foundDocOpened && !q_saved) {
             // Was the same and was asked to show body (and did not already had to fake-save and refresh)
-            this.preventIconChange = true;
+            // this.preventIconChange = true; // ? NEEDED ?
             this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
         }
 
@@ -3042,9 +3122,11 @@ export class LeoIntegration {
      * * Sets vscode's body-pane editor's language
      */
     private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): Thenable<vscode.TextDocument> {
+
         return vscode.languages.setTextDocumentLanguage(p_document, p_language).then(
             (p_mewDocument) => { return p_mewDocument; }, // ok - language found
             (p_error) => {
+                // ERROR: Output error info
                 let w_langName: string = p_error.toString().split('\n')[0];
                 if (w_langName.length > 36 && w_langName.includes(Constants.LEO_LANGUAGE_PREFIX)) {
                     w_langName = w_langName.substring(36);
@@ -3100,6 +3182,7 @@ export class LeoIntegration {
 
             // Replace language string if in 'exceptions' array
             w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
+
             // Apply language if the selected node is still the same after all those events
             if (this._bodyTextDocument &&
                 !this._bodyTextDocument.isClosed &&
@@ -3107,6 +3190,9 @@ export class LeoIntegration {
                 w_language !== this._bodyTextDocument.languageId &&
                 utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
             ) {
+                console.log('refreshBodyStates language was : ', this._bodyTextDocument.languageId);
+                console.log('setting language: ', w_language);
+
                 this._setBodyLanguage(this._bodyTextDocument, w_language);
             }
         });
@@ -3115,15 +3201,29 @@ export class LeoIntegration {
     /**
      * * Refresh body states after a small debounced delay.
      */
-    public debouncedRefreshBodyStates() {
+    public debouncedRefreshBodyStates(p_delay?: number) {
+
+        if (!p_delay) {
+            p_delay = 0;
+        }
+
         if (this._bodyStatesTimer) {
             clearTimeout(this._bodyStatesTimer);
         }
-        this._bodyStatesTimer = setTimeout(() => {
-            // this.triggerBodySave(true);
-            this._bodySaveDocument(this._bodyLastChangedDocument!);
-            this.refreshBodyStates();
-        }, Constants.BODY_STATES_DEBOUNCE_DELAY);
+        if (p_delay === 0) {
+            if (this._bodyLastChangedDocument && this.leoStates.fileOpenedReady) {
+                this._bodySaveDocument(this._bodyLastChangedDocument);
+                this.refreshBodyStates();
+            }
+        } else {
+            this._bodyStatesTimer = setTimeout(() => {
+                if (this._bodyLastChangedDocument && this.leoStates.fileOpenedReady) {
+                    this._bodySaveDocument(this._bodyLastChangedDocument);
+                    this.refreshBodyStates();
+                }
+            }, p_delay);
+        }
+
     }
 
     /**
@@ -3253,14 +3353,14 @@ export class LeoIntegration {
         if (p_picked &&
             p_picked.label &&
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
-            this._minibufferHistory.unshift(p_picked.label); // Add to minibuffer history
+            this._addToMinibufferHistory(p_picked.label);
             return vscode.commands.executeCommand(
                 Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
             );
         }
         // * Ok, it was really a minibuffer command
         if (p_picked && p_picked.label) {
-            this._minibufferHistory.push(p_picked.label); // Add to minibuffer history
+            this._addToMinibufferHistory(p_picked.label);
             const w_commandResult = this.nodeCommand({
                 action: "-" + p_picked.label,
                 node: undefined,
@@ -3278,6 +3378,19 @@ export class LeoIntegration {
             // Canceled
             return Promise.resolve(undefined);
         }
+    }
+
+    /**
+     * Add to the minibuffer history (without duplicating entries)
+     */
+    private _addToMinibufferHistory(p_commandName: string): void {
+        const w_found = this._minibufferHistory.indexOf(p_commandName);
+        // If found, will be removed (and placed on top)
+        if (w_found >= 0) {
+            this._minibufferHistory.splice(w_found, 1);
+        }
+        // Add to top of minibuffer history
+        this._minibufferHistory.unshift(p_commandName);
     }
 
     /**
@@ -3324,7 +3437,10 @@ export class LeoIntegration {
         }
 
         this.leoStates.setSelectedNodeFlags(p_node);
-        this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
+
+        // removed until proper API for knowing focus placement
+        // this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
+
         const w_showBodyKeepFocus = p_aside
             ? this.config.treeKeepFocusWhenAside
             : this.config.treeKeepFocus;
@@ -3345,6 +3461,25 @@ export class LeoIntegration {
             utils.buildNodeCommand(p_node)
         ).then((p_setSelectedResult) => {
             if (!p_internalCall) {
+                if (this.findFocusTree) {
+                    // had a range but now refresh from other than find/replace
+                    // So make sure tree is also refreshed.
+                    this.findFocusTree = false;
+                    this.setupRefresh(
+                        Focus.Outline,
+                        {
+                            tree: true,
+                            body: true,
+                            // documents: false,
+                            // buttons: false,
+                            // states: false,
+                        }
+                    );
+                    this._launchRefresh();
+                    return p_setSelectedResult;
+                }
+
+
                 this._refreshType.states = true;
                 this.getStates();
             }
@@ -4052,11 +4187,17 @@ export class LeoIntegration {
             }
             await vscode.commands.executeCommand(w_panelID + '.focus');
 
+            if (this._findPanelWebviewView && this._findPanelWebviewView.visible) {
+                w_panel = this._findPanelWebviewView;
+            } else if (this._findPanelWebviewExplorerView && this._findPanelWebviewExplorerView.visible) {
+                w_panel = this._findPanelWebviewExplorerView;
+            }
+
             if (w_panel && w_panel.show && !w_panel.visible) {
                 w_panel.show(false);
             }
             const w_message: { [key: string]: string; } = { type: 'selectNav' };
-            if (w_string && w_string?.trim()) {
+            if (w_string && w_string.trim()) {
                 w_message["text"] = w_string.trim();
             }
             await w_panel!.webview.postMessage(w_message);
@@ -4076,7 +4217,7 @@ export class LeoIntegration {
             );
 
             if (!p_navEntryResult.focus) {
-                return vscode.window.showInformationMessage('Not found');
+                return vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
             } else {
                 let w_revealTarget = Focus.Body;
                 const w_focus = p_navEntryResult.focus.toLowerCase();
@@ -4157,7 +4298,7 @@ export class LeoIntegration {
      * * Opens the find panel and focuses on the "find/replace" field, selecting all it's content.
      */
     public startSearch(): void {
-
+        this._isBusyTriggerSave(false, true);
         // already instantiated & shown ?
         let w_panel: vscode.WebviewView | undefined;
 
@@ -4210,13 +4351,19 @@ export class LeoIntegration {
     /**
      * * Get a find pattern string input from the user
      * @param p_replace flag for doing a 'replace' instead of a 'find'
+     * @param p_uniqueRegex flag for using the "all unique regex" commands
      * @returns Promise of string or undefined if cancelled
      */
-    private _inputFindPattern(p_replace?: boolean): Thenable<string | undefined> {
+    private _inputFindPattern(p_replace?: boolean, p_value?: string): Thenable<string | undefined> {
+        let w_title, w_prompt, w_placeHolder;
+        w_title = p_replace ? Constants.USER_MESSAGES.REPLACE_TITLE : Constants.USER_MESSAGES.SEARCH_TITLE;
+        w_prompt = p_replace ? Constants.USER_MESSAGES.REPLACE_PROMPT : Constants.USER_MESSAGES.SEARCH_PROMPT;
+        w_placeHolder = p_replace ? Constants.USER_MESSAGES.REPLACE_PLACEHOLDER : Constants.USER_MESSAGES.SEARCH_PLACEHOLDER;
         return vscode.window.showInputBox({
-            title: p_replace ? "Replace with" : "Search for",
-            prompt: p_replace ? "Type text to replace with and press enter." : "Type text to search for and press enter.",
-            placeHolder: p_replace ? "Replace pattern here" : "Find pattern here",
+            title: w_title,
+            prompt: w_prompt,
+            value: p_value,
+            placeHolder: w_placeHolder,
         });
     }
 
@@ -4235,16 +4382,24 @@ export class LeoIntegration {
 
         const p_findResult = await this.sendAction(w_action, { fromOutline: !!p_fromOutline });
 
+        this.findFocusTree = false; // Reset flag for headline range
+
         if (!p_findResult.found || !p_findResult.focus) {
-            vscode.window.showInformationMessage('Not found');
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
         } else {
             let w_finalFocus = Focus.Body;
             const w_focus = p_findResult.focus.toLowerCase();
             if (w_focus.includes('tree') || w_focus.includes('head')) {
                 // tree
+                this._lastCommandFindEndOutline = 2;
                 w_finalFocus = Focus.Outline;
                 this.showOutlineIfClosed = true;
-
+                // * SETUP HEADLINE RANGE
+                this.findFocusTree = true;
+                // Default to 0,0 if range not available
+                const range = p_findResult.range ? p_findResult.range : [0, 0];
+                this.findHeadlineRange = [range[0], range[1]];
+                this.findHeadlinePosition = p_findResult.node;
             } else {
                 this.showBodyIfClosed = true;
             }
@@ -4258,7 +4413,8 @@ export class LeoIntegration {
                     // buttons: false,
                     states: true,
                 },
-                p_findResult.node!
+                p_findResult.node!,
+                this.findFocusTree
             );
             this.launchRefresh();
         }
@@ -4279,7 +4435,7 @@ export class LeoIntegration {
         const p_findResult = await this.sendAction(w_action, { fromOutline: false });
 
         if (!p_findResult.found || !p_findResult.focus) {
-            vscode.window.showInformationMessage('Not found');
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
         } else {
             let w_finalFocus = Focus.Body;
             const w_focus = p_findResult.focus.toLowerCase();
@@ -4317,28 +4473,164 @@ export class LeoIntegration {
 
         const w_replaceResult = await this.sendAction(w_action, { fromOutline: !!p_fromOutline });
 
-        if (!w_replaceResult.found || !w_replaceResult.focus) {
-            vscode.window.showInformationMessage('Not found');
+        this.findFocusTree = false; // Reset flag for headline range
+
+        let w_finalFocus = Focus.Body;
+        let w_focus = w_replaceResult.focus ? w_replaceResult.focus : "body";
+        w_focus = w_focus.toLowerCase();
+        if (w_focus.includes('tree') || w_focus.includes('head')) {
+            // tree
+            this._lastCommandFindEndOutline = 2;
+            w_finalFocus = Focus.Outline;
+            this.showOutlineIfClosed = true;
+            // * SETUP HEADLINE RANGE
+            this.findFocusTree = true;
+            // Default to 0,0 if range not available
+            const range = w_replaceResult.range ? w_replaceResult.range : [0, 0];
+            this.findHeadlineRange = [range[0], range[1]];
+            this.findHeadlinePosition = w_replaceResult.node;
         } else {
-            let w_finalFocus = Focus.Body;
-            const w_focus = w_replaceResult.focus.toLowerCase();
-            if (w_focus.includes('tree') || w_focus.includes('head')) {
-                // tree
-                w_finalFocus = Focus.Outline;
-            }
-            this.setupRefresh(
-                w_finalFocus,
-                {
-                    tree: true,
-                    body: true,
-                    scroll: true,
-                    // documents: false,
-                    // buttons: false,
-                    states: true,
-                }
-            );
-            this.launchRefresh();
+            this.showBodyIfClosed = true;
         }
+        this.setupRefresh(
+            w_finalFocus, // ! Unlike gotoNavEntry, this sets focus in outline -or- body.
+            {
+                tree: true, // HAVE to refresh tree because find folds/unfolds only result outline paths
+                body: true,
+                scroll: w_replaceResult.found && w_finalFocus === Focus.Body,
+                // documents: false,
+                // buttons: false,
+                states: true,
+            },
+            w_replaceResult.node!,
+            this.findFocusTree
+        );
+        this.launchRefresh();
+    }
+
+    /**
+     * Interactive Search to implement search-backward, re-search, word-search. etc.
+     * HAS SPECIAL SYSTEM WITH _lastCommandFindEndOutline TO FAKE FOCUS ZONE PROVENANCE DETECTION
+     */
+    public async interactiveSearch(p_backward: boolean, p_regex: boolean, p_word: boolean): Promise<unknown> {
+
+        this._isBusyTriggerSave(false, true);
+
+        if (p_regex && p_word) {
+            console.error('interactiveSearch called with both "WORD" and "REGEX"');
+            return;
+        }
+
+        let w_searchTitle = Constants.USER_MESSAGES.INT_SEARCH_TITLE;
+        let w_searchPrompt = Constants.USER_MESSAGES.INT_SEARCH_PROMPT;
+        let w_searchPlaceholder = Constants.USER_MESSAGES.SEARCH_PLACEHOLDER;
+
+        if (p_backward) {
+            w_searchTitle += Constants.USER_MESSAGES.INT_SEARCH_BACKWARD;
+        }
+        if (p_regex) {
+            w_searchTitle = Constants.USER_MESSAGES.INT_SEARCH_REGEXP + w_searchTitle;
+        }
+        if (p_word) {
+            w_searchTitle = Constants.USER_MESSAGES.INT_SEARCH_WORD + w_searchTitle;
+        }
+
+        const disposables: vscode.Disposable[] = [];
+
+        // Get value from find panel input
+        const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
+
+        try {
+            return await new Promise<unknown>((resolve, reject) => {
+                const input = vscode.window.createInputBox();
+                input.title = w_searchTitle;
+                input.value = w_startValue;
+                input.prompt = w_searchPrompt;
+                input.placeholder = w_searchPlaceholder;
+
+                disposables.push(
+                    input.onDidAccept(async () => {
+                        if (!input.value) {
+                            input.hide();
+                            return resolve(true); // Cancelled with escape or empty string.
+                        }
+                        const value = input.value; // maybe this was replace.
+
+                        const w_action: string = Constants.LEOBRIDGE.INTERACTIVE_SEARCH;
+
+                        const w_options: { [key: string]: any } = {
+                            findText: value,
+                            word: p_word,
+                            regex: p_regex,
+                            backward: p_backward,
+                        };
+
+                        // KEEP undefined to re-use last starting focus zone (outline in this case)
+                        if (!this._lastCommandFindEndOutline) {
+                            // TODO : Send real parameter when possible (vscode prevents focus detection)
+                            w_options.fromOutline = "false"; // Not from a find ending on outline, so set to false.
+                        }
+                        const p_findResult = await this.sendAction(
+                            w_action,
+                            w_options
+                        );
+
+                        this.findFocusTree = false; // Reset flag for headline range
+
+                        if (!p_findResult.found || !p_findResult.focus) {
+                            vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
+                            input.hide();
+                        } else {
+                            let w_finalFocus = Focus.Body;
+                            const w_focus = p_findResult.focus.toLowerCase();
+                            if (w_focus.includes('tree') || w_focus.includes('head')) {
+                                // tree
+                                this._lastCommandFindEndOutline = 2;
+                                w_finalFocus = Focus.Outline;
+                                this.showOutlineIfClosed = true;
+                                // * SETUP HEADLINE RANGE
+                                this.findFocusTree = true;
+                                // Default to 0,0 if range not available
+                                const range = p_findResult.range ? p_findResult.range : [0, 0];
+                                this.findHeadlineRange = [range[0], range[1]];
+                                this.findHeadlinePosition = p_findResult.node;
+                            } else {
+                                this.showBodyIfClosed = true;
+                            }
+                            this.loadSearchSettings();
+                            this.setupRefresh(
+                                w_finalFocus, // ! Unlike gotoNavEntry, this sets focus in outline -or- body.
+                                {
+                                    tree: true, // HAVE to refresh tree because find folds/unfolds only result outline paths
+                                    body: true,
+                                    scroll: p_findResult.found && w_finalFocus === Focus.Body,
+                                    // documents: false,
+                                    // buttons: false,
+                                    states: true,
+                                },
+                                p_findResult.node!,
+                                this.findFocusTree
+                            );
+                            this.launchRefresh();
+                            input.hide();
+                        }
+
+                    }),
+                    input.onDidHide(() => {
+                        return resolve(true);
+                    })
+                );
+                if (this._interactiveSearchInputBox) {
+                    this._interactiveSearchInputBox.dispose(); // just in case.
+                }
+                this._interactiveSearchInputBox = input;
+                this._interactiveSearchInputBox.show();
+            });
+        } finally {
+            disposables.forEach(d => d.dispose());
+            this._interactiveSearchInputBox?.hide();
+        }
+
     }
 
     /**
@@ -4353,16 +4645,19 @@ export class LeoIntegration {
         let w_searchString: string = this._lastSettingsUsed!.findText;
         let w_replaceString: string = this._lastSettingsUsed!.replaceText;
 
+        const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
+        const w_startReplace = this._lastSettingsUsed?.replaceText;
+
         return this._isBusyTriggerSave(false, true)
             .then((p_saveResult) => {
-                return this._inputFindPattern()
+                return this._inputFindPattern(false, w_startValue)
                     .then((p_findString) => {
                         if (!p_findString) {
                             return true; // Cancelled with escape or empty string.
                         }
                         w_searchString = p_findString;
                         if (p_replace) {
-                            return this._inputFindPattern(true).then((p_replaceString) => {
+                            return this._inputFindPattern(true, w_startReplace).then((p_replaceString) => {
                                 if (p_replaceString === undefined) {
                                     return true;
                                 }
@@ -4432,9 +4727,11 @@ export class LeoIntegration {
             }) || Promise.resolve();
         }
 
+        const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
+
         return this._isBusyTriggerSave(false, true)
             .then(() => {
-                return this._inputFindPattern()
+                return this._inputFindPattern(false, w_startValue)
                     .then((p_findString) => {
                         if (!p_findString) {
                             return true; // Cancelled with escape or empty string.
@@ -4628,7 +4925,7 @@ export class LeoIntegration {
                     p_inputResult = p_inputResult.trim();
                     // check for special chars first
                     if (p_inputResult.split(/(&|\||-|\^)/).length > 1) {
-                        vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &|^-');
+                        vscode.window.showInformationMessage(Constants.USER_MESSAGES.TAGS_CHARACTERS_ERROR);
                         return;
                     }
                     this.sendAction(
@@ -4670,7 +4967,7 @@ export class LeoIntegration {
                     p_inputResult = p_inputResult.trim();
                     // check for special chars first
                     if (p_inputResult.split(/(&|\||-|\^)/).length > 1) {
-                        vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &|^-');
+                        vscode.window.showInformationMessage(Constants.USER_MESSAGES.TAGS_CHARACTERS_ERROR);
                         return;
                     }
                     this.sendAction(
@@ -4756,7 +5053,7 @@ export class LeoIntegration {
                     }
                 });
         } else if (this.lastSelectedNode) {
-            vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.headline);
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.NO_TAGS_ON_NODE + this.lastSelectedNode.headline);
         } else {
             return;
         }
@@ -4787,7 +5084,7 @@ export class LeoIntegration {
                     });
                 });
         } else if (this.lastSelectedNode) {
-            vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.headline);
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.NO_TAGS_ON_NODE + this.lastSelectedNode.headline);
         } else {
             return;
         }
@@ -4909,7 +5206,7 @@ export class LeoIntegration {
                         name: p_chosenLeoFile,
                     });
                     this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                    this._leoStatusBar.update(true, 0, true);
+                    // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
                     this._addRecentAndLastFile(p_chosenLeoFile.trim());
                     if (q_commandResult) {
                         return q_commandResult;
@@ -4963,7 +5260,7 @@ export class LeoIntegration {
                         name: p_chosenLeoFile,
                     });
                     this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                    this._leoStatusBar.update(true, 0, true);
+                    // this._leoStatusBar.update(true, 0, true);// removed until proper API for knowing focus placement
                     this._addRecentAndLastFile(p_chosenLeoFile.trim());
                     if (q_commandResult) {
                         return q_commandResult;
@@ -5760,7 +6057,7 @@ export class LeoIntegration {
                     name: p_chosenLeoFile,
                 });
                 this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
-                this._leoStatusBar.update(true, 0, true);
+                // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
                 this._addRecentAndLastFile(p_chosenLeoFile.trim());
                 if (q_commandResult) {
                     return q_commandResult;
@@ -5949,7 +6246,7 @@ export class LeoIntegration {
      */
     public async gotoScript(p_node: LeoButtonNode): Promise<any> {
         await this._isBusyTriggerSave(false);
-        await this.sendAction(
+        this.sendAction(
             Constants.LEOBRIDGE.GOTO_SCRIPT,
             { index: p_node.button.index }
         );
@@ -5996,7 +6293,7 @@ export class LeoIntegration {
      * * Reverts to a particular undo bead state
      */
     public async revertToUndo(p_undo: LeoUndoNode): Promise<any> {
-        if (p_undo.label === 'Unchanged') {
+        if (p_undo.contextValue !== Constants.CONTEXT_FLAGS.UNDO_BEAD) {
             return Promise.resolve();
         }
         let action = Constants.LEOBRIDGE.REDO;

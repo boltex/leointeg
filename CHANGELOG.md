@@ -1,5 +1,21 @@
 # Change Log
 
+## 1.0.12
+
+- Fixed undo pane's context menu for unchanged document.
+- Fixed minibuffer history item order that had unordered entries in some cases. Also keeps unique entries as per Leo's original behavior.
+- Fixed keyboard navigation in the 'Goto Panel'. Arrow navigation is now possible.
+- Added support for @killcolor and @nocolor-node color suppression directives: requires Leo 6.7.2
+- Fixed 'when' condition for keybindings of 'replace' & 'replace-then-find'.
+- Completed set of search commands: re-search, word-search and their backward variants.
+- Fixed defaults set as placeholders in search commands that use an input box.
+- Added support for search commands to leave selection range in tree headlines: requires Leo 6.7.2
+- Removed status-bar indicator and related settings until vscode's API allows for focus detection.
+- Clicking on the \<find pattern here\> text of the find panel selects all the text to replace easily.
+- Fixed auto-closing/restoring body panes at vscode's startup which would cause the 'Cannot save / newer file' error.
+- Fixed 'on document changed' logic which would leave the node icon in the wrong 'has-body-content' visual state.
+- Trying to open an already opened Leo document now properly selects that document instead of the last one in the list.
+
 ## 1.0.11
 
 - Fixed 'openAside' context menu entry in explorer.
@@ -62,7 +78,7 @@
   - Marked nodes
   - Nav search with currently selected body text
 - Made those same commands available through vscode command palettes and user keybindings.
-- Added leoID check upon connection, and implemented a dialog to capture and set the leoID on the server, equivalent to <https://leoeditor.com/running.html?highlight=leoid#running-leo-the-first-time>
+- Added leoID check upon connection, and implemented a dialog to capture and set the leoID on the server, equivalent to <https://leo-editor.github.io/leo-editor/running.html?highlight=leoid#running-leo-the-first-time>
 
 ## 1.0.6
 
@@ -277,6 +293,6 @@ _Note: This editable body panel does not affect Leo file yet._
 ## 0.0.1
 
 - Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
-- Implemented [leoBridge](https://leoeditor.com/leoBridge.html) interaction.
+- Implemented [leoBridge](https://leo-editor.github.io/leo-editor/leoBridge.html) interaction.
 
 ![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp96px.png)

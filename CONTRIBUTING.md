@@ -92,7 +92,7 @@ On Linux:
 For more details about all possible arguments, run it from a command prompt with the 'help' argument like so:\
 **`...leo-editor/leo/core/leoserver.py --help`**
 
-For more information about the Leo server see [Using leoserver.py](https://leoeditor.com/leoserver.html) from Leo's official documentation.
+For more information about the Leo server see [Using leoserver.py](https://leo-editor.github.io/leo-editor/leoserver.html) from Leo's official documentation.
 
 ### Using Anaconda or other custom python installations
 

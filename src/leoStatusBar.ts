@@ -26,9 +26,9 @@ export class LeoStatusBar {
         private _leoIntegration: LeoIntegration
     ) {
         this._leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
-        this._leoStatusBarItem.color = this._leoIntegration.config.statusBarColor;
+        // this._leoStatusBarItem.color = this._leoIntegration.config.statusBarColor;
 
-        this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
+        // this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR;
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         this._context.subscriptions.push(this._leoStatusBarItem);
@@ -94,7 +94,7 @@ export class LeoStatusBar {
 
         // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
         if (this.statusBarFlag && this._leoIntegration.leoStates.fileOpenedReady) {
-            this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
+            // this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
             this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         } else {
             this._leoStatusBarItem.color = this._statusbarNormalColor;
