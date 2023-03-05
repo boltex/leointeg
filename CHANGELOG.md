@@ -14,7 +14,7 @@
 - Clicking on the \<find pattern here\> text of the find panel selects all the text to replace easily.
 - Fixed auto-closing/restoring body panes at vscode's startup which would cause the 'Cannot save / newer file' error.
 - Fixed 'on document changed' logic which would leave the node icon in the wrong 'has-body-content' visual state.
-- Trying to open an already opened Leo document now selects that document properly.
+- Trying to open an already opened Leo document now properly selects that document instead of the last one in the list.
 
 ## 1.0.11
 
