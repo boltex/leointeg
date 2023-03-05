@@ -8580,7 +8580,7 @@ So select at least one character to use the previously assigned original keyboar
 &gt; Refer to the [issue tracker](https://github.com/boltex/leointeg/issues) page to learn more about the known issues, or to contribute with additional information if you encounter some yourself.
 
 </t>
-<t tx="felix.20200718222113.1">## How It Works ⚙️
+<t tx="felix.20200718222113.1">## How It Works 🚀
 
 Leo integration into VS Code is done by starting
 a [python server script](https://github.com/leo-editor/leo-editor/blob/devel/leo/core/leoserver.py) and connecting to it via
@@ -14418,8 +14418,8 @@ The server, located in your Leo-Editor installation folder, also has other optio
 LeoInteg that allows you to create a stand-alone internet server for other uses such as
 multi-user interaction over a network/internet, and more.
 
-Run the server directly with the '--help' argument like so for more details:\
-**`...leo-editor/leo/core/leoserver.py --help`**
+Run the server directly with the '--help' argument to view all server options and capabilities:\
+`.../leo-editor/leo/core/leoserver.py --help`
 
 For more information about the Leo server see [Using leoserver.py](https://leo-editor.github.io/leo-editor/leoserver.html) from Leo's official documentation.
 
@@ -18788,9 +18788,9 @@ private _finishOpenLastFiles(): void {
 
 }
 </t>
-<t tx="felix.20230304182815.1">## Undo Panel ✂️
+<t tx="felix.20230304182815.1">## Undo Panel  🔄
 
-Use the undo / redo icons above the Leo outline or the undo pane. You can also right-click on an undo step to change to that state directly!
+Use the undo / redo icons above the outline or above the undo pane itself. You can also right-click on an undo step to directly switch to that specific state!
 
 ![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/undo-pane.gif)
 
@@ -18817,7 +18817,9 @@ Hitting **`F3`** repeatedly will find the subsequent matches. (**`F2`** for prev
 
 ### Nav and the Goto Panel
 
-Type your search term in the **Nav** field instead to see all results show up below in leo's **Goto Pane**.
+Type your search term in the **Nav** field instead to see all results show up below in leo's **Goto Pane**. This will show the headlines as you type.
+
+Press **`Enter`** to freeze the results and show results also found in **body text of any node**. This will add a snowflake icon ❄️ to the **Nav** field.
 
 From the **Goto Pane**, you can use the arrow keys, home/end, page up/down to cycle directly to any of those matches.
 
