@@ -3102,32 +3102,32 @@
         {
           "command": "leointeg.unmark",
           "when": "viewItem =~ /^leoNodeMarked/",
-          "group": "leoNodeContext2@2"
+          "group": "leoNodeContext2@1"
         },
         {
           "command": "leointeg.copyNode",
           "when": "viewItem =~ /^leoNode/",
-          "group": "leoNodeContext2@3"
+          "group": "leoNodeContext2@2"
         },
         {
           "command": "leointeg.cutNode",
           "when": "viewItem =~ /^leoNode/",
-          "group": "leoNodeContext2@4"
+          "group": "leoNodeContext2@3"
         },
         {
           "command": "leointeg.pasteNode",
           "when": "viewItem =~ /^leoNode/",
-          "group": "leoNodeContext2@5"
+          "group": "leoNodeContext2@4"
         },
         {
           "command": "leointeg.pasteNodeAsClone",
           "when": "viewItem =~ /^leoNode/",
-          "group": "leoNodeContext2@6"
+          "group": "leoNodeContext2@5"
         },
         {
           "command": "leointeg.delete",
           "when": "viewItem =~ /^leoNode/",
-          "group": "leoNodeContext2@7"
+          "group": "leoNodeContext2@6"
         },
         {
           "command": "leointeg.insertNode",
