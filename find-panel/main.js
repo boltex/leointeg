@@ -290,8 +290,11 @@
         let w_showParent = document.getElementById('showParents');
         let w_navSelect = document.getElementById('searchOptions');
         if (searchSettings.isTag) {
-            // @ts-expect-error
-            w_input.placeholder = "<tag pattern here>";
+            if (w_input) {
+                // @ts-expect-error
+                w_input.placeholder = "<tag pattern here>";
+                w_input.title = "Enter a tag name to list tagged nodes in the Goto pane&#013;Clear this field to list all tags used in this file";
+            }
             // @ts-expect-error
             w_showParent.disabled = true;
             // @ts-expect-error
@@ -305,8 +308,11 @@
                 }, 100);
             }
         } else {
-            // @ts-expect-error
-            w_input.placeholder = "<nav pattern here>";
+            if (w_input) {
+                // @ts-expect-error
+                w_input.placeholder = "<nav pattern here>";
+                w_input.title = "Typing searches headlines interactively&#013;Enter freezes input and searches body text";
+            }
             // @ts-expect-error
             w_showParent.disabled = false;
             // @ts-expect-error

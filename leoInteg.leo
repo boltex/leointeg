@@ -15287,8 +15287,11 @@ public getTextFromClipboard(): string {
         let w_showParent = document.getElementById('showParents');
         let w_navSelect = document.getElementById('searchOptions');
         if (searchSettings.isTag) {
-            // @ts-expect-error
-            w_input.placeholder = "&lt;tag pattern here&gt;";
+            if (w_input) {
+                // @ts-expect-error
+                w_input.placeholder = "&lt;tag pattern here&gt;";
+                w_input.title = "Enter a tag name to list tagged nodes in the Goto pane&amp;#013;Clear this field to list all tags used in this file";
+            }
             // @ts-expect-error
             w_showParent.disabled = true;
             // @ts-expect-error
@@ -15302,8 +15305,11 @@ public getTextFromClipboard(): string {
                 }, 100);
             }
         } else {
-            // @ts-expect-error
-            w_input.placeholder = "&lt;nav pattern here&gt;";
+            if (w_input) {
+                // @ts-expect-error
+                w_input.placeholder = "&lt;nav pattern here&gt;";
+                w_input.title = "Typing searches headlines interactively&amp;#013;Enter freezes input and searches body text";
+            }
             // @ts-expect-error
             w_showParent.disabled = false;
             // @ts-expect-error
@@ -19133,7 +19139,7 @@ import * as utils from "../utils";
                 &lt;/div&gt;
             &lt;/div&gt;
             &lt;div class="input-holder mt-0 mb-6 nav-element"&gt;
-                &lt;input title="Typing searches headlines, Enter also searches body text and freeze" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
+                &lt;input title="Typing searches headlines interactively&amp;#013;Enter freezes input and searches body text" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
             &lt;/div&gt;
             &lt;div class="nav-element" id="freeze" title="Clear field to unfreeze"&gt;&amp;#x2744;&lt;/div&gt;
 
