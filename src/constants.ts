@@ -1082,6 +1082,12 @@ export class Constants {
         'change-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
         'replace-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
         'show-find-options': Constants.COMMANDS.START_SEARCH,
+
+
+        'set-find-everywhere': Constants.COMMANDS.SET_FIND_EVERYWHERE_OPTION,
+        'set-find-node-only': Constants.COMMANDS.SET_FIND_NODE_ONLY_OPTION,
+        'set-find-file-only': Constants.COMMANDS.SET_FIND_FILE_ONLY_OPTION,
+        'set-find-suboutline-only': Constants.COMMANDS.SET_FIND_SUBOUTLINE_ONLY_OPTION,
         'toggle-find-ignore-case-option': Constants.COMMANDS.TOGGLE_FIND_IGNORE_CASE_OPTION,
         'toggle-find-in-body-option': Constants.COMMANDS.TOGGLE_FIND_SEARCH_BODY_OPTION,
         'toggle-find-in-headline-option': Constants.COMMANDS.TOGGLE_FIND_SEARCH_HEADLINE_OPTION,
