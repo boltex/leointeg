@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.13
+
+- Added missing find panel settings toggle commands to the minibuffer override.
+
 ## 1.0.12
 
 - Fixed undo pane's context menu for unchanged document.

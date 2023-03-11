@@ -30,6 +30,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20230310210120.1"><vh>1.0.13</vh></v>
 <v t="felix.20221208001059.1"><vh>1.0.12</vh></v>
 <v t="felix.20221212232224.1"><vh>1.0.11</vh></v>
 <v t="felix.20221009171323.1"><vh>1.0.10</vh></v>
@@ -2262,7 +2263,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -18864,6 +18865,11 @@ If you check the **Tag** option, the **Nav** field and **Goto Pane** are then us
     &lt;/tr&gt;
 &lt;/table&gt;
 </t>
+<t tx="felix.20230310210120.1">## 1.0.13
+
+- Added missing find panel settings toggle commands to the minibuffer override.
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -19520,7 +19526,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.12&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.13&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
@@ -19531,7 +19537,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0.12
+            See What's New in LeoInteg 1.0.13
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
