@@ -11,7 +11,6 @@ declare function acquireVsCodeApi(): IVsCodeApi;
     const toast = document.getElementById("saved-config-toast");
     const dirty = document.getElementById("dirty-config-toast");
 
-    // * TEST
     const oldState = vscode.getState();
     let currentCount: number = (oldState && oldState.count) || 0;
     if (currentCount) {

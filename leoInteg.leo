@@ -3745,7 +3745,7 @@ print('done')
   "scope": "application",
   "default": "none",
   "type": "string",
-  "description": "Set default for derived files to always reload, or always ignore, when changes are detected",
+  "description": "Set default for derived files so that they reload, or ignore, when changes are detected",
   "enum": [
     "none",
     "yes-all",
@@ -9422,12 +9422,10 @@ private _setupOpenedLeoDocument(): void {
  * @param p_event The configuration-change event passed by vscode
  */
 private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
-    if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
-        this.config.buildFromSavedSettings();
-    }
 
     if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
-        this.config.buildFromSavedSettings(); // If the config setting started with 'leojs'
+        this.config.buildFromSavedSettings();
+        this.leoSettingsWebview.changedConfiguration();
         if (
             p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.INVERT_NODES) ||
             p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_EDIT) ||
@@ -18868,6 +18866,7 @@ If you check the **Tag** option, the **Nav** field and **Goto Pane** are then us
 <t tx="felix.20230310210120.1">## 1.0.13
 
 - Added missing find panel settings toggle commands to the minibuffer override.
+- Fixed setting synchronization that was lagging by one change when going from vscode to leoInteg's welcome/setting panel.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
@@ -18891,9 +18890,6 @@ import * as utils from "../utils";
         private _leoIntegration: LeoIntegration
     ) {
         this._extensionPath = _context.extensionPath;
-        _context.subscriptions.push(
-            vscode.workspace.onDidChangeConfiguration(p_event =&gt; this.changedConfiguration(p_event))
-        );
     }
 
     @others
@@ -19491,7 +19487,7 @@ body &gt; div &gt; div &gt; label:active {
 <t tx="fil.20210603223933.10">&lt;html lang="en"&gt;
 
 &lt;head&gt;
-  &lt;meta charset="UTF-8" /&gt;
+  &lt;meta charset="UTF-8"&gt;
 &lt;/head&gt;
 
 &lt;body class="preload"&gt;
@@ -20400,7 +20396,6 @@ declare function acquireVsCodeApi(): IVsCodeApi;
     const toast = document.getElementById("saved-config-toast");
     const dirty = document.getElementById("dirty-config-toast");
 
-    // * TEST
     const oldState = vscode.getState();
     let currentCount: number = (oldState &amp;&amp; oldState.count) || 0;
     if (currentCount) {

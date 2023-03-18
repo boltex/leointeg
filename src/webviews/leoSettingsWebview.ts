@@ -15,9 +15,6 @@ export class LeoSettingsProvider {
         private _leoIntegration: LeoIntegration
     ) {
         this._extensionPath = _context.extensionPath;
-        _context.subscriptions.push(
-            vscode.workspace.onDidChangeConfiguration(p_event => this.changedConfiguration(p_event))
-        );
     }
 
     public changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): void {
