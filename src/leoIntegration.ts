@@ -1290,19 +1290,28 @@ export class LeoIntegration {
      */
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
 
-        if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
-            this.config.buildFromSavedSettings();
-            this.leoSettingsWebview.changedConfiguration();
-            if (
-                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.INVERT_NODES) ||
-                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_EDIT) ||
-                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_ADD) ||
-                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_MARK) ||
-                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_CLONE) ||
-                p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
-            ) {
-                this.configTreeRefresh();
-            }
+        if (
+            p_event.affectsConfiguration(Constants.CONFIG_NAME) ||
+            p_event.affectsConfiguration('editor.fontSize') ||
+            p_event.affectsConfiguration('window.zoomLevel')
+        ) {
+            this.config.setLeoIntegSettingsPromise.then(
+                () => {
+                    this.config.buildFromSavedSettings();
+                    this.leoSettingsWebview.changedConfiguration();
+                    if (
+                        p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.INVERT_NODES) ||
+                        p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_EDIT) ||
+                        p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_ADD) ||
+                        p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_MARK) ||
+                        p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_CLONE) ||
+                        p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
+                    ) {
+                        this.configTreeRefresh();
+                    }
+                }
+            );
+
         }
 
         // also check if workbench.editor.enablePreview

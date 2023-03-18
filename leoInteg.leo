@@ -6032,6 +6032,8 @@ export class Config implements ConfigMembers {
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
+    public setLeoIntegSettingsPromise: Promise&lt;unknown&gt; = Promise.resolve();
+
     // public uAsNumber: boolean = true;
 
     private _isBusySettingConfig: boolean = false;
@@ -6117,7 +6119,8 @@ public setLeoIntegSettings(p_changes: ConfigSetting[]): Promise&lt;void&gt; {
             w_promises.push(w_vscodeConfig.update(i_change.code, i_change.value, true));
         }
     });
-    return Promise.all(w_promises).then(() =&gt; {
+    this.setLeoIntegSettingsPromise = Promise.all(w_promises);
+    return this.setLeoIntegSettingsPromise.then(() =&gt; {
         this._isBusySettingConfig = false;
         this.buildFromSavedSettings();
         return Promise.resolve();
@@ -6128,7 +6131,7 @@ public setLeoIntegSettings(p_changes: ConfigSetting[]): Promise&lt;void&gt; {
 <t tx="felix.20200718030926.5">/**
  * * Build config from settings from vscode's saved config settings
  */
-public buildFromSavedSettings(): void {
+public buildFromSavedSettings(): boolean {
     // Shorthand pointers for readability
     const GET = vscode.workspace.getConfiguration;
     const NAME = Constants.CONFIG_NAME;
@@ -6138,7 +6141,7 @@ public buildFromSavedSettings(): void {
 
     if (this._isBusySettingConfig) {
         // * Currently setting config, wait until its done all, and this will be called automatically
-        return;
+        return false;
     } else {
         this.checkForChangeExternalFiles = GET(NAME).get(NAMES.CHECK_FOR_CHANGE_EXTERNAL_FILES, DEFAULTS.CHECK_FOR_CHANGE_EXTERNAL_FILES);
         this.defaultReloadIgnore = GET(NAME).get(NAMES.DEFAULT_RELOAD_IGNORE, DEFAULTS.DEFAULT_RELOAD_IGNORE);
@@ -6227,6 +6230,7 @@ public buildFromSavedSettings(): void {
             // utils.setContext(FLAGS.AUTO_START_SERVER, false); // Save option but not context flag
             //utils.setContext(FLAGS.AUTO_CONNECT, false);
         }
+        return true;
     }
 }
 
@@ -9423,19 +9427,28 @@ private _setupOpenedLeoDocument(): void {
  */
 private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
 
-    if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
-        this.config.buildFromSavedSettings();
-        this.leoSettingsWebview.changedConfiguration();
-        if (
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.INVERT_NODES) ||
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_EDIT) ||
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_ADD) ||
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_MARK) ||
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_CLONE) ||
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
-        ) {
-            this.configTreeRefresh();
-        }
+    if (
+        p_event.affectsConfiguration(Constants.CONFIG_NAME) ||
+        p_event.affectsConfiguration('editor.fontSize') ||
+        p_event.affectsConfiguration('window.zoomLevel')
+    ) {
+        this.config.setLeoIntegSettingsPromise.then(
+            () =&gt; {
+                this.config.buildFromSavedSettings();
+                this.leoSettingsWebview.changedConfiguration();
+                if (
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.INVERT_NODES) ||
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_EDIT) ||
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_ADD) ||
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_MARK) ||
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_CLONE) ||
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
+                ) {
+                    this.configTreeRefresh();
+                }
+            }
+        );
+
     }
 
     // also check if workbench.editor.enablePreview

@@ -54,6 +54,8 @@ export class Config implements ConfigMembers {
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
+    public setLeoIntegSettingsPromise: Promise<unknown> = Promise.resolve();
+
     // public uAsNumber: boolean = true;
 
     private _isBusySettingConfig: boolean = false;
@@ -154,7 +156,8 @@ export class Config implements ConfigMembers {
                 w_promises.push(w_vscodeConfig.update(i_change.code, i_change.value, true));
             }
         });
-        return Promise.all(w_promises).then(() => {
+        this.setLeoIntegSettingsPromise = Promise.all(w_promises);
+        return this.setLeoIntegSettingsPromise.then(() => {
             this._isBusySettingConfig = false;
             this.buildFromSavedSettings();
             return Promise.resolve();
@@ -266,7 +269,7 @@ export class Config implements ConfigMembers {
     /**
      * * Build config from settings from vscode's saved config settings
      */
-    public buildFromSavedSettings(): void {
+    public buildFromSavedSettings(): boolean {
         // Shorthand pointers for readability
         const GET = vscode.workspace.getConfiguration;
         const NAME = Constants.CONFIG_NAME;
@@ -276,7 +279,7 @@ export class Config implements ConfigMembers {
 
         if (this._isBusySettingConfig) {
             // * Currently setting config, wait until its done all, and this will be called automatically
-            return;
+            return false;
         } else {
             this.checkForChangeExternalFiles = GET(NAME).get(NAMES.CHECK_FOR_CHANGE_EXTERNAL_FILES, DEFAULTS.CHECK_FOR_CHANGE_EXTERNAL_FILES);
             this.defaultReloadIgnore = GET(NAME).get(NAMES.DEFAULT_RELOAD_IGNORE, DEFAULTS.DEFAULT_RELOAD_IGNORE);
@@ -365,6 +368,7 @@ export class Config implements ConfigMembers {
                 // utils.setContext(FLAGS.AUTO_START_SERVER, false); // Save option but not context flag
                 //utils.setContext(FLAGS.AUTO_CONNECT, false);
             }
+            return true;
         }
     }
 
