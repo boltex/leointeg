@@ -947,13 +947,13 @@ export class Constants {
 
         { "label": "flatten-outline", "detail": "Export the selected outline to an external file. The outline is represented in MORE format." },
 
-        { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file.        The outline is represented in CWEB format." },
-        { "label": "outline-to-noweb", "detail": "Export the selected outline to an external file.        The outline is represented in noweb format." },
+        { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file. The outline is represented in CWEB format." },
+        { "label": "outline-to-noweb", "detail": "Export the selected outline to an external file. The outline is represented in noweb format." },
         { "label": "remove-sentinels", "detail": "Import one or more files, removing any sentinels." },
         { "label": "weave", "detail": "Simulate a literate-programming weave operation by writing the outline to a text file." },
 
         { "label": "read-file-into-node", "detail": "Read a file into a single node." },
-        { "label": "write-file-from-node", "detail": "If node starts with @read-file-into-node, use the full path name in the headline.        Otherwise, prompt for a file name." },
+        { "label": "write-file-from-node", "detail": "If node starts with @read-file-into-node, use the full path name in the headline. Otherwise, prompt for a file name." },
 
     ];
 

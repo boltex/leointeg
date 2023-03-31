@@ -7,8 +7,23 @@
 <table>
     <tr>
         <td align="center">
+            <a href="https://github.com/edreamleo">
+                <img src="https://avatars.githubusercontent.com/u/592928?v=4"
+                     alt="Edward K. Ream"
+                     width="48"
+                     height="48"
+                >
+            </a>
+            <br>
+            Edward K. Ream
+        </td>
+        <td align="center">
             <a href="https://github.com/kghenderson">
-                <img src="https://avatars.githubusercontent.com/u/3522168?v=4" alt="Kevin Henderson" width="48" height="48">
+                <img src="https://avatars.githubusercontent.com/u/3522168?v=4"
+                     alt="Kevin Henderson"
+                     width="48"
+                     height="48"
+                >
             </a>
             <br>
             Kevin Henderson

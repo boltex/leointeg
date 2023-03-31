@@ -16087,13 +16087,13 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 
     { "label": "flatten-outline", "detail": "Export the selected outline to an external file. The outline is represented in MORE format." },
 
-    { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file.        The outline is represented in CWEB format." },
-    { "label": "outline-to-noweb", "detail": "Export the selected outline to an external file.        The outline is represented in noweb format." },
+    { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file. The outline is represented in CWEB format." },
+    { "label": "outline-to-noweb", "detail": "Export the selected outline to an external file. The outline is represented in noweb format." },
     { "label": "remove-sentinels", "detail": "Import one or more files, removing any sentinels." },
     { "label": "weave", "detail": "Simulate a literate-programming weave operation by writing the outline to a text file." },
 
     { "label": "read-file-into-node", "detail": "Read a file into a single node." },
-    { "label": "write-file-from-node", "detail": "If node starts with @read-file-into-node, use the full path name in the headline.        Otherwise, prompt for a file name." },
+    { "label": "write-file-from-node", "detail": "If node starts with @read-file-into-node, use the full path name in the headline. Otherwise, prompt for a file name." },
 
 ];
 
@@ -18867,8 +18867,23 @@ If you check the **Tag** option, the **Nav** field and **Goto Pane** are then us
 &lt;table&gt;
     &lt;tr&gt;
         &lt;td align="center"&gt;
+            &lt;a href="https://github.com/edreamleo"&gt;
+                &lt;img src="https://avatars.githubusercontent.com/u/592928?v=4"
+                     alt="Edward K. Ream"
+                     width="48"
+                     height="48"
+                &gt;
+            &lt;/a&gt;
+            &lt;br&gt;
+            Edward K. Ream
+        &lt;/td&gt;
+        &lt;td align="center"&gt;
             &lt;a href="https://github.com/kghenderson"&gt;
-                &lt;img src="https://avatars.githubusercontent.com/u/3522168?v=4" alt="Kevin Henderson" width="48" height="48"&gt;
+                &lt;img src="https://avatars.githubusercontent.com/u/3522168?v=4"
+                     alt="Kevin Henderson"
+                     width="48"
+                     height="48"
+                &gt;
             &lt;/a&gt;
             &lt;br&gt;
             Kevin Henderson
