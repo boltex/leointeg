@@ -30,6 +30,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20230310210120.1"><vh>1.0.13</vh></v>
 <v t="felix.20221208001059.1"><vh>1.0.12</vh></v>
 <v t="felix.20221212232224.1"><vh>1.0.11</vh></v>
 <v t="felix.20221009171323.1"><vh>1.0.10</vh></v>
@@ -2262,7 +2263,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -3744,7 +3745,7 @@ print('done')
   "scope": "application",
   "default": "none",
   "type": "string",
-  "description": "Set default for derived files to always reload, or always ignore, when changes are detected",
+  "description": "Set default for derived files so that they reload, or ignore, when changes are detected",
   "enum": [
     "none",
     "yes-all",
@@ -6031,6 +6032,8 @@ export class Config implements ConfigMembers {
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
+    public setLeoIntegSettingsPromise: Promise&lt;unknown&gt; = Promise.resolve();
+
     // public uAsNumber: boolean = true;
 
     private _isBusySettingConfig: boolean = false;
@@ -6116,7 +6119,8 @@ public setLeoIntegSettings(p_changes: ConfigSetting[]): Promise&lt;void&gt; {
             w_promises.push(w_vscodeConfig.update(i_change.code, i_change.value, true));
         }
     });
-    return Promise.all(w_promises).then(() =&gt; {
+    this.setLeoIntegSettingsPromise = Promise.all(w_promises);
+    return this.setLeoIntegSettingsPromise.then(() =&gt; {
         this._isBusySettingConfig = false;
         this.buildFromSavedSettings();
         return Promise.resolve();
@@ -6127,7 +6131,7 @@ public setLeoIntegSettings(p_changes: ConfigSetting[]): Promise&lt;void&gt; {
 <t tx="felix.20200718030926.5">/**
  * * Build config from settings from vscode's saved config settings
  */
-public buildFromSavedSettings(): void {
+public buildFromSavedSettings(): boolean {
     // Shorthand pointers for readability
     const GET = vscode.workspace.getConfiguration;
     const NAME = Constants.CONFIG_NAME;
@@ -6137,7 +6141,7 @@ public buildFromSavedSettings(): void {
 
     if (this._isBusySettingConfig) {
         // * Currently setting config, wait until its done all, and this will be called automatically
-        return;
+        return false;
     } else {
         this.checkForChangeExternalFiles = GET(NAME).get(NAMES.CHECK_FOR_CHANGE_EXTERNAL_FILES, DEFAULTS.CHECK_FOR_CHANGE_EXTERNAL_FILES);
         this.defaultReloadIgnore = GET(NAME).get(NAMES.DEFAULT_RELOAD_IGNORE, DEFAULTS.DEFAULT_RELOAD_IGNORE);
@@ -6226,6 +6230,7 @@ public buildFromSavedSettings(): void {
             // utils.setContext(FLAGS.AUTO_START_SERVER, false); // Save option but not context flag
             //utils.setContext(FLAGS.AUTO_CONNECT, false);
         }
+        return true;
     }
 }
 
@@ -9421,22 +9426,29 @@ private _setupOpenedLeoDocument(): void {
  * @param p_event The configuration-change event passed by vscode
  */
 private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
-    if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
-        this.config.buildFromSavedSettings();
-    }
 
-    if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
-        this.config.buildFromSavedSettings(); // If the config setting started with 'leojs'
-        if (
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.INVERT_NODES) ||
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_EDIT) ||
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_ADD) ||
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_MARK) ||
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_CLONE) ||
-            p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
-        ) {
-            this.configTreeRefresh();
-        }
+    if (
+        p_event.affectsConfiguration(Constants.CONFIG_NAME) ||
+        p_event.affectsConfiguration('editor.fontSize') ||
+        p_event.affectsConfiguration('window.zoomLevel')
+    ) {
+        this.config.setLeoIntegSettingsPromise.then(
+            () =&gt; {
+                this.config.buildFromSavedSettings();
+                this.leoSettingsWebview.changedConfiguration();
+                if (
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.INVERT_NODES) ||
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_EDIT) ||
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_ADD) ||
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_MARK) ||
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_CLONE) ||
+                    p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
+                ) {
+                    this.configTreeRefresh();
+                }
+            }
+        );
+
     }
 
     // also check if workbench.editor.enablePreview
@@ -12089,32 +12101,32 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.unmark",
     "when": "viewItem =~ /^leoNodeMarked/",
-    "group": "leoNodeContext2@2"
+    "group": "leoNodeContext2@1"
   },
   {
     "command": "leointeg.copyNode",
     "when": "viewItem =~ /^leoNode/",
-    "group": "leoNodeContext2@3"
+    "group": "leoNodeContext2@2"
   },
   {
     "command": "leointeg.cutNode",
     "when": "viewItem =~ /^leoNode/",
-    "group": "leoNodeContext2@4"
+    "group": "leoNodeContext2@3"
   },
   {
     "command": "leointeg.pasteNode",
     "when": "viewItem =~ /^leoNode/",
-    "group": "leoNodeContext2@5"
+    "group": "leoNodeContext2@4"
   },
   {
     "command": "leointeg.pasteNodeAsClone",
     "when": "viewItem =~ /^leoNode/",
-    "group": "leoNodeContext2@6"
+    "group": "leoNodeContext2@5"
   },
   {
     "command": "leointeg.delete",
     "when": "viewItem =~ /^leoNode/",
-    "group": "leoNodeContext2@7"
+    "group": "leoNodeContext2@6"
   },
   {
     "command": "leointeg.insertNode",
@@ -13460,6 +13472,12 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'change-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
     'replace-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
     'show-find-options': Constants.COMMANDS.START_SEARCH,
+
+
+    'set-find-everywhere': Constants.COMMANDS.SET_FIND_EVERYWHERE_OPTION,
+    'set-find-node-only': Constants.COMMANDS.SET_FIND_NODE_ONLY_OPTION,
+    'set-find-file-only': Constants.COMMANDS.SET_FIND_FILE_ONLY_OPTION,
+    'set-find-suboutline-only': Constants.COMMANDS.SET_FIND_SUBOUTLINE_ONLY_OPTION,
     'toggle-find-ignore-case-option': Constants.COMMANDS.TOGGLE_FIND_IGNORE_CASE_OPTION,
     'toggle-find-in-body-option': Constants.COMMANDS.TOGGLE_FIND_SEARCH_BODY_OPTION,
     'toggle-find-in-headline-option': Constants.COMMANDS.TOGGLE_FIND_SEARCH_HEADLINE_OPTION,
@@ -15287,8 +15305,11 @@ public getTextFromClipboard(): string {
         let w_showParent = document.getElementById('showParents');
         let w_navSelect = document.getElementById('searchOptions');
         if (searchSettings.isTag) {
-            // @ts-expect-error
-            w_input.placeholder = "&lt;tag pattern here&gt;";
+            if (w_input) {
+                // @ts-expect-error
+                w_input.placeholder = "&lt;tag pattern here&gt;";
+                w_input.title = "Enter a tag name to list tagged nodes in the Goto pane&amp;#013;Clear this field to list all tags used in this file";
+            }
             // @ts-expect-error
             w_showParent.disabled = true;
             // @ts-expect-error
@@ -15302,8 +15323,11 @@ public getTextFromClipboard(): string {
                 }, 100);
             }
         } else {
-            // @ts-expect-error
-            w_input.placeholder = "&lt;nav pattern here&gt;";
+            if (w_input) {
+                // @ts-expect-error
+                w_input.placeholder = "&lt;nav pattern here&gt;";
+                w_input.title = "Typing searches headlines interactively&amp;#013;Enter freezes input and searches body text";
+            }
             // @ts-expect-error
             w_showParent.disabled = false;
             // @ts-expect-error
@@ -16063,13 +16087,13 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 
     { "label": "flatten-outline", "detail": "Export the selected outline to an external file. The outline is represented in MORE format." },
 
-    { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file.        The outline is represented in CWEB format." },
-    { "label": "outline-to-noweb", "detail": "Export the selected outline to an external file.        The outline is represented in noweb format." },
+    { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file. The outline is represented in CWEB format." },
+    { "label": "outline-to-noweb", "detail": "Export the selected outline to an external file. The outline is represented in noweb format." },
     { "label": "remove-sentinels", "detail": "Import one or more files, removing any sentinels." },
     { "label": "weave", "detail": "Simulate a literate-programming weave operation by writing the outline to a text file." },
 
     { "label": "read-file-into-node", "detail": "Read a file into a single node." },
-    { "label": "write-file-from-node", "detail": "If node starts with @read-file-into-node, use the full path name in the headline.        Otherwise, prompt for a file name." },
+    { "label": "write-file-from-node", "detail": "If node starts with @read-file-into-node, use the full path name in the headline. Otherwise, prompt for a file name." },
 
 ];
 
@@ -18843,14 +18867,35 @@ If you check the **Tag** option, the **Nav** field and **Goto Pane** are then us
 &lt;table&gt;
     &lt;tr&gt;
         &lt;td align="center"&gt;
+            &lt;a href="https://github.com/edreamleo"&gt;
+                &lt;img src="https://avatars.githubusercontent.com/u/592928?v=4"
+                     alt="Edward K. Ream"
+                     width="48"
+                     height="48"
+                &gt;
+            &lt;/a&gt;
+            &lt;br&gt;
+            Edward K. Ream
+        &lt;/td&gt;
+        &lt;td align="center"&gt;
             &lt;a href="https://github.com/kghenderson"&gt;
-                &lt;img src="https://avatars.githubusercontent.com/u/3522168?v=4" alt="Kevin Henderson" width="48" height="48"&gt;
+                &lt;img src="https://avatars.githubusercontent.com/u/3522168?v=4"
+                     alt="Kevin Henderson"
+                     width="48"
+                     height="48"
+                &gt;
             &lt;/a&gt;
             &lt;br&gt;
             Kevin Henderson
         &lt;/td&gt;
     &lt;/tr&gt;
 &lt;/table&gt;
+</t>
+<t tx="felix.20230310210120.1">## 1.0.13
+
+- Added missing find panel settings toggle commands to the minibuffer override.
+- Fixed setting synchronization that was lagging by one change when going from vscode to leoInteg's welcome/setting panel.
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
@@ -18873,9 +18918,6 @@ import * as utils from "../utils";
         private _leoIntegration: LeoIntegration
     ) {
         this._extensionPath = _context.extensionPath;
-        _context.subscriptions.push(
-            vscode.workspace.onDidChangeConfiguration(p_event =&gt; this.changedConfiguration(p_event))
-        );
     }
 
     @others
@@ -19133,7 +19175,7 @@ import * as utils from "../utils";
                 &lt;/div&gt;
             &lt;/div&gt;
             &lt;div class="input-holder mt-0 mb-6 nav-element"&gt;
-                &lt;input title="Typing searches headlines, Enter also searches body text and freeze" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
+                &lt;input title="Typing searches headlines interactively&amp;#013;Enter freezes input and searches body text" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
             &lt;/div&gt;
             &lt;div class="nav-element" id="freeze" title="Clear field to unfreeze"&gt;&amp;#x2744;&lt;/div&gt;
 
@@ -19473,7 +19515,7 @@ body &gt; div &gt; div &gt; label:active {
 <t tx="fil.20210603223933.10">&lt;html lang="en"&gt;
 
 &lt;head&gt;
-  &lt;meta charset="UTF-8" /&gt;
+  &lt;meta charset="UTF-8"&gt;
 &lt;/head&gt;
 
 &lt;body class="preload"&gt;
@@ -19508,7 +19550,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.12&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.13&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
@@ -19519,7 +19561,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0.12
+            See What's New in LeoInteg 1.0.13
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
@@ -20382,7 +20424,6 @@ declare function acquireVsCodeApi(): IVsCodeApi;
     const toast = document.getElementById("saved-config-toast");
     const dirty = document.getElementById("dirty-config-toast");
 
-    // * TEST
     const oldState = vscode.getState();
     let currentCount: number = (oldState &amp;&amp; oldState.count) || 0;
     if (currentCount) {

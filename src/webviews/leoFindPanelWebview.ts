@@ -144,7 +144,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                     </div>
                 </div>
                 <div class="input-holder mt-0 mb-6 nav-element">
-                    <input title="Typing searches headlines, Enter also searches body text and freeze" type="text" id="navText" name="navText" placeholder="<nav pattern here>">
+                    <input title="Typing searches headlines interactively&#013;Enter freezes input and searches body text" type="text" id="navText" name="navText" placeholder="<nav pattern here>">
                 </div>
                 <div class="nav-element" id="freeze" title="Clear field to unfreeze">&#x2744;</div>
 

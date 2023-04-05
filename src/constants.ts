@@ -947,13 +947,13 @@ export class Constants {
 
         { "label": "flatten-outline", "detail": "Export the selected outline to an external file. The outline is represented in MORE format." },
 
-        { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file.        The outline is represented in CWEB format." },
-        { "label": "outline-to-noweb", "detail": "Export the selected outline to an external file.        The outline is represented in noweb format." },
+        { "label": "outline-to-cweb", "detail": "Export the selected outline to an external file. The outline is represented in CWEB format." },
+        { "label": "outline-to-noweb", "detail": "Export the selected outline to an external file. The outline is represented in noweb format." },
         { "label": "remove-sentinels", "detail": "Import one or more files, removing any sentinels." },
         { "label": "weave", "detail": "Simulate a literate-programming weave operation by writing the outline to a text file." },
 
         { "label": "read-file-into-node", "detail": "Read a file into a single node." },
-        { "label": "write-file-from-node", "detail": "If node starts with @read-file-into-node, use the full path name in the headline.        Otherwise, prompt for a file name." },
+        { "label": "write-file-from-node", "detail": "If node starts with @read-file-into-node, use the full path name in the headline. Otherwise, prompt for a file name." },
 
     ];
 
@@ -1082,6 +1082,12 @@ export class Constants {
         'change-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
         'replace-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
         'show-find-options': Constants.COMMANDS.START_SEARCH,
+
+
+        'set-find-everywhere': Constants.COMMANDS.SET_FIND_EVERYWHERE_OPTION,
+        'set-find-node-only': Constants.COMMANDS.SET_FIND_NODE_ONLY_OPTION,
+        'set-find-file-only': Constants.COMMANDS.SET_FIND_FILE_ONLY_OPTION,
+        'set-find-suboutline-only': Constants.COMMANDS.SET_FIND_SUBOUTLINE_ONLY_OPTION,
         'toggle-find-ignore-case-option': Constants.COMMANDS.TOGGLE_FIND_IGNORE_CASE_OPTION,
         'toggle-find-in-body-option': Constants.COMMANDS.TOGGLE_FIND_SEARCH_BODY_OPTION,
         'toggle-find-in-headline-option': Constants.COMMANDS.TOGGLE_FIND_SEARCH_HEADLINE_OPTION,

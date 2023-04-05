@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.0.13
+
+- Added missing find panel settings toggle commands to the minibuffer override.
+- Fixed setting synchronization that was lagging by one change when going from vscode to leoInteg's welcome/setting panel.
+
 ## 1.0.12
 
 - Fixed undo pane's context menu for unchanged document.
