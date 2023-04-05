@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.14
+
+- Fixed links in welcome page
+
 ## 1.0.13
 
 - Added missing find panel settings toggle commands to the minibuffer override.
