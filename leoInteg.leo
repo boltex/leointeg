@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Created by Leo: http://leoeditor.com/leo_toc.html -->
-<leo_file xmlns:leo="http://leoeditor.com/namespaces/leo-python-editor/1.1" >
+<!-- Created by Leo: https://leo-editor.github.io/leo-editor/leo_toc.html -->
+<leo_file xmlns:leo="http://leo-editor.github.io/leo-editor/namespaces/leo-python-editor/1.1" >
 <leo_header file_format="2"/>
 <globals/>
 <preferences/>
@@ -6770,7 +6770,7 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
         this._rejectAction(`Websocket closed, code: ${p_event.code}`);
         // TODO : Implement a better connection error handling (optional fileOpenedReady check may be overkill, etc.)
         if (this._leoIntegration.leoStates.leoBridgeReady || this._leoIntegration.leoStates.fileOpenedReady) {
-            this._leoIntegration.cancelConnect(`Connection to server closed. Code: ${p_event.code})`);
+            this._leoIntegration.cancelConnect(`Connection to server closed. Code: ${p_event.code}`);
         }
     };
     // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'

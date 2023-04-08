@@ -248,7 +248,7 @@ export class LeoBridge {
             this._rejectAction(`Websocket closed, code: ${p_event.code}`);
             // TODO : Implement a better connection error handling (optional fileOpenedReady check may be overkill, etc.)
             if (this._leoIntegration.leoStates.leoBridgeReady || this._leoIntegration.leoStates.fileOpenedReady) {
-                this._leoIntegration.cancelConnect(`Connection to server closed. Code: ${p_event.code})`);
+                this._leoIntegration.cancelConnect(`Connection to server closed. Code: ${p_event.code}`);
             }
         };
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
