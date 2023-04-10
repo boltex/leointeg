@@ -2881,7 +2881,7 @@ print('done')
 {
   "command": "leointeg.saveAsLeoJsFile",
   "category": "Leo",
-  "title": "Save as leojs JSON File...",
+  "title": "Save a copy as leojs File...",
   "enablement": "leoTreeOpened",
   "icon": {
     "light": "resources/light/save-as-leojs.svg",
@@ -14519,10 +14519,10 @@ public getLeoJsFileUrl(): Promise&lt;string&gt; {
     return new Promise((p_resolve, p_reject) =&gt; {
         // Choose file
         vscode.window.showSaveDialog({
-            saveLabel: "Save Leojs File",
+            saveLabel: "Save Copy as leojs File",
             defaultUri: this._getBestOpenFolderUri(),
             filters: { 'JSON Leo File': ['leojs'] },
-            title: "Save as LeoJS File"
+            title: "Save Copy as leojs File"
         })
             .then(p_chosenLeoFile =&gt; {
                 this._fileBrowserActive = false;

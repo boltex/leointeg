@@ -148,10 +148,10 @@ export class LeoFilesBrowser {
         return new Promise((p_resolve, p_reject) => {
             // Choose file
             vscode.window.showSaveDialog({
-                saveLabel: "Save Leojs File",
+                saveLabel: "Save Copy as leojs File",
                 defaultUri: this._getBestOpenFolderUri(),
                 filters: { 'JSON Leo File': ['leojs'] },
-                title: "Save as LeoJS File"
+                title: "Save Copy as leojs File"
             })
                 .then(p_chosenLeoFile => {
                     this._fileBrowserActive = false;
