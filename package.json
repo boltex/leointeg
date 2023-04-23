@@ -44,7 +44,7 @@
   },
   "contributes": {
     "configuration": {
-      "title": "Leo Integration — Use 'Leo: Open Settings' for a richer, interactive experience",
+      "title": "Leo Editor Integration",
       "properties": {
         "leoIntegration.checkForChangeExternalFiles": {
           "scope": "application",

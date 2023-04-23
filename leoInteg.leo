@@ -2956,7 +2956,7 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.2">"configuration": {
-  "title": "Leo Integration — Use 'Leo: Open Settings' for a richer, interactive experience",
+  "title": "Leo Editor Integration",
   "properties": {
     @others
   }
