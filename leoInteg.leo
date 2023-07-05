@@ -2333,7 +2333,7 @@ print('done')
     "imagemin-webpack-plugin": "^2.4.2",
     "mini-css-extract-plugin": "^0.9.0",
     "mocha": "^7.2.0",
-    "node-sass": "^8.0.0",
+    "node-sass": "^4.14.1",
     "sass-loader": "^8.0.2",
     "ts-loader": "^7.0.5",
     "tslint": "^6.1.3",
@@ -11810,16 +11810,60 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
         }
     });
 
-    const w_options: vscode.QuickPickOptions = {
-        placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
-        matchOnDetail: true,
-    };
-    const w_picked = await vscode.window.showQuickPick(q_commandList, w_options);
+    const w_choices = await q_commandList;
+
+    const w_disposables: vscode.Disposable[] = [];
+
+    const q_minibufferQuickPick: Promise&lt;vscode.QuickPickItem | undefined&gt; = new Promise((resolve, reject) =&gt; {
+        const quickPick = vscode.window.createQuickPick();
+        quickPick.items = w_choices;
+        quickPick.placeholder = Constants.USER_MESSAGES.MINIBUFFER_PROMPT;
+        quickPick.matchOnDetail = true;
+
+        w_disposables.push(
+            quickPick.onDidChangeSelection(selection =&gt; {
+                if (selection[0]) {
+                    resolve(selection[0]);
+                    quickPick.hide();
+                }
+            }),
+            quickPick.onDidAccept(accepted =&gt; {
+                if (/^\d+$/.test(quickPick.value)) {
+                    // * Was an integer
+                    this.gotoGlobalLine(Number(quickPick.value));
+                    resolve(undefined);
+                    quickPick.hide();
+                }
+            }),
+            quickPick.onDidChangeValue(changed =&gt; {
+                if (/^\d+$/.test(changed)) {
+                    if (quickPick.items.length) {
+                        quickPick.items = [];
+                    }
+                } else if (quickPick.items !== w_choices) {
+                    quickPick.items = w_choices;
+                }
+            }),
+            quickPick.onDidHide(() =&gt; {
+                resolve(undefined);
+            }),
+            quickPick
+        );
+        quickPick.show();
+
+    });
+
+    const w_picked: vscode.QuickPickItem | undefined = await q_minibufferQuickPick;
+
+    w_disposables.forEach(d =&gt; d.dispose());
+
     // First, check for undo-history list being requested
     if (w_picked &amp;&amp; w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
         return this.minibufferHistory();
     }
-    return this._doMinibufferCommand(w_picked);
+    if (w_picked) {
+        return this._doMinibufferCommand(w_picked);
+    }
 }
 
 </t>
@@ -17987,9 +18031,6 @@ private async _doMinibufferCommand(p_picked: vscode.QuickPickItem | undefined): 
             finalFocus: Focus.NoChange, // TODO: Fetch focus location from Leo?
         });
         return w_commandResult ? w_commandResult : Promise.reject('Command not added');
-    } else {
-        // Canceled
-        return Promise.resolve(undefined);
     }
 }
 
