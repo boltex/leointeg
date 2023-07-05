@@ -2333,7 +2333,7 @@ print('done')
     "imagemin-webpack-plugin": "^2.4.2",
     "mini-css-extract-plugin": "^0.9.0",
     "mocha": "^7.2.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^8.0.0",
     "sass-loader": "^8.0.2",
     "ts-loader": "^7.0.5",
     "tslint": "^6.1.3",
@@ -13314,41 +13314,34 @@ public static FIND_INPUTS_IDS = {
 <t tx="felix.20210601164915.1">/**
  * * Goto Global Line
  */
-public gotoGlobalLine(): void {
-    this.triggerBodySave(false)
-        .then((p_saveResult: boolean) =&gt; {
-            return vscode.window.showInputBox({
-                title: Constants.USER_MESSAGES.TITLE_GOTO_GLOBAL_LINE,
-                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_GOTO_GLOBAL_LINE,
-                prompt: Constants.USER_MESSAGES.PROMPT_GOTO_GLOBAL_LINE,
-            });
-        })
-        .then((p_inputResult?: string) =&gt; {
-            if (p_inputResult) {
-                const w_line = parseInt(p_inputResult);
-                if (!isNaN(w_line)) {
-                    this.sendAction(
-                        Constants.LEOBRIDGE.GOTO_GLOBAL_LINE,
-                        { line: w_line }
-                    ).then((p_resultGoto: LeoBridgePackage) =&gt; {
-                        if (!p_resultGoto.found) {
-                            // Not found
-                        }
-                        this.setupRefresh(
-                            Focus.Body,
-                            {
-                                tree: true,
-                                body: true,
-                                // documents: false,
-                                // buttons: false,
-                                states: true,
-                            }
-                        );
-                        this.launchRefresh();
-                    });
+public gotoGlobalLine(p_lineNumber?: number): void {
+    if (p_lineNumber == null) {
+        this.triggerBodySave(false)
+            .then((p_saveResult: boolean) =&gt; {
+                return vscode.window.showInputBox({
+                    title: Constants.USER_MESSAGES.TITLE_GOTO_GLOBAL_LINE,
+                    placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_GOTO_GLOBAL_LINE,
+                    prompt: Constants.USER_MESSAGES.PROMPT_GOTO_GLOBAL_LINE,
+                });
+            })
+            .then((p_inputResult?: string) =&gt; {
+                if (p_inputResult) {
+                    const w_line = parseInt(p_inputResult);
+                    if (!isNaN(w_line)) {
+                        this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: w_line }).then((p_resultGoto: LeoBridgePackage) =&gt; {
+                            this.setupRefresh(Focus.Body, { tree: true, body: true, states: true, });
+                            this.launchRefresh();
+                        });
+                    }
                 }
-            }
+            });
+    } else if (!isNaN(p_lineNumber)) {
+        // p_lineNumber is a number 
+        this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: p_lineNumber }).then((p_resultGoto: LeoBridgePackage) =&gt; {
+            this.setupRefresh(Focus.Body, { tree: true, body: true, states: true, });
+            this.launchRefresh();
         });
+    }
 }
 
 </t>
