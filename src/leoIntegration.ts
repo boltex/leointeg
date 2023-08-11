@@ -34,8 +34,8 @@ import { CommandStack } from './commandStack';
 import { LeoDocumentsProvider, LeoDocumentNode } from './leoDocuments';
 import { LeoStates } from './leoStates';
 import { LeoButtonsProvider, LeoButtonNode } from './leoButtons';
-import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
-import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
+import { LeoFindPanelProvider } from './leoFindPanelWebview';
+import { LeoSettingsProvider } from './leoSettingsWebview';
 import { LeoGotoProvider, LeoGotoNode } from './leoGoto';
 import { LeoUndosProvider, LeoUndoNode } from './leoUndos';
 
@@ -4920,7 +4920,7 @@ export class LeoIntegration {
      * * Goto Global Line
      */
     public gotoGlobalLine(p_lineNumber?: number): void {
-        if (p_lineNumber == null) {
+        if (p_lineNumber === null || p_lineNumber === undefined) {
             this.triggerBodySave(false)
                 .then((p_saveResult: boolean) => {
                     return vscode.window.showInputBox({

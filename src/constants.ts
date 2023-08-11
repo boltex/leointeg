@@ -301,9 +301,9 @@ export class Constants {
         TREE_KEEP_FOCUS: "treeKeepFocus",
         TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
 
-        COLLAPSE_ALL_SHORTCUT: "leoCollapseAllShortcut",
-        ACTIVITY_VIEW_SHORTCUT: "leoActivityViewShortcut",
-        GO_ANYWHERE_SHORTCUT: "leoGoAnywhereShortcut",
+        COLLAPSE_ALL_SHORTCUT: "collapseAllShortcut",
+        ACTIVITY_VIEW_SHORTCUT: "activityViewShortcut",
+        GO_ANYWHERE_SHORTCUT: "goAnywhereShortcut",
 
         // STATUSBAR_STRING: "statusBarString",
         // STATUSBAR_COLOR: "statusBarColor",

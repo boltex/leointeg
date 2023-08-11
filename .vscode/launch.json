@@ -9,14 +9,27 @@
 			"name": "Run Extension",
 			"type": "extensionHost",
 			"request": "launch",
-			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}"
 			],
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
-			"preLaunchTask": "npm: webpack"
+			"preLaunchTask": "${defaultBuildTask}"
+		},
+		{
+			"name": "Extension Tests",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js",
+				"${workspaceFolder}/dist/**/*.js"
+			],
+			"preLaunchTask": "tasks: watch-tests"
 		},
 		{
 			"name": "Python: Old leoBridge Server",
@@ -38,21 +51,6 @@
 			],
 			"console": "integratedTerminal"
 		}
-		// ,
-		// {
-		// 	"name": "Extension Tests",
-		// 	"type": "extensionHost",
-		// 	"request": "launch",
-		// 	"runtimeExecutable": "${execPath}",
-		// 	"args": [
-		// 		"--extensionDevelopmentPath=${workspaceFolder}",
-		// 		"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
-		// 	],
-		// 	"outFiles": [
-		// 		"${workspaceFolder}/out/test/**/*.js"
-		// 	],
-		// 	"preLaunchTask": "npm: test-compile"
-		// }
 	],
 	"compounds": [
 		{

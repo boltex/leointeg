@@ -3,7 +3,7 @@ import * as utils from "./utils";
 import { Constants } from "./constants";
 import { ArchivedPosition, Focus, LeoGotoNavKey, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
+import { LeoSettingsProvider } from "./leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtons";
 import { LeoGotoNode } from "./leoGoto";
 import { LeoUndoNode } from "./leoUndos";

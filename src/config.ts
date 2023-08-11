@@ -17,9 +17,9 @@ export class Config implements ConfigMembers {
     public treeKeepFocus: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS;
     public treeKeepFocusWhenAside: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE;
 
-    public leoCollapseAllShortcut: boolean = Constants.CONFIG_DEFAULTS.COLLAPSE_ALL_SHORTCUT;
-    public leoActivityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
-    public leoGoAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
+    public collapseAllShortcut: boolean = Constants.CONFIG_DEFAULTS.COLLAPSE_ALL_SHORTCUT;
+    public activityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
+    public goAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
     // public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
@@ -78,9 +78,9 @@ export class Config implements ConfigMembers {
             treeKeepFocus: this.treeKeepFocus,
             treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
 
-            leoCollapseAllShortcut: this.leoCollapseAllShortcut,
-            leoActivityViewShortcut: this.leoActivityViewShortcut,
-            leoGoAnywhereShortcut: this.leoGoAnywhereShortcut,
+            collapseAllShortcut: this.collapseAllShortcut,
+            activityViewShortcut: this.activityViewShortcut,
+            goAnywhereShortcut: this.goAnywhereShortcut,
 
             // statusBarString: this.statusBarString,
             // statusBarColor: this.statusBarColor,
@@ -287,9 +287,9 @@ export class Config implements ConfigMembers {
             this.treeKeepFocus = GET(NAME).get(NAMES.TREE_KEEP_FOCUS, DEFAULTS.TREE_KEEP_FOCUS);
             this.treeKeepFocusWhenAside = GET(NAME).get(NAMES.TREE_KEEP_FOCUS_WHEN_ASIDE, DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE);
 
-            this.leoCollapseAllShortcut = GET(NAME).get(NAMES.COLLAPSE_ALL_SHORTCUT, DEFAULTS.COLLAPSE_ALL_SHORTCUT);
-            this.leoActivityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
-            this.leoGoAnywhereShortcut = GET(NAME).get(NAMES.GO_ANYWHERE_SHORTCUT, DEFAULTS.GO_ANYWHERE_SHORTCUT);
+            this.collapseAllShortcut = GET(NAME).get(NAMES.COLLAPSE_ALL_SHORTCUT, DEFAULTS.COLLAPSE_ALL_SHORTCUT);
+            this.activityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
+            this.goAnywhereShortcut = GET(NAME).get(NAMES.GO_ANYWHERE_SHORTCUT, DEFAULTS.GO_ANYWHERE_SHORTCUT);
 
             // this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
             // if (this.statusBarString.length > 8) {

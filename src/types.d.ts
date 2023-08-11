@@ -19,9 +19,9 @@ export interface ConfigMembers {
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
 
-    leoCollapseAllShortcut: boolean;
-    leoActivityViewShortcut: boolean;
-    leoGoAnywhereShortcut: boolean;
+    collapseAllShortcut: boolean;
+    activityViewShortcut: boolean;
+    goAnywhereShortcut: boolean;
 
     // statusBarString: string;
     // statusBarColor: string;
