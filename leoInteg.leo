@@ -13934,7 +13934,9 @@ public tagChildren(): void {
 public cloneFindTag(): void {
     this.triggerBodySave(false)
         .then((p_saveResult: boolean) =&gt; {
+            const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
             return vscode.window.showInputBox({
+                value: w_startValue,
                 title: Constants.USER_MESSAGES.TITLE_FIND_TAG,
                 placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_CLONE_FIND_TAG,
                 prompt: Constants.USER_MESSAGES.PROMPT_CLONE_FIND_TAG,
