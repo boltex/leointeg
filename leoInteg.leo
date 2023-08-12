@@ -1574,7 +1574,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.CLOSE_FILE, () =&gt; w_leo.closeLeoFile()],
 [CMD.NEW_FILE, () =&gt; w_leo.newLeoFile()],
-
+[CMD.REVERT_TO_SAVED, () =&gt; w_leo.revert()],
 [CMD.OPEN_FILE, (p_uri?: vscode.Uri) =&gt; w_leo.openLeoFile(p_uri)],
 
 [CMD.CLEAR_RECENT_FILES, () =&gt; w_leo.clearRecentLeoFiles()],
@@ -5181,7 +5181,7 @@ public static COMMANDS = {
     SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
     SAVE_AS_LEOJS: Constants.NAME + ".saveAsLeoJsFile",
     CLOSE_FILE: Constants.NAME + ".closeLeoFile",
-    REVERT_TO_SAVED: Constants.NAME + ".revertToSaved",
+    REVERT_TO_SAVED: Constants.NAME + ".revert",
     CLICK_BUTTON: Constants.NAME + ".clickButton",
     REMOVE_BUTTON: Constants.NAME + ".removeButton",
     GOTO_SCRIPT: Constants.NAME + ".gotoScript",
@@ -8429,7 +8429,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 ![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
 </t>
-<t tx="felix.20200718222043.1">## Leo Commands and Keybindings ⌨️
+<t tx="felix.20200718222043.1">## Leo Commands and Keybindings
 
 Here are the most useful Commands. Most of Leo's other commands are also available with their original keybindings.
 
@@ -8456,20 +8456,20 @@ Here are the most useful Commands. Most of Leo's other commands are also availab
 
 _Move Outline commands need the 'Alt' key modifier only when focus is on body pane._
 
-| Common Operations  |     |          |     |           |    |            |                     |
-| :----------------- | :-- | :------- | :-- | :-------- |:-- | :--------- | :------------------ |
-| `Ctrl + T`         |     |          |     |           |    |            | Toggle Outline/Body |
-| `Tab`              | or  | `Enter`  | or  | `Alt + D` |or  | `Ctrl + G` | Focus on Body       |
-| `Alt + T`          |     |          |     |           |    |            | Focus on Outline    |
-| `Alt + -`          |     |          |     |           |    |            | Contract All        |
-| `Ctrl + B`         |     |          |     |           |    |            | Execute Script      |
-| `Ctrl + Shift + D` |     |          |     |           |    |            | Extract             |
-| `Ctrl + Shift + N` |     |          |     |           |    |            | Extract Names       |
-| `Alt + A`          |     |          |     |           |    |            | Sort Siblings       |
-| `Ctrl + F`         |     |          |     |           |    |            | Start Search        |
-| `F3`               |     |          |     |           |    |            | Find Next           |
-| `F2`               |     |          |     |           |    |            | Find Previous       |
-| `Alt + X`          |     |          |     |           |    |            | Minibuffer Palette  |
+| Common Operations  |     |         |     |           |     |            |                     |
+| :----------------- | :-- | :------ | :-- | :-------- | :-- | :--------- | :------------------ |
+| `Ctrl + T`         |     |         |     |           |     |            | Toggle Outline/Body |
+| `Tab`              | or  | `Enter` | or  | `Alt + D` | or  | `Ctrl + G` | Focus on Body       |
+| `Alt + T`          |     |         |     |           |     |            | Focus on Outline    |
+| `Alt + -`          |     |         |     |           |     |            | Contract All        |
+| `Ctrl + B`         |     |         |     |           |     |            | Execute Script      |
+| `Ctrl + Shift + D` |     |         |     |           |     |            | Extract             |
+| `Ctrl + Shift + N` |     |         |     |           |     |            | Extract Names       |
+| `Alt + A`          |     |         |     |           |     |            | Sort Siblings       |
+| `Ctrl + F`         |     |         |     |           |     |            | Start Search        |
+| `F3`               |     |         |     |           |     |            | Find Next           |
+| `F2`               |     |         |     |           |     |            | Find Previous       |
+| `Alt + X`          |     |         |     |           |     |            | Minibuffer Palette  |
 
 | Tree Navigation    |     |                 |                             |
 | :----------------- | :-- | :-------------- | :-------------------------- |
@@ -8485,13 +8485,13 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 **\*** _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
-| File Commands      |     |                         |                   |
-| :----------------- | :-- | :---------------------- | :---------------- |
-| `Ctrl + S`         |     |                         | Save Leo Document |
-| `Ctrl + N`         |     |                         | New Leo Document  |
-| `Ctrl + O`         |     |                         | Open Leo Document |
-| `Ctrl + Shift + W` |     |                         | Write File Nodes  |
-| `Ctrl + Shift + Q` |     |                         | Write Dirty Files |
+| File Commands      |     |     |                   |
+| :----------------- | :-- | :-- | :---------------- |
+| `Ctrl + S`         |     |     | Save Leo Document |
+| `Ctrl + N`         |     |     | New Leo Document  |
+| `Ctrl + O`         |     |     | Open Leo Document |
+| `Ctrl + Shift + W` |     |     | Write File Nodes  |
+| `Ctrl + Shift + Q` |     |     | Write Dirty Files |
 
 ---
 
@@ -13422,6 +13422,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
 
     'file-new': Constants.COMMANDS.NEW_FILE,
     'file-open-by-name': Constants.COMMANDS.OPEN_FILE,
+    'revert': Constants.COMMANDS.REVERT_TO_SAVED,
     'new': Constants.COMMANDS.NEW_FILE,
     'open-outline': Constants.COMMANDS.OPEN_FILE,
     'file-save': Constants.COMMANDS.SAVE_FILE,
@@ -18830,7 +18831,7 @@ private _finishOpenLastFiles(): void {
 
 }
 </t>
-<t tx="felix.20230304182815.1">## Undo Panel  🔄
+<t tx="felix.20230304182815.1">## Undo Panel ♻️
 
 Use the undo / redo icons above the outline or above the undo pane itself. You can also right-click on an undo step to directly switch to that specific state!
 
@@ -18843,7 +18844,7 @@ Arrow keys, home/end, page up/down are used for basic navigation. But in order t
 
 ### Goto Anywhere Command
 
-Normally in vscode, the the **`Ctrl+P`**  shortcut allows you to switch to any project file, but when the focus is in one of Leo's panels, the **`Ctrl+P`** keybinding allows you to switch to a node directly by typing (part of) it's headline.
+Normally in vscode, the the **`Ctrl+P`** shortcut allows you to switch to any project file, but when the focus is in one of Leo's panels, the **`Ctrl+P`** keybinding allows you to switch to a node directly by typing (part of) it's headline.
 
 ![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/goto-anywhere.gif)
 
@@ -21964,6 +21965,10 @@ public clearRecentLeoFiles(): void {
 <t tx="fil.20230405000235.1">## 1.0.14
 
 - Fixed links in welcome page
+- Made package smaller by fixing webpack compilation
+- Made package smaller by excluding image files for readme and other .md files in resources folder.
+- Fixed 'minibuffer' preserving of the body pane before opening input.
+- Added 'revert' command used to 'Revert to Saved' the currently opened Leo document.
 
 </t>
 </tnodes>

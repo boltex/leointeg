@@ -1025,6 +1025,7 @@ export class Constants {
 
         'file-new': Constants.COMMANDS.NEW_FILE,
         'file-open-by-name': Constants.COMMANDS.OPEN_FILE,
+        'revert': Constants.COMMANDS.REVERT_TO_SAVED,
         'new': Constants.COMMANDS.NEW_FILE,
         'open-outline': Constants.COMMANDS.OPEN_FILE,
         'file-save': Constants.COMMANDS.SAVE_FILE,

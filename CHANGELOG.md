@@ -3,6 +3,10 @@
 ## 1.0.14
 
 - Fixed links in welcome page
+- Made package smaller by fixing webpack compilation
+- Made package smaller by excluding image files for readme and other .md files in resources folder.
+- Fixed 'minibuffer' preserving of the body pane before opening input.
+- Added 'revert' command used to 'Revert to Saved' the currently opened Leo document.
 
 ## 1.0.13
 
