@@ -18,6 +18,7 @@ export class ServerService {
 
     private _platform: string;
     private _isWin32: boolean;
+    private _skippedFirstEmpty = false; // if first ever empty line was skipped. (for esthetics only)
     public usingPort: number = 0; // set to other than zero if server is started by leointeg itself
 
     /**
@@ -232,6 +233,12 @@ export class ServerService {
      */
     private _processServerOutput(p_data: string): void {
         let w_dataString = p_data.toString().replace(/\n$/, ""); // remove last
+        if (!this._skippedFirstEmpty) {
+            if (w_dataString && (w_dataString.charCodeAt(0) === 10 || w_dataString.charCodeAt(0) === 13)) {
+                this._skippedFirstEmpty = true; // Skipping first empty line for esthetics only
+                return;
+            }
+        }
         w_dataString.toString().split("\n").forEach(p_line => {
             if (true || p_line) { // ? std out process line by line: json shouldn't have line breaks
                 if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
