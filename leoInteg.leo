@@ -486,6 +486,7 @@
 <v t="felix.20200719025231.60"><vh>switchLeoFile</vh></v>
 <v t="felix.20200719025231.61"><vh>selectOpenedLeoDocument</vh></v>
 <v t="fil.20210609233100.1"><vh>clearRecentLeoFiles</vh></v>
+<v t="felix.20230811224332.1"><vh>revertToSaved</vh></v>
 <v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
 <v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
 <v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
@@ -1363,8 +1364,8 @@ private _tryApplyNodeToBody(
  * @returns Promise back from command's execution, if added on stack, undefined otherwise.
  * (see command stack 'rules' in commandStack.ts)
  */
-public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise&lt;LeoBridgePackage&gt; | undefined {
 
+public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise&lt;LeoBridgePackage&gt; | undefined {
     // No forced vscode save-triggers for direct calls from extension.js
     this.triggerBodySave();
     if (p_isNavigation) {
@@ -2811,6 +2812,12 @@ print('done')
   }
 },
 {
+  "command": "leointeg.revert",
+  "title": "Revert to Saved",
+  "enablement": "leoTreeOpened",
+  "category": "Leo"
+},
+{
   "command": "leointeg.saveLeoFile",
   "category": "Leo",
   "title": "Save Leo File",
@@ -2843,7 +2850,7 @@ print('done')
 {
   "command": "leointeg.saveAsLeoJsFile",
   "category": "Leo",
-  "title": "Save a copy as leojs File...",
+  "title": "Save a Copy as leojs File...",
   "enablement": "leoTreeOpened",
   "icon": {
     "light": "resources/light/save-as-leojs.svg",
@@ -5019,6 +5026,7 @@ public static LEOBRIDGE = {
     OPEN_FILE: "!open_file", // "openFile",
     OPEN_FILES: "!open_files", //  "openFiles",
     CLOSE_FILE: "!close_file", // "closeFile",
+    REVERT: "-revert",
     SAVE_FILE: "!save_file", // "saveFile",
     // * @-Buttons
     GET_BUTTONS: "!get_buttons", // "getButtons",
@@ -5173,6 +5181,7 @@ public static COMMANDS = {
     SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
     SAVE_AS_LEOJS: Constants.NAME + ".saveAsLeoJsFile",
     CLOSE_FILE: Constants.NAME + ".closeLeoFile",
+    REVERT_TO_SAVED: Constants.NAME + ".revertToSaved",
     CLICK_BUTTON: Constants.NAME + ".clickButton",
     REMOVE_BUTTON: Constants.NAME + ".removeButton",
     GOTO_SCRIPT: Constants.NAME + ".gotoScript",
@@ -5514,6 +5523,7 @@ public static USER_MESSAGES = {
         "4.  Press the *new* button.",
     SAVE_CHANGES: "Save changes to",
     BEFORE_CLOSING: "before closing?",
+    REVERT_PREVIOUS_VERSION: "Revert to previous version of ", // Trailing space intended
     CANCEL: "Cancel",
     OPEN_WITH_LEOINTEG: "Open this Leo file with LeoInteg?",
     OPEN_RECENT_FILE: "Open Recent Leo File",
@@ -11695,7 +11705,7 @@ public setTreeViewTitle(p_title?: string): void {
 public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
 
     // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
-    await this._isBusyTriggerSave(false);
+    await this._isBusyTriggerSave(false, true);
 
     const q_commandList: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
         Constants.LEOBRIDGE.GET_COMMANDS
@@ -18914,6 +18924,55 @@ If you check the **Tag** option, the **Nav** field and **Goto Pane** are then us
     return text;
 }
 
+</t>
+<t tx="felix.20230811224332.1">/**
+ * * Revert the contents of a Leo outline to last saved contents.
+ * If unnamed file, calls anyways to let the real command print out message
+ */
+public async revert(): Promise&lt;unknown&gt; {
+    await this._isBusyTriggerSave(true, true);
+    if (this.leoStates.leoOpenedFileName) {
+
+        const w_result = await vscode.window.showInformationMessage(
+            Constants.USER_MESSAGES.REVERT_PREVIOUS_VERSION +
+            this.leoStates.leoOpenedFileName +
+            '?',
+            { modal: true },
+            {
+                title: Constants.USER_MESSAGES.YES,
+                isCloseAffordance: false
+            },
+            {
+                title: Constants.USER_MESSAGES.NO,
+                isCloseAffordance: true
+            },
+        );
+        if (!w_result || w_result.title === Constants.USER_MESSAGES.NO) {
+            return;
+        }
+    }
+
+    const q_commandResult = this.nodeCommand({
+        action: Constants.LEOBRIDGE.REVERT,
+        node: undefined,
+        refreshType: {
+            tree: true,
+            body: true,
+            documents: true,
+            buttons: true,
+            goto: true,
+            states: true,
+        },
+        finalFocus: Focus.NoChange, // use last
+
+    });
+    if (q_commandResult) {
+        return q_commandResult;
+    } else {
+        return Promise.reject('Export Headlines not added on command stack');
+    }
+
+}
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

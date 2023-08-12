@@ -805,6 +805,12 @@
         }
       },
       {
+        "command": "leointeg.revert",
+        "title": "Revert to Saved",
+        "enablement": "leoTreeOpened",
+        "category": "Leo"
+      },
+      {
         "command": "leointeg.saveLeoFile",
         "category": "Leo",
         "title": "Save Leo File",
@@ -837,7 +843,7 @@
       {
         "command": "leointeg.saveAsLeoJsFile",
         "category": "Leo",
-        "title": "Save a copy as leojs File...",
+        "title": "Save a Copy as leojs File...",
         "enablement": "leoTreeOpened",
         "icon": {
           "light": "resources/light/save-as-leojs.svg",

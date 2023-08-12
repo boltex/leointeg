@@ -3240,7 +3240,7 @@ export class LeoIntegration {
     public async minibuffer(): Promise<LeoBridgePackage | undefined> {
 
         // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
-        await this._isBusyTriggerSave(false);
+        await this._isBusyTriggerSave(false, true);
 
         const q_commandList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
             Constants.LEOBRIDGE.GET_COMMANDS
@@ -3546,8 +3546,8 @@ export class LeoIntegration {
      * @returns Promise back from command's execution, if added on stack, undefined otherwise.
      * (see command stack 'rules' in commandStack.ts)
      */
-    public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise<LeoBridgePackage> | undefined {
 
+    public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise<LeoBridgePackage> | undefined {
         // No forced vscode save-triggers for direct calls from extension.js
         this.triggerBodySave();
         if (p_isNavigation) {
@@ -5441,6 +5441,54 @@ export class LeoIntegration {
         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLEARED_RECENT);
     }
 
+    /**
+     * * Revert the contents of a Leo outline to last saved contents.
+     * If unnamed file, calls anyways to let the real command print out message
+     */
+    public async revert(): Promise<unknown> {
+        await this._isBusyTriggerSave(true, true);
+        if (this.leoStates.leoOpenedFileName) {
+
+            const w_result = await vscode.window.showInformationMessage(
+                Constants.USER_MESSAGES.REVERT_PREVIOUS_VERSION +
+                this.leoStates.leoOpenedFileName +
+                '?',
+                { modal: true },
+                {
+                    title: Constants.USER_MESSAGES.YES,
+                    isCloseAffordance: false
+                },
+                {
+                    title: Constants.USER_MESSAGES.NO,
+                    isCloseAffordance: true
+                },
+            );
+            if (!w_result || w_result.title === Constants.USER_MESSAGES.NO) {
+                return;
+            }
+        }
+
+        const q_commandResult = this.nodeCommand({
+            action: Constants.LEOBRIDGE.REVERT,
+            node: undefined,
+            refreshType: {
+                tree: true,
+                body: true,
+                documents: true,
+                buttons: true,
+                goto: true,
+                states: true,
+            },
+            finalFocus: Focus.NoChange, // use last
+
+        });
+        if (q_commandResult) {
+            return q_commandResult;
+        } else {
+            return Promise.reject('Export Headlines not added on command stack');
+        }
+
+    }
     /**
     * * Close an opened Leo file
     * @returns the launchRefresh promise started after it's done closing the Leo document

@@ -162,6 +162,7 @@ export class Constants {
             "4.  Press the *new* button.",
         SAVE_CHANGES: "Save changes to",
         BEFORE_CLOSING: "before closing?",
+        REVERT_PREVIOUS_VERSION: "Revert to previous version of ", // Trailing space intended
         CANCEL: "Cancel",
         OPEN_WITH_LEOINTEG: "Open this Leo file with LeoInteg?",
         OPEN_RECENT_FILE: "Open Recent Leo File",
@@ -573,6 +574,7 @@ export class Constants {
         OPEN_FILE: "!open_file", // "openFile",
         OPEN_FILES: "!open_files", //  "openFiles",
         CLOSE_FILE: "!close_file", // "closeFile",
+        REVERT: "-revert",
         SAVE_FILE: "!save_file", // "saveFile",
         // * @-Buttons
         GET_BUTTONS: "!get_buttons", // "getButtons",
@@ -726,6 +728,7 @@ export class Constants {
         SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
         SAVE_AS_LEOJS: Constants.NAME + ".saveAsLeoJsFile",
         CLOSE_FILE: Constants.NAME + ".closeLeoFile",
+        REVERT_TO_SAVED: Constants.NAME + ".revert",
         CLICK_BUTTON: Constants.NAME + ".clickButton",
         REMOVE_BUTTON: Constants.NAME + ".removeButton",
         GOTO_SCRIPT: Constants.NAME + ".gotoScript",

@@ -83,7 +83,7 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [CMD.CLOSE_FILE, () => w_leo.closeLeoFile()],
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],
-
+        [CMD.REVERT_TO_SAVED, () => w_leo.revert()],
         [CMD.OPEN_FILE, (p_uri?: vscode.Uri) => w_leo.openLeoFile(p_uri)],
 
         [CMD.CLEAR_RECENT_FILES, () => w_leo.clearRecentLeoFiles()],
