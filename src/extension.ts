@@ -690,9 +690,10 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.REPLACE_ALL, () => w_leo.findAll(true)],
         [CMD.GOTO_GLOBAL_LINE, () => w_leo.gotoGlobalLine()],
         [CMD.TAG_CHILDREN, () => w_leo.tagChildren()],
-        [CMD.TAG_NODE, () => w_leo.tagNode()],
-        [CMD.REMOVE_TAG, () => w_leo.removeTag()],
-        [CMD.REMOVE_TAGS, () => w_leo.removeTags()],
+
+        [CMD.TAG_NODE, (p_ap: ArchivedPosition) => w_leo.tagNode(p_ap)],
+        [CMD.REMOVE_TAG, (p_ap: ArchivedPosition) => w_leo.removeTag(p_ap)],
+        [CMD.REMOVE_TAGS, (p_ap: ArchivedPosition) => w_leo.removeTags(p_ap)],
 
         [CMD.CLONE_FIND_ALL, () => w_leo.cloneFind(false, false)],
         [CMD.CLONE_FIND_ALL_FLATTENED, () => w_leo.cloneFind(false, true)],

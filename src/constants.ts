@@ -437,6 +437,7 @@ export class Constants {
         NODE_CLONED: "leoNodeCloned",
         NODE_ROOT: "leoNodeRoot",
         NODE_NOT_ROOT: "leoNodeNotRoot",
+        NODE_TAGS: "leoNodeTags",
 
         // Flags for undo nodes
         UNDO_BEAD: "leoUndoNode",
@@ -945,7 +946,9 @@ export class Constants {
         { "label": "find-quick-changed", "detail": "Lists all nodes that are changed (aka \"dirty\") since last save." },
         { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
         { "label": "marked-list", "detail": "List all marked nodes." },
-        { "label": "tag-node", "detail": "Tag the selected node." },
+
+        { "label": "remove-tag", "detail": "Prompt for a tag to remove on selected node" },
+        { "label": "remove-all-tags", "detail": "Remove all tags on selected node" },
 
         { "label": "export-headlines", "detail": "Export all headlines to an external file." },
 
@@ -999,6 +1002,8 @@ export class Constants {
 
         "tag-children": Constants.COMMANDS.TAG_CHILDREN,
         "tag-node": Constants.COMMANDS.TAG_NODE,
+        "remove-tag": Constants.COMMANDS.REMOVE_TAG,
+        "remove-all-tags": Constants.COMMANDS.REMOVE_TAGS,
         "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
         "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
         "redo": Constants.COMMANDS.REDO,

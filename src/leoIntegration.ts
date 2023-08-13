@@ -4998,7 +4998,7 @@ export class LeoIntegration {
     /**
      * * Tag Node
      */
-    public tagNode(): void {
+    public tagNode(p_node?: ArchivedPosition): void {
         this.triggerBodySave(false)
             .then((p_saveResult: boolean) => {
                 return vscode.window.showInputBox({
@@ -5016,9 +5016,14 @@ export class LeoIntegration {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.TAGS_CHARACTERS_ERROR);
                         return;
                     }
+                    let w_param: { [key: string]: any; } = {};
+                    if (p_node) {
+                        w_param = utils.buildNodeCommand(p_node);
+                    }
+                    w_param.tag = p_inputResult;
                     this.sendAction(
                         Constants.LEOBRIDGE.TAG_NODE,
-                        { tag: p_inputResult }
+                        w_param
                     ).then((p_resultTag: LeoBridgePackage) => {
 
                         this.setupRefresh(
@@ -5040,14 +5045,14 @@ export class LeoIntegration {
     /**
      * * Remove single Tag on selected node
      */
-    public removeTag(): void {
+    public removeTag(p_node?: ArchivedPosition): void {
 
-        if (this.lastSelectedNode && this.lastSelectedNode.nodeTags) {
+        if ((p_node && p_node.nodeTags) || (this.lastSelectedNode && this.lastSelectedNode.nodeTags)) {
             this.triggerBodySave(false)
                 .then((p_saveResult) => {
                     return this.sendAction(
-                        Constants.LEOBRIDGE.GET_UA
-
+                        Constants.LEOBRIDGE.GET_UA,
+                        p_node ? utils.buildNodeCommand(p_node) : undefined
                     );
 
                 })
@@ -5080,9 +5085,14 @@ export class LeoIntegration {
                 })
                 .then((p_inputResult?: string) => {
                     if (p_inputResult && p_inputResult.trim()) {
+                        let w_param: { [key: string]: any; } = {};
+                        if (p_node) {
+                            w_param = utils.buildNodeCommand(p_node);
+                        }
+                        w_param.tag = p_inputResult.trim();
                         this.sendAction(
                             Constants.LEOBRIDGE.REMOVE_TAG,
-                            { tag: p_inputResult.trim() }
+                            w_param
                         ).then((p_resultTag: LeoBridgePackage) => {
                             this.setupRefresh(
                                 Focus.NoChange,
@@ -5109,12 +5119,13 @@ export class LeoIntegration {
     /**
      * * Remove all tags on selected node
      */
-    public removeTags(): void {
-        if (this.lastSelectedNode && this.lastSelectedNode.nodeTags) {
+    public removeTags(p_node?: ArchivedPosition): void {
+        if ((p_node && p_node.nodeTags) || (this.lastSelectedNode && this.lastSelectedNode.nodeTags)) {
             this.triggerBodySave(false)
                 .then((p_saveResult: boolean) => {
                     this.sendAction(
-                        Constants.LEOBRIDGE.REMOVE_TAGS
+                        Constants.LEOBRIDGE.REMOVE_TAGS,
+                        p_node ? utils.buildNodeCommand(p_node) : undefined
                     ).then((p_resultTag: LeoBridgePackage) => {
                         this.setupRefresh(
                             Focus.NoChange,

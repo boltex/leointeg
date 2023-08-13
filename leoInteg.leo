@@ -2187,9 +2187,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.REPLACE_ALL, () =&gt; w_leo.findAll(true)],
 [CMD.GOTO_GLOBAL_LINE, () =&gt; w_leo.gotoGlobalLine()],
 [CMD.TAG_CHILDREN, () =&gt; w_leo.tagChildren()],
-[CMD.TAG_NODE, () =&gt; w_leo.tagNode()],
-[CMD.REMOVE_TAG, () =&gt; w_leo.removeTag()],
-[CMD.REMOVE_TAGS, () =&gt; w_leo.removeTags()],
+
+[CMD.TAG_NODE, (p_ap: ArchivedPosition) =&gt; w_leo.tagNode(p_ap)],
+[CMD.REMOVE_TAG, (p_ap: ArchivedPosition) =&gt; w_leo.removeTag(p_ap)],
+[CMD.REMOVE_TAGS, (p_ap: ArchivedPosition) =&gt; w_leo.removeTags(p_ap)],
 
 [CMD.CLONE_FIND_ALL, () =&gt; w_leo.cloneFind(false, false)],
 [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; w_leo.cloneFind(false, true)],
@@ -5730,6 +5731,7 @@ public static CONTEXT_FLAGS = {
     NODE_CLONED: "leoNodeCloned",
     NODE_ROOT: "leoNodeRoot",
     NODE_NOT_ROOT: "leoNodeNotRoot",
+    NODE_TAGS: "leoNodeTags",
 
     // Flags for undo nodes
     UNDO_BEAD: "leoUndoNode",
@@ -12134,29 +12136,44 @@ public static VSCODE_COMMANDS = {
     "group": "leoNodeContext2@1"
   },
   {
-    "command": "leointeg.copyNode",
-    "when": "viewItem =~ /^leoNode/",
+    "command": "leointeg.tagNode",
+    "when": "viewItem =~ /leoNode/",
     "group": "leoNodeContext2@2"
   },
   {
-    "command": "leointeg.cutNode",
-    "when": "viewItem =~ /^leoNode/",
+    "command": "leointeg.removeTag",
+    "when": "viewItem =~ /leoNodeTags/",
     "group": "leoNodeContext2@3"
   },
   {
-    "command": "leointeg.pasteNode",
-    "when": "viewItem =~ /^leoNode/",
+    "command": "leointeg.removeTags",
+    "when": "viewItem =~ /leoNodeTags/",
     "group": "leoNodeContext2@4"
   },
   {
-    "command": "leointeg.pasteNodeAsClone",
+    "command": "leointeg.copyNode",
     "when": "viewItem =~ /^leoNode/",
     "group": "leoNodeContext2@5"
   },
   {
-    "command": "leointeg.delete",
+    "command": "leointeg.cutNode",
     "when": "viewItem =~ /^leoNode/",
     "group": "leoNodeContext2@6"
+  },
+  {
+    "command": "leointeg.pasteNode",
+    "when": "viewItem =~ /^leoNode/",
+    "group": "leoNodeContext2@7"
+  },
+  {
+    "command": "leointeg.pasteNodeAsClone",
+    "when": "viewItem =~ /^leoNode/",
+    "group": "leoNodeContext2@8"
+  },
+  {
+    "command": "leointeg.delete",
+    "when": "viewItem =~ /^leoNode/",
+    "group": "leoNodeContext2@9"
   },
   {
     "command": "leointeg.insertNode",
@@ -13408,6 +13425,8 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
 
     "tag-children": Constants.COMMANDS.TAG_CHILDREN,
     "tag-node": Constants.COMMANDS.TAG_NODE,
+    "remove-tag": Constants.COMMANDS.REMOVE_TAG,
+    "remove-all-tags": Constants.COMMANDS.REMOVE_TAGS,
     "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
     "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
     "redo": Constants.COMMANDS.REDO,
@@ -15919,7 +15938,7 @@ private _onGotoTreeViewVisibilityChanged(
 <t tx="felix.20220313211902.1">/**
  * * Tag Node
  */
-public tagNode(): void {
+public tagNode(p_node?: ArchivedPosition): void {
     this.triggerBodySave(false)
         .then((p_saveResult: boolean) =&gt; {
             return vscode.window.showInputBox({
@@ -15937,9 +15956,14 @@ public tagNode(): void {
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.TAGS_CHARACTERS_ERROR);
                     return;
                 }
+                let w_param: { [key: string]: any; } = {};
+                if (p_node) {
+                    w_param = utils.buildNodeCommand(p_node);
+                }
+                w_param.tag = p_inputResult;
                 this.sendAction(
                     Constants.LEOBRIDGE.TAG_NODE,
-                    { tag: p_inputResult }
+                    w_param
                 ).then((p_resultTag: LeoBridgePackage) =&gt; {
 
                     this.setupRefresh(
@@ -15962,14 +15986,14 @@ public tagNode(): void {
 <t tx="felix.20220313211907.1">/**
  * * Remove single Tag on selected node
  */
-public removeTag(): void {
+public removeTag(p_node?: ArchivedPosition): void {
 
-    if (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.nodeTags) {
+    if ((p_node &amp;&amp; p_node.nodeTags) || (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.nodeTags)) {
         this.triggerBodySave(false)
             .then((p_saveResult) =&gt; {
                 return this.sendAction(
-                    Constants.LEOBRIDGE.GET_UA
-
+                    Constants.LEOBRIDGE.GET_UA,
+                    p_node ? utils.buildNodeCommand(p_node) : undefined
                 );
 
             })
@@ -16002,9 +16026,14 @@ public removeTag(): void {
             })
             .then((p_inputResult?: string) =&gt; {
                 if (p_inputResult &amp;&amp; p_inputResult.trim()) {
+                    let w_param: { [key: string]: any; } = {};
+                    if (p_node) {
+                        w_param = utils.buildNodeCommand(p_node);
+                    }
+                    w_param.tag = p_inputResult.trim();
                     this.sendAction(
                         Constants.LEOBRIDGE.REMOVE_TAG,
-                        { tag: p_inputResult.trim() }
+                        w_param
                     ).then((p_resultTag: LeoBridgePackage) =&gt; {
                         this.setupRefresh(
                             Focus.NoChange,
@@ -16032,12 +16061,13 @@ public removeTag(): void {
 <t tx="felix.20220313221212.1">/**
  * * Remove all tags on selected node
  */
-public removeTags(): void {
-    if (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.nodeTags) {
+public removeTags(p_node?: ArchivedPosition): void {
+    if ((p_node &amp;&amp; p_node.nodeTags) || (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.nodeTags)) {
         this.triggerBodySave(false)
             .then((p_saveResult: boolean) =&gt; {
                 this.sendAction(
-                    Constants.LEOBRIDGE.REMOVE_TAGS
+                    Constants.LEOBRIDGE.REMOVE_TAGS,
+                    p_node ? utils.buildNodeCommand(p_node) : undefined
                 ).then((p_resultTag: LeoBridgePackage) =&gt; {
                     this.setupRefresh(
                         Focus.NoChange,
@@ -16118,7 +16148,9 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     { "label": "find-quick-changed", "detail": "Lists all nodes that are changed (aka \"dirty\") since last save." },
     { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
     { "label": "marked-list", "detail": "List all marked nodes." },
-    { "label": "tag-node", "detail": "Tag the selected node." },
+
+    { "label": "remove-tag", "detail": "Prompt for a tag to remove on selected node" },
+    { "label": "remove-all-tags", "detail": "Remove all tags on selected node" },
 
     { "label": "export-headlines", "detail": "Export all headlines to an external file." },
 
@@ -16911,6 +16943,7 @@ public incTreeId(): void {
             desc = "\u{1F4CE} (" + element.u + ")";
         }
         if (tagsQty) {
+            w_contextValue += Constants.CONTEXT_FLAGS.NODE_TAGS;
             if (desc) {
                 desc = desc + " "; // add space
             }
