@@ -65,6 +65,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         })],
 
         [CMD.IMPORT_ANY_FILE, () => w_leo.importAnyFile()], // No URL passed from the command definition.
+        [CMD.READ_OUTLINE_ONLY, () => w_leo.readOutlineOnly()],
         [CMD.READ_FILE_INTO_NODE, () => w_leo.readFileIntoNode()],
 
         [CMD.EXPORT_HEADLINES, () => w_leo.exportHeadlines()],

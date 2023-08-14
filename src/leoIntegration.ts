@@ -5686,7 +5686,7 @@ export class LeoIntegration {
      * * Shows an 'Open Leo File' dialog window and opens the chosen file
      * * If not shown already, it also shows the outline, body and log panes
      * @param p_leoFileUri optional uri for specifying a file, if missing, a dialog will open
-     * @returns A promise that resolves with a textEditor of the chosen file
+     * @returns A promise that resolves with a LeoBridgePackage from the open file command
      */
     public openLeoFile(p_leoFileUri?: vscode.Uri): Promise<LeoBridgePackage | undefined> {
         return this._isBusyTriggerSave(true, true)
@@ -5741,8 +5741,86 @@ export class LeoIntegration {
                                     goto: true
                                 }
                             );
-                            // * TODO : SHOULD LAUNCH REFRESH INSTEAD
-                            // return this._setupOpenedLeoDocument(p_openFileResult);
+                        } else {
+                            this.serverHasOpenedFile = false;
+                            this.serverOpenedFileName = "";
+                            this.serverOpenedNode = undefined;
+                        }
+                        this.launchRefresh();
+
+                        return p_openFileResult;
+                    } else {
+                        return Promise.resolve(undefined); // User cancelled chooser.
+                    }
+                },
+                (p_errorOpen) => {
+                    // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
+                    console.log('in .then not opened or already opened');
+                    return Promise.reject(p_errorOpen);
+                }
+            );
+    }
+
+    /**
+     * * Shows an 'Open Leo File' dialog window and opens the chosen file
+     * * If not shown already, it also shows the outline, body and log panes
+     * @param p_leoFileUri optional uri for specifying a file, if missing, a dialog will open
+     * @returns A promise that resolves with a LeoBridgePackage from the open file command
+     */
+    public readOutlineOnly(p_leoFileUri?: vscode.Uri): Promise<LeoBridgePackage | undefined> {
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                if (p_leoFileUri && p_leoFileUri.scheme && p_leoFileUri.scheme.startsWith("leo")) {
+                    p_leoFileUri = undefined; // Was used in the editor/title menu!
+                }
+                let q_openedFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
+                if (p_leoFileUri && p_leoFileUri.fsPath && p_leoFileUri.fsPath.trim()) {
+                    const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
+                    q_openedFile = this.sendAction(
+                        Constants.LEOBRIDGE.READ_OUTLINE_ONLY,
+                        { filename: w_fixedFilePath }
+                    );
+                } else {
+                    q_openedFile = this._leoFilesBrowser.getLeoFileUrl(false, 'Read Outline Only').then(
+                        (p_chosenLeoFile) => {
+                            if (p_chosenLeoFile.trim()) {
+                                return this.sendAction(
+                                    Constants.LEOBRIDGE.READ_OUTLINE_ONLY,
+                                    { filename: p_chosenLeoFile }
+                                );
+                            } else {
+                                return Promise.resolve(undefined);
+                            }
+                        },
+                        (p_errorGetFile) => {
+                            return Promise.reject(p_errorGetFile);
+                        }
+                    );
+                }
+                return q_openedFile;
+            })
+            .then(
+                (p_openFileResult: LeoBridgePackage | undefined) => {
+                    if (p_openFileResult) {
+                        if (p_openFileResult.total) {
+                            this.serverHasOpenedFile = true;
+                            this.serverOpenedFileName = p_openFileResult.filename!;
+                            this.serverOpenedNode = p_openFileResult.node!;
+                            this._addRecentAndLastFile(this.serverOpenedFileName);
+
+                            this.loadSearchSettings();
+                            this.setupRefresh(
+                                this.finalFocus,
+                                {
+                                    tree: true,
+                                    body: true,
+                                    documents: true,
+                                    buttons: true,
+                                    states: true,
+                                    goto: true
+                                }
+                            );
+
                         } else {
                             this.serverHasOpenedFile = false;
                             this.serverOpenedFileName = "";

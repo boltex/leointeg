@@ -490,6 +490,7 @@
 <v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
 <v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
 <v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
+<v t="felix.20230813230048.1"><vh>readOutlineOnly</vh></v>
 </v>
 <v t="felix.20220808233838.1"><vh>Export/Import Commands</vh>
 <v t="felix.20210602155312.1"><vh>importFile</vh></v>
@@ -5065,6 +5066,7 @@ public static LEOBRIDGE = {
     OUTLINE_TO_NOWEB: "!outline_to_noweb",
     REMOVE_SENTINELS: "!remove_sentinels",
     WEAVE: "!weave",
+    READ_OUTLINE_ONLY: "!read_outline_only",
     WRITE_FILE_FROM_NODE: "!write_file_from_node",
 
     // * Leo Operations, setters and getters
@@ -5223,6 +5225,7 @@ public static COMMANDS = {
     OUTLINE_TO_NOWEB: Constants.NAME + ".outlineToNoweb",
     REMOVE_SENTINELS: Constants.NAME + ".removeSentinels",
     WEAVE: Constants.NAME + ".weave",
+    READ_OUTLINE_ONLY: Constants.NAME + ".readOutlineOnly",
     WRITE_FILE_FROM_NODE: Constants.NAME + ".writeFileFromNode",
     // * Leo Operations
     UNDO: Constants.NAME + ".undo", // From command Palette
@@ -7287,7 +7290,7 @@ private _getBestOpenFolderUri(): vscode.Uri {
  * @param p_saveAsFlag Optional flag that will ask for a 'save' path+filename
  * @returns A promise resolving to a chosen path string, or rejected with an empty string if cancelled
  */
-public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
+public getLeoFileUrl(p_saveAsFlag?: boolean, p_customTitle?: string): Promise&lt;string&gt; {
     if (this._fileBrowserActive) {
         return Promise.resolve("");
     }
@@ -7306,7 +7309,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
                 saveLabel: "Save Leo File",
                 defaultUri: this._getBestOpenFolderUri(),
                 filters: w_filters,
-                title: "Save as Leo File"
+                title: p_customTitle ? p_customTitle : "Save as Leo File"
             })
                 .then(p_chosenLeoFile =&gt; {
                     this._fileBrowserActive = false;
@@ -7324,7 +7327,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
                     defaultUri: this._getBestOpenFolderUri(),
                     canSelectFolders: false,
                     filters: w_filters,
-                    title: "Open Leo File"
+                    title: p_customTitle ? p_customTitle : "Open Leo File"
                 })
                 .then(p_chosenLeoFile =&gt; {
                     this._fileBrowserActive = false;
@@ -11189,7 +11192,7 @@ public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
  * * Shows an 'Open Leo File' dialog window and opens the chosen file
  * * If not shown already, it also shows the outline, body and log panes
  * @param p_leoFileUri optional uri for specifying a file, if missing, a dialog will open
- * @returns A promise that resolves with a textEditor of the chosen file
+ * @returns A promise that resolves with a LeoBridgePackage from the open file command
  */
 public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | undefined&gt; {
     return this._isBusyTriggerSave(true, true)
@@ -11244,8 +11247,6 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
                                 goto: true
                             }
                         );
-                        // * TODO : SHOULD LAUNCH REFRESH INSTEAD
-                        // return this._setupOpenedLeoDocument(p_openFileResult);
                     } else {
                         this.serverHasOpenedFile = false;
                         this.serverOpenedFileName = "";
@@ -13450,6 +13451,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'weave': Constants.COMMANDS.WEAVE,
 
     'read-file-into-node': Constants.COMMANDS.READ_FILE_INTO_NODE,
+    'read-outline-only': Constants.COMMANDS.READ_OUTLINE_ONLY,
     'write-file-from-node': Constants.COMMANDS.WRITE_FILE_FROM_NODE,
 
     'file-new': Constants.COMMANDS.NEW_FILE,
@@ -17386,6 +17388,12 @@ public setFindPanel(p_panel: vscode.WebviewView): void {
   "title": "Read File Into Node..."
 },
 {
+  "command": "leointeg.readOutlineOnly",
+  "category": "Leo",
+  "enablement": "leoBridgeReady",
+  "title": "Read Outline Only..."
+},
+{
   "command": "leointeg.exportHeadlines",
   "category": "Leo",
   "enablement": "leoTreeOpened",
@@ -19022,6 +19030,87 @@ public async revert(): Promise&lt;unknown&gt; {
     }
 
 }
+</t>
+<t tx="felix.20230813230048.1">/**
+ * * Shows an 'Open Leo File' dialog window and opens the chosen file
+ * * If not shown already, it also shows the outline, body and log panes
+ * @param p_leoFileUri optional uri for specifying a file, if missing, a dialog will open
+ * @returns A promise that resolves with a LeoBridgePackage from the open file command
+ */
+public readOutlineOnly(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | undefined&gt; {
+    return this._isBusyTriggerSave(true, true)
+        .then((p_saveResult) =&gt; {
+            if (p_leoFileUri &amp;&amp; p_leoFileUri.scheme &amp;&amp; p_leoFileUri.scheme.startsWith("leo")) {
+                p_leoFileUri = undefined; // Was used in the editor/title menu!
+            }
+            let q_openedFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
+            if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath &amp;&amp; p_leoFileUri.fsPath.trim()) {
+                const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
+                q_openedFile = this.sendAction(
+                    Constants.LEOBRIDGE.READ_OUTLINE_ONLY,
+                    { filename: w_fixedFilePath }
+                );
+            } else {
+                q_openedFile = this._leoFilesBrowser.getLeoFileUrl(false, 'Read Outline Only').then(
+                    (p_chosenLeoFile) =&gt; {
+                        if (p_chosenLeoFile.trim()) {
+                            return this.sendAction(
+                                Constants.LEOBRIDGE.READ_OUTLINE_ONLY,
+                                { filename: p_chosenLeoFile }
+                            );
+                        } else {
+                            return Promise.resolve(undefined);
+                        }
+                    },
+                    (p_errorGetFile) =&gt; {
+                        return Promise.reject(p_errorGetFile);
+                    }
+                );
+            }
+            return q_openedFile;
+        })
+        .then(
+            (p_openFileResult: LeoBridgePackage | undefined) =&gt; {
+                if (p_openFileResult) {
+                    if (p_openFileResult.total) {
+                        this.serverHasOpenedFile = true;
+                        this.serverOpenedFileName = p_openFileResult.filename!;
+                        this.serverOpenedNode = p_openFileResult.node!;
+                        this._addRecentAndLastFile(this.serverOpenedFileName);
+
+                        this.loadSearchSettings();
+                        this.setupRefresh(
+                            this.finalFocus,
+                            {
+                                tree: true,
+                                body: true,
+                                documents: true,
+                                buttons: true,
+                                states: true,
+                                goto: true
+                            }
+                        );
+
+                    } else {
+                        this.serverHasOpenedFile = false;
+                        this.serverOpenedFileName = "";
+                        this.serverOpenedNode = undefined;
+                    }
+                    this.launchRefresh();
+
+                    return p_openFileResult;
+                } else {
+                    return Promise.resolve(undefined); // User cancelled chooser.
+                }
+            },
+            (p_errorOpen) =&gt; {
+                // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
+                console.log('in .then not opened or already opened');
+                return Promise.reject(p_errorOpen);
+            }
+        );
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
