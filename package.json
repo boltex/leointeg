@@ -933,12 +933,6 @@
         "title": "Read File Into Node..."
       },
       {
-        "command": "leointeg.readOutlineOnly",
-        "category": "Leo",
-        "enablement": "leoBridgeReady",
-        "title": "Read Outline Only..."
-      },
-      {
         "command": "leointeg.exportHeadlines",
         "category": "Leo",
         "enablement": "leoTreeOpened",

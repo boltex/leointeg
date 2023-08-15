@@ -1563,6 +1563,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 })],
 
 [CMD.IMPORT_ANY_FILE, () =&gt; w_leo.importAnyFile()], // No URL passed from the command definition.
+// [CMD.READ_OUTLINE_ONLY, () =&gt; w_leo.readOutlineOnly()], // Not present until fixed or deprecated in Leo.
 [CMD.READ_FILE_INTO_NODE, () =&gt; w_leo.readFileIntoNode()],
 
 [CMD.EXPORT_HEADLINES, () =&gt; w_leo.exportHeadlines()],
@@ -5066,7 +5067,7 @@ public static LEOBRIDGE = {
     OUTLINE_TO_NOWEB: "!outline_to_noweb",
     REMOVE_SENTINELS: "!remove_sentinels",
     WEAVE: "!weave",
-    READ_OUTLINE_ONLY: "!read_outline_only",
+    READ_OUTLINE_ONLY: "!read_outline_only",  // ! Not present until fixed or deprecated in Leo.
     WRITE_FILE_FROM_NODE: "!write_file_from_node",
 
     // * Leo Operations, setters and getters
@@ -5225,7 +5226,7 @@ public static COMMANDS = {
     OUTLINE_TO_NOWEB: Constants.NAME + ".outlineToNoweb",
     REMOVE_SENTINELS: Constants.NAME + ".removeSentinels",
     WEAVE: Constants.NAME + ".weave",
-    READ_OUTLINE_ONLY: Constants.NAME + ".readOutlineOnly",
+    // READ_OUTLINE_ONLY: Constants.NAME + ".readOutlineOnly",  // Not present until fixed or deprecated in Leo.
     WRITE_FILE_FROM_NODE: Constants.NAME + ".writeFileFromNode",
     // * Leo Operations
     UNDO: Constants.NAME + ".undo", // From command Palette
@@ -13451,7 +13452,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'weave': Constants.COMMANDS.WEAVE,
 
     'read-file-into-node': Constants.COMMANDS.READ_FILE_INTO_NODE,
-    'read-outline-only': Constants.COMMANDS.READ_OUTLINE_ONLY,
+    // 'read-outline-only': Constants.COMMANDS.READ_OUTLINE_ONLY,
     'write-file-from-node': Constants.COMMANDS.WRITE_FILE_FROM_NODE,
 
     'file-new': Constants.COMMANDS.NEW_FILE,
@@ -16652,6 +16653,7 @@ public async revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
 
 </t>
 <t tx="felix.20220709005340.1">public static unsupportedMinibufferCommands: string[] = [
+    'read-outline-only', // Seems buggy in Leo. Not present until fixed or deprecated in Leo.
     'restart-leo' // added to bad list for leoserver 1.0.6. (Can be removed in next leointeg version)
 ];
 
@@ -17386,12 +17388,6 @@ public setFindPanel(p_panel: vscode.WebviewView): void {
   "category": "Leo",
   "enablement": "leoTreeOpened",
   "title": "Read File Into Node..."
-},
-{
-  "command": "leointeg.readOutlineOnly",
-  "category": "Leo",
-  "enablement": "leoBridgeReady",
-  "title": "Read Outline Only..."
 },
 {
   "command": "leointeg.exportHeadlines",

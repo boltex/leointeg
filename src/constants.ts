@@ -608,7 +608,7 @@ export class Constants {
         OUTLINE_TO_NOWEB: "!outline_to_noweb",
         REMOVE_SENTINELS: "!remove_sentinels",
         WEAVE: "!weave",
-        READ_OUTLINE_ONLY: "!read_outline_only",
+        READ_OUTLINE_ONLY: "!read_outline_only",  // ! Not present until fixed or deprecated in Leo.
         WRITE_FILE_FROM_NODE: "!write_file_from_node",
 
         // * Leo Operations, setters and getters
@@ -766,7 +766,7 @@ export class Constants {
         OUTLINE_TO_NOWEB: Constants.NAME + ".outlineToNoweb",
         REMOVE_SENTINELS: Constants.NAME + ".removeSentinels",
         WEAVE: Constants.NAME + ".weave",
-        READ_OUTLINE_ONLY: Constants.NAME + ".readOutlineOnly",
+        // READ_OUTLINE_ONLY: Constants.NAME + ".readOutlineOnly",  // Not present until fixed or deprecated in Leo.
         WRITE_FILE_FROM_NODE: Constants.NAME + ".writeFileFromNode",
         // * Leo Operations
         UNDO: Constants.NAME + ".undo", // From command Palette
@@ -967,6 +967,7 @@ export class Constants {
     ];
 
     public static unsupportedMinibufferCommands: string[] = [
+        'read-outline-only', // Seems buggy in Leo. Not present until fixed or deprecated in Leo.
         'restart-leo' // added to bad list for leoserver 1.0.6. (Can be removed in next leointeg version)
     ];
 
@@ -1029,7 +1030,7 @@ export class Constants {
         'weave': Constants.COMMANDS.WEAVE,
 
         'read-file-into-node': Constants.COMMANDS.READ_FILE_INTO_NODE,
-        'read-outline-only': Constants.COMMANDS.READ_OUTLINE_ONLY,
+        // 'read-outline-only': Constants.COMMANDS.READ_OUTLINE_ONLY,
         'write-file-from-node': Constants.COMMANDS.WRITE_FILE_FROM_NODE,
 
         'file-new': Constants.COMMANDS.NEW_FILE,
