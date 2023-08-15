@@ -2864,16 +2864,6 @@
       ],
       "view/title": [
         {
-          "command": "leointeg.openLeoFile",
-          "when": "view =~ /^leoIntegration/ && leoBridgeReady && !leoTreeOpened || view =~ /^leoDocuments/ && leoBridgeReady",
-          "group": "navigation@1"
-        },
-        {
-          "command": "leointeg.newLeoFile",
-          "when": "view =~ /^leoIntegration/ && leoBridgeReady && !leoTreeOpened || view =~ /^leoDocuments/ && leoBridgeReady",
-          "group": "navigation@1"
-        },
-        {
           "command": "leointeg.showSettingsPage",
           "when": "view =~ /^leoDocuments|^leoButtons/ && leoBridgeReady",
           "group": "navigation@9"
@@ -2934,13 +2924,28 @@
           "group": "navigation@1"
         },
         {
+          "command": "leointeg.openLeoFile",
+          "when": "view =~ /^leoIntegration|^leoDocuments/ && leoBridgeReady",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.newLeoFile",
+          "when": "view =~ /^leoIntegration|^leoDocuments/ && leoBridgeReady",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.saveLeoFileFromOutline",
+          "when": "view =~ /^leoIntegration|^leoDocuments/ && leoTreeOpened && leoTreeTitled",
+          "group": "navigation@2"
+        },
+        {
           "command": "leointeg.saveAsLeoFile",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoTreeTitled",
+          "when": "view =~ /^leoIntegration|^leoDocuments/ && leoTreeOpened && !leoTreeTitled",
           "group": "navigation@2"
         },
         {
           "command": "leointeg.saveAsLeoJsFile",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoTreeTitled",
+          "when": "view =~ /^leoIntegration|^leoDocuments/ && leoTreeOpened && !leoTreeTitled",
           "group": "navigation@2"
         },
         {

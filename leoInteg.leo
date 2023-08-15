@@ -11899,16 +11899,6 @@ public static VSCODE_COMMANDS = {
 </t>
 <t tx="felix.20201215210439.1">"view/title": [
   {
-    "command": "leointeg.openLeoFile",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened || view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
-    "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.newLeoFile",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened || view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
-    "group": "navigation@1"
-  },
-  {
     "command": "leointeg.showSettingsPage",
     "when": "view =~ /^leoDocuments|^leoButtons/ &amp;&amp; leoBridgeReady",
     "group": "navigation@9"
@@ -11969,13 +11959,28 @@ public static VSCODE_COMMANDS = {
     "group": "navigation@1"
   },
   {
+    "command": "leointeg.openLeoFile",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.newLeoFile",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.saveLeoFileFromOutline",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled",
+    "group": "navigation@2"
+  },
+  {
     "command": "leointeg.saveAsLeoFile",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
     "group": "navigation@2"
   },
   {
     "command": "leointeg.saveAsLeoJsFile",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
     "group": "navigation@2"
   },
   {
