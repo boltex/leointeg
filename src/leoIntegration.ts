@@ -240,7 +240,7 @@ export class LeoIntegration {
     public leoSettingsWebview: LeoSettingsProvider;
 
     // * Log and terminal Panes
-    private _leoLogPane: vscode.OutputChannel;
+    private _leoLogPane: undefined | vscode.OutputChannel;
 
     // * Status Bar
     // private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
@@ -286,12 +286,6 @@ export class LeoIntegration {
     public launchRefresh: (() => void);
 
     constructor(private _context: vscode.ExtensionContext) {
-
-        // * output channel instantiation
-        this._leoLogPane = vscode.window.createOutputChannel(
-            Constants.GUI.LOG_PANE_TITLE
-        );
-        this._context.subscriptions.push(this._leoLogPane);
 
         // * Setup States
         this.leoStates = new LeoStates(_context, this);
@@ -1141,6 +1135,13 @@ export class LeoIntegration {
      * * Reveals the log pane if not already visible
      */
     public showLogPane(): void {
+        if (!this._leoLogPane) {
+            // * output channel instantiation
+            this._leoLogPane = vscode.window.createOutputChannel(
+                Constants.GUI.LOG_PANE_TITLE
+            );
+            this._context.subscriptions.push(this._leoLogPane);
+        }
         this._leoLogPane.show(true);
     }
 
@@ -1148,7 +1149,9 @@ export class LeoIntegration {
      * * Hides the log pane
      */
     public hideLogPane(): void {
-        this._leoLogPane.hide();
+        if (this._leoLogPane) {
+            this._leoLogPane.hide();
+        }
     }
 
     /**
@@ -1156,7 +1159,11 @@ export class LeoIntegration {
      * @param p_message The string to be added in the log
      */
     public addLogPaneEntry(p_message: string): void {
-        this._leoLogPane.appendLine(p_message);
+        if (this._leoLogPane) {
+            this._leoLogPane.appendLine(p_message);
+        } else {
+            console.log('LEOINTEG ERROR : addLogPaneEntry without log pane!');
+        }
     }
 
     /**

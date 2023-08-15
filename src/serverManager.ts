@@ -67,6 +67,8 @@ export class ServerService {
             };
         */
 
+        this._skippedFirstEmpty = false;
+
         if (!p_leoEditorPath) {
             return Promise.reject(Constants.USER_MESSAGES.LEO_PATH_MISSING);
         }
