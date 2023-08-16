@@ -5231,6 +5231,34 @@ export class LeoIntegration {
     }
 
     /**
+     * * Cycle opened documents
+     */
+    public async tabCycle(): Promise<unknown> {
+        await this._isBusyTriggerSave(true, true);
+        const w_package = await this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
+        const w_files: LeoDocument[] = w_package.files!;
+        let w_index: number = 0;
+        let w_chosenIndex = 0;
+        if (w_files && w_files.length && w_files.length > 1) {
+            w_files.forEach(function (p_filePath: LeoDocument) {
+                if (p_filePath.selected) {
+                    if (w_index === w_files.length - 1) {
+                        w_chosenIndex = 0;
+                    } else {
+                        w_chosenIndex = w_index + 1;
+                    }
+                }
+                w_index++;
+            });
+        } else {
+            // "No opened documents"
+            return undefined;
+        }
+        this.finalFocus = Focus.Outline;
+        return this.selectOpenedLeoDocument(w_chosenIndex);
+    }
+
+    /**
      * * Asks for file name and path, then saves the Leo file
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
      * @returns a promise from saving the file results, or that will resolve to undefined if cancelled
@@ -5375,45 +5403,38 @@ export class LeoIntegration {
      * * Show switch document 'QuickPick' dialog and switch file if selection is made, or just return if no files are opened.
      * @returns A promise that resolves with a LeoBridgePackage if document switched, or undefined if no switch/canceled.
      */
-    public switchLeoFile(): Promise<LeoBridgePackage | undefined> {
-        return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
-                return this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
-            })
-            .then((p_package) => {
-                const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
-                const w_files: LeoDocument[] = p_package.files!;
-                let w_index: number = 0;
-                if (w_files && w_files.length) {
-                    w_files.forEach(function (p_filePath: LeoDocument) {
-                        w_entries.push({
-                            label: w_index.toString(),
-                            description: p_filePath.name
-                                ? p_filePath.name
-                                : Constants.UNTITLED_FILE_NAME,
-                            value: w_index,
-                            alwaysShow: true,
-                        });
-                        w_index++;
-                    });
-                    const w_pickOptions: vscode.QuickPickOptions = {
-                        matchOnDescription: true,
-                        placeHolder: Constants.USER_MESSAGES.CHOOSE_OPENED_FILE,
-                    };
-                    return vscode.window.showQuickPick(w_entries, w_pickOptions);
-                } else {
-                    // "No opened documents"
-                    return Promise.resolve(undefined);
-                }
-            })
-            .then((p_chosenDocument) => {
-                if (p_chosenDocument) {
-                    return Promise.resolve(this.selectOpenedLeoDocument(p_chosenDocument.value));
-                } else {
-                    // Canceled
-                    return Promise.resolve(undefined);
-                }
+    public async switchLeoFile(): Promise<LeoBridgePackage | undefined> {
+        await this._isBusyTriggerSave(true, true);
+        const w_package = await this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
+        const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
+        const w_files: LeoDocument[] = w_package.files!;
+        let w_index: number = 0;
+        let w_chosenDocument;
+        if (w_files && w_files.length) {
+            w_files.forEach(function (p_filePath: LeoDocument) {
+                w_entries.push({
+                    label: w_index.toString(),
+                    description: p_filePath.name
+                        ? p_filePath.name
+                        : Constants.UNTITLED_FILE_NAME,
+                    value: w_index,
+                    alwaysShow: true,
+                });
+                w_index++;
             });
+            const w_pickOptions: vscode.QuickPickOptions = {
+                matchOnDescription: true,
+                placeHolder: Constants.USER_MESSAGES.CHOOSE_OPENED_FILE,
+            };
+            w_chosenDocument = await vscode.window.showQuickPick(w_entries, w_pickOptions);
+        } else {
+            // "No opened documents"
+            return undefined;
+        }
+        if (w_chosenDocument) {
+            this.finalFocus = Focus.Outline;
+            return this.selectOpenedLeoDocument(w_chosenDocument.value);
+        }
     }
 
     /**

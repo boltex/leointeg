@@ -143,6 +143,8 @@ export function activate(p_context: vscode.ExtensionContext) {
             finalFocus: Focus.Body
         })],
 
+        [CMD.TAB_CYCLE_NEXT, () => w_leo.tabCycle()],
+
         [CMD.HEADLINE, (p_ap: ArchivedPosition) => w_leo.editHeadline(p_ap, true)],
         [CMD.HEADLINE_SELECTION, () => w_leo.editHeadline(U, false)],
         [CMD.HEADLINE_SELECTION_FO, () => w_leo.editHeadline(U, true)],

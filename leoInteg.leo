@@ -480,6 +480,7 @@
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
 <v t="felix.20220724215921.1"><vh>setDocumentSelection</vh></v>
+<v t="felix.20230815233005.1"><vh>tabCycle</vh></v>
 <v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
 <v t="felix.20210915233602.1"><vh>saveAsLeoJsFile</vh></v>
 <v t="felix.20200719025231.59"><vh>saveLeoFile</vh></v>
@@ -1653,6 +1654,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Body
 })],
+
+[CMD.TAB_CYCLE_NEXT, () =&gt; w_leo.tabCycle()],
 
 [CMD.HEADLINE, (p_ap: ArchivedPosition) =&gt; w_leo.editHeadline(p_ap, true)],
 [CMD.HEADLINE_SELECTION, () =&gt; w_leo.editHeadline(U, false)],
@@ -2945,7 +2948,12 @@ print('done')
   "enablement": "leoTreeOpened",
   "title": "Git Diff"
 },
-</t>
+{
+  "command": "leointeg.tabCycleNext",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Tab Cycle Next"
+},</t>
 <t tx="ekr.20200815123601.2">"configuration": {
   "title": "Leo Editor Integration",
   "properties": {
@@ -4354,6 +4362,12 @@ print('done')
   "key": "enter",
   "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
+{
+  "command": "leointeg.tabCycleNext",
+  "key": "ctrl+tab",
+  "mac": "cmd+tab",
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
 </t>
 <t tx="ekr.20200815123601.79">{
   "command": "leointeg.saveLeoFileFromOutline",
@@ -5210,6 +5224,7 @@ public static COMMANDS = {
     GOTO_SCRIPT: Constants.NAME + ".gotoScript",
     MINIBUFFER: Constants.NAME + ".minibuffer",
     GIT_DIFF: Constants.NAME + ".gitDiff",
+    TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
     // * Outline selection
     SELECT_NODE: Constants.NAME + ".selectTreeNode",
     OPEN_ASIDE: Constants.NAME + ".openAside",
@@ -8514,13 +8529,14 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 **\*** _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
-| File Commands      |     |     |                   |
-| :----------------- | :-- | :-- | :---------------- |
-| `Ctrl + S`         |     |     | Save Leo Document |
-| `Ctrl + N`         |     |     | New Leo Document  |
-| `Ctrl + O`         |     |     | Open Leo Document |
-| `Ctrl + Shift + W` |     |     | Write File Nodes  |
-| `Ctrl + Shift + Q` |     |     | Write Dirty Files |
+| File Commands      |     |     |                     |
+| :----------------- | :-- | :-- | :------------------ |
+| `Ctrl + S`         |     |     | Save Leo Document   |
+| `Ctrl + N`         |     |     | New Leo Document    |
+| `Ctrl + O`         |     |     | Open Leo Document   |
+| `Ctrl + Tab`       |     |     | Cycle Next Document |
+| `Ctrl + Shift + W` |     |     | Write File Nodes    |
+| `Ctrl + Shift + Q` |     |     | Write Dirty Files   |
 
 ---
 
@@ -10937,45 +10953,38 @@ public startNetworkServices(): void {
  * * Show switch document 'QuickPick' dialog and switch file if selection is made, or just return if no files are opened.
  * @returns A promise that resolves with a LeoBridgePackage if document switched, or undefined if no switch/canceled.
  */
-public switchLeoFile(): Promise&lt;LeoBridgePackage | undefined&gt; {
-    return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
-        })
-        .then((p_package) =&gt; {
-            const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
-            const w_files: LeoDocument[] = p_package.files!;
-            let w_index: number = 0;
-            if (w_files &amp;&amp; w_files.length) {
-                w_files.forEach(function (p_filePath: LeoDocument) {
-                    w_entries.push({
-                        label: w_index.toString(),
-                        description: p_filePath.name
-                            ? p_filePath.name
-                            : Constants.UNTITLED_FILE_NAME,
-                        value: w_index,
-                        alwaysShow: true,
-                    });
-                    w_index++;
-                });
-                const w_pickOptions: vscode.QuickPickOptions = {
-                    matchOnDescription: true,
-                    placeHolder: Constants.USER_MESSAGES.CHOOSE_OPENED_FILE,
-                };
-                return vscode.window.showQuickPick(w_entries, w_pickOptions);
-            } else {
-                // "No opened documents"
-                return Promise.resolve(undefined);
-            }
-        })
-        .then((p_chosenDocument) =&gt; {
-            if (p_chosenDocument) {
-                return Promise.resolve(this.selectOpenedLeoDocument(p_chosenDocument.value));
-            } else {
-                // Canceled
-                return Promise.resolve(undefined);
-            }
+public async switchLeoFile(): Promise&lt;LeoBridgePackage | undefined&gt; {
+    await this._isBusyTriggerSave(true, true);
+    const w_package = await this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
+    const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
+    const w_files: LeoDocument[] = w_package.files!;
+    let w_index: number = 0;
+    let w_chosenDocument;
+    if (w_files &amp;&amp; w_files.length) {
+        w_files.forEach(function (p_filePath: LeoDocument) {
+            w_entries.push({
+                label: w_index.toString(),
+                description: p_filePath.name
+                    ? p_filePath.name
+                    : Constants.UNTITLED_FILE_NAME,
+                value: w_index,
+                alwaysShow: true,
+            });
+            w_index++;
         });
+        const w_pickOptions: vscode.QuickPickOptions = {
+            matchOnDescription: true,
+            placeHolder: Constants.USER_MESSAGES.CHOOSE_OPENED_FILE,
+        };
+        w_chosenDocument = await vscode.window.showQuickPick(w_entries, w_pickOptions);
+    } else {
+        // "No opened documents"
+        return undefined;
+    }
+    if (w_chosenDocument) {
+        this.finalFocus = Focus.Outline;
+        return this.selectOpenedLeoDocument(w_chosenDocument.value);
+    }
 }
 
 </t>
@@ -19119,6 +19128,35 @@ public readOutlineOnly(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage |
                 return Promise.reject(p_errorOpen);
             }
         );
+}
+
+</t>
+<t tx="felix.20230815233005.1">/**
+ * * Cycle opened documents
+ */
+public async tabCycle(): Promise&lt;unknown&gt; {
+    await this._isBusyTriggerSave(true, true);
+    const w_package = await this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
+    const w_files: LeoDocument[] = w_package.files!;
+    let w_index: number = 0;
+    let w_chosenIndex = 0;
+    if (w_files &amp;&amp; w_files.length &amp;&amp; w_files.length &gt; 1) {
+        w_files.forEach(function (p_filePath: LeoDocument) {
+            if (p_filePath.selected) {
+                if (w_index === w_files.length - 1) {
+                    w_chosenIndex = 0;
+                } else {
+                    w_chosenIndex = w_index + 1;
+                }
+            }
+            w_index++;
+        });
+    } else {
+        // "No opened documents"
+        return undefined;
+    }
+    this.finalFocus = Focus.Outline;
+    return this.selectOpenedLeoDocument(w_chosenIndex);
 }
 
 </t>

@@ -917,6 +917,12 @@
         "title": "Git Diff"
       },
       {
+        "command": "leointeg.tabCycleNext",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Tab Cycle Next"
+      },
+      {
         "command": "leointeg.importAnyFile",
         "title": "Import File",
         "category": "Leo",
@@ -3243,6 +3249,12 @@
         "command": "leointeg.showBody",
         "key": "enter",
         "when": "config.leoIntegration.leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
+      },
+      {
+        "command": "leointeg.tabCycleNext",
+        "key": "ctrl+tab",
+        "mac": "cmd+tab",
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.saveLeoFileFromOutline",

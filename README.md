@@ -100,13 +100,14 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 **\*** _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
-| File Commands      |     |     |                   |
-| :----------------- | :-- | :-- | :---------------- |
-| `Ctrl + S`         |     |     | Save Leo Document |
-| `Ctrl + N`         |     |     | New Leo Document  |
-| `Ctrl + O`         |     |     | Open Leo Document |
-| `Ctrl + Shift + W` |     |     | Write File Nodes  |
-| `Ctrl + Shift + Q` |     |     | Write Dirty Files |
+| File Commands      |     |     |                     |
+| :----------------- | :-- | :-- | :------------------ |
+| `Ctrl + S`         |     |     | Save Leo Document   |
+| `Ctrl + N`         |     |     | New Leo Document    |
+| `Ctrl + O`         |     |     | Open Leo Document   |
+| `Ctrl + Tab`       |     |     | Cycle Next Document |
+| `Ctrl + Shift + W` |     |     | Write File Nodes    |
+| `Ctrl + Shift + Q` |     |     | Write Dirty Files   |
 
 ---
 

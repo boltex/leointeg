@@ -737,6 +737,7 @@ export class Constants {
         GOTO_SCRIPT: Constants.NAME + ".gotoScript",
         MINIBUFFER: Constants.NAME + ".minibuffer",
         GIT_DIFF: Constants.NAME + ".gitDiff",
+        TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
         OPEN_ASIDE: Constants.NAME + ".openAside",
