@@ -3215,7 +3215,7 @@
       {
         "command": "leointeg.showOutline",
         "key": "alt+t",
-        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo || leoFindFocus || focusedView =~ /^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.showOutline",

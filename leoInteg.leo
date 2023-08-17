@@ -2953,7 +2953,8 @@ print('done')
   "category": "Leo",
   "enablement": "leoTreeOpened",
   "title": "Tab Cycle Next"
-},</t>
+},
+</t>
 <t tx="ekr.20200815123601.2">"configuration": {
   "title": "Leo Editor Integration",
   "properties": {
@@ -4327,7 +4328,7 @@ print('done')
 <t tx="ekr.20200815123601.78">{
   "command": "leointeg.showOutline",
   "key": "alt+t",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo || leoFindFocus || focusedView =~ /^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.showOutline",
@@ -5779,20 +5780,20 @@ public static CONTEXT_FLAGS = {
     FOCUS_FIND: "leoFindFocus",
 
     // Flags that match specific LeoInteg config settings
-    // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
-    // TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
-    // SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
-    // SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,              // Hover Icons on outline nodes
-    // SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,           // Hover Icons on outline nodes
-    // SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                 // Hover Icons on outline nodes
-    // SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,               // Hover Icons on outline nodes
-    // SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
-    // SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
-    // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
-    // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
+    // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE,     // Force ar'jan's suggestion of Leo's tree behavior override
+    // TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER,   // Leo outline also in the explorer view
+    // SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,     // Show 'open aside' in context menu
+    // SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,                 // Hover Icons on outline nodes
+    // SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,             // Hover Icons on outline nodes
+    // SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                   // Hover Icons on outline nodes
+    // SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,                 // Hover Icons on outline nodes
+    // SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,               // Hover Icons on outline nodes
+    // SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,                 // Hover Icons on outline nodes
+    // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER, // Used at startup
+    // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,           // Used at startup
 
     // AUTO_CONNECT: 'leoAutoConnect',             // Used at startup by 'views-welcome'
-    // AUTO_START_SERVER: 'leoAutoStartServer',   // Used at startup by 'views-welcome'
+    // AUTO_START_SERVER: 'leoAutoStartServer',    // Used at startup by 'views-welcome'
 
     // SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
     // SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
