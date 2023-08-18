@@ -3373,7 +3373,7 @@ export class LeoIntegration {
 
         // First, check for undo-history list being requested
         if (w_picked && w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
-            return this.minibufferHistory();
+            return this._showMinibufferHistory();
         }
         if (w_picked) {
             return this._doMinibufferCommand(w_picked);
@@ -3381,13 +3381,11 @@ export class LeoIntegration {
     }
 
     /**
-     * * Opens quickPick minibuffer pallette to choose from all commands in this file's commander
+     * * Opens quickPick of minibuffer's commands history
      * @returns Promise that resolves when the chosen command is placed on the front-end command stack
      */
-    public async minibufferHistory(): Promise<LeoBridgePackage | undefined> {
+    private async _showMinibufferHistory(): Promise<LeoBridgePackage | undefined> {
 
-        // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
-        await this._isBusyTriggerSave(false);
         if (!this._minibufferHistory.length) {
             return Promise.resolve(undefined);
         }
@@ -4953,7 +4951,7 @@ export class LeoIntegration {
                     }
                 });
         } else if (!isNaN(p_lineNumber)) {
-            // p_lineNumber is a number 
+            // p_lineNumber is a number
             this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: p_lineNumber }).then((p_resultGoto: LeoBridgePackage) => {
                 this.setupRefresh(Focus.Body, { tree: true, body: true, states: true, });
                 this.launchRefresh();

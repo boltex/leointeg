@@ -419,7 +419,7 @@
 </v>
 <v t="felix.20200719025231.51"><vh>Commands</vh>
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
-<v t="felix.20220824144905.1"><vh>minibufferHistory</vh></v>
+<v t="felix.20220824144905.1"><vh>_showMinibufferHistory</vh></v>
 <v t="felix.20220825004838.1"><vh>_doMinibufferCommand</vh></v>
 <v t="felix.20230222213432.1"><vh>_addToMinibufferHistory</vh></v>
 <v t="felix.20220806151009.1"><vh>prevNextNode</vh></v>
@@ -11867,7 +11867,7 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
 
     // First, check for undo-history list being requested
     if (w_picked &amp;&amp; w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
-        return this.minibufferHistory();
+        return this._showMinibufferHistory();
     }
     if (w_picked) {
         return this._doMinibufferCommand(w_picked);
@@ -13408,7 +13408,7 @@ public gotoGlobalLine(p_lineNumber?: number): void {
                 }
             });
     } else if (!isNaN(p_lineNumber)) {
-        // p_lineNumber is a number 
+        // p_lineNumber is a number
         this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: p_lineNumber }).then((p_resultGoto: LeoBridgePackage) =&gt; {
             this.setupRefresh(Focus.Body, { tree: true, body: true, states: true, });
             this.launchRefresh();
@@ -18039,13 +18039,11 @@ public isTsStillValid(ts: number): boolean {
 
 </t>
 <t tx="felix.20220824144905.1">/**
- * * Opens quickPick minibuffer pallette to choose from all commands in this file's commander
+ * * Opens quickPick of minibuffer's commands history
  * @returns Promise that resolves when the chosen command is placed on the front-end command stack
  */
-public async minibufferHistory(): Promise&lt;LeoBridgePackage | undefined&gt; {
+private async _showMinibufferHistory(): Promise&lt;LeoBridgePackage | undefined&gt; {
 
-    // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
-    await this._isBusyTriggerSave(false);
     if (!this._minibufferHistory.length) {
         return Promise.resolve(undefined);
     }
