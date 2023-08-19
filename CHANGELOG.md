@@ -2,12 +2,19 @@
 
 ## 1.0.14
 
+- Made package much smaller by fixing webpack compilation. (from 5.6mb to 760kb)
 - Fixed links in welcome page
-- Made package smaller by fixing webpack compilation
 - Made package smaller by excluding image files for readme and other .md files in resources folder.
 - Fixed 'minibuffer' preserving of the body pane before opening input.
 - Added 'revert' command used to 'Revert to Saved' the currently opened Leo document.
 - Added 'tag' related commands to outline nodes context menu, and to the minibuffer.
+- Added goto-global-line functionality to the minibuffer with direct access via direct 'number' entry.
+- Fixed input box entry UI for various commands. (insert-child, insert-node, clone-find-tag, etc.)
+- Added 'tab-cycle-next' command and the Ctrl+Tab keybinding shortcut to cycle opened Leo documents.
+- Fixed the 'focus-on-tree' command, along with the Alt+T shortcut, to work from Leo panes other than the body pane.
+.
+- Fixed 'opening' a Leo file (normally or via right-click) to force-show the main Leo panes (outline and body).
+
 
 ## 1.0.13
 
