@@ -491,7 +491,6 @@
 <v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
 <v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
 <v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
-<v t="felix.20230813230048.1"><vh>readOutlineOnly</vh></v>
 </v>
 <v t="felix.20220808233838.1"><vh>Export/Import Commands</vh>
 <v t="felix.20210602155312.1"><vh>importFile</vh></v>
@@ -1577,7 +1576,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 })],
 
 [CMD.IMPORT_ANY_FILE, () =&gt; w_leo.importAnyFile()], // No URL passed from the command definition.
-// [CMD.READ_OUTLINE_ONLY, () =&gt; w_leo.readOutlineOnly()], // Not present until fixed or deprecated in Leo.
 [CMD.READ_FILE_INTO_NODE, () =&gt; w_leo.readFileIntoNode()],
 
 [CMD.EXPORT_HEADLINES, () =&gt; w_leo.exportHeadlines()],
@@ -5095,7 +5093,6 @@ public static LEOBRIDGE = {
     OUTLINE_TO_NOWEB: "!outline_to_noweb",
     REMOVE_SENTINELS: "!remove_sentinels",
     WEAVE: "!weave",
-    READ_OUTLINE_ONLY: "!read_outline_only",  // ! Not present until fixed or deprecated in Leo.
     WRITE_FILE_FROM_NODE: "!write_file_from_node",
 
     // * Leo Operations, setters and getters
@@ -5255,7 +5252,6 @@ public static COMMANDS = {
     OUTLINE_TO_NOWEB: Constants.NAME + ".outlineToNoweb",
     REMOVE_SENTINELS: Constants.NAME + ".removeSentinels",
     WEAVE: Constants.NAME + ".weave",
-    // READ_OUTLINE_ONLY: Constants.NAME + ".readOutlineOnly",  // Not present until fixed or deprecated in Leo.
     WRITE_FILE_FROM_NODE: Constants.NAME + ".writeFileFromNode",
     // * Leo Operations
     UNDO: Constants.NAME + ".undo", // From command Palette
@@ -11256,8 +11252,12 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
                         this._addRecentAndLastFile(this.serverOpenedFileName);
 
                         this.loadSearchSettings();
+
+                        this.showBodyIfClosed = true;
+                        this.showOutlineIfClosed = true;
+
                         this.setupRefresh(
-                            this.finalFocus,
+                            Focus.Body,
                             {
                                 tree: true,
                                 body: true,
@@ -13476,7 +13476,6 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'weave': Constants.COMMANDS.WEAVE,
 
     'read-file-into-node': Constants.COMMANDS.READ_FILE_INTO_NODE,
-    // 'read-outline-only': Constants.COMMANDS.READ_OUTLINE_ONLY,
     'write-file-from-node': Constants.COMMANDS.WRITE_FILE_FROM_NODE,
 
     'file-new': Constants.COMMANDS.NEW_FILE,
@@ -16677,7 +16676,7 @@ public async revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
 
 </t>
 <t tx="felix.20220709005340.1">public static unsupportedMinibufferCommands: string[] = [
-    'read-outline-only', // Seems buggy in Leo. Not present until fixed or deprecated in Leo.
+    'read-outline-only', // Seems buggy in Leo. Not present until fixed or deprecated in Leo. (removed in Leo 6.7.5)
     'restart-leo' // added to bad list for leoserver 1.0.6. (Can be removed in next leointeg version)
 ];
 
@@ -19048,87 +19047,6 @@ public async revert(): Promise&lt;unknown&gt; {
     }
 
 }
-</t>
-<t tx="felix.20230813230048.1">/**
- * * Shows an 'Open Leo File' dialog window and opens the chosen file
- * * If not shown already, it also shows the outline, body and log panes
- * @param p_leoFileUri optional uri for specifying a file, if missing, a dialog will open
- * @returns A promise that resolves with a LeoBridgePackage from the open file command
- */
-public readOutlineOnly(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | undefined&gt; {
-    return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
-            if (p_leoFileUri &amp;&amp; p_leoFileUri.scheme &amp;&amp; p_leoFileUri.scheme.startsWith("leo")) {
-                p_leoFileUri = undefined; // Was used in the editor/title menu!
-            }
-            let q_openedFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
-            if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath &amp;&amp; p_leoFileUri.fsPath.trim()) {
-                const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
-                q_openedFile = this.sendAction(
-                    Constants.LEOBRIDGE.READ_OUTLINE_ONLY,
-                    { filename: w_fixedFilePath }
-                );
-            } else {
-                q_openedFile = this._leoFilesBrowser.getLeoFileUrl(false, 'Read Outline Only').then(
-                    (p_chosenLeoFile) =&gt; {
-                        if (p_chosenLeoFile.trim()) {
-                            return this.sendAction(
-                                Constants.LEOBRIDGE.READ_OUTLINE_ONLY,
-                                { filename: p_chosenLeoFile }
-                            );
-                        } else {
-                            return Promise.resolve(undefined);
-                        }
-                    },
-                    (p_errorGetFile) =&gt; {
-                        return Promise.reject(p_errorGetFile);
-                    }
-                );
-            }
-            return q_openedFile;
-        })
-        .then(
-            (p_openFileResult: LeoBridgePackage | undefined) =&gt; {
-                if (p_openFileResult) {
-                    if (p_openFileResult.total) {
-                        this.serverHasOpenedFile = true;
-                        this.serverOpenedFileName = p_openFileResult.filename!;
-                        this.serverOpenedNode = p_openFileResult.node!;
-                        this._addRecentAndLastFile(this.serverOpenedFileName);
-
-                        this.loadSearchSettings();
-                        this.setupRefresh(
-                            this.finalFocus,
-                            {
-                                tree: true,
-                                body: true,
-                                documents: true,
-                                buttons: true,
-                                states: true,
-                                goto: true
-                            }
-                        );
-
-                    } else {
-                        this.serverHasOpenedFile = false;
-                        this.serverOpenedFileName = "";
-                        this.serverOpenedNode = undefined;
-                    }
-                    this.launchRefresh();
-
-                    return p_openFileResult;
-                } else {
-                    return Promise.resolve(undefined); // User cancelled chooser.
-                }
-            },
-            (p_errorOpen) =&gt; {
-                // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
-                console.log('in .then not opened or already opened');
-                return Promise.reject(p_errorOpen);
-            }
-        );
-}
-
 </t>
 <t tx="felix.20230815233005.1">/**
  * * Cycle opened documents
