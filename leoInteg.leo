@@ -5750,9 +5750,6 @@ public static CONTEXT_FLAGS = {
     SELECTED_CHILD: "leoChild", // Has children
     SELECTED_ATFILE: "leoAtFile", // Can be refreshed
 
-    // Statusbar Flag 'keybindings in effect'
-    LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
-
     // Outline nodes: text Flags for 'when' clauses. Used as concatenated strings.
     NODE_MARKED: "leoNodeMarked",  // Selected node is marked
     NODE_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked (Needed for regexp)
@@ -7469,8 +7466,6 @@ private _updateLeoObjectIndicator(): void {
         clearTimeout(this._updateStatusBarTimeout);
     }
 
-    utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
-
     this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
         (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
 
@@ -7693,6 +7688,12 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
                     return;
                 }
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+
+                this._leoIntegration.leoStates.leoConnecting = false;
+                this._leoIntegration.leoStates.leoBridgeReady = false;
+                this._leoIntegration.leoStates.fileOpenedReady = false;
+                this._leoIntegration.leoStates.leoStartingServer = false;
+
                 this._serverProcess = undefined;
                 if (this._rejectPromise) {
                     this._rejectPromise(`Leo server exited with code ${p_code}`);
@@ -14115,10 +14116,17 @@ public killServer(): void {
             return;
         }
         utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+
+        this._leoIntegration.leoStates.leoConnecting = false;
+        this._leoIntegration.leoStates.leoBridgeReady = false;
+        this._leoIntegration.leoStates.fileOpenedReady = false;
+        this._leoIntegration.leoStates.leoStartingServer = false;
+
         this._serverProcess = undefined;
     } else {
         console.error("No Server");
     }
+
 }
 
 </t>

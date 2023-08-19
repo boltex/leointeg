@@ -198,6 +198,12 @@ export class ServerService {
                         return;
                     }
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+
+                    this._leoIntegration.leoStates.leoConnecting = false;
+                    this._leoIntegration.leoStates.leoBridgeReady = false;
+                    this._leoIntegration.leoStates.fileOpenedReady = false;
+                    this._leoIntegration.leoStates.leoStartingServer = false;
+
                     this._serverProcess = undefined;
                     if (this._rejectPromise) {
                         this._rejectPromise(`Leo server exited with code ${p_code}`);
@@ -222,10 +228,17 @@ export class ServerService {
                 return;
             }
             utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+
+            this._leoIntegration.leoStates.leoConnecting = false;
+            this._leoIntegration.leoStates.leoBridgeReady = false;
+            this._leoIntegration.leoStates.fileOpenedReady = false;
+            this._leoIntegration.leoStates.leoStartingServer = false;
+
             this._serverProcess = undefined;
         } else {
             console.error("No Server");
         }
+
     }
 
     /**

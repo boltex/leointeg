@@ -427,9 +427,6 @@ export class Constants {
         SELECTED_CHILD: "leoChild", // Has children
         SELECTED_ATFILE: "leoAtFile", // Can be refreshed
 
-        // Statusbar Flag 'keybindings in effect'
-        LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
-
         // Outline nodes: text Flags for 'when' clauses. Used as concatenated strings.
         NODE_MARKED: "leoNodeMarked",  // Selected node is marked
         NODE_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked (Needed for regexp)

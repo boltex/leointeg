@@ -87,8 +87,6 @@ export class LeoStatusBar {
             clearTimeout(this._updateStatusBarTimeout);
         }
 
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
-
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
             (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
 
