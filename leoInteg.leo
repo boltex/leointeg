@@ -22095,9 +22095,7 @@ public clearRecentLeoFiles(): void {
 - Fixed input box entry UI for various commands. (insert-child, insert-node, clone-find-tag, etc.)
 - Added 'tab-cycle-next' command and the Ctrl+Tab keybinding shortcut to cycle opened Leo documents.
 - Fixed the 'focus-on-tree' command, along with the Alt+T shortcut, to work from Leo panes other than the body pane.
-.
 - Fixed 'opening' a Leo file (normally or via right-click) to force-show the main Leo panes (outline and body).
-
 
 </t>
 </tnodes>
