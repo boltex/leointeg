@@ -3,7 +3,8 @@
 ## 1.0.14
 
 - Made package much smaller by fixing webpack compilation. (from 5.6mb to 760kb)
-- Fixed links in welcome page
+- Added 'new', 'Open' and 'Save' icons to the outline pane's title bar.
+- Fixed links in welcome page.
 - Made package smaller by excluding image files for readme and other .md files in resources folder.
 - Fixed 'minibuffer' preserving of the body pane before opening input.
 - Added 'revert' command used to 'Revert to Saved' the currently opened Leo document.
