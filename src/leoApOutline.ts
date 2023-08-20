@@ -92,6 +92,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
                 desc = "\u{1F4CE} (" + element.u + ")";
             }
             if (tagsQty) {
+                w_contextValue += Constants.CONTEXT_FLAGS.NODE_TAGS;
                 if (desc) {
                     desc = desc + " "; // add space
                 }

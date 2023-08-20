@@ -3,7 +3,7 @@ import * as utils from "./utils";
 import { Constants } from "./constants";
 import { ArchivedPosition, Focus, LeoGotoNavKey, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
+import { LeoSettingsProvider } from "./leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtons";
 import { LeoGotoNode } from "./leoGoto";
 import { LeoUndoNode } from "./leoUndos";
@@ -83,7 +83,7 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [CMD.CLOSE_FILE, () => w_leo.closeLeoFile()],
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],
-
+        [CMD.REVERT_TO_SAVED, () => w_leo.revert()],
         [CMD.OPEN_FILE, (p_uri?: vscode.Uri) => w_leo.openLeoFile(p_uri)],
 
         [CMD.CLEAR_RECENT_FILES, () => w_leo.clearRecentLeoFiles()],
@@ -141,6 +141,8 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             finalFocus: Focus.Body
         })],
+
+        [CMD.TAB_CYCLE_NEXT, () => w_leo.tabCycle()],
 
         [CMD.HEADLINE, (p_ap: ArchivedPosition) => w_leo.editHeadline(p_ap, true)],
         [CMD.HEADLINE_SELECTION, () => w_leo.editHeadline(U, false)],
@@ -690,9 +692,10 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.REPLACE_ALL, () => w_leo.findAll(true)],
         [CMD.GOTO_GLOBAL_LINE, () => w_leo.gotoGlobalLine()],
         [CMD.TAG_CHILDREN, () => w_leo.tagChildren()],
-        [CMD.TAG_NODE, () => w_leo.tagNode()],
-        [CMD.REMOVE_TAG, () => w_leo.removeTag()],
-        [CMD.REMOVE_TAGS, () => w_leo.removeTags()],
+
+        [CMD.TAG_NODE, (p_ap: ArchivedPosition) => w_leo.tagNode(p_ap)],
+        [CMD.REMOVE_TAG, (p_ap: ArchivedPosition) => w_leo.removeTag(p_ap)],
+        [CMD.REMOVE_TAGS, (p_ap: ArchivedPosition) => w_leo.removeTags(p_ap)],
 
         [CMD.CLONE_FIND_ALL, () => w_leo.cloneFind(false, false)],
         [CMD.CLONE_FIND_ALL_FLATTENED, () => w_leo.cloneFind(false, true)],

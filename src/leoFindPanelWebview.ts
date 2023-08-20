@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { Constants } from '../constants';
-import { LeoIntegration } from '../leoIntegration';
-import * as utils from '../utils';
+import { Constants } from './constants';
+import { LeoIntegration } from './leoIntegration';
+import * as utils from './utils';
 
 /**
  * Leo Find Panel provider
@@ -93,18 +93,11 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
             vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'main.js')
         );
         // Do the same for the stylesheet.
-        const styleResetUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'reset.css')
+        const style = webview.asWebviewUri(
+            vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'style.css')
         );
-        const styleVSCodeUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'vscode.css')
-        );
-        const styleMainUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'main.css')
-        );
-
         // Use a nonce to only allow a specific script to be run.
-        const nonce = this.getNonce();
+        const nonce = utils.getNonce();
 
         return `<!DOCTYPE html>
             <html lang="en" tabindex="-1">
@@ -112,10 +105,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                 <meta charset="UTF-8">
                 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <link href="${styleResetUri}" rel="stylesheet">
-                <link href="${styleVSCodeUri}" rel="stylesheet">
-                <link href="${styleMainUri}" rel="stylesheet">
-
+                <link href="${style}" rel="stylesheet">
                 <title>Leo Find Panel</title>
             </head>
             <body>
@@ -190,12 +180,4 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
             </html>`;
     }
 
-    private getNonce() {
-        let text = '';
-        const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < 32; i++) {
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-        }
-        return text;
-    }
 }

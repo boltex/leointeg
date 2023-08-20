@@ -84,7 +84,7 @@ export class LeoFilesBrowser {
      * @param p_saveAsFlag Optional flag that will ask for a 'save' path+filename
      * @returns A promise resolving to a chosen path string, or rejected with an empty string if cancelled
      */
-    public getLeoFileUrl(p_saveAsFlag?: boolean): Promise<string> {
+    public getLeoFileUrl(p_saveAsFlag?: boolean, p_customTitle?: string): Promise<string> {
         if (this._fileBrowserActive) {
             return Promise.resolve("");
         }
@@ -103,7 +103,7 @@ export class LeoFilesBrowser {
                     saveLabel: "Save Leo File",
                     defaultUri: this._getBestOpenFolderUri(),
                     filters: w_filters,
-                    title: "Save as Leo File"
+                    title: p_customTitle ? p_customTitle : "Save as Leo File"
                 })
                     .then(p_chosenLeoFile => {
                         this._fileBrowserActive = false;
@@ -121,7 +121,7 @@ export class LeoFilesBrowser {
                         defaultUri: this._getBestOpenFolderUri(),
                         canSelectFolders: false,
                         filters: w_filters,
-                        title: "Open Leo File"
+                        title: p_customTitle ? p_customTitle : "Open Leo File"
                     })
                     .then(p_chosenLeoFile => {
                         this._fileBrowserActive = false;
@@ -148,10 +148,10 @@ export class LeoFilesBrowser {
         return new Promise((p_resolve, p_reject) => {
             // Choose file
             vscode.window.showSaveDialog({
-                saveLabel: "Save Leojs File",
+                saveLabel: "Save Copy as leojs File",
                 defaultUri: this._getBestOpenFolderUri(),
                 filters: { 'JSON Leo File': ['leojs'] },
-                title: "Save as LeoJS File"
+                title: "Save Copy as leojs File"
             })
                 .then(p_chosenLeoFile => {
                     this._fileBrowserActive = false;

@@ -44,7 +44,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
-## Leo Commands and Keybindings ⌨️
+## Leo Commands and Keybindings
 
 Here are the most useful Commands. Most of Leo's other commands are also available with their original keybindings.
 
@@ -71,20 +71,20 @@ Here are the most useful Commands. Most of Leo's other commands are also availab
 
 _Move Outline commands need the 'Alt' key modifier only when focus is on body pane._
 
-| Common Operations  |     |          |     |           |    |            |                     |
-| :----------------- | :-- | :------- | :-- | :-------- |:-- | :--------- | :------------------ |
-| `Ctrl + T`         |     |          |     |           |    |            | Toggle Outline/Body |
-| `Tab`              | or  | `Enter`  | or  | `Alt + D` |or  | `Ctrl + G` | Focus on Body       |
-| `Alt + T`          |     |          |     |           |    |            | Focus on Outline    |
-| `Alt + -`          |     |          |     |           |    |            | Contract All        |
-| `Ctrl + B`         |     |          |     |           |    |            | Execute Script      |
-| `Ctrl + Shift + D` |     |          |     |           |    |            | Extract             |
-| `Ctrl + Shift + N` |     |          |     |           |    |            | Extract Names       |
-| `Alt + A`          |     |          |     |           |    |            | Sort Siblings       |
-| `Ctrl + F`         |     |          |     |           |    |            | Start Search        |
-| `F3`               |     |          |     |           |    |            | Find Next           |
-| `F2`               |     |          |     |           |    |            | Find Previous       |
-| `Alt + X`          |     |          |     |           |    |            | Minibuffer Palette  |
+| Common Operations  |     |         |     |           |     |            |                     |
+| :----------------- | :-- | :------ | :-- | :-------- | :-- | :--------- | :------------------ |
+| `Ctrl + T`         |     |         |     |           |     |            | Toggle Outline/Body |
+| `Tab`              | or  | `Enter` | or  | `Alt + D` | or  | `Ctrl + G` | Focus on Body       |
+| `Alt + T`          |     |         |     |           |     |            | Focus on Outline    |
+| `Alt + -`          |     |         |     |           |     |            | Contract All        |
+| `Ctrl + B`         |     |         |     |           |     |            | Execute Script      |
+| `Ctrl + Shift + D` |     |         |     |           |     |            | Extract             |
+| `Ctrl + Shift + N` |     |         |     |           |     |            | Extract Names       |
+| `Alt + A`          |     |         |     |           |     |            | Sort Siblings       |
+| `Ctrl + F`         |     |         |     |           |     |            | Start Search        |
+| `F3`               |     |         |     |           |     |            | Find Next           |
+| `F2`               |     |         |     |           |     |            | Find Previous       |
+| `Alt + X`          |     |         |     |           |     |            | Minibuffer Palette  |
 
 | Tree Navigation    |     |                 |                             |
 | :----------------- | :-- | :-------------- | :-------------------------- |
@@ -100,13 +100,14 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 **\*** _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
-| File Commands      |     |                         |                   |
-| :----------------- | :-- | :---------------------- | :---------------- |
-| `Ctrl + S`         |     |                         | Save Leo Document |
-| `Ctrl + N`         |     |                         | New Leo Document  |
-| `Ctrl + O`         |     |                         | Open Leo Document |
-| `Ctrl + Shift + W` |     |                         | Write File Nodes  |
-| `Ctrl + Shift + Q` |     |                         | Write Dirty Files |
+| File Commands      |     |     |                     |
+| :----------------- | :-- | :-- | :------------------ |
+| `Ctrl + S`         |     |     | Save Leo Document   |
+| `Ctrl + N`         |     |     | New Leo Document    |
+| `Ctrl + O`         |     |     | Open Leo Document   |
+| `Ctrl + Tab`       |     |     | Cycle Next Document |
+| `Ctrl + Shift + W` |     |     | Write File Nodes    |
+| `Ctrl + Shift + Q` |     |     | Write Dirty Files   |
 
 ---
 
@@ -171,7 +172,7 @@ Arrow keys, home/end, page up/down are used for basic navigation. But in order t
 
 ### Goto Anywhere Command
 
-Normally in vscode, the the **`Ctrl+P`**  shortcut allows you to switch to any project file, but when the focus is in one of Leo's panels, the **`Ctrl+P`** keybinding allows you to switch to a node directly by typing (part of) it's headline.
+Normally in vscode, the the **`Ctrl+P`** shortcut allows you to switch to any project file, but when the focus is in one of Leo's panels, the **`Ctrl+P`** keybinding allows you to switch to a node directly by typing (part of) it's headline.
 
 ![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/goto-anywhere.gif)
 
@@ -201,7 +202,7 @@ If you check the **Tag** option, the **Nav** field and **Goto Pane** are then us
 
 ![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-tags.gif)
 
-## Undo Panel  🔄
+## Undo Panel ♻️
 
 Use the undo / redo icons above the outline or above the undo pane itself. You can also right-click on an undo step to directly switch to that specific state!
 

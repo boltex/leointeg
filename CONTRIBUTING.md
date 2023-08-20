@@ -24,31 +24,31 @@ If you're having problems with the procedures below, try [running this sample ex
 
 On Windows:
 
-![about](resources/vscode-about-win.png)
+![about](https://raw.githubusercontent.com/boltex/leointeg/master/resources/vscode-about-win.png)
 
 On Linux:
 
-![about](resources/vscode-about.png)
+![about](https://raw.githubusercontent.com/boltex/leointeg/master/resources/vscode-about.png)
 
 ## Getting the source and its development dependencies
 
 - Clone the repository using the command line by typing : `git clone https://github.com/boltex/leointeg.git`
 
-![clone](resources/git-clone.png)
+![clone](https://raw.githubusercontent.com/boltex/leointeg/master/resources/git-clone.png)
 
 - Although you could 'cd' into the leoInteg folder and run some commands from the same terminal, let's instead use the terminal from within vscode. So open the leoInteg folder with vscode instead, either with the context menu as shown below, or by choosing "Open Folder..." from within vscode:
 
-![open with vscode](resources/open-with-vscode.png)
+![open with vscode](https://raw.githubusercontent.com/boltex/leointeg/master/resources/open-with-vscode.png)
 
 - With vscode now opened with the **leoInteg folder as its workspace**, use the `ctrl+shift+p` keyboard shortcut to open command palette and toggle the terminal. (You can find any command through the command palette)
 
-![open terminal](resources/open-terminal.png)
+![open terminal](https://raw.githubusercontent.com/boltex/leointeg/master/resources/open-terminal.png)
 
 - Install the development dependencies by entering the `npm install` command in the terminal. **(Important if you also just _pulled_ updated sources)**
 
 - When the command has finished running, you should see logged results in the terminal and also that a new **node_modules** folder was created.
 
-![dependencies](resources/node-modules.png)
+![dependencies](https://raw.githubusercontent.com/boltex/leointeg/master/resources/node-modules.png)
 
 - You're now ready to **compile and run** the development version of the leoInteg extension.
 
@@ -58,7 +58,7 @@ On Linux:
 
 - When simply running the extension, choose the **Run Extension** profile.
 
-![profile](resources/debug-profile.png)
+![profile](https://raw.githubusercontent.com/boltex/leointeg/master/resources/debug-profile.png)
 
 > (**Optional**) To contribute code to the python server script, or run it through the vscode debugger, you may need to install the [python development extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python).
 
@@ -68,11 +68,11 @@ On Linux:
 
 - Use the **Start Debugging** command (or press **F5**) to start another vscode window with the expansion _installed and running_ within it.
 
-![extension started](resources/leointeg-started.png)
+![extension started](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leointeg-started.png)
 
 - If any problems occurred during the extension compilation it will be logged in the vscode instance that started the debug process in its **task-webpack** terminal panel. Otherwise if its running, the extension itself will be logging any messages in the **debug-console** panel. (See animation below)
 
-![extension logs](resources/debug-anim.gif)
+![extension logs](https://raw.githubusercontent.com/boltex/leointeg/master/resources/debug-anim.gif)
 
 ## The python server script
 
@@ -100,13 +100,13 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 - If Leointeg or vscode cannot start running the server script on you system or OS, a **workaround** is to start the server script beforehand manually with whichever python interpreter you have installed.
 
-![launch server](resources/manual-server-start.png)
+![launch server](https://raw.githubusercontent.com/boltex/leointeg/master/resources/manual-server-start.png)
 
 - It will terminate automatically when a user disconnect.
 
 **Note**: If force-closing the server from the integrated vscode terminal, use the 'Kill terminal' button instead of the 'X' that just hides the panel.
 
-![kill terminal](resources/kill-terminal.png)
+![kill terminal](https://raw.githubusercontent.com/boltex/leointeg/master/resources/kill-terminal.png)
 
 ## Issues
 

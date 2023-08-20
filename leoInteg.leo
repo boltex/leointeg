@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Created by Leo: http://leoeditor.com/leo_toc.html -->
-<leo_file xmlns:leo="http://leoeditor.com/namespaces/leo-python-editor/1.1" >
+<!-- Created by Leo: https://leo-editor.github.io/leo-editor/leo_toc.html -->
+<leo_file xmlns:leo="http://leo-editor.github.io/leo-editor/namespaces/leo-python-editor/1.1" >
 <leo_header file_format="2"/>
 <globals/>
 <preferences/>
@@ -30,6 +30,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="fil.20230405000235.1"><vh>1.0.14</vh></v>
 <v t="felix.20230310210120.1"><vh>1.0.13</vh></v>
 <v t="felix.20221208001059.1"><vh>1.0.12</vh></v>
 <v t="felix.20221212232224.1"><vh>1.0.11</vh></v>
@@ -418,7 +419,7 @@
 </v>
 <v t="felix.20200719025231.51"><vh>Commands</vh>
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
-<v t="felix.20220824144905.1"><vh>minibufferHistory</vh></v>
+<v t="felix.20220824144905.1"><vh>_showMinibufferHistory</vh></v>
 <v t="felix.20220825004838.1"><vh>_doMinibufferCommand</vh></v>
 <v t="felix.20230222213432.1"><vh>_addToMinibufferHistory</vh></v>
 <v t="felix.20220806151009.1"><vh>prevNextNode</vh></v>
@@ -479,12 +480,14 @@
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
 <v t="felix.20220724215921.1"><vh>setDocumentSelection</vh></v>
+<v t="felix.20230815233005.1"><vh>tabCycle</vh></v>
 <v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
 <v t="felix.20210915233602.1"><vh>saveAsLeoJsFile</vh></v>
 <v t="felix.20200719025231.59"><vh>saveLeoFile</vh></v>
 <v t="felix.20200719025231.60"><vh>switchLeoFile</vh></v>
 <v t="felix.20200719025231.61"><vh>selectOpenedLeoDocument</vh></v>
 <v t="fil.20210609233100.1"><vh>clearRecentLeoFiles</vh></v>
+<v t="felix.20230811224332.1"><vh>revertToSaved</vh></v>
 <v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
 <v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
 <v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
@@ -636,6 +639,7 @@
 <v t="felix.20210614235023.1"><vh>chooseLeoFolderDialog</vh></v>
 <v t="felix.20201018163510.1"><vh>getDurationMilliseconds</vh></v>
 <v t="felix.20200718195558.7"><vh>getFileFromPath</vh></v>
+<v t="felix.20230808224051.1"><vh>getOnce</vh></v>
 <v t="felix.20220826200039.1"><vh>isApEqual</vh></v>
 <v t="felix.20200718195558.8"><vh>isIconChangedByEdit</vh></v>
 <v t="felix.20200718195558.9"><vh>isHexColor</vh></v>
@@ -646,14 +650,13 @@
 <v t="felix.20210612214028.1"><vh>findNextAvailablePort</vh></v>
 <v t="felix.20210820231649.1"><vh>findSingleAvailablePort</vh></v>
 </v>
-<v t="felix.20210522001751.1"><vh>@clean src/webviews/leoFindPanelWebview.ts</vh>
+<v t="felix.20210522001751.1"><vh>@clean src/leoFindPanelWebview.ts</vh>
 <v t="felix.20210522001814.1"><vh>class LeoFindPanelProvider</vh>
 <v t="fil.20210603195851.1"><vh>resolveWebviewView</vh></v>
 <v t="fil.20210603195902.1"><vh>_getHtmlForWebview</vh></v>
-<v t="fil.20210603195909.1"><vh>getNonce</vh></v>
 </v>
 </v>
-<v t="fil.20210603195218.1"><vh>@clean src/webviews/leoSettingsWebview.ts</vh>
+<v t="fil.20210603195218.1"><vh>@clean src/leoSettingsWebview.ts</vh>
 <v t="fil.20210603195319.1"><vh>class LeoSettingsWebview</vh>
 <v t="fil.20210603195319.2"><vh>changedConfiguration</vh></v>
 <v t="fil.20210603195319.3"><vh>openWebview</vh></v>
@@ -662,48 +665,15 @@
 </v>
 </v>
 <v t="fil.20210603223013.1"><vh>Files: Find Panel Webview</vh>
-<v t="fil.20210603223013.2"><vh>@clean find-panel/main.css</vh></v>
+<v t="fil.20210603223013.2"><vh>@clean find-panel/style.css</vh></v>
 <v t="fil.20210603223013.4"><vh>@clean find-panel/main.js</vh>
 <v t="felix.20220301224252.1"><vh>main function</vh></v>
 </v>
-<v t="fil.20210603223014.2"><vh>@clean find-panel/reset.css</vh></v>
-<v t="fil.20210603223014.4"><vh>@clean find-panel/vscode.css</vh></v>
 </v>
 <v t="fil.20210603223933.1"><vh>Files: Settings Panel Webview</vh>
-<v t="fil.20210603223933.2"><vh>@clean src/webviews/settingsPanel/colors.ts</vh>
-<v t="fil.20210603223933.3"><vh>adjustLight</vh></v>
-<v t="fil.20210603223933.4"><vh>darken</vh></v>
-<v t="fil.20210603223933.5"><vh>lighten</vh></v>
-<v t="fil.20210603223933.6"><vh>opacity</vh></v>
-<v t="fil.20210603223933.7"><vh>toRgba</vh></v>
-</v>
-<v t="fil.20210603223933.9"><vh>@clean src/webviews/settingsPanel/index.html</vh>
-<v t="fil.20210603223933.10"><vh>&lt;html&gt;</vh></v>
-</v>
-<v t="fil.20210603223933.165"><vh>@clean src/webviews/settingsPanel/index.ts</vh>
-<v t="fil.20210603223933.166"><vh>main</vh>
-<v t="fil.20210603223934.1"><vh>listenAll</vh></v>
-<v t="fil.20210603223934.2"><vh>chooseLeoServerPath</vh></v>
-<v t="fil.20210603223934.3"><vh>onBind</vh></v>
-<v t="fil.20210603223934.4"><vh>onInputSelected</vh></v>
-<v t="fil.20210603223934.5"><vh>onInputChecked</vh></v>
-<v t="fil.20210603223934.6"><vh>onInputBlurred</vh></v>
-<v t="fil.20210603223934.7"><vh>onInputFocused</vh></v>
-<v t="fil.20210603223934.8"><vh>onInputChanged</vh></v>
-<v t="felix.20210725221438.1"><vh>onVscodeInputChanged</vh></v>
-<v t="felix.20210725221447.1"><vh>setFontControls</vh></v>
-<v t="fil.20210603223934.9"><vh>setControls</vh></v>
-<v t="fil.20210603223934.10"><vh>setVisibility</vh></v>
-<v t="fil.20210603223934.11"><vh>parseStateExpression</vh></v>
-<v t="fil.20210603223934.12"><vh>evaluateStateExpression</vh></v>
-<v t="fil.20210603223934.13"><vh>getSettingValue</vh></v>
-</v>
-</v>
-<v t="fil.20210603223934.15"><vh>@clean src/webviews/settingsPanel/theme.ts</vh>
-<v t="fil.20210603223934.16"><vh>initializeAndWatchThemeColors</vh></v>
-</v>
-<v t="fil.20210603223956.2"><vh>@clean src/webviews/settingsPanel/scss/main.scss</vh></v>
-<v t="fil.20210603223956.4"><vh>@clean src/webviews/settingsPanel/scss/popup.scss</vh></v>
+<v t="fil.20210603223933.9"><vh>@clean settings-panel/index.html</vh></v>
+<v t="fil.20210603223933.165"><vh>@clean settings-panel/main.js</vh></v>
+<v t="fil.20210603223956.2"><vh>@clean settings-panel/style.css</vh></v>
 </v>
 <v t="ekr.20200808100339.1"><vh>----- TS Classes</vh>
 <v t="felix.20200718024635.2"></v>
@@ -1057,6 +1027,13 @@ def simulateDialog(self, key, defaultVal):
  * * Reveals the log pane if not already visible
  */
 public showLogPane(): void {
+    if (!this._leoLogPane) {
+        // * output channel instantiation
+        this._leoLogPane = vscode.window.createOutputChannel(
+            Constants.GUI.LOG_PANE_TITLE
+        );
+        this._context.subscriptions.push(this._leoLogPane);
+    }
     this._leoLogPane.show(true);
 }
 
@@ -1065,7 +1042,9 @@ public showLogPane(): void {
  * * Hides the log pane
  */
 public hideLogPane(): void {
-    this._leoLogPane.hide();
+    if (this._leoLogPane) {
+        this._leoLogPane.hide();
+    }
 }
 
 </t>
@@ -1074,7 +1053,11 @@ public hideLogPane(): void {
  * @param p_message The string to be added in the log
  */
 public addLogPaneEntry(p_message: string): void {
-    this._leoLogPane.appendLine(p_message);
+    if (this._leoLogPane) {
+        this._leoLogPane.appendLine(p_message);
+    } else {
+        console.log('LEOINTEG ERROR : addLogPaneEntry without log pane!');
+    }
 }
 
 </t>
@@ -1394,8 +1377,8 @@ private _tryApplyNodeToBody(
  * @returns Promise back from command's execution, if added on stack, undefined otherwise.
  * (see command stack 'rules' in commandStack.ts)
  */
-public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise&lt;LeoBridgePackage&gt; | undefined {
 
+public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise&lt;LeoBridgePackage&gt; | undefined {
     // No forced vscode save-triggers for direct calls from extension.js
     this.triggerBodySave();
     if (p_isNavigation) {
@@ -1513,6 +1496,12 @@ public async removeAtButton(p_node: LeoButtonNode): Promise&lt;any&gt; {
  */
 private _processServerOutput(p_data: string): void {
     let w_dataString = p_data.toString().replace(/\n$/, ""); // remove last
+    if (!this._skippedFirstEmpty) {
+        if (w_dataString &amp;&amp; (w_dataString.charCodeAt(0) === 10 || w_dataString.charCodeAt(0) === 13)) {
+            this._skippedFirstEmpty = true; // Skipping first empty line for esthetics only
+            return;
+        }
+    }
     w_dataString.toString().split("\n").forEach(p_line =&gt; {
         if (true || p_line) { // ? std out process line by line: json shouldn't have line breaks
             if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
@@ -1604,7 +1593,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.CLOSE_FILE, () =&gt; w_leo.closeLeoFile()],
 [CMD.NEW_FILE, () =&gt; w_leo.newLeoFile()],
-
+[CMD.REVERT_TO_SAVED, () =&gt; w_leo.revert()],
 [CMD.OPEN_FILE, (p_uri?: vscode.Uri) =&gt; w_leo.openLeoFile(p_uri)],
 
 [CMD.CLEAR_RECENT_FILES, () =&gt; w_leo.clearRecentLeoFiles()],
@@ -1662,6 +1651,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Body
 })],
+
+[CMD.TAB_CYCLE_NEXT, () =&gt; w_leo.tabCycle()],
 
 [CMD.HEADLINE, (p_ap: ArchivedPosition) =&gt; w_leo.editHeadline(p_ap, true)],
 [CMD.HEADLINE_SELECTION, () =&gt; w_leo.editHeadline(U, false)],
@@ -2211,9 +2202,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.REPLACE_ALL, () =&gt; w_leo.findAll(true)],
 [CMD.GOTO_GLOBAL_LINE, () =&gt; w_leo.gotoGlobalLine()],
 [CMD.TAG_CHILDREN, () =&gt; w_leo.tagChildren()],
-[CMD.TAG_NODE, () =&gt; w_leo.tagNode()],
-[CMD.REMOVE_TAG, () =&gt; w_leo.removeTag()],
-[CMD.REMOVE_TAGS, () =&gt; w_leo.removeTags()],
+
+[CMD.TAG_NODE, (p_ap: ArchivedPosition) =&gt; w_leo.tagNode(p_ap)],
+[CMD.REMOVE_TAG, (p_ap: ArchivedPosition) =&gt; w_leo.removeTag(p_ap)],
+[CMD.REMOVE_TAGS, (p_ap: ArchivedPosition) =&gt; w_leo.removeTags(p_ap)],
 
 [CMD.CLONE_FIND_ALL, () =&gt; w_leo.cloneFind(false, false)],
 [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; w_leo.cloneFind(false, true)],
@@ -2263,7 +2255,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -2281,7 +2273,7 @@ print('done')
   },
   "homepage": "https://github.com/boltex/leointeg#readme",
   "engines": {
-    "vscode": "^1.75.1"
+    "vscode": "^1.81.0"
   },
   "keywords": [
     "leo",
@@ -2307,39 +2299,33 @@ print('done')
     @others
   },
   "scripts": {
-    "vscode:prepublish": "webpack --mode production",
-    "webpack": "webpack --mode development",
-    "webpack-dev": "webpack --mode development --watch",
-    "test-compile": "tsc -p ./",
-    "lint": "tslint -p ./"
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests &amp;&amp; npm run compile &amp;&amp; npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.3",
+    "@types/glob": "^8.1.0",
     "@types/lodash": "^4.14.177",
-    "@types/mocha": "^7.0.2",
-    "@types/node": "^14.11.2",
-    "@types/vscode": "^1.68.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "20.2.5",
+    "@types/vscode": "^1.81.0",
     "@types/ws": "^7.2.6",
-    "clean-webpack-plugin": "^3.0.0",
-    "csp-html-webpack-plugin": "^4.0.0",
-    "css-loader": "^3.5.3",
-    "eslint": "^7.9.0",
-    "fork-ts-checker-webpack-plugin": "^4.1.6",
-    "glob": "^7.1.6",
-    "html-loader": "^1.1.0",
-    "html-webpack-exclude-assets-plugin": "0.0.7",
-    "html-webpack-plugin": "^3.2.0",
-    "imagemin-webpack-plugin": "^2.4.2",
-    "mini-css-extract-plugin": "^0.9.0",
-    "mocha": "^7.2.0",
-    "node-sass": "^4.14.1",
-    "sass-loader": "^8.0.2",
-    "ts-loader": "^7.0.5",
-    "tslint": "^6.1.3",
-    "typescript": "^3.9.7",
-    "vscode-test": "^1.4.0",
-    "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
+    "eslint": "^8.41.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "ts-loader": "^9.4.3",
+    "typescript": "^5.1.3",
+    "webpack": "^5.85.0",
+    "webpack-cli": "^5.1.1",
+    "@vscode/test-electron": "^2.3.2"
   },
   "dependencies": {
     "bufferutil": "^4.0.1",
@@ -2848,6 +2834,12 @@ print('done')
   }
 },
 {
+  "command": "leointeg.revert",
+  "title": "Revert to Saved",
+  "enablement": "leoTreeOpened",
+  "category": "Leo"
+},
+{
   "command": "leointeg.saveLeoFile",
   "category": "Leo",
   "title": "Save Leo File",
@@ -2880,7 +2872,7 @@ print('done')
 {
   "command": "leointeg.saveAsLeoJsFile",
   "category": "Leo",
-  "title": "Save as leojs JSON File...",
+  "title": "Save a Copy as leojs File...",
   "enablement": "leoTreeOpened",
   "icon": {
     "light": "resources/light/save-as-leojs.svg",
@@ -2953,9 +2945,15 @@ print('done')
   "enablement": "leoTreeOpened",
   "title": "Git Diff"
 },
+{
+  "command": "leointeg.tabCycleNext",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Tab Cycle Next"
+},
 </t>
 <t tx="ekr.20200815123601.2">"configuration": {
-  "title": "Leo Integration — Use 'Leo: Open Settings' for a richer, interactive experience",
+  "title": "Leo Editor Integration",
   "properties": {
     @others
   }
@@ -3855,19 +3853,19 @@ print('done')
   "type": "boolean",
   "description": "Specifies whether to keep focus in the outline when opening a body pane on the side"
 },
-"leoIntegration.leoGoAnywhereShortcut": {
+"leoIntegration.goAnywhereShortcut": {
   "scope": "application",
   "default": true,
   "type": "boolean",
   "description": "Enables Leo's 'Go Anywhere' to replace 'Go to file' with the Ctrl+P keyboard shortcut when focus in in outline or body"
 },
-"leoIntegration.leoCollapseAllShortcut": {
+"leoIntegration.collapseAllShortcut": {
   "scope": "application",
   "default": true,
   "type": "boolean",
   "description": "Enables the Alt+'-' keyboard shortcut for collapsing all folders in the Explorer View"
 },
-"leoIntegration.leoActivityViewShortcut": {
+"leoIntegration.activityViewShortcut": {
   "scope": "application",
   "default": true,
   "type": "boolean",
@@ -4327,7 +4325,7 @@ print('done')
 <t tx="ekr.20200815123601.78">{
   "command": "leointeg.showOutline",
   "key": "alt+t",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo || leoFindFocus || focusedView =~ /^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.showOutline",
@@ -4361,6 +4359,12 @@ print('done')
   "command": "leointeg.showBody",
   "key": "enter",
   "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+},
+{
+  "command": "leointeg.tabCycleNext",
+  "key": "ctrl+tab",
+  "mac": "cmd+tab",
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 </t>
 <t tx="ekr.20200815123601.79">{
@@ -5056,6 +5060,7 @@ public static LEOBRIDGE = {
     OPEN_FILE: "!open_file", // "openFile",
     OPEN_FILES: "!open_files", //  "openFiles",
     CLOSE_FILE: "!close_file", // "closeFile",
+    REVERT: "-revert",
     SAVE_FILE: "!save_file", // "saveFile",
     // * @-Buttons
     GET_BUTTONS: "!get_buttons", // "getButtons",
@@ -5210,11 +5215,13 @@ public static COMMANDS = {
     SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
     SAVE_AS_LEOJS: Constants.NAME + ".saveAsLeoJsFile",
     CLOSE_FILE: Constants.NAME + ".closeLeoFile",
+    REVERT_TO_SAVED: Constants.NAME + ".revert",
     CLICK_BUTTON: Constants.NAME + ".clickButton",
     REMOVE_BUTTON: Constants.NAME + ".removeButton",
     GOTO_SCRIPT: Constants.NAME + ".gotoScript",
     MINIBUFFER: Constants.NAME + ".minibuffer",
     GIT_DIFF: Constants.NAME + ".gitDiff",
+    TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
     // * Outline selection
     SELECT_NODE: Constants.NAME + ".selectTreeNode",
     OPEN_ASIDE: Constants.NAME + ".openAside",
@@ -5551,6 +5558,7 @@ public static USER_MESSAGES = {
         "4.  Press the *new* button.",
     SAVE_CHANGES: "Save changes to",
     BEFORE_CLOSING: "before closing?",
+    REVERT_PREVIOUS_VERSION: "Revert to previous version of ", // Trailing space intended
     CANCEL: "Cancel",
     OPEN_WITH_LEOINTEG: "Open this Leo file with LeoInteg?",
     OPEN_RECENT_FILE: "Open Recent Leo File",
@@ -5562,6 +5570,7 @@ public static USER_MESSAGES = {
     STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
     PROMPT_EDIT_HEADLINE: "Edit Headline",
     PROMPT_INSERT_NODE: "Insert Node",
+    PROMPT_INSERT_CHILD: "Insert Child",
     DEFAULT_HEADLINE: "New Headline",
     TITLE_GOTO_GLOBAL_LINE: "Goto global line",
     PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
@@ -5665,9 +5674,9 @@ public static CONFIG_NAMES = {
     TREE_KEEP_FOCUS: "treeKeepFocus",
     TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
 
-    COLLAPSE_ALL_SHORTCUT: "leoCollapseAllShortcut",
-    ACTIVITY_VIEW_SHORTCUT: "leoActivityViewShortcut",
-    GO_ANYWHERE_SHORTCUT: "leoGoAnywhereShortcut",
+    COLLAPSE_ALL_SHORTCUT: "collapseAllShortcut",
+    ACTIVITY_VIEW_SHORTCUT: "activityViewShortcut",
+    GO_ANYWHERE_SHORTCUT: "goAnywhereShortcut",
 
     // STATUSBAR_STRING: "statusBarString",
     // STATUSBAR_COLOR: "statusBarColor",
@@ -5740,9 +5749,6 @@ public static CONTEXT_FLAGS = {
     SELECTED_CHILD: "leoChild", // Has children
     SELECTED_ATFILE: "leoAtFile", // Can be refreshed
 
-    // Statusbar Flag 'keybindings in effect'
-    LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
-
     // Outline nodes: text Flags for 'when' clauses. Used as concatenated strings.
     NODE_MARKED: "leoNodeMarked",  // Selected node is marked
     NODE_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked (Needed for regexp)
@@ -5750,6 +5756,7 @@ public static CONTEXT_FLAGS = {
     NODE_CLONED: "leoNodeCloned",
     NODE_ROOT: "leoNodeRoot",
     NODE_NOT_ROOT: "leoNodeNotRoot",
+    NODE_TAGS: "leoNodeTags",
 
     // Flags for undo nodes
     UNDO_BEAD: "leoUndoNode",
@@ -5765,20 +5772,20 @@ public static CONTEXT_FLAGS = {
     FOCUS_FIND: "leoFindFocus",
 
     // Flags that match specific LeoInteg config settings
-    // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
-    // TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
-    // SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
-    // SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,              // Hover Icons on outline nodes
-    // SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,           // Hover Icons on outline nodes
-    // SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                 // Hover Icons on outline nodes
-    // SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,               // Hover Icons on outline nodes
-    // SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
-    // SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
-    // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
-    // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
+    // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE,     // Force ar'jan's suggestion of Leo's tree behavior override
+    // TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER,   // Leo outline also in the explorer view
+    // SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,     // Show 'open aside' in context menu
+    // SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,                 // Hover Icons on outline nodes
+    // SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,             // Hover Icons on outline nodes
+    // SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                   // Hover Icons on outline nodes
+    // SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,                 // Hover Icons on outline nodes
+    // SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,               // Hover Icons on outline nodes
+    // SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,                 // Hover Icons on outline nodes
+    // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER, // Used at startup
+    // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,           // Used at startup
 
     // AUTO_CONNECT: 'leoAutoConnect',             // Used at startup by 'views-welcome'
-    // AUTO_START_SERVER: 'leoAutoStartServer',   // Used at startup by 'views-welcome'
+    // AUTO_START_SERVER: 'leoAutoStartServer',    // Used at startup by 'views-welcome'
 
     // SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
     // SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
@@ -5995,9 +6002,9 @@ export class Config implements ConfigMembers {
     public treeKeepFocus: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS;
     public treeKeepFocusWhenAside: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE;
 
-    public leoCollapseAllShortcut: boolean = Constants.CONFIG_DEFAULTS.COLLAPSE_ALL_SHORTCUT;
-    public leoActivityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
-    public leoGoAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
+    public collapseAllShortcut: boolean = Constants.CONFIG_DEFAULTS.COLLAPSE_ALL_SHORTCUT;
+    public activityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
+    public goAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
     // public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
@@ -6059,9 +6066,9 @@ public getConfig(): ConfigMembers {
         treeKeepFocus: this.treeKeepFocus,
         treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
 
-        leoCollapseAllShortcut: this.leoCollapseAllShortcut,
-        leoActivityViewShortcut: this.leoActivityViewShortcut,
-        leoGoAnywhereShortcut: this.leoGoAnywhereShortcut,
+        collapseAllShortcut: this.collapseAllShortcut,
+        activityViewShortcut: this.activityViewShortcut,
+        goAnywhereShortcut: this.goAnywhereShortcut,
 
         // statusBarString: this.statusBarString,
         // statusBarColor: this.statusBarColor,
@@ -6149,9 +6156,9 @@ public buildFromSavedSettings(): boolean {
         this.treeKeepFocus = GET(NAME).get(NAMES.TREE_KEEP_FOCUS, DEFAULTS.TREE_KEEP_FOCUS);
         this.treeKeepFocusWhenAside = GET(NAME).get(NAMES.TREE_KEEP_FOCUS_WHEN_ASIDE, DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE);
 
-        this.leoCollapseAllShortcut = GET(NAME).get(NAMES.COLLAPSE_ALL_SHORTCUT, DEFAULTS.COLLAPSE_ALL_SHORTCUT);
-        this.leoActivityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
-        this.leoGoAnywhereShortcut = GET(NAME).get(NAMES.GO_ANYWHERE_SHORTCUT, DEFAULTS.GO_ANYWHERE_SHORTCUT);
+        this.collapseAllShortcut = GET(NAME).get(NAMES.COLLAPSE_ALL_SHORTCUT, DEFAULTS.COLLAPSE_ALL_SHORTCUT);
+        this.activityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
+        this.goAnywhereShortcut = GET(NAME).get(NAMES.GO_ANYWHERE_SHORTCUT, DEFAULTS.GO_ANYWHERE_SHORTCUT);
 
         // this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
         // if (this.statusBarString.length &gt; 8) {
@@ -6240,7 +6247,7 @@ import * as utils from "./utils";
 import { Constants } from "./constants";
 import { ArchivedPosition, Focus, LeoGotoNavKey, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
+import { LeoSettingsProvider } from "./leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtons";
 import { LeoGotoNode } from "./leoGoto";
 import { LeoUndoNode } from "./leoUndos";
@@ -6769,7 +6776,7 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
         this._rejectAction(`Websocket closed, code: ${p_event.code}`);
         // TODO : Implement a better connection error handling (optional fileOpenedReady check may be overkill, etc.)
         if (this._leoIntegration.leoStates.leoBridgeReady || this._leoIntegration.leoStates.fileOpenedReady) {
-            this._leoIntegration.cancelConnect(`Connection to server closed. Code: ${p_event.code})`);
+            this._leoIntegration.cancelConnect(`Connection to server closed. Code: ${p_event.code}`);
         }
     };
     // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
@@ -7305,7 +7312,7 @@ private _getBestOpenFolderUri(): vscode.Uri {
  * @param p_saveAsFlag Optional flag that will ask for a 'save' path+filename
  * @returns A promise resolving to a chosen path string, or rejected with an empty string if cancelled
  */
-public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
+public getLeoFileUrl(p_saveAsFlag?: boolean, p_customTitle?: string): Promise&lt;string&gt; {
     if (this._fileBrowserActive) {
         return Promise.resolve("");
     }
@@ -7324,7 +7331,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
                 saveLabel: "Save Leo File",
                 defaultUri: this._getBestOpenFolderUri(),
                 filters: w_filters,
-                title: "Save as Leo File"
+                title: p_customTitle ? p_customTitle : "Save as Leo File"
             })
                 .then(p_chosenLeoFile =&gt; {
                     this._fileBrowserActive = false;
@@ -7342,7 +7349,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
                     defaultUri: this._getBestOpenFolderUri(),
                     canSelectFolders: false,
                     filters: w_filters,
-                    title: "Open Leo File"
+                    title: p_customTitle ? p_customTitle : "Open Leo File"
                 })
                 .then(p_chosenLeoFile =&gt; {
                     this._fileBrowserActive = false;
@@ -7458,8 +7465,6 @@ private _updateLeoObjectIndicator(): void {
         clearTimeout(this._updateStatusBarTimeout);
     }
 
-    utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
-
     this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
         (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
 
@@ -7498,6 +7503,7 @@ export class ServerService {
 
     private _platform: string;
     private _isWin32: boolean;
+    private _skippedFirstEmpty = false; // if first ever empty line was skipped. (for esthetics only)
     public usingPort: number = 0; // set to other than zero if server is started by leointeg itself
 
     /**
@@ -7549,6 +7555,8 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
             env: process.env
         };
     */
+
+    this._skippedFirstEmpty = false;
 
     if (!p_leoEditorPath) {
         return Promise.reject(Constants.USER_MESSAGES.LEO_PATH_MISSING);
@@ -7679,6 +7687,12 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
                     return;
                 }
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+
+                this._leoIntegration.leoStates.leoConnecting = false;
+                this._leoIntegration.leoStates.leoBridgeReady = false;
+                this._leoIntegration.leoStates.fileOpenedReady = false;
+                this._leoIntegration.leoStates.leoStartingServer = false;
+
                 this._serverProcess = undefined;
                 if (this._rejectPromise) {
                     this._rejectPromise(`Leo server exited with code ${p_code}`);
@@ -8126,9 +8140,9 @@ export interface ConfigMembers {
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
 
-    leoCollapseAllShortcut: boolean;
-    leoActivityViewShortcut: boolean;
-    leoGoAnywhereShortcut: boolean;
+    collapseAllShortcut: boolean;
+    activityViewShortcut: boolean;
+    goAnywhereShortcut: boolean;
 
     // statusBarString: string;
     // statusBarColor: string;
@@ -8456,7 +8470,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 ![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
 </t>
-<t tx="felix.20200718222043.1">## Leo Commands and Keybindings ⌨️
+<t tx="felix.20200718222043.1">## Leo Commands and Keybindings
 
 Here are the most useful Commands. Most of Leo's other commands are also available with their original keybindings.
 
@@ -8483,20 +8497,20 @@ Here are the most useful Commands. Most of Leo's other commands are also availab
 
 _Move Outline commands need the 'Alt' key modifier only when focus is on body pane._
 
-| Common Operations  |     |          |     |           |    |            |                     |
-| :----------------- | :-- | :------- | :-- | :-------- |:-- | :--------- | :------------------ |
-| `Ctrl + T`         |     |          |     |           |    |            | Toggle Outline/Body |
-| `Tab`              | or  | `Enter`  | or  | `Alt + D` |or  | `Ctrl + G` | Focus on Body       |
-| `Alt + T`          |     |          |     |           |    |            | Focus on Outline    |
-| `Alt + -`          |     |          |     |           |    |            | Contract All        |
-| `Ctrl + B`         |     |          |     |           |    |            | Execute Script      |
-| `Ctrl + Shift + D` |     |          |     |           |    |            | Extract             |
-| `Ctrl + Shift + N` |     |          |     |           |    |            | Extract Names       |
-| `Alt + A`          |     |          |     |           |    |            | Sort Siblings       |
-| `Ctrl + F`         |     |          |     |           |    |            | Start Search        |
-| `F3`               |     |          |     |           |    |            | Find Next           |
-| `F2`               |     |          |     |           |    |            | Find Previous       |
-| `Alt + X`          |     |          |     |           |    |            | Minibuffer Palette  |
+| Common Operations  |     |         |     |           |     |            |                     |
+| :----------------- | :-- | :------ | :-- | :-------- | :-- | :--------- | :------------------ |
+| `Ctrl + T`         |     |         |     |           |     |            | Toggle Outline/Body |
+| `Tab`              | or  | `Enter` | or  | `Alt + D` | or  | `Ctrl + G` | Focus on Body       |
+| `Alt + T`          |     |         |     |           |     |            | Focus on Outline    |
+| `Alt + -`          |     |         |     |           |     |            | Contract All        |
+| `Ctrl + B`         |     |         |     |           |     |            | Execute Script      |
+| `Ctrl + Shift + D` |     |         |     |           |     |            | Extract             |
+| `Ctrl + Shift + N` |     |         |     |           |     |            | Extract Names       |
+| `Alt + A`          |     |         |     |           |     |            | Sort Siblings       |
+| `Ctrl + F`         |     |         |     |           |     |            | Start Search        |
+| `F3`               |     |         |     |           |     |            | Find Next           |
+| `F2`               |     |         |     |           |     |            | Find Previous       |
+| `Alt + X`          |     |         |     |           |     |            | Minibuffer Palette  |
 
 | Tree Navigation    |     |                 |                             |
 | :----------------- | :-- | :-------------- | :-------------------------- |
@@ -8512,13 +8526,14 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 **\*** _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
-| File Commands      |     |                         |                   |
-| :----------------- | :-- | :---------------------- | :---------------- |
-| `Ctrl + S`         |     |                         | Save Leo Document |
-| `Ctrl + N`         |     |                         | New Leo Document  |
-| `Ctrl + O`         |     |                         | Open Leo Document |
-| `Ctrl + Shift + W` |     |                         | Write File Nodes  |
-| `Ctrl + Shift + Q` |     |                         | Write Dirty Files |
+| File Commands      |     |     |                     |
+| :----------------- | :-- | :-- | :------------------ |
+| `Ctrl + S`         |     |     | Save Leo Document   |
+| `Ctrl + N`         |     |     | New Leo Document    |
+| `Ctrl + O`         |     |     | Open Leo Document   |
+| `Ctrl + Tab`       |     |     | Cycle Next Document |
+| `Ctrl + Shift + W` |     |     | Write File Nodes    |
+| `Ctrl + Shift + Q` |     |     | Write Dirty Files   |
 
 ---
 
@@ -8744,32 +8759,32 @@ If you're having problems with the procedures below, try [running this sample ex
 
 On Windows:
 
-![about](resources/vscode-about-win.png)
+![about](https://raw.githubusercontent.com/boltex/leointeg/master/resources/vscode-about-win.png)
 
 On Linux:
 
-![about](resources/vscode-about.png)
+![about](https://raw.githubusercontent.com/boltex/leointeg/master/resources/vscode-about.png)
 
 </t>
 <t tx="felix.20200718222741.1">## Getting the source and its development dependencies
 
 - Clone the repository using the command line by typing : `git clone https://github.com/boltex/leointeg.git`
 
-![clone](resources/git-clone.png)
+![clone](https://raw.githubusercontent.com/boltex/leointeg/master/resources/git-clone.png)
 
 - Although you could 'cd' into the leoInteg folder and run some commands from the same terminal, let's instead use the terminal from within vscode. So open the leoInteg folder with vscode instead, either with the context menu as shown below, or by choosing "Open Folder..." from within vscode:
 
-![open with vscode](resources/open-with-vscode.png)
+![open with vscode](https://raw.githubusercontent.com/boltex/leointeg/master/resources/open-with-vscode.png)
 
 - With vscode now opened with the **leoInteg folder as its workspace**, use the `ctrl+shift+p` keyboard shortcut to open command palette and toggle the terminal. (You can find any command through the command palette)
 
-![open terminal](resources/open-terminal.png)
+![open terminal](https://raw.githubusercontent.com/boltex/leointeg/master/resources/open-terminal.png)
 
 - Install the development dependencies by entering the `npm install` command in the terminal. **(Important if you also just _pulled_ updated sources)**
 
 - When the command has finished running, you should see logged results in the terminal and also that a new **node_modules** folder was created.
 
-![dependencies](resources/node-modules.png)
+![dependencies](https://raw.githubusercontent.com/boltex/leointeg/master/resources/node-modules.png)
 
 - You're now ready to **compile and run** the development version of the leoInteg extension.
 
@@ -8780,7 +8795,7 @@ On Linux:
 
 - When simply running the extension, choose the **Run Extension** profile.
 
-![profile](resources/debug-profile.png)
+![profile](https://raw.githubusercontent.com/boltex/leointeg/master/resources/debug-profile.png)
 
 &gt; (**Optional**) To contribute code to the python server script, or run it through the vscode debugger, you may need to install the [python development extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python).
 
@@ -8791,11 +8806,11 @@ On Linux:
 
 - Use the **Start Debugging** command (or press **F5**) to start another vscode window with the expansion _installed and running_ within it.
 
-![extension started](resources/leointeg-started.png)
+![extension started](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leointeg-started.png)
 
 - If any problems occurred during the extension compilation it will be logged in the vscode instance that started the debug process in its **task-webpack** terminal panel. Otherwise if its running, the extension itself will be logging any messages in the **debug-console** panel. (See animation below)
 
-![extension logs](resources/debug-anim.gif)
+![extension logs](https://raw.githubusercontent.com/boltex/leointeg/master/resources/debug-anim.gif)
 
 </t>
 <t tx="felix.20200718222754.1">## The python server script
@@ -8824,13 +8839,13 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 - If Leointeg or vscode cannot start running the server script on you system or OS, a **workaround** is to start the server script beforehand manually with whichever python interpreter you have installed.
 
-![launch server](resources/manual-server-start.png)
+![launch server](https://raw.githubusercontent.com/boltex/leointeg/master/resources/manual-server-start.png)
 
 - It will terminate automatically when a user disconnect.
 
 **Note**: If force-closing the server from the integrated vscode terminal, use the 'Kill terminal' button instead of the 'X' that just hides the panel.
 
-![kill terminal](resources/kill-terminal.png)
+![kill terminal](https://raw.githubusercontent.com/boltex/leointeg/master/resources/kill-terminal.png)
 
 </t>
 <t tx="felix.20200718222757.1">## Issues
@@ -8873,8 +8888,8 @@ import { CommandStack } from './commandStack';
 import { LeoDocumentsProvider, LeoDocumentNode } from './leoDocuments';
 import { LeoStates } from './leoStates';
 import { LeoButtonsProvider, LeoButtonNode } from './leoButtons';
-import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
-import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
+import { LeoFindPanelProvider } from './leoFindPanelWebview';
+import { LeoSettingsProvider } from './leoSettingsWebview';
 import { LeoGotoProvider, LeoGotoNode } from './leoGoto';
 import { LeoUndosProvider, LeoUndoNode } from './leoUndos';
 
@@ -9284,7 +9299,7 @@ export class LeoIntegration {
     public leoSettingsWebview: LeoSettingsProvider;
 
     // * Log and terminal Panes
-    private _leoLogPane: vscode.OutputChannel;
+    private _leoLogPane: undefined | vscode.OutputChannel;
 
     // * Status Bar
     // private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
@@ -9579,12 +9594,6 @@ private _onActiveEditorChanged(
 
 </t>
 <t tx="felix.20200719025231.3">constructor(private _context: vscode.ExtensionContext) {
-
-    // * output channel instantiation
-    this._leoLogPane = vscode.window.createOutputChannel(
-        Constants.GUI.LOG_PANE_TITLE
-    );
-    this._context.subscriptions.push(this._leoLogPane);
 
     // * Setup States
     this.leoStates = new LeoStates(_context, this);
@@ -10771,7 +10780,12 @@ public insertNode(
     // if no node parameter, the front command stack CAN be busy, but if a node is passed, stack must be free
     if (!p_node || !this._isBusy()) {
         this.triggerBodySave(true); // Don't wait for saving to resolve because we're waiting for user input anyways
-        this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
+        // this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
+        if (p_asChild) {
+            this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_CHILD;
+        } else {
+            this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
+        }
         this._headlineInputOptions.value = Constants.USER_MESSAGES.DEFAULT_HEADLINE;
         return new Promise&lt;LeoBridgePackage&gt;((p_resolve, p_reject) =&gt; {
             vscode.window.showInputBox(this._headlineInputOptions).then((p_newHeadline) =&gt; {
@@ -10936,45 +10950,38 @@ public startNetworkServices(): void {
  * * Show switch document 'QuickPick' dialog and switch file if selection is made, or just return if no files are opened.
  * @returns A promise that resolves with a LeoBridgePackage if document switched, or undefined if no switch/canceled.
  */
-public switchLeoFile(): Promise&lt;LeoBridgePackage | undefined&gt; {
-    return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
-        })
-        .then((p_package) =&gt; {
-            const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
-            const w_files: LeoDocument[] = p_package.files!;
-            let w_index: number = 0;
-            if (w_files &amp;&amp; w_files.length) {
-                w_files.forEach(function (p_filePath: LeoDocument) {
-                    w_entries.push({
-                        label: w_index.toString(),
-                        description: p_filePath.name
-                            ? p_filePath.name
-                            : Constants.UNTITLED_FILE_NAME,
-                        value: w_index,
-                        alwaysShow: true,
-                    });
-                    w_index++;
-                });
-                const w_pickOptions: vscode.QuickPickOptions = {
-                    matchOnDescription: true,
-                    placeHolder: Constants.USER_MESSAGES.CHOOSE_OPENED_FILE,
-                };
-                return vscode.window.showQuickPick(w_entries, w_pickOptions);
-            } else {
-                // "No opened documents"
-                return Promise.resolve(undefined);
-            }
-        })
-        .then((p_chosenDocument) =&gt; {
-            if (p_chosenDocument) {
-                return Promise.resolve(this.selectOpenedLeoDocument(p_chosenDocument.value));
-            } else {
-                // Canceled
-                return Promise.resolve(undefined);
-            }
+public async switchLeoFile(): Promise&lt;LeoBridgePackage | undefined&gt; {
+    await this._isBusyTriggerSave(true, true);
+    const w_package = await this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
+    const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
+    const w_files: LeoDocument[] = w_package.files!;
+    let w_index: number = 0;
+    let w_chosenDocument;
+    if (w_files &amp;&amp; w_files.length) {
+        w_files.forEach(function (p_filePath: LeoDocument) {
+            w_entries.push({
+                label: w_index.toString(),
+                description: p_filePath.name
+                    ? p_filePath.name
+                    : Constants.UNTITLED_FILE_NAME,
+                value: w_index,
+                alwaysShow: true,
+            });
+            w_index++;
         });
+        const w_pickOptions: vscode.QuickPickOptions = {
+            matchOnDescription: true,
+            placeHolder: Constants.USER_MESSAGES.CHOOSE_OPENED_FILE,
+        };
+        w_chosenDocument = await vscode.window.showQuickPick(w_entries, w_pickOptions);
+    } else {
+        // "No opened documents"
+        return undefined;
+    }
+    if (w_chosenDocument) {
+        this.finalFocus = Focus.Outline;
+        return this.selectOpenedLeoDocument(w_chosenDocument.value);
+    }
 }
 
 </t>
@@ -11201,7 +11208,7 @@ public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
  * * Shows an 'Open Leo File' dialog window and opens the chosen file
  * * If not shown already, it also shows the outline, body and log panes
  * @param p_leoFileUri optional uri for specifying a file, if missing, a dialog will open
- * @returns A promise that resolves with a textEditor of the chosen file
+ * @returns A promise that resolves with a LeoBridgePackage from the open file command
  */
 public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | undefined&gt; {
     return this._isBusyTriggerSave(true, true)
@@ -11245,8 +11252,12 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
                         this._addRecentAndLastFile(this.serverOpenedFileName);
 
                         this.loadSearchSettings();
+
+                        this.showBodyIfClosed = true;
+                        this.showOutlineIfClosed = true;
+
                         this.setupRefresh(
-                            this.finalFocus,
+                            Focus.Body,
                             {
                                 tree: true,
                                 body: true,
@@ -11256,8 +11267,6 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
                                 goto: true
                             }
                         );
-                        // * TODO : SHOULD LAUNCH REFRESH INSTEAD
-                        // return this._setupOpenedLeoDocument(p_openFileResult);
                     } else {
                         this.serverHasOpenedFile = false;
                         this.serverOpenedFileName = "";
@@ -11732,7 +11741,7 @@ public setTreeViewTitle(p_title?: string): void {
 public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
 
     // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
-    await this._isBusyTriggerSave(false);
+    await this._isBusyTriggerSave(false, true);
 
     const q_commandList: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
         Constants.LEOBRIDGE.GET_COMMANDS
@@ -11809,16 +11818,60 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
         }
     });
 
-    const w_options: vscode.QuickPickOptions = {
-        placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
-        matchOnDetail: true,
-    };
-    const w_picked = await vscode.window.showQuickPick(q_commandList, w_options);
+    const w_choices = await q_commandList;
+
+    const w_disposables: vscode.Disposable[] = [];
+
+    const q_minibufferQuickPick: Promise&lt;vscode.QuickPickItem | undefined&gt; = new Promise((resolve, reject) =&gt; {
+        const quickPick = vscode.window.createQuickPick();
+        quickPick.items = w_choices;
+        quickPick.placeholder = Constants.USER_MESSAGES.MINIBUFFER_PROMPT;
+        quickPick.matchOnDetail = true;
+
+        w_disposables.push(
+            quickPick.onDidChangeSelection(selection =&gt; {
+                if (selection[0]) {
+                    resolve(selection[0]);
+                    quickPick.hide();
+                }
+            }),
+            quickPick.onDidAccept(accepted =&gt; {
+                if (/^\d+$/.test(quickPick.value)) {
+                    // * Was an integer
+                    this.gotoGlobalLine(Number(quickPick.value));
+                    resolve(undefined);
+                    quickPick.hide();
+                }
+            }),
+            quickPick.onDidChangeValue(changed =&gt; {
+                if (/^\d+$/.test(changed)) {
+                    if (quickPick.items.length) {
+                        quickPick.items = [];
+                    }
+                } else if (quickPick.items !== w_choices) {
+                    quickPick.items = w_choices;
+                }
+            }),
+            quickPick.onDidHide(() =&gt; {
+                resolve(undefined);
+            }),
+            quickPick
+        );
+        quickPick.show();
+
+    });
+
+    const w_picked: vscode.QuickPickItem | undefined = await q_minibufferQuickPick;
+
+    w_disposables.forEach(d =&gt; d.dispose());
+
     // First, check for undo-history list being requested
     if (w_picked &amp;&amp; w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
-        return this.minibufferHistory();
+        return this._showMinibufferHistory();
     }
-    return this._doMinibufferCommand(w_picked);
+    if (w_picked) {
+        return this._doMinibufferCommand(w_picked);
+    }
 }
 
 </t>
@@ -11855,16 +11908,6 @@ public static VSCODE_COMMANDS = {
 
 </t>
 <t tx="felix.20201215210439.1">"view/title": [
-  {
-    "command": "leointeg.openLeoFile",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened || view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
-    "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.newLeoFile",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened || view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
-    "group": "navigation@1"
-  },
   {
     "command": "leointeg.showSettingsPage",
     "when": "view =~ /^leoDocuments|^leoButtons/ &amp;&amp; leoBridgeReady",
@@ -11926,13 +11969,28 @@ public static VSCODE_COMMANDS = {
     "group": "navigation@1"
   },
   {
+    "command": "leointeg.openLeoFile",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.newLeoFile",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.saveLeoFileFromOutline",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled",
+    "group": "navigation@2"
+  },
+  {
     "command": "leointeg.saveAsLeoFile",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
     "group": "navigation@2"
   },
   {
     "command": "leointeg.saveAsLeoJsFile",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
     "group": "navigation@2"
   },
   {
@@ -12104,29 +12162,44 @@ public static VSCODE_COMMANDS = {
     "group": "leoNodeContext2@1"
   },
   {
-    "command": "leointeg.copyNode",
-    "when": "viewItem =~ /^leoNode/",
+    "command": "leointeg.tagNode",
+    "when": "viewItem =~ /leoNode/",
     "group": "leoNodeContext2@2"
   },
   {
-    "command": "leointeg.cutNode",
-    "when": "viewItem =~ /^leoNode/",
+    "command": "leointeg.removeTag",
+    "when": "viewItem =~ /leoNodeTags/",
     "group": "leoNodeContext2@3"
   },
   {
-    "command": "leointeg.pasteNode",
-    "when": "viewItem =~ /^leoNode/",
+    "command": "leointeg.removeTags",
+    "when": "viewItem =~ /leoNodeTags/",
     "group": "leoNodeContext2@4"
   },
   {
-    "command": "leointeg.pasteNodeAsClone",
+    "command": "leointeg.copyNode",
     "when": "viewItem =~ /^leoNode/",
     "group": "leoNodeContext2@5"
   },
   {
-    "command": "leointeg.delete",
+    "command": "leointeg.cutNode",
     "when": "viewItem =~ /^leoNode/",
     "group": "leoNodeContext2@6"
+  },
+  {
+    "command": "leointeg.pasteNode",
+    "when": "viewItem =~ /^leoNode/",
+    "group": "leoNodeContext2@7"
+  },
+  {
+    "command": "leointeg.pasteNodeAsClone",
+    "when": "viewItem =~ /^leoNode/",
+    "group": "leoNodeContext2@8"
+  },
+  {
+    "command": "leointeg.delete",
+    "when": "viewItem =~ /^leoNode/",
+    "group": "leoNodeContext2@9"
   },
   {
     "command": "leointeg.insertNode",
@@ -12740,7 +12813,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.goAnywhere",
   "key": "ctrl+p",
   "mac": "cmd+p",
-  "when": "config.leoIntegration.leoGoAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || config.leoIntegration.leoGoAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.startSearch",
@@ -12865,9 +12938,9 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
 },
 </t>
 <t tx="felix.20210522001751.1">import * as vscode from 'vscode';
-import { Constants } from '../constants';
-import { LeoIntegration } from '../leoIntegration';
-import * as utils from '../utils';
+import { Constants } from './constants';
+import { LeoIntegration } from './leoIntegration';
+import * as utils from './utils';
 
 @language typescript
 @tabwidth -4
@@ -13313,41 +13386,34 @@ public static FIND_INPUTS_IDS = {
 <t tx="felix.20210601164915.1">/**
  * * Goto Global Line
  */
-public gotoGlobalLine(): void {
-    this.triggerBodySave(false)
-        .then((p_saveResult: boolean) =&gt; {
-            return vscode.window.showInputBox({
-                title: Constants.USER_MESSAGES.TITLE_GOTO_GLOBAL_LINE,
-                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_GOTO_GLOBAL_LINE,
-                prompt: Constants.USER_MESSAGES.PROMPT_GOTO_GLOBAL_LINE,
-            });
-        })
-        .then((p_inputResult?: string) =&gt; {
-            if (p_inputResult) {
-                const w_line = parseInt(p_inputResult);
-                if (!isNaN(w_line)) {
-                    this.sendAction(
-                        Constants.LEOBRIDGE.GOTO_GLOBAL_LINE,
-                        { line: w_line }
-                    ).then((p_resultGoto: LeoBridgePackage) =&gt; {
-                        if (!p_resultGoto.found) {
-                            // Not found
-                        }
-                        this.setupRefresh(
-                            Focus.Body,
-                            {
-                                tree: true,
-                                body: true,
-                                // documents: false,
-                                // buttons: false,
-                                states: true,
-                            }
-                        );
-                        this.launchRefresh();
-                    });
+public gotoGlobalLine(p_lineNumber?: number): void {
+    if (p_lineNumber === null || p_lineNumber === undefined) {
+        this.triggerBodySave(false)
+            .then((p_saveResult: boolean) =&gt; {
+                return vscode.window.showInputBox({
+                    title: Constants.USER_MESSAGES.TITLE_GOTO_GLOBAL_LINE,
+                    placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_GOTO_GLOBAL_LINE,
+                    prompt: Constants.USER_MESSAGES.PROMPT_GOTO_GLOBAL_LINE,
+                });
+            })
+            .then((p_inputResult?: string) =&gt; {
+                if (p_inputResult) {
+                    const w_line = parseInt(p_inputResult);
+                    if (!isNaN(w_line)) {
+                        this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: w_line }).then((p_resultGoto: LeoBridgePackage) =&gt; {
+                            this.setupRefresh(Focus.Body, { tree: true, body: true, states: true, });
+                            this.launchRefresh();
+                        });
+                    }
                 }
-            }
+            });
+    } else if (!isNaN(p_lineNumber)) {
+        // p_lineNumber is a number
+        this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: p_lineNumber }).then((p_resultGoto: LeoBridgePackage) =&gt; {
+            this.setupRefresh(Focus.Body, { tree: true, body: true, states: true, });
+            this.launchRefresh();
         });
+    }
 }
 
 </t>
@@ -13385,6 +13451,8 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
 
     "tag-children": Constants.COMMANDS.TAG_CHILDREN,
     "tag-node": Constants.COMMANDS.TAG_NODE,
+    "remove-tag": Constants.COMMANDS.REMOVE_TAG,
+    "remove-all-tags": Constants.COMMANDS.REMOVE_TAGS,
     "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
     "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
     "redo": Constants.COMMANDS.REDO,
@@ -13412,6 +13480,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
 
     'file-new': Constants.COMMANDS.NEW_FILE,
     'file-open-by-name': Constants.COMMANDS.OPEN_FILE,
+    'revert': Constants.COMMANDS.REVERT_TO_SAVED,
     'new': Constants.COMMANDS.NEW_FILE,
     'open-outline': Constants.COMMANDS.OPEN_FILE,
     'file-save': Constants.COMMANDS.SAVE_FILE,
@@ -13923,7 +13992,9 @@ public tagChildren(): void {
 public cloneFindTag(): void {
     this.triggerBodySave(false)
         .then((p_saveResult: boolean) =&gt; {
+            const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
             return vscode.window.showInputBox({
+                value: w_startValue,
                 title: Constants.USER_MESSAGES.TITLE_FIND_TAG,
                 placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_CLONE_FIND_TAG,
                 prompt: Constants.USER_MESSAGES.PROMPT_CLONE_FIND_TAG,
@@ -14044,10 +14115,17 @@ public killServer(): void {
             return;
         }
         utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+
+        this._leoIntegration.leoStates.leoConnecting = false;
+        this._leoIntegration.leoStates.leoBridgeReady = false;
+        this._leoIntegration.leoStates.fileOpenedReady = false;
+        this._leoIntegration.leoStates.leoStartingServer = false;
+
         this._serverProcess = undefined;
     } else {
         console.error("No Server");
     }
+
 }
 
 </t>
@@ -14120,33 +14198,6 @@ public cleanupBody(): Thenable&lt;any&gt; {
 <t tx="felix.20210725153617.1">## 0.1.16
 
 - Added procedures to cleanup when closing a vscode window. (closes server and body panes)
-
-</t>
-<t tx="felix.20210725221438.1">function onVscodeInputChanged(element: HTMLInputElement) {
-    if (element.id === "zoomLevel") {
-        frontFontConfig.zoomLevel = element.valueAsNumber;
-    }
-    if (element.id === "editorFontSize") {
-        frontFontConfig.fontSize = element.valueAsNumber;
-    }
-    applyFontChanges();
-}
-
-</t>
-<t tx="felix.20210725221447.1">function setFontControls(): void {
-    if (frontFontConfig.zoomLevel || frontFontConfig.zoomLevel === 0) {
-        const w_element = document.getElementById("zoomLevel");
-        (w_element as HTMLInputElement).valueAsNumber = Number(frontFontConfig.zoomLevel);
-    } else {
-        console.log('Error : vscode font setting "zoomLevel" is missing');
-    }
-    if (frontFontConfig.fontSize) {
-        const w_element = document.getElementById("editorFontSize");
-        (w_element as HTMLInputElement).valueAsNumber = Number(frontFontConfig.fontSize);
-    } else {
-        console.log('Error : vscode font setting "fontSize" is missing');
-    }
-}
 
 </t>
 <t tx="felix.20210727224122.1">/**
@@ -14296,12 +14347,12 @@ private _bodySaveDeactivate(
 <t tx="felix.20210812004050.1">{
   "command": "workbench.files.action.collapseExplorerFolders",
   "key": "alt+-",
-  "when": "config.leoIntegration.leoCollapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == untitled || config.leoIntegration.leoCollapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == file || config.leoIntegration.leoCollapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; explorerViewletFocus"
+  "when": "config.leoIntegration.collapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == untitled || config.leoIntegration.collapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == file || config.leoIntegration.collapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; explorerViewletFocus"
 },
 {
   "command": "workbench.view.extension.leoIntegrationView",
   "key": "ctrl+shift+l",
-  "when": "config.leoIntegration.leoActivityViewShortcut &amp;&amp; !editorHasSelection &amp;&amp; !inSearchEditor &amp;&amp; focusedView != workbench.view.search"
+  "when": "config.leoIntegration.activityViewShortcut &amp;&amp; !editorHasSelection &amp;&amp; !inSearchEditor &amp;&amp; focusedView != workbench.view.search"
 }
 </t>
 <t tx="felix.20210816230003.1">## 0.1.17
@@ -14518,10 +14569,10 @@ public getLeoJsFileUrl(): Promise&lt;string&gt; {
     return new Promise((p_resolve, p_reject) =&gt; {
         // Choose file
         vscode.window.showSaveDialog({
-            saveLabel: "Save Leojs File",
+            saveLabel: "Save Copy as leojs File",
             defaultUri: this._getBestOpenFolderUri(),
             filters: { 'JSON Leo File': ['leojs'] },
-            title: "Save as LeoJS File"
+            title: "Save Copy as leojs File"
         })
             .then(p_chosenLeoFile =&gt; {
                 this._fileBrowserActive = false;
@@ -15017,8 +15068,8 @@ public getTextFromClipboard(): string {
 
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
-// Send message to leoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
-// Receive messages from leoInteg with window.addEventListener('message', event =&gt; { ... });
+// Send message to leointeg with vscode.postMessage({ keyNameEx1: someValue, ... });
+// Receive messages from leointeg with window.addEventListener('message', event =&gt; { ... });
 (function () {
     // @ts-expect-error
     const vscode = acquireVsCodeApi();
@@ -15036,10 +15087,9 @@ public getTextFromClipboard(): string {
      * - Sets when pressing Enter with non-empty input field &amp;&amp; not tag mode.
      */
     let frozen = false;
-    let frozenEl;
-    frozenEl = document.getElementById("freeze");
-    if (frozenEl) {
-        frozenEl.style.display = 'none';
+    let w_freezeElement = document.getElementById("freeze");
+    if (w_freezeElement) {
+        w_freezeElement.style.display = 'none';
     }
     let navSearchTimer; // for debouncing the search-headline while typing if unfrozen
 
@@ -15064,7 +15114,7 @@ public getTextFromClipboard(): string {
     };
 
     // * Search related controls (No nav inputs)
-    let inputIds = ['findText', 'replaceText'];
+    let findReplaceInputIds = ['findText', 'replaceText'];
     let checkboxIds = [
         'wholeWord',
         'ignoreCase',
@@ -15100,7 +15150,7 @@ public getTextFromClipboard(): string {
             setFrozen(false);
             // if tagging but empty: SEND SEARCH LIST-ALL-TAGS COMMAND
             if (searchSettings.isTag) {
-                return resetTagNav();
+                resetTagNav();
             }
 
         }
@@ -15134,14 +15184,13 @@ public getTextFromClipboard(): string {
 
     function setFrozen(p_focus) {
         frozen = p_focus;
-        frozenEl = document.getElementById("freeze");
-        if (!frozenEl) {
-            return;
-        }
-        if (frozen) {
-            frozenEl.style.display = '';
-        } else {
-            frozenEl.style.display = 'none';
+        w_freezeElement = document.getElementById("freeze");
+        if (w_freezeElement) {
+            if (frozen) {
+                w_freezeElement.style.display = '';
+            } else {
+                w_freezeElement.style.display = 'none';
+            }
         }
     }
 
@@ -15180,7 +15229,7 @@ public getTextFromClipboard(): string {
         }
 
         // When opening a Leo document, set default values of fields
-        inputIds.forEach((p_inputId) =&gt; {
+        findReplaceInputIds.forEach((p_inputId) =&gt; {
             // @ts-expect-error
             document.getElementById(p_inputId).value = p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId];
@@ -15243,6 +15292,7 @@ public getTextFromClipboard(): string {
         }
         var keyCode = p_event.code || p_event.key;
 
+        // Detect CTRL+F
         if (p_event.ctrlKey &amp;&amp; !p_event.shiftKey &amp;&amp; p_event.keyCode === 70) {
             p_event.preventDefault();
             p_event.stopPropagation();
@@ -15250,25 +15300,54 @@ public getTextFromClipboard(): string {
             return;
         }
 
+        // ? NEEDED ?
+        /*
+        // Detect F2
+        if (!p_event.ctrlKey &amp;&amp; !p_event.shiftKey &amp;&amp; p_event.keyCode === 113) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            vscode.postMessage({ type: 'leoFindPrevious' });
+            return;
+        }
+        // Detect F3
+        if (!p_event.ctrlKey &amp;&amp; !p_event.shiftKey &amp;&amp; p_event.keyCode === 114) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            vscode.postMessage({ type: 'leoFindNext' });
+            return;
+        }
+        // Detect Ctrl + =
+        if (p_event.ctrlKey &amp;&amp; !p_event.shiftKey &amp;&amp; p_event.keyCode === 187) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            vscode.postMessage({ type: 'replace' });
+            return;
+        }
+        // Detect Ctrl + -
+        if (p_event.ctrlKey &amp;&amp; !p_event.shiftKey &amp;&amp; p_event.keyCode === 189) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            vscode.postMessage({ type: 'replaceThenFind' });
+            return;
+        }
+        */
+
         if (keyCode === 'Tab') {
             var actEl = document.activeElement;
+            var lastEl = document.getElementById(lastTabElId);
+
             if (p_event.shiftKey) {
                 // shift + tab so if first got last
                 var firstEl = document.getElementById(firstTabElId);
-                if (actEl === firstEl) {
+                if (lastEl &amp;&amp; actEl === firstEl) {
                     p_event.preventDefault();
                     p_event.stopPropagation();
                     p_event.stopImmediatePropagation();
-                    var lastTabEl = document.getElementById(lastTabElId);
-                    if (lastTabEl) {
-                        lastTabEl.focus();
-                    }
-
+                    lastEl.focus();
                     return;
                 }
             } else {
                 // tab, so if last goto first
-                var lastEl = document.getElementById(lastTabElId);
                 if (actEl === lastEl) {
                     p_event.preventDefault();
                     p_event.stopPropagation();
@@ -15282,13 +15361,15 @@ public getTextFromClipboard(): string {
 
     function focusOnField(p_id) {
         const inputField = document.querySelector('#' + p_id);
-        // @ts-expect-error
-        inputField.select();
-        // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
-        setTimeout(() =&gt; {
+        if (inputField) {
             // @ts-expect-error
             inputField.select();
-        }, 0);
+            // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
+            setTimeout(() =&gt; {
+                // @ts-expect-error
+                inputField.select();
+            }, 0);
+        }
     }
 
     function getSettings() {
@@ -15305,11 +15386,13 @@ public getTextFromClipboard(): string {
         let w_showParent = document.getElementById('showParents');
         let w_navSelect = document.getElementById('searchOptions');
         if (searchSettings.isTag) {
+
             if (w_input) {
                 // @ts-expect-error
                 w_input.placeholder = "&lt;tag pattern here&gt;";
                 w_input.title = "Enter a tag name to list tagged nodes in the Goto pane&amp;#013;Clear this field to list all tags used in this file";
             }
+
             // @ts-expect-error
             w_showParent.disabled = true;
             // @ts-expect-error
@@ -15337,9 +15420,9 @@ public getTextFromClipboard(): string {
     }
 
     // * Nav text input detection
-    let navTextEl = document.getElementById('navText');
-    if (navTextEl) {
-        navTextEl.onkeypress = function (p_event) {
+    const w_navTextEl = document.getElementById('navText');
+    if (w_navTextEl) {
+        w_navTextEl.onkeypress = function (p_event) {
             if (!p_event) {
                 // @ts-expect-error
                 p_event = window.event;
@@ -15368,10 +15451,12 @@ public getTextFromClipboard(): string {
                         vscode.postMessage({ type: 'leoNavClear' });
                     }
                 }
+
                 return false;
             }
         };
-        navTextEl.addEventListener('input', function (p_event) {
+
+        w_navTextEl.addEventListener('input', function (p_event) {
             // @ts-expect-error
             searchSettings.navText = this.value;
             navTextDirty = true;
@@ -15379,19 +15464,18 @@ public getTextFromClipboard(): string {
         });
     }
 
-    let showParentsEl = document.getElementById("showParents");
-    if (showParentsEl) {
-        showParentsEl.addEventListener('change', function (p_event) {
+    const w_showParentsEl = document.getElementById('showParents');
+    if (w_showParentsEl) {
+        w_showParentsEl.addEventListener('change', function (p_event) {
             // @ts-expect-error
             searchSettings.showParents = this.checked;
             processChange();
         });
     }
 
-    let isTagEl = document.getElementById("isTag");
-    if (isTagEl) {
-        isTagEl.addEventListener('change', function (p_event) {
-
+    const w_isTagEl = document.getElementById('isTag');
+    if (w_isTagEl) {
+        w_isTagEl.addEventListener('change', function (p_event) {
             // @ts-expect-error
             let w_checked = this.checked;
             let w_wasSet = false;
@@ -15409,24 +15493,25 @@ public getTextFromClipboard(): string {
     }
 
     // * Find &amp; Replace controls change detection
-    let searchOptionsEl = document.getElementById("searchOptions");
-    if (searchOptionsEl) {
-        searchOptionsEl.addEventListener('change', function (p_event) {
+    const w_searchOptionsEl = document.getElementById('searchOptions');
+    if (w_searchOptionsEl) {
+        w_searchOptionsEl.addEventListener('change', function (p_event) {
             // @ts-expect-error
             searchSettings.searchOptions = Number(this.value);
             processChange();
         });
+
     }
 
-    let inputEl;
-    inputIds.forEach((p_inputId) =&gt; {
-        inputEl = document.getElementById(p_inputId);
-        if (inputEl) {
-            inputEl.onkeypress = function (p_event) {
+    findReplaceInputIds.forEach((p_inputId) =&gt; {
+        const w_inputEl = document.getElementById(p_inputId);
+        if (w_inputEl) {
+
+            w_inputEl.onkeypress = function (p_event) {
                 if (!p_event) {
                     // @ts-expect-error
-                    p_event = window.event
-                };
+                    p_event = window.event;
+                }
                 var keyCode = p_event.code || p_event.key;
                 if (keyCode === 'Enter') {
                     if (timer) {
@@ -15437,27 +15522,31 @@ public getTextFromClipboard(): string {
                     return false;
                 }
             };
-            inputEl.addEventListener('input', function (p_event) {
+            w_inputEl.addEventListener('input', function (p_event) {
                 // @ts-expect-error
                 searchSettings[p_inputId] = this.value;
                 processChange();
             });
         }
     });
+
     checkboxIds.forEach((p_inputId) =&gt; {
-        inputEl = document.getElementById(p_inputId);
-        if (inputEl) {
-            inputEl.addEventListener('change', function (p_event) {
+        const w_inputEl = document.getElementById(p_inputId);
+        if (w_inputEl) {
+
+            w_inputEl.addEventListener('change', function (p_event) {
                 // @ts-expect-error
                 searchSettings[p_inputId] = this.checked;
                 processChange();
             });
         }
     });
+
     radioIds.forEach((p_inputId) =&gt; {
-        inputEl = document.getElementById(p_inputId);
-        if (inputEl) {
-            inputEl.addEventListener('change', function (p_event) {
+        const w_inputEl = document.getElementById(p_inputId);
+        if (w_inputEl) {
+
+            w_inputEl.addEventListener('change', function (p_event) {
                 searchSettings['searchScope'] = parseInt(
                     // @ts-expect-error
                     document.querySelector('input[name="searchScope"]:checked').value
@@ -15882,7 +15971,7 @@ private _onGotoTreeViewVisibilityChanged(
 <t tx="felix.20220313211902.1">/**
  * * Tag Node
  */
-public tagNode(): void {
+public tagNode(p_node?: ArchivedPosition): void {
     this.triggerBodySave(false)
         .then((p_saveResult: boolean) =&gt; {
             return vscode.window.showInputBox({
@@ -15900,9 +15989,14 @@ public tagNode(): void {
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.TAGS_CHARACTERS_ERROR);
                     return;
                 }
+                let w_param: { [key: string]: any; } = {};
+                if (p_node) {
+                    w_param = utils.buildNodeCommand(p_node);
+                }
+                w_param.tag = p_inputResult;
                 this.sendAction(
                     Constants.LEOBRIDGE.TAG_NODE,
-                    { tag: p_inputResult }
+                    w_param
                 ).then((p_resultTag: LeoBridgePackage) =&gt; {
 
                     this.setupRefresh(
@@ -15925,14 +16019,14 @@ public tagNode(): void {
 <t tx="felix.20220313211907.1">/**
  * * Remove single Tag on selected node
  */
-public removeTag(): void {
+public removeTag(p_node?: ArchivedPosition): void {
 
-    if (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.nodeTags) {
+    if ((p_node &amp;&amp; p_node.nodeTags) || (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.nodeTags)) {
         this.triggerBodySave(false)
             .then((p_saveResult) =&gt; {
                 return this.sendAction(
-                    Constants.LEOBRIDGE.GET_UA
-
+                    Constants.LEOBRIDGE.GET_UA,
+                    p_node ? utils.buildNodeCommand(p_node) : undefined
                 );
 
             })
@@ -15965,9 +16059,14 @@ public removeTag(): void {
             })
             .then((p_inputResult?: string) =&gt; {
                 if (p_inputResult &amp;&amp; p_inputResult.trim()) {
+                    let w_param: { [key: string]: any; } = {};
+                    if (p_node) {
+                        w_param = utils.buildNodeCommand(p_node);
+                    }
+                    w_param.tag = p_inputResult.trim();
                     this.sendAction(
                         Constants.LEOBRIDGE.REMOVE_TAG,
-                        { tag: p_inputResult.trim() }
+                        w_param
                     ).then((p_resultTag: LeoBridgePackage) =&gt; {
                         this.setupRefresh(
                             Focus.NoChange,
@@ -15995,12 +16094,13 @@ public removeTag(): void {
 <t tx="felix.20220313221212.1">/**
  * * Remove all tags on selected node
  */
-public removeTags(): void {
-    if (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.nodeTags) {
+public removeTags(p_node?: ArchivedPosition): void {
+    if ((p_node &amp;&amp; p_node.nodeTags) || (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.nodeTags)) {
         this.triggerBodySave(false)
             .then((p_saveResult: boolean) =&gt; {
                 this.sendAction(
-                    Constants.LEOBRIDGE.REMOVE_TAGS
+                    Constants.LEOBRIDGE.REMOVE_TAGS,
+                    p_node ? utils.buildNodeCommand(p_node) : undefined
                 ).then((p_resultTag: LeoBridgePackage) =&gt; {
                     this.setupRefresh(
                         Focus.NoChange,
@@ -16081,7 +16181,9 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     { "label": "find-quick-changed", "detail": "Lists all nodes that are changed (aka \"dirty\") since last save." },
     { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
     { "label": "marked-list", "detail": "List all marked nodes." },
-    { "label": "tag-node", "detail": "Tag the selected node." },
+
+    { "label": "remove-tag", "detail": "Prompt for a tag to remove on selected node" },
+    { "label": "remove-all-tags", "detail": "Remove all tags on selected node" },
 
     { "label": "export-headlines", "detail": "Export all headlines to an external file." },
 
@@ -16581,6 +16683,7 @@ public async revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
 
 </t>
 <t tx="felix.20220709005340.1">public static unsupportedMinibufferCommands: string[] = [
+    'read-outline-only', // Seems buggy in Leo. Not present until fixed or deprecated in Leo. (removed in Leo 6.7.5)
     'restart-leo' // added to bad list for leoserver 1.0.6. (Can be removed in next leointeg version)
 ];
 
@@ -16874,6 +16977,7 @@ public incTreeId(): void {
             desc = "\u{1F4CE} (" + element.u + ")";
         }
         if (tagsQty) {
+            w_contextValue += Constants.CONTEXT_FLAGS.NODE_TAGS;
             if (desc) {
                 desc = desc + " "; // add space
             }
@@ -17941,13 +18045,11 @@ public isTsStillValid(ts: number): boolean {
 
 </t>
 <t tx="felix.20220824144905.1">/**
- * * Opens quickPick minibuffer pallette to choose from all commands in this file's commander
+ * * Opens quickPick of minibuffer's commands history
  * @returns Promise that resolves when the chosen command is placed on the front-end command stack
  */
-public async minibufferHistory(): Promise&lt;LeoBridgePackage | undefined&gt; {
+private async _showMinibufferHistory(): Promise&lt;LeoBridgePackage | undefined&gt; {
 
-    // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
-    await this._isBusyTriggerSave(false);
     if (!this._minibufferHistory.length) {
         return Promise.resolve(undefined);
     }
@@ -17993,9 +18095,6 @@ private async _doMinibufferCommand(p_picked: vscode.QuickPickItem | undefined): 
             finalFocus: Focus.NoChange, // TODO: Fetch focus location from Leo?
         });
         return w_commandResult ? w_commandResult : Promise.reject('Command not added');
-    } else {
-        // Canceled
-        return Promise.resolve(undefined);
     }
 }
 
@@ -18812,7 +18911,7 @@ private _finishOpenLastFiles(): void {
 
 }
 </t>
-<t tx="felix.20230304182815.1">## Undo Panel  🔄
+<t tx="felix.20230304182815.1">## Undo Panel ♻️
 
 Use the undo / redo icons above the outline or above the undo pane itself. You can also right-click on an undo step to directly switch to that specific state!
 
@@ -18825,7 +18924,7 @@ Arrow keys, home/end, page up/down are used for basic navigation. But in order t
 
 ### Goto Anywhere Command
 
-Normally in vscode, the the **`Ctrl+P`**  shortcut allows you to switch to any project file, but when the focus is in one of Leo's panels, the **`Ctrl+P`** keybinding allows you to switch to a node directly by typing (part of) it's headline.
+Normally in vscode, the the **`Ctrl+P`** shortcut allows you to switch to any project file, but when the focus is in one of Leo's panels, the **`Ctrl+P`** keybinding allows you to switch to a node directly by typing (part of) it's headline.
 
 ![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/goto-anywhere.gif)
 
@@ -18897,10 +18996,98 @@ If you check the **Tag** option, the **Nav** field and **Goto Pane** are then us
 - Fixed setting synchronization that was lagging by one change when going from vscode to leoInteg's welcome/setting panel.
 
 </t>
+<t tx="felix.20230808224051.1">export function getNonce(): string {
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i &lt; 32; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+}
+
+</t>
+<t tx="felix.20230811224332.1">/**
+ * * Revert the contents of a Leo outline to last saved contents.
+ * If unnamed file, calls anyways to let the real command print out message
+ */
+public async revert(): Promise&lt;unknown&gt; {
+    await this._isBusyTriggerSave(true, true);
+    if (this.leoStates.leoOpenedFileName) {
+
+        const w_result = await vscode.window.showInformationMessage(
+            Constants.USER_MESSAGES.REVERT_PREVIOUS_VERSION +
+            this.leoStates.leoOpenedFileName +
+            '?',
+            { modal: true },
+            {
+                title: Constants.USER_MESSAGES.YES,
+                isCloseAffordance: false
+            },
+            {
+                title: Constants.USER_MESSAGES.NO,
+                isCloseAffordance: true
+            },
+        );
+        if (!w_result || w_result.title === Constants.USER_MESSAGES.NO) {
+            return;
+        }
+    }
+
+    const q_commandResult = this.nodeCommand({
+        action: Constants.LEOBRIDGE.REVERT,
+        node: undefined,
+        refreshType: {
+            tree: true,
+            body: true,
+            documents: true,
+            buttons: true,
+            goto: true,
+            states: true,
+        },
+        finalFocus: Focus.NoChange, // use last
+
+    });
+    if (q_commandResult) {
+        return q_commandResult;
+    } else {
+        return Promise.reject('Export Headlines not added on command stack');
+    }
+
+}
+</t>
+<t tx="felix.20230815233005.1">/**
+ * * Cycle opened documents
+ */
+public async tabCycle(): Promise&lt;unknown&gt; {
+    await this._isBusyTriggerSave(true, true);
+    const w_package = await this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
+    const w_files: LeoDocument[] = w_package.files!;
+    let w_index: number = 0;
+    let w_chosenIndex = 0;
+    if (w_files &amp;&amp; w_files.length &amp;&amp; w_files.length &gt; 1) {
+        w_files.forEach(function (p_filePath: LeoDocument) {
+            if (p_filePath.selected) {
+                if (w_index === w_files.length - 1) {
+                    w_chosenIndex = 0;
+                } else {
+                    w_chosenIndex = w_index + 1;
+                }
+            }
+            w_index++;
+        });
+    } else {
+        // "No opened documents"
+        return undefined;
+    }
+    this.finalFocus = Focus.Outline;
+    return this.selectOpenedLeoDocument(w_chosenIndex);
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
-import { LeoIntegration } from "../leoIntegration";
-import * as utils from "../utils";
+import { LeoIntegration } from "./leoIntegration";
+import * as utils from "./utils";
 
 @language typescript
 @tabwidth -4
@@ -18909,7 +19096,7 @@ import * as utils from "../utils";
 <t tx="fil.20210603195319.1">export class LeoSettingsProvider {
 
     private _panel: vscode.WebviewPanel | undefined;
-    private readonly _extensionPath: string;
+    private readonly _extensionUri: vscode.Uri;
     private _html: string | undefined;
     private _waitingForUpdate: boolean = false;
 
@@ -18917,130 +19104,161 @@ import * as utils from "../utils";
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
     ) {
-        this._extensionPath = _context.extensionPath;
+        this._extensionUri = _context.extensionUri;
     }
 
     @others
 }
 </t>
-<t tx="fil.20210603195319.2">public changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): void {
+<t tx="fil.20210603195319.2">public async changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): Promise&lt;void&gt; {
     if (this._panel &amp;&amp; !this._waitingForUpdate) {
-        this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
-        this._panel.webview.postMessage({ command: 'newFontConfig', config: this._leoIntegration.config.getFontConfig() });
+        await this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
+        await this._panel.webview.postMessage({ command: 'newFontConfig', config: this._leoIntegration.config.getFontConfig() });
     }
 }
 
 </t>
-<t tx="fil.20210603195319.3">public openWebview(): void {
+<t tx="fil.20210603195319.3">public openWebview(): Promise&lt;unknown&gt; {
     if (this._panel) {
-        this._panel.reveal();
+        return Promise.resolve(this._panel.reveal());
     } else {
-        this._getBaseHtml().then(p_baseHtml =&gt; {
-            this._panel = vscode.window.createWebviewPanel(
-                'leoSettings', // Identifies the type of the webview. Used internally
-                'Leo Integration Settings', // Title of the panel displayed to the user
-                { viewColumn: vscode.ViewColumn.Beside, preserveFocus: false }, // Editor column to show the new webview panel in.
-                {
-                    retainContextWhenHidden: false,
-                    enableFindWidget: true,
-                    enableCommandUris: true,
-                    enableScripts: true
-                }
-            );
-            this._context.subscriptions.push(this._panel);
-            let w_baseUri = this._panel.webview.asWebviewUri(vscode.Uri.file(
-                path.join(this._extensionPath)
-            ));
-            this._panel.iconPath = vscode.Uri.file(this._context.asAbsolutePath('resources/leoapp128px.png'));
-            this._panel.webview.html = p_baseHtml.replace(
-                /#{root}/g,
-                w_baseUri.toString()
-            ).replace(
-                /#{endOfBody}/g,
-                `&lt;script type="text/javascript" nonce="Z2l0bGV1cy1ib290c3RyYXA="&gt;window.leoConfig = ${JSON.stringify(
-                    this._leoIntegration.config.getConfig()
-                )};window.fontConfig = ${JSON.stringify(
-                    this._leoIntegration.config.getFontConfig()
-                )};&lt;/script&gt;`
-            );
-            this._panel.webview.onDidReceiveMessage(
-                message =&gt; {
-                    switch (message.command) {
-                        case 'alert':
-                            vscode.window.showErrorMessage(message.text);
-                            break;
-                        case 'chooseLeoEditorPath':
-                            utils.chooseLeoFolderDialog().then(p_chosenPath =&gt; {
-                                if (p_chosenPath &amp;&amp; p_chosenPath.length) {
-                                    this._panel!.webview.postMessage(
+        this._panel = vscode.window.createWebviewPanel(
+            'leoSettings', // Identifies the type of the webview. Used internally
+            'Leo Integration Settings', // Title of the panel displayed to the user
+            { viewColumn: vscode.ViewColumn.Beside, preserveFocus: false }, // Editor column to show the new webview panel in.
+            {
+                retainContextWhenHidden: false,
+                enableFindWidget: true,
+                enableCommandUris: true,
+                enableScripts: true
+            }
+        );
+
+        return this._getBaseHtml(this._panel.webview).then(p_baseHtml =&gt; {
+            if (this._panel) {
+
+                this._context.subscriptions.push(this._panel);
+
+                // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
+                const scriptUri = this._panel.webview.asWebviewUri(
+                    vscode.Uri.joinPath(this._extensionUri, 'settings-panel', 'main.js')
+                );
+                // Do the same for the stylesheet.
+                const style = this._panel.webview.asWebviewUri(
+                    vscode.Uri.joinPath(this._extensionUri, 'settings-panel', 'style.css')
+                );
+
+                const w_baseUri = this._panel.webview.asWebviewUri(this._extensionUri);
+
+                this._panel.iconPath = vscode.Uri.joinPath(this._extensionUri, 'resources', 'leoapp128px.png');
+
+                const w_nonce = utils.getNonce();
+
+                this._panel.webview.html = p_baseHtml
+                    .replace(
+                        /#{nonce}/g,
+                        w_nonce
+                    )
+                    .replace(
+                        /#{style}/g,
+                        `${style}`
+                    )
+                    .replace(
+                        /#{webview.cspSource}/g,
+                        this._panel.webview.cspSource
+                    )
+                    .replace(
+                        /#{root}/g,
+                        `${w_baseUri}`
+                    ).replace(
+                        /#{endOfBody}/g,
+                        `&lt;script type="text/javascript" nonce="${w_nonce}"&gt;window.leoConfig = ${JSON.stringify(
+                            this._leoIntegration.config.getConfig()
+                        )};window.fontConfig = ${JSON.stringify(
+                            this._leoIntegration.config.getFontConfig()
+                        )};&lt;/script&gt;
+                        &lt;script nonce="${w_nonce}" src="${scriptUri}"&gt;&lt;/script&gt;
+                        `
+                    );
+
+
+                this._panel.webview.onDidReceiveMessage(
+                    message =&gt; {
+                        switch (message.command) {
+                            case 'alert':
+                                void vscode.window.showErrorMessage(message.text);
+                                break;
+                            case 'chooseLeoEditorPath':
+                                utils.chooseLeoFolderDialog().then(p_chosenPath =&gt; {
+                                    if (this._panel &amp;&amp; p_chosenPath &amp;&amp; p_chosenPath.length) {
+                                        this._panel.webview.postMessage(
+                                            {
+                                                command: 'newEditorPath',
+                                                editorPath: p_chosenPath[0].fsPath
+                                            }
+                                        );
+                                    }
+                                });
+                                break;
+                            case 'getNewConfig':
+                                if (this._panel &amp;&amp; !this._waitingForUpdate) {
+                                    void this._panel.webview.postMessage(
                                         {
-                                            command: 'newEditorPath',
-                                            editorPath: p_chosenPath[0].fsPath
+                                            command: 'newConfig',
+                                            config: this._leoIntegration.config.getConfig()
                                         }
                                     );
                                 }
-                            });
-                            break;
-                        case 'getNewConfig':
-                            if (this._panel &amp;&amp; !this._waitingForUpdate) {
-                                this._panel.webview.postMessage(
-                                    {
-                                        command: 'newConfig',
-                                        config: this._leoIntegration.config.getConfig()
-                                    }
-                                );
-                            }
-                            break;
-                        case 'config':
-                            this._waitingForUpdate = true;
-                            this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() =&gt; {
-                                this._panel!.webview.postMessage(
-                                    {
-                                        command: 'vscodeConfig',
-                                        config: this._leoIntegration.config.getConfig()
-                                    }
-                                );
-                                this._waitingForUpdate = false;
-                            });
-                            break;
-                        case 'getNewFontConfig':
-                            if (this._panel &amp;&amp; !this._waitingForUpdate) {
-                                this._panel.webview.postMessage(
-                                    {
-                                        command: 'newFontConfig',
-                                        config: this._leoIntegration.config.getFontConfig()
-                                    }
-                                );
-                            }
-                            break;
-                        case 'fontConfig':
-                            this._leoIntegration.config.setFontConfig(message.changes);
-                            break;
-                    }
-                },
-                null,
-                this._context.subscriptions
-            );
-            this._panel.onDidDispose(() =&gt; {
-                // console.log('disposed');
-                this._panel = undefined;
-            },
-                null,
-                this._context.subscriptions);
+                                break;
+                            case 'config':
+                                this._waitingForUpdate = true;
+                                void this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() =&gt; {
+                                    void this._panel!.webview.postMessage(
+                                        {
+                                            command: 'vscodeConfig',
+                                            config: this._leoIntegration.config.getConfig()
+                                        }
+                                    );
+                                    this._waitingForUpdate = false;
+                                });
+                                break;
+                            case 'getNewFontConfig':
+                                if (this._panel &amp;&amp; !this._waitingForUpdate) {
+                                    void this._panel.webview.postMessage(
+                                        {
+                                            command: 'newFontConfig',
+                                            config: this._leoIntegration.config.getFontConfig()
+                                        }
+                                    );
+                                }
+                                break;
+                            case 'fontConfig':
+                                this._leoIntegration.config.setFontConfig(message.changes);
+                                break;
+                        }
+                    },
+                    null,
+                    this._context.subscriptions
+                );
+                this._panel.onDidDispose(
+                    () =&gt; { this._panel = undefined; },
+                    null,
+                    this._context.subscriptions
+                );
+            }
         });
     }
 }
 
 </t>
-<t tx="fil.20210603195319.4">private async _getBaseHtml(): Promise&lt;string&gt; {
+<t tx="fil.20210603195319.4">private async _getBaseHtml(webview: vscode.Webview): Promise&lt;string&gt; {
     if (this._html !== undefined) {
         return this._html;
     } else {
-        const w_filename = this._context.asAbsolutePath(path.join('dist/webviews/', 'settings.html'));
-        const w_doc = await vscode.workspace.openTextDocument(w_filename);
-
+        // 'Normal' uri, not a 'webview.asWebviewUri(...)' !
+        const w_fileUri = vscode.Uri.joinPath(this._extensionUri, 'settings-panel', 'index.html');
+        const w_doc = await vscode.workspace.openTextDocument(w_fileUri);
         this._html = w_doc.getText();
-
         return this._html;
     }
 }
@@ -19124,18 +19342,11 @@ import * as utils from "../utils";
         vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'main.js')
     );
     // Do the same for the stylesheet.
-    const styleResetUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'reset.css')
+    const style = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'style.css')
     );
-    const styleVSCodeUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'vscode.css')
-    );
-    const styleMainUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'main.css')
-    );
-
     // Use a nonce to only allow a specific script to be run.
-    const nonce = this.getNonce();
+    const nonce = utils.getNonce();
 
     return `&lt;!DOCTYPE html&gt;
         &lt;html lang="en" tabindex="-1"&gt;
@@ -19143,10 +19354,7 @@ import * as utils from "../utils";
             &lt;meta charset="UTF-8"&gt;
             &lt;meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';"&gt;
             &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-            &lt;link href="${styleResetUri}" rel="stylesheet"&gt;
-            &lt;link href="${styleVSCodeUri}" rel="stylesheet"&gt;
-            &lt;link href="${styleMainUri}" rel="stylesheet"&gt;
-
+            &lt;link href="${style}" rel="stylesheet"&gt;
             &lt;title&gt;Leo Find Panel&lt;/title&gt;
         &lt;/head&gt;
         &lt;body&gt;
@@ -19222,88 +19430,8 @@ import * as utils from "../utils";
 }
 
 </t>
-<t tx="fil.20210603195909.1">private getNonce() {
-    let text = '';
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i &lt; 32; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-}
-</t>
 <t tx="fil.20210603223013.1"></t>
 <t tx="fil.20210603223013.2">@language css
-div.row {
-  overflow-x: hidden;
-  white-space: nowrap;
-}
-
-div.col {
-  vertical-align: top;
-  width: 50%;
-  max-width: 9.5em;
-  display: inline-block;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-div.col-nav {
-  width: 50%;
-  display: inline-block;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.mt-0 {
-  margin-top: 0;
-}
-
-.mt-4 {
-  margin-top: 4px;
-}
-
-.mb-0 {
-  margin-bottom: 0;
-}
-
-.mb-4 {
-  margin-bottom: 4px;
-}
-
-.mb-6 {
-  margin-bottom: 6px;
-}
-
-.input-holder {
-  padding: 0;
-  margin-right: 6px;
-}
-
-.align-right {
-  text-align: right;
-}
-
-.float-left {
-  float: left;
-}
-
-.float-right {
-  float: right;
-}
-
-.no-overflow {
-  text-overflow: unset !important;
-}
-
-.label-fix {
-  vertical-align: top;
-  line-height: 18px;
-}
-</t>
-<t tx="fil.20210603223013.4">@others
-@language javascript
-@tabwidth -4
-</t>
-<t tx="fil.20210603223014.2">@language css
 html {
   box-sizing: border-box;
   font-size: 13px;
@@ -19339,8 +19467,7 @@ img {
   max-width: 100%;
   height: auto;
 }
-</t>
-<t tx="fil.20210603223014.4">@language css
+
 :root {
   --input-padding-vertical: 6px;
   --input-padding-horizontal: 4px;
@@ -19373,8 +19500,8 @@ ul {
   padding-left: var(--container-padding);
 }
 
-body &gt; *,
-form &gt; * {
+body&gt;*,
+form&gt;* {
   margin-block-start: var(--input-margin-vertical);
   margin-block-end: var(--input-margin-vertical);
 }
@@ -19436,13 +19563,16 @@ select {
   position: relative;
   border-radius: 2px;
 }
+
 select:disabled {
   opacity: 0.5;
   cursor: default;
 }
+
 select option {
   background-color: var(--vscode-dropdown-listBackground);
 }
+
 select option:focus {
   background-color: var(--vscode-input-background);
   outline-color: var(--vscode-input-border);
@@ -19467,12 +19597,15 @@ input[type="checkbox"],
 input[type="radio"] {
   cursor: pointer;
 }
-input[type="checkbox"]:focus + label {
+
+input[type="checkbox"]:focus+label {
   border: 1px solid var(--vscode-button-background);
 }
-input[type="radio"]:focus + label {
+
+input[type="radio"]:focus+label {
   border: 1px solid var(--vscode-button-background);
 }
+
 input:disabled {
   opacity: 0.5;
   cursor: default;
@@ -19489,8 +19622,8 @@ u {
   text-underline-offset: 0.04em;
 }
 
-body &gt; div &gt; div &gt; label:focus,
-body &gt; div &gt; div &gt; label:active {
+body&gt;div&gt;div&gt;label:focus,
+body&gt;div&gt;div&gt;label:active {
   outline-color: none !important;
   border: none !important;
 }
@@ -19510,924 +19643,99 @@ body &gt; div &gt; div &gt; label:active {
 .comment {
   display: none;
 }
-</t>
-<t tx="fil.20210603223933.1"></t>
-<t tx="fil.20210603223933.10">&lt;html lang="en"&gt;
 
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-&lt;/head&gt;
+div.row {
+  overflow-x: hidden;
+  white-space: nowrap;
+}
 
-&lt;body class="preload"&gt;
-  &lt;div class="container"&gt;
+div.col {
+  vertical-align: top;
+  width: 50%;
+  max-width: 9.5em;
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 
-    &lt;header&gt;
-      &lt;a class="header__link"
-         title="Learn more about Leo Integration"
-         href="https://github.com/boltex/leointeg#-leo-for-vs-code"&gt;
-        &lt;div class="header__logo"&gt;
-          &lt;img class="image__logo"
-               src="#{root}/resources/leoapp128px.png" /&gt;
-          &lt;div&gt;
-            &lt;h1&gt;Leo&lt;span class="header__logo--highlight"&gt;Integ&lt;/span&gt;&lt;/h1&gt;
-            &lt;p class="header__subtitle"&gt;Leo for VS Code&lt;/p&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/a&gt;
-      &lt;p class="header__blurb"&gt;
-        Use &lt;b&gt;Leo&lt;/b&gt;, the &lt;b&gt;Literate Editor with Outlines&lt;/b&gt;, to program with &lt;b&gt;directed acyclic graphs&lt;/b&gt;,
-        along with &lt;b&gt;section-references&lt;/b&gt;, &lt;b&gt;@others&lt;/b&gt;, and &lt;b&gt;clones&lt;/b&gt;.
-      &lt;/p&gt;
-    &lt;/header&gt;
+div.col-nav {
+  width: 50%;
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 
-    &lt;!-- &lt;div class="hero__area"&gt;
-      &lt;p&gt;
+.mt-0 {
+  margin-top: 0;
+}
 
-      &lt;/p&gt;
-    &lt;/div&gt; --&gt;
+.mt-4 {
+  margin-top: 4px;
+}
 
-    &lt;div class="content__area"&gt;
-      &lt;section id="welcome"
-               class="section--full mb-0"&gt;
-        &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.13&lt;/span&gt;
-        &lt;/h2&gt;
-        &lt;div class="center mt-1"&gt;
-          &lt;a class="button button--flat is-sidebar-hidden "
-             title="LeoInteg is built by the support of generous users like you!"
-             href="https://boltex.github.io/"&gt;Sponsor LeoInteg
-            &lt;span class="heart"&gt;&amp;#x2764;&lt;/span&gt;
-          &lt;/a&gt;
-          &lt;a class="button button--flat"
-             title="LeoInteg's Features"
-             href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0.13
-          &lt;/a&gt;
-        &lt;/div&gt;
-        &lt;p class="blurb center ml-0 mr-0"&gt;
-          &lt;!--
-          &lt;a class="bold"
-             title="Learn more about LeoInteg"
-             href="https://github.com/boltex/leointeg#-leo-editor-integration-with-visual-studio-code"&gt;LeoInteg&lt;/a&gt; --&gt;
+.mb-0 {
+  margin-bottom: 0;
+}
 
-          &lt;strong&gt;LeoInteg&lt;/strong&gt;
-          is an open-source extension created by
-          &lt;a class="bold"
-             title="My github user page"
-             href="https://boltex.github.io/"&gt;Félix&lt;/a&gt;
-          that integrates
-          &lt;a class="bold"
-             title="Learn more about Leo"
-             href="https://leo-editor.github.io/leo-editor/"&gt;Leo&lt;/a&gt;
-          into VS Code.
-          &lt;!--
-          LeoInteg is designed to &lt;b&gt;provide Leo's functionality&lt;/b&gt;
-          and can be &lt;b&gt;customized&lt;/b&gt; to meet your needs.
-           --&gt;
-        &lt;/p&gt;
-        &lt;h2 class="section__title section__title--break"&gt;&lt;/h2&gt;
-        &lt;p class="section__hint mt-0 center"&gt;
-          Automate the &lt;a href="#leobridge-options"
-             title="Setup server options"&gt;server startup&lt;/a&gt;,
-          auto-refresh for &lt;a href="#external-files"
-             title="Setup file-change detection"&gt;external files changes&lt;/a&gt;,
-          or choose which &lt;a href="#node-commands"
-             title="Fine-tune interface"&gt;icons&lt;/a&gt;
-          are shown, and more!
-        &lt;/p&gt;
-      &lt;/section&gt;
+.mb-4 {
+  margin-bottom: 4px;
+}
 
-      &lt;section id="leobridge-options"
-               class="section--settings"&gt;
-        &lt;div class="section__content"&gt;
-          &lt;div class="section__header"&gt;
-            &lt;h2&gt;
-              Leo Server Options
-            &lt;/h2&gt;
-          &lt;/div&gt;
-          &lt;div class="settings"&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="startServerAutomatically"
-                       name="startServerAutomatically"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="startServerAutomatically"&gt;Start&amp;nbsp;Server&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Run the leoserver.py server script at startup&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="connectToServerAutomatically"
-                       name="connectToServerAutomatically"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="connectToServerAutomatically"&gt;Connect&amp;nbsp;to&amp;nbsp;Server&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Connects automatically to a Leo server&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="leoEditorPath"&gt;Leo&amp;#8209;Editor&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
-                &lt;input id="leoEditorPath"
-                       name="leoEditorPath"
-                       type="text"
-                       maxlength="256"
-                       placeholder="C:/leo-editor"
-                       data-setting /&gt;
-                &lt;button type="button"
-                        id="chooseLeoEditorPath"
-                        name="chooseLeoEditorPath"
-                        class="button btn button--flat button--flat-primary button--choose-path"&gt;
-                  Browse For Folder...
-                &lt;/button&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Location of your Leo-Editor installation&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="leoPythonCommand"&gt;Python&amp;nbsp;Command&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
-                &lt;input id="leoPythonCommand"
-                       name="leoPythonCommand"
-                       type="text"
-                       maxlength="256"
-                       placeholder="Empty for default"
-                       data-setting /&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Command for starting python (Defaults to 'py' on windows, or
-                'python3' otherwise)&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="connectionAddress"&gt;Connection&amp;nbsp;Address&lt;/label&gt;
-                &lt;input id="connectionAddress"
-                       name="connectionAddress"
-                       type="text"
-                       maxlength="256"
-                       placeholder="Host Name, IP Address or localhost"
-                       data-setting /&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Connection host&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="connectionPort"&gt;Connection&amp;nbsp;Port&lt;/label&gt;
-                &lt;input id="connectionPort"
-                       name="connectionPort"
-                       type="number"
-                       min="0"
-                       max="65535"
-                       max-length="5"
-                       placeholder="Port Number"
-                       data-setting /&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Connection host port number&lt;/span&gt;
-            &lt;/div&gt;
+.mb-6 {
+  margin-bottom: 6px;
+}
 
-            &lt;fieldset&gt;
-              &lt;legend&gt;Experimental Features&lt;/legend&gt;
-              &lt;div class="setting"&gt;
-                &lt;div class="setting__input"&gt;
-                  &lt;input id="setDetached"
-                         name="setDetached"
-                         type="checkbox"
-                         data-setting /&gt;
-                  &lt;label for="setDetached"&gt;Spawn&amp;nbsp;Detached&lt;/label&gt;
-                &lt;/div&gt;
-                &lt;span class="setting__hint"&gt;Server spawned with 'detached' option&lt;br&gt;
-                  (Shows dialog when quitting with unsaved files)&lt;/span&gt;
-              &lt;/div&gt;
-              &lt;div class="setting"&gt;
-                &lt;div class="setting__input"&gt;
-                  &lt;label for="limitUsers"&gt;User&amp;nbsp;Limit&lt;/label&gt;
-                  &lt;input id="limitUsers"
-                         name="limitUsers"
-                         type="number"
-                         min="0"
-                         max="255"
-                         max-length="3"
-                         placeholder="1 to 255"
-                         data-setting /&gt;
-                &lt;/div&gt;
-                &lt;span class="setting__hint"&gt;Server's max simultaneous connections&lt;/span&gt;
-              &lt;/div&gt;
-              &lt;br&gt;
-              &lt;p&gt;For a standalone, persistent, or multi-user server
-                see &lt;a href="https://leo-editor.github.io/leo-editor/leoserver.html"
-                   title="Leo server documentation"&gt;Using leoserver.py&lt;/a&gt;
-                from Leo's documentation.
-              &lt;/p&gt;
-            &lt;/fieldset&gt;
+.input-holder {
+  padding: 0;
+  margin-right: 6px;
+}
 
-          &lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/section&gt;
+.align-right {
+  text-align: right;
+}
 
-      &lt;section id="external-files"
-               class="section--settings"&gt;
-        &lt;div class="section__content"&gt;
-          &lt;div class="section__header"&gt;
-            &lt;h2&gt;
-              External Files Change Detection
-            &lt;/h2&gt;
-          &lt;/div&gt;
-          &lt;div class="settings"&gt;
+.float-left {
+  float: left;
+}
 
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="checkForChangeExternalFiles"&gt;Check changes to external files&lt;/label&gt;
-                &lt;select id="checkForChangeExternalFiles"
-                        name="checkForChangeExternalFiles"
-                        data-setting&gt;
-                  &lt;option value="none"&gt;Default from Leo's config&lt;/option&gt;
-                  &lt;option value="force-check"&gt;Check for changes&lt;/option&gt;
-                  &lt;option value="force-ignore"&gt;Ignore all changes&lt;/option&gt;
-                &lt;/select&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Use Leo's defaults, or force either to check changes or not&lt;/span&gt;
-            &lt;/div&gt;
+.float-right {
+  float: right;
+}
 
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="defaultReloadIgnore"&gt;Force reload or ignore changes&lt;/label&gt;
-                &lt;select id="defaultReloadIgnore"
-                        name="defaultReloadIgnore"
-                        data-setting&gt;
-                  &lt;option value="none"&gt;Choose each time&lt;/option&gt;
-                  &lt;option value="yes-all"&gt;Reload All&lt;/option&gt;
-                  &lt;option value="no-all"&gt;Ignore All&lt;/option&gt;
-                &lt;/select&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Choose yourself, or set default to reload or ignore changes&lt;/span&gt;
-            &lt;/div&gt;
+.no-overflow {
+  text-overflow: unset !important;
+}
 
-          &lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/section&gt;
-
-      &lt;section id="interface-behavior"
-               class="section--settings"&gt;
-        &lt;div class="section__content"&gt;
-          &lt;div class="section__header"&gt;
-            &lt;h2&gt;
-              Interface Behavior
-            &lt;/h2&gt;
-          &lt;/div&gt;
-
-          &lt;div class="settings"&gt;
-
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="leoTreeBrowse"
-                       name="leoTreeBrowse"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="leoTreeBrowse"&gt;Use Leo Tree Browsing&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Navigate Leo's outline with Leo's shortcuts and behavior instead of the
-                default vscode
-                method&lt;br&gt;(Arrow keys move selection instead of moving a cursor when focus is on Leo's outline)&lt;/span&gt;
-            &lt;/div&gt;
-
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="treeKeepFocus"
-                       name="treeKeepFocus"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="treeKeepFocus"&gt;Keep focus on Outline&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Keep focus in the outline when selecting a node - overridden by "&lt;strong&gt;Leo
-                  Tree
-                  Browsing&lt;/strong&gt;"&lt;/span&gt;
-            &lt;/div&gt;
-
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="treeKeepFocusWhenAside"
-                       name="treeKeepFocusWhenAside"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="treeKeepFocusWhenAside"&gt;Keep focus when opening on the side&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Keep focus in the outline when opening a body pane on the side&lt;/span&gt;
-            &lt;/div&gt;
-
-            &lt;div class="break"&gt;&lt;/div&gt;
-
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="leoGoAnywhereShortcut"
-                       name="leoGoAnywhereShortcut"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="leoGoAnywhereShortcut"&gt;Replace 'Go to File' shortcut with 'Go Anywhere'&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;
-                Make &lt;strong&gt;[Ctrl+P]&lt;/strong&gt; call Leo's &lt;strong&gt;Go Anywhere&lt;/strong&gt;
-                instead of VSCode's &lt;strong&gt;Go to File&lt;/strong&gt; when focus in the body or outline
-            &lt;/div&gt;
-
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="leoCollapseAllShortcut"
-                       name="leoCollapseAllShortcut"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="leoCollapseAllShortcut"&gt;Enable collapse-all shortcut for explorer&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Allows the &lt;strong&gt;[Alt+'-'] keyboard shortcut&lt;/strong&gt;
-                to collapse folders in the file explorer&lt;/span&gt;
-            &lt;/div&gt;
-
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="leoActivityViewShortcut"
-                       name="leoActivityViewShortcut"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="leoActivityViewShortcut"&gt;Enable 'Show LeoInteg view' shortcut&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Allows the &lt;strong&gt;[Ctrl+Shift+L] keyboard shortcut&lt;/strong&gt;
-                to reveal the Leointeg Activity View&lt;/span&gt;
-            &lt;/div&gt;
-
-          &lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/section&gt;
-
-      &lt;section id="tree-in-explorer"
-               class="section--settings"&gt;
-        &lt;div class="section__content"&gt;
-          &lt;div class="section__header"&gt;
-            &lt;div class="setting__input setting__input--big"&gt;
-              &lt;input id="treeInExplorer"
-                     name="treeInExplorer"
-                     type="checkbox"
-                     data-setting /&gt;
-              &lt;label for="treeInExplorer"&gt;Show&amp;nbsp;Leo&amp;nbsp;Outline&amp;nbsp;in&amp;nbsp;Explorer&lt;/label&gt;
-            &lt;/div&gt;
-            &lt;p class="section__header-hint"&gt;
-              Adds an instance of the outline pane in the explorer view
-            &lt;/p&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div class="section__preview"&gt;
-          &lt;img class="image__preview"
-               src="#{root}/resources/treeInExplorerDisabled.png" /&gt;
-          &lt;img class="image__preview--overlay hidden"
-               src="#{root}/resources/treeInExplorerEnabled.png"
-               data-visibility="treeInExplorer" /&gt;
-        &lt;/div&gt;
-      &lt;/section&gt;
-
-      &lt;section id="show-open-aside"
-               class="section--settings"&gt;
-        &lt;div class="section__content"&gt;
-          &lt;div class="section__header"&gt;
-            &lt;div class="setting__input setting__input--big"&gt;
-              &lt;input id="showOpenAside"
-                     name="showOpenAside"
-                     type="checkbox"
-                     data-setting /&gt;
-              &lt;label for="showOpenAside"&gt;Show&amp;nbsp;'Open&amp;nbsp;to&amp;nbsp;the&amp;nbsp;Side'&lt;/label&gt;
-            &lt;/div&gt;
-            &lt;p class="section__header-hint"&gt;
-              Adds the command in the node's context menu
-            &lt;/p&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div class="break"&gt;&lt;/div&gt; &lt;!-- Make sure to break line after this short title. --&gt;
-        &lt;div class="section__preview"&gt;
-          &lt;img class="image__preview"
-               src="#{root}/resources/showOpenAsideDisabled.png" /&gt;
-          &lt;img class="image__preview--overlay hidden"
-               src="#{root}/resources/showOpenAsideEnabled.png"
-               data-visibility="showOpenAside" /&gt;
-        &lt;/div&gt;
-      &lt;/section&gt;
-
-      &lt;section id="invert-contrast"
-               class="section--settings"&gt;
-        &lt;div class="section__content"&gt;
-          &lt;div class="section__header"&gt;
-            &lt;div class="setting__input setting__input--big"&gt;
-              &lt;input id="invertNodeContrast"
-                     name="invertNodeContrast"
-                     type="checkbox"
-                     data-setting /&gt;
-              &lt;label for="invertNodeContrast"&gt;Invert Node Contrast&lt;/label&gt;
-            &lt;/div&gt;
-            &lt;p class="section__header-hint"&gt;
-              Inverts the dirty/clean border appearance of tree nodes
-            &lt;/p&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div class="section__preview"&gt;
-          &lt;img class="image__preview"
-               src="#{root}/resources/invertedDisabled.png" /&gt;
-          &lt;img class="image__preview--overlay hidden"
-               src="#{root}/resources/invertedEnabled.png"
-               data-visibility="invertNodeContrast" /&gt;
-        &lt;/div&gt;
-      &lt;/section&gt;
-
-      &lt;section id="node-commands"
-               class="section--settings"&gt;
-        &lt;div class="section__content"&gt;
-          &lt;div class="section__header"&gt;
-            &lt;h2&gt;
-              Node Commands
-            &lt;/h2&gt;
-            &lt;p class="section__header-hint"&gt;
-              Hovering tree nodes displays an edit icon - Choose more commands to display when hovering
-            &lt;/p&gt;
-          &lt;/div&gt;
-          &lt;div class="section__preview"&gt;
-
-            &lt;img class="image__preview"
-                 src="#{root}/resources/allIconsDisabled.png" /&gt;
-
-            &lt;div class="image__preview--float-container"&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/bookmark.png"
-                   data-visibility="showMarkOnNodes" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/copy.png"
-                   data-visibility="showCopyOnNodes" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/clone.png"
-                   data-visibility="showCloneOnNodes" /&gt;
-              &lt;!-- &lt;img class="image__preview--float"
-                   src="#{root}/resources/arrows.png"
-                   data-visibility="showArrowsOnNodes" /&gt; --&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/add.png"
-                   data-visibility="showAddOnNodes" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/editHeadline.png"
-                   data-visibility="showEditOnNodes" /&gt;
-            &lt;/div&gt;
-          &lt;/div&gt;
-
-          &lt;div class="settings"&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showEditOnNodes"
-                       name="showEditOnNodes"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showEditOnNodes"&gt;Edit&amp;nbsp;Headline&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Shows 'Edit Headline' on hover&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showMarkOnNodes"
-                       name="showMarkOnNodes"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showMarkOnNodes"&gt;Mark&amp;nbsp;/&amp;nbsp;Unmark&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Shows 'Mark/Unmark' on hover&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showCopyOnNodes"
-                       name="showCopyOnNodes"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showCopyOnNodes"&gt;Copy&amp;nbsp;Node&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Shows 'Copy' on hover&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showCloneOnNodes"
-                       name="showCloneOnNodes"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showCloneOnNodes"&gt;Clone&amp;nbsp;Node&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Shows 'Clone' on hover&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;!-- &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showArrowsOnNodes"
-                       name="showArrowsOnNodes"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showArrowsOnNodes"&gt;Move&amp;nbsp;arrow&amp;nbsp;commands&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Shows 'Move' arrows on hover&lt;/span&gt;
-            &lt;/div&gt; --&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showAddOnNodes"
-                       name="showAddOnNodes"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showAddOnNodes"&gt;Add&amp;nbsp;Node&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Shows 'Insert' on hover&lt;/span&gt;
-            &lt;/div&gt;
-          &lt;/div&gt;
-
-        &lt;/div&gt;
-      &lt;/section&gt;
-
-      &lt;!-- &lt;section id="editor-commands"
-               class="section--settings"&gt;
-        &lt;div class="section__content"&gt;
-          &lt;div class="section__header"&gt;
-            &lt;h2&gt;
-              Body Editor Icons
-            &lt;/h2&gt;
-            &lt;p class="section__header-hint"&gt;
-              Command Icons to display atop the Body Pane: &lt;em&gt;Limited to the first leftmost 9 icons&lt;/em&gt;
-            &lt;/p&gt;
-          &lt;/div&gt;
-          &lt;div class="section__preview"&gt;
-
-            &lt;img class="image__preview__body"
-                 src="#{root}/resources/body-menu.png" /&gt;
-
-            &lt;div class="image__preview__body--float-container"&gt;
-
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-refresh.png"
-                   data-visibility="showRefreshOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-import.png"
-                   data-visibility="showImportOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-sort.png"
-                   data-visibility="showSortOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-mark.png"
-                   data-visibility="showMarkOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-clipboard.png"
-                   data-visibility="showClipboardOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-edition.png"
-                   data-visibility="showEditionOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-extract.png"
-                   data-visibility="showExtractOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-execute.png"
-                   data-visibility="showExecuteOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-promote.png"
-                   data-visibility="showPromoteOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-hoist.png"
-                   data-visibility="showHoistOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-prev-next.png" /&gt;
-
-            &lt;/div&gt;
-          &lt;/div&gt;
-
-          &lt;div class="settings"&gt;
-
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showEditionOnBody"
-                       name="showEditionOnBody"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showEditionOnBody"&gt;Outline&amp;nbsp;Edition&amp;nbsp;Commands&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Clone, Delete and Insert nodes&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showClipboardOnBody"
-                       name="showClipboardOnBody"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showClipboardOnBody"&gt;Clipboard&amp;nbsp;Operations&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Cut, Copy and Paste nodes&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showPromoteOnBody"
-                       name="showPromoteOnBody"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showPromoteOnBody"&gt;Promote&amp;nbsp;&amp;amp;&amp;nbsp;Demote&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Promote children, demote siblings&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showExecuteOnBody"
-                       name="showExecuteOnBody"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showExecuteOnBody"&gt;Execute&amp;nbsp;Script&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Executes node or selected text&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showExtractOnBody"
-                       name="showExtractOnBody"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showExtractOnBody"&gt;Extract&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Extract Text and Names&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showImportOnBody"
-                       name="showImportOnBody"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showImportOnBody"&gt;Import&amp;nbsp;File&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Import any file into a node&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showRefreshOnBody"
-                       name="showRefreshOnBody"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showRefreshOnBody"&gt;Refresh&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Refresh an external file from disk&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showHoistOnBody"
-                       name="showHoistOnBody"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showHoistOnBody"&gt;Hoist&amp;nbsp;&amp;amp;&amp;nbsp;Dehoist&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Isolate part of the outline&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showMarkOnBody"
-                       name="showMarkOnBody"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showMarkOnBody"&gt;Mark&amp;nbsp;&amp;amp;&amp;nbsp;Unmark&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Mark or unmark tree nodes&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="showSortOnBody"
-                       name="showSortOnBody"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="showSortOnBody"&gt;Sort&amp;nbsp;Siblings&lt;/label&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Sort siblings of a node alphabetically&lt;/span&gt;
-            &lt;/div&gt;
-
-          &lt;/div&gt;
-
-        &lt;/div&gt;
-      &lt;/section&gt; --&gt;
-
-      &lt;section id="font-sizes"
-               class="section--settings"&gt;
-        &lt;div class="section__content"&gt;
-          &lt;div class="section__header"&gt;
-            &lt;h2&gt;
-              Outline and Body Font Sizes
-            &lt;/h2&gt;
-            &lt;p class="section__header-hint"&gt;
-              &lt;em&gt;Start by adjusting the Outline pane&lt;/em&gt;, by changing the global &lt;em&gt;Zoom Level&lt;/em&gt;.&lt;br&gt;
-              Then, resize the the &lt;em&gt;Body Pane font size&lt;/em&gt; by changing the &lt;em&gt;Editor Font Size&lt;/em&gt;.
-            &lt;/p&gt;
-          &lt;/div&gt;
-
-          &lt;div class="settings"&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="zoomLevel"&gt;Zoom Level&lt;/label&gt;
-                &lt;input id="zoomLevel"
-                       name="zoomLevel"
-                       type="number"
-                       min="-12"
-                       max="12"
-                       maxlength="2"
-                       placeholder="Number"
-                       data-vscode /&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;
-                Adjust the zoom level&lt;br&gt;
-                of the window.&lt;br&gt;
-                (Original size is 0 and each&lt;br&gt;
-                increment above 1 or below -1&lt;br&gt;
-                represents zooming 20%.&lt;br&gt;
-                You can also use decimals.)
-              &lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="editorFontSize"&gt;Editor Font Size&lt;/label&gt;
-                &lt;input id="editorFontSize"
-                       name="editorFontSize"
-                       type="number"
-                       min="6"
-                       max="30"
-                       maxlength="2"
-                       placeholder="Number"
-                       data-vscode /&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;
-                Controls the Text-Editor&lt;br&gt;
-                pane font size in pixels.&lt;br&gt;
-                Set this after having set the&lt;br&gt;
-                Zoom Level for the outline, as&lt;br&gt;
-                it's affected by the Zoom Level.
-              &lt;/span&gt;
-            &lt;/div&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/section&gt;
-      &lt;!--
-      &lt;section id="statusbar-indicator"
-               class="section--settings"&gt;
-        &lt;div class="section__content"&gt;
-          &lt;div class="section__header"&gt;
-            &lt;h2&gt;
-              Statusbar Indicator
-            &lt;/h2&gt;
-            &lt;p class="section__header-hint"&gt;
-              Keyboard icon and currently opened Leo document can be shown in a specific color
-            &lt;/p&gt;
-          &lt;/div&gt;
-
-          &lt;div class="section__preview"&gt;
-            &lt;img class="image__preview"
-                 src="#{root}/resources/statusbar.png" /&gt;
-          &lt;/div&gt;
-
-          &lt;div class="settings"&gt;
-             &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="statusBarString"&gt;Status Bar Keyboard indicator&lt;/label&gt;
-                &lt;input id="statusBarString"
-                       name="statusBarString"
-                       type="text"
-                       maxlength="8"
-                       placeholder="Status bar indicator text "
-                       data-setting /&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Leo's keybindings 'on/off' indicator text message&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="statusBarColor"&gt;Status Bar Color&lt;/label&gt;
-                &lt;input id="statusBarColor"
-                       name="statusBarColor"
-                       type="text"
-                       maxlength="6"
-                       placeholder="RrGgBb"
-                       data-setting /&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Leo's keybindings 'on' indicator 6 hex digits color code&lt;/span&gt;
-            &lt;/div&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/section&gt;
-       --&gt;
-    &lt;/div&gt;
-
-    &lt;div class="sidebar"&gt;
-      &lt;div class="sidebar__group"&gt;
-        &lt;a class="button button--flat-primary"
-           title="Support LeoInteg Development"
-           href="https://boltex.github.io/"&gt;Sponsor
-          LeoInteg &amp;#x2764;&lt;/a&gt;
-        &lt;p&gt;
-          LeoInteg is built by the support of generous users like &lt;b&gt;you&lt;/b&gt;!
-        &lt;/p&gt;
-      &lt;/div&gt;
-
-      &lt;div class="sidebar__group"&gt;
-        &lt;h2&gt;Configuration&lt;/h2&gt;
-        &lt;ul&gt;
-          &lt;li&gt;
-            &lt;a href="#leobridge-options"
-               title="Server settings"&gt;Leo server Options&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;li&gt;
-            &lt;a href="#external-files"
-               title="File change detection settings"&gt;External Files&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;li&gt;
-            &lt;a href="#interface-behavior"
-               title="Outline behavior settings"&gt;Interface Behavior&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;li&gt;
-            &lt;a href="#tree-in-explorer"
-               title="Outline visibility settings"&gt;Outline in Explorer&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;li&gt;
-            &lt;a href="#show-open-aside"
-               title="Outline context menu settings"&gt;Open to the Side&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;li&gt;
-            &lt;a href="#invert-contrast"
-               title="UI contrast settings"&gt;Invert Contrast&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;li&gt;
-            &lt;a href="#node-commands"
-               title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;!-- &lt;li&gt;
-            &lt;a href="#editor-commands"
-               title="Body editor menu settings"&gt;Body Editor Icons&lt;/a&gt;
-          &lt;/li&gt; --&gt;
-          &lt;li&gt;
-            &lt;a href="#font-sizes"
-               title="Font size settings"&gt;Font Sizes&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;!-- &lt;li&gt;
-            &lt;a href="#statusbar-indicator"
-               title="Statusbar settings"&gt;Statusbar Indicator&lt;/a&gt;
-          &lt;/li&gt; --&gt;
-        &lt;/ul&gt;
-      &lt;/div&gt;
-
-      &lt;!-- &lt;div class="sidebar__group"&gt;
-        &lt;h2&gt;Help&lt;/h2&gt;
-        &lt;ul&gt;
-          &lt;li&gt;
-            &lt;a href="https://github.com/boltex/leointeg#requirements"&gt;Documentation&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;li&gt;
-            &lt;a href="https://github.com/boltex/leointeg/blob/master/CHANGELOG.md#change-log"&gt;Changelog&lt;/a&gt;
-          &lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/div&gt; --&gt;
-
-      &lt;div class="sidebar__group"&gt;
-        &lt;h2&gt;About Leo&lt;/h2&gt;
-        &lt;ul&gt;
-          &lt;li&gt;
-            &lt;a href="https://leo-editor.github.io/leo-editor/"
-               title="Leo's Home Page"&gt;Home Page&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;li&gt;
-            &lt;a href="https://leo-editor.github.io/leo-editor/leo_toc.html"
-               title="Leo's Documentation Page"&gt;Documentation&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;li&gt;
-            &lt;a href="https://groups.google.com/forum/#!forum/leo-editor"
-               title="Leo Editor Forum"&gt;Forum&lt;/a&gt;
-            &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #Google Group&lt;/small&gt;
-          &lt;/li&gt;
-          &lt;li&gt;
-            &lt;a href="https://github.com/leo-editor/leo-editor"
-               title="Leo Editor on GitHub"&gt;Source&lt;/a&gt;
-            &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #GitHub&lt;/small&gt;
-          &lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-
-  &lt;/div&gt;
-  &lt;div id="dirty-config-toast"&gt;Saving...&lt;/div&gt;
-  &lt;div id="saved-config-toast"&gt;Settings Saved&lt;/div&gt;
-  #{endOfBody}
-&lt;/body&gt;
-
-&lt;/html&gt;
-</t>
-<t tx="fil.20210603223933.165">import { initializeAndWatchThemeColors } from './theme';
-import { debounce } from "lodash";
-import { ConfigSetting, IVsCodeApi } from '../../types';
-
-declare function acquireVsCodeApi(): IVsCodeApi;
-
-@others
-@language typescript
+.label-fix {
+  vertical-align: top;
+  line-height: 18px;
+}</t>
+<t tx="fil.20210603223013.4">@others
+@language javascript
 @tabwidth -4
 </t>
-<t tx="fil.20210603223933.166">(function () {
+<t tx="fil.20210603223933.1"></t>
+<t tx="fil.20210603223933.165">@language javascript
+// @ts-check
+
+// This script will be run within the webview itself
+// It cannot access the main VS Code APIs directly.
+// Send message to LeoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
+// Receive messages from LeoInteg with window.addEventListener('message', event =&gt; { ... });
+(function () {
+    const cssColorRegex = /^(?:(#?)([0-9a-f]{3}|[0-9a-f]{6})|((?:rgb|hsl)a?)\((-?\d+%?)[,\s]+(-?\d+%?)[,\s]+(-?\d+%?)[,\s]*(-?[\d.]+%?)?\))$/i;
+
+    // @ts-expect-error
     const vscode = acquireVsCodeApi();
+
     initializeAndWatchThemeColors();
 
     const toast = document.getElementById("saved-config-toast");
     const dirty = document.getElementById("dirty-config-toast");
 
     const oldState = vscode.getState();
-    let currentCount: number = (oldState &amp;&amp; oldState.count) || 0;
+    let currentCount = (oldState &amp;&amp; oldState.count) || 0;
     if (currentCount) {
-        // Already opened! Get fresh and recent config!
         vscode.postMessage({
             command: "getNewConfig"
         });
@@ -20435,25 +19743,25 @@ declare function acquireVsCodeApi(): IVsCodeApi;
     currentCount = currentCount + 1;
     vscode.setState({ count: currentCount });
 
-    // * SETUP
     // Global variable config
-    let frontConfig: { [key: string]: any } = {};
-    let vscodeConfig: { [key: string]: any } = {};
-    let vscodeFontConfig: { [key: string]: any } = {};
-    let frontFontConfig: { [key: string]: any } = {};
+    let frontConfig = {};
+    let vscodeConfig = {};
+    let vscodeFontConfig = {};
+    let frontFontConfig = {};
 
-    vscodeConfig = (window as any).leoConfig; // ! PRE SET BY leoSettingsWebview
+    // @ts-expect-error
+    vscodeConfig = window.leoConfig; // PRE SET BY leoSettingsWebview
     frontConfig = JSON.parse(JSON.stringify(vscodeConfig));
-    vscodeFontConfig = (window as any).fontConfig; // ! PRE SET BY leoSettingsWebview
+    // @ts-expect-error
+    vscodeFontConfig = window.fontConfig; // PRE SET BY leoSettingsWebview
     frontFontConfig = JSON.parse(JSON.stringify(vscodeFontConfig));
 
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", event =&gt; {
         const message = event.data; // The json data that the extension sent
-        if (message.command) {
+        if (message.command &amp;&amp; dirty &amp;&amp; toast) {
             switch (message.command) {
                 case "test":
-                    console.log("got test message");
                     break;
                 case "newConfig":
                     vscodeConfig = message.config;
@@ -20461,9 +19769,11 @@ declare function acquireVsCodeApi(): IVsCodeApi;
                     setControls();
                     break;
                 case "vscodeConfig":
-                    dirty!.className = dirty!.className.replace("show", "");
-                    toast!.className = "show";
-                    setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
+                    dirty.className = dirty.className.replace("show", "");
+                    toast.className = "show";
+                    setTimeout(function () {
+                        toast.className = toast.className.replace("show", "");
+                    }, 1500);
                     vscodeConfig = message.config; // next changes will be confronted to those settings
                     break;
                 case "newFontConfig":
@@ -20475,14 +19785,14 @@ declare function acquireVsCodeApi(): IVsCodeApi;
                     vscodeFontConfig = message.config; // next changes will be confronted to those settings
                     break;
                 case "newEditorPath":
-                    const w_element: HTMLElement | null = document.getElementById("leoEditorPath");
+                    const w_element = document.getElementById("leoEditorPath");
                     if (w_element) {
-                        (w_element as HTMLInputElement).value = message.editorPath;
-                        onInputChanged(w_element as HTMLInputElement);
+                        // @ts-expect-error
+                        w_element.value = message.editorPath;
+                        onInputChanged(w_element);
                     }
                     break;
                 default:
-                    console.log("got message: ", message.command);
                     break;
             }
         } else {
@@ -20490,15 +19800,337 @@ declare function acquireVsCodeApi(): IVsCodeApi;
         }
     });
 
-    @others
+    function adjustLight(color, amount) {
+        const cc = color + amount;
+        const c = amount &lt; 0 ? (cc &lt; 0 ? 0 : cc) : cc &gt; 255 ? 255 : cc;
+
+        return Math.round(c);
+    }
+
+    function darken(color, percentage) {
+        return lighten(color, -percentage);
+    }
+
+    function lighten(color, percentage) {
+        const rgba = toRgba(color);
+        if (rgba == null) { return color; }
+
+        const [r, g, b, a] = rgba;
+        const amount = (255 * percentage) / 100;
+        return `rgba(${adjustLight(r, amount)}, ${adjustLight(g, amount)}, ${adjustLight(b, amount)}, ${a})`;
+    }
+
+    function opacity(color, percentage) {
+        const rgba = toRgba(color);
+        if (rgba == null) { return color; }
+
+        const [r, g, b, a] = rgba;
+        return `rgba(${r}, ${g}, ${b}, ${a * (percentage / 100)})`;
+    }
+
+    function toRgba(color) {
+        color = color.trim();
+
+        const result = cssColorRegex.exec(color);
+        if (result == null) { return null; }
+
+        if (result[1] === '#') {
+            const hex = result[2];
+            switch (hex.length) {
+                case 3:
+                    return [parseInt(hex[0] + hex[0], 16), parseInt(hex[1] + hex[1], 16), parseInt(hex[2] + hex[2], 16), 1];
+                case 6:
+                    return [
+                        parseInt(hex.substring(0, 2), 16),
+                        parseInt(hex.substring(2, 4), 16),
+                        parseInt(hex.substring(4, 6), 16),
+                        1
+                    ];
+            }
+
+            return null;
+        }
+
+        switch (result[3]) {
+            case 'rgb':
+                return [parseInt(result[4], 10), parseInt(result[5], 10), parseInt(result[6], 10), 1];
+            case 'rgba':
+                return [parseInt(result[4], 10), parseInt(result[5], 10), parseInt(result[6], 10), parseFloat(result[7])];
+            default:
+                return null;
+        }
+    }
+
+    function initializeAndWatchThemeColors() {
+        const onColorThemeChanged = () =&gt; {
+            const body = document.body;
+            const computedStyle = window.getComputedStyle(body);
+
+            const bodyStyle = body.style;
+
+            const font = computedStyle.getPropertyValue('--vscode-font-family').trim();
+            if (font) {
+                bodyStyle.setProperty('--font-family', font);
+                bodyStyle.setProperty('--font-size', computedStyle.getPropertyValue('--vscode-font-size').trim());
+                bodyStyle.setProperty('--font-weight', computedStyle.getPropertyValue('--vscode-font-weight').trim());
+            } else {
+                bodyStyle.setProperty(
+                    '--font-family',
+                    computedStyle.getPropertyValue('--vscode-editor-font-family').trim()
+                );
+                bodyStyle.setProperty('--font-size', computedStyle.getPropertyValue('--vscode-editor-font-size').trim());
+                bodyStyle.setProperty(
+                    '--font-weight',
+                    computedStyle.getPropertyValue('--vscode-editor-font-weight').trim()
+                );
+            }
+
+            let color = computedStyle.getPropertyValue('--vscode-editor-background').trim();
+            bodyStyle.setProperty('--color-background', color);
+            bodyStyle.setProperty('--color-background--lighten-05', lighten(color, 5));
+            bodyStyle.setProperty('--color-background--darken-05', darken(color, 5));
+            bodyStyle.setProperty('--color-background--lighten-075', lighten(color, 7.5));
+            bodyStyle.setProperty('--color-background--darken-075', darken(color, 7.5));
+            bodyStyle.setProperty('--color-background--lighten-15', lighten(color, 15));
+            bodyStyle.setProperty('--color-background--darken-15', darken(color, 15));
+            bodyStyle.setProperty('--color-background--lighten-30', lighten(color, 30));
+            bodyStyle.setProperty('--color-background--darken-30', darken(color, 30));
+            bodyStyle.setProperty('--color-background--lighten-50', lighten(color, 50));
+            bodyStyle.setProperty('--color-background--darken-50', darken(color, 50));
+
+            color = computedStyle.getPropertyValue('--vscode-button-background').trim();
+            bodyStyle.setProperty('--color-button-background', color);
+            bodyStyle.setProperty('--color-button-background--darken-30', darken(color, 30));
+
+            color = computedStyle.getPropertyValue('--vscode-button-foreground').trim();
+            bodyStyle.setProperty('--color-button-foreground', color);
+
+            color = computedStyle.getPropertyValue('--vscode-editor-foreground').trim();
+            if (!color) {
+                color = computedStyle.getPropertyValue('--vscode-foreground').trim();
+            }
+            bodyStyle.setProperty('--color-foreground', color);
+            bodyStyle.setProperty('--color-foreground--85', opacity(color, 85));
+            bodyStyle.setProperty('--color-foreground--75', opacity(color, 75));
+            bodyStyle.setProperty('--color-foreground--65', opacity(color, 65));
+            bodyStyle.setProperty('--color-foreground--50', opacity(color, 50));
+
+            color = computedStyle.getPropertyValue('--vscode-focusBorder').trim();
+            bodyStyle.setProperty('--color-focus-border', color);
+
+            color = computedStyle.getPropertyValue('--vscode-textLink-foreground').trim();
+            bodyStyle.setProperty('--color-link-foreground', color);
+            bodyStyle.setProperty('--color-link-foreground--darken-20', darken(color, 20));
+            bodyStyle.setProperty('--color-link-foreground--lighten-20', lighten(color, 20));
+        };
+
+        const observer = new MutationObserver(onColorThemeChanged);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+        onColorThemeChanged();
+        return observer;
+    }
+
+    function listenAll(selector, name, listener) {
+        const els = document.querySelectorAll(selector);
+        for (const el of els) {
+            el.addEventListener(name, listener, false);
+        }
+    }
+
+    function chooseLeoEditorPath() {
+        vscode.postMessage({
+            command: "chooseLeoEditorPath"
+        });
+    }
+
+    function onBind() {
+        listenAll('input[type=checkbox][data-setting]', 'change', function (p_this) {
+            return onInputChecked(p_this.target);
+        });
+        listenAll('input[type=text][data-setting], input:not([type])[data-setting]', 'blur', function (
+            p_this
+        ) {
+            return onInputBlurred(p_this.target);
+        });
+        listenAll('input[type=text][data-setting], input:not([type])[data-setting]', 'focus', function (
+            p_this
+        ) {
+            return onInputFocused(p_this.target);
+        });
+        listenAll('input[type=text][data-setting], input[type=number][data-setting]', 'input', function (
+            p_this
+        ) {
+            return onInputChanged(p_this.target);
+        });
+        listenAll('select[data-setting]', 'change', function (p_this) {
+            return onDropdownChanged(p_this.target);
+        });
+        listenAll('input[type=number][data-vscode]', 'input', function (
+            p_this
+        ) {
+            return onVscodeInputChanged(p_this.target);
+        });
+    }
+    function showDirtyAndApplyChange() {
+        if (dirty) {
+            dirty.className = "show";
+        }
+        applyChanges();
+    }
+
+    function onDropdownChanged(element) {
+        if (element) {
+            const w_value = element.options[element.selectedIndex].value;
+            frontConfig[element.id] = w_value;
+        }
+        showDirtyAndApplyChange();
+    }
+
+    function onInputChecked(element) {
+        frontConfig[element.id] = element.checked;
+        setVisibility(frontConfig);
+        showDirtyAndApplyChange();
+    }
+    function onInputBlurred(element) {
+        // console.log('onInputBlurred', element);
+    }
+    function onInputFocused(element) {
+        // console.log('onInputFocused', element);
+    }
+
+    function onInputChanged(element) {
+        if (element.type === 'number' &amp;&amp; Number(element.value) &lt; Number(element.max) &amp;&amp; Number(element.value) &gt; Number(element.min)) {
+            frontConfig[element.id] = Number(element.value);
+            element.classList.remove("is-invalid");
+            showDirtyAndApplyChange();
+        } else if (element.type === 'number' &amp;&amp; (Number(element.value) &gt; Number(element.max) || Number(element.value) &lt; Number(element.min))) {
+            // make red
+            element.classList.add("is-invalid");
+        } else if (element.type === 'text' &amp;&amp; (element.value.length &gt; element.maxLength || (element.value.length &lt; element.minLength &amp;&amp; element.value.length !== 0))) {
+            element.classList.add("is-invalid");
+        } else if (element.type === 'text' &amp;&amp; element.value.length &lt;= element.maxLength) {
+            element.classList.remove("is-invalid");
+            frontConfig[element.id] = element.value;
+            showDirtyAndApplyChange();
+
+        }
+    }
+
+    function onVscodeInputChanged(element) {
+        if (element.id === "zoomLevel") {
+            frontFontConfig.zoomLevel = element.valueAsNumber;
+        }
+        if (element.id === "editorFontSize") {
+            frontFontConfig.fontSize = element.valueAsNumber;
+        }
+        applyFontChanges();
+    }
+
+    function setFontControls() {
+        if (frontFontConfig.zoomLevel || frontFontConfig.zoomLevel === 0) {
+            const w_element = document.getElementById("zoomLevel");
+            // @ts-expect-error
+            w_element.valueAsNumber = Number(frontFontConfig.zoomLevel);
+        } else {
+            console.log('Error : vscode font setting "zoomLevel" is missing');
+        }
+        if (frontFontConfig.fontSize) {
+            const w_element = document.getElementById("editorFontSize");
+            // @ts-expect-error
+            w_element.valueAsNumber = Number(frontFontConfig.fontSize);
+        } else {
+            console.log('Error : vscode font setting "fontSize" is missing');
+        }
+    }
+
+    function setControls() {
+        // 1- Set leointeg's own configuration settings
+        for (const key in frontConfig) {
+            if (frontConfig.hasOwnProperty(key)) {
+                const w_element = document.getElementById(key);
+                if (w_element &amp;&amp; w_element.getAttribute('type') === 'checkbox') {
+                    // @ts-expect-error
+                    w_element.checked = frontConfig[key];
+                } else if (w_element) {
+                    // @ts-expect-error
+                    w_element.value = frontConfig[key];
+                } else {
+                    console.log('ERROR : w_element', key, ' is ', w_element);
+                }
+            }
+        }
+    }
+
+    function setVisibility(state) {
+        for (const el of document.querySelectorAll('[data-visibility]')) {
+            // @ts-expect-error
+            el.classList.toggle('hidden', !evaluateStateExpression(el.dataset.visibility, state));
+        }
+    }
+    function parseStateExpression(expression) {
+        const [lhs, op, rhs] = expression.trim().split(/([=+!])/);
+        return [lhs.trim(), op !== undefined ? op.trim() : '=', rhs !== undefined ? rhs.trim() : rhs];
+    }
+
+    function evaluateStateExpression(expression, changes) {
+        let state = false;
+
+        for (const expr of expression.trim().split('&amp;')) {
+            const [lhs, op, rhs] = parseStateExpression(expr);
+
+            switch (op) {
+                case '=': {
+                    // Equals
+                    let value = changes[lhs];
+                    if (value === undefined) {
+                        value = getSettingValue(lhs) || false;
+                    }
+                    state = rhs !== undefined ? rhs === String(value) : Boolean(value);
+                    break;
+                }
+                case '!': {
+                    // Not equals
+                    let value = changes[lhs];
+                    if (value === undefined) {
+                        value = getSettingValue(lhs) || false;
+                    }
+                    state = rhs !== undefined ? rhs !== String(value) : !value;
+                    break;
+                }
+                case '+': {
+                    // Contains
+                    if (rhs !== undefined) {
+                        const setting = getSettingValue(lhs);
+                        state = setting !== undefined ? setting.includes(rhs.toString()) : false;
+                    }
+                    break;
+                }
+            }
+
+            if (!state) { break; }
+        }
+        return state;
+    }
+
+    function getSettingValue(p_setting) {
+        return frontConfig[p_setting];
+    }
+
+    function debounce(func, timeout = 300) {
+        let timer;
+        return (...args) =&gt; {
+            clearTimeout(timer);
+            timer = setTimeout(() =&gt; { func.apply(this, args); }, timeout);
+        };
+    }
 
     var applyChanges = debounce(
         function () {
-            var w_changes: ConfigSetting[] = [];
+            var w_changes = [];
             if (frontConfig) {
                 for (var prop in frontConfig) {
                     if (Object.prototype.hasOwnProperty.call(frontConfig, prop)) {
-                        // console.log(prop);
                         if (frontConfig[prop] !== vscodeConfig[prop]) {
                             w_changes.push({ code: prop, value: frontConfig[prop] });
                         }
@@ -20513,13 +20145,12 @@ declare function acquireVsCodeApi(): IVsCodeApi;
                     command: "config",
                     changes: w_changes
                 });
-            } else {
+            } else if (dirty) {
                 // Still have to remove 'modified' popup
-                dirty!.className = dirty!.className.replace("show", "");
+                dirty.className = dirty.className.replace("show", "");
             }
         },
-        1500,
-        { leading: false, trailing: true }
+        1500
     );
 
     var applyFontChanges = debounce(
@@ -20529,13 +20160,11 @@ declare function acquireVsCodeApi(): IVsCodeApi;
                 changes: frontFontConfig
             });
         },
-        800,
-        { leading: false, trailing: true }
+        800
     );
 
-
-    // * START
-    const w_button: HTMLElement | null = document.getElementById('chooseLeoEditorPath');
+    // START
+    const w_button = document.getElementById('chooseLeoEditorPath');
     if (w_button) {
         w_button.onclick = chooseLeoEditorPath;
     }
@@ -20545,327 +20174,520 @@ declare function acquireVsCodeApi(): IVsCodeApi;
     onBind();
 
 })();
-</t>
-<t tx="fil.20210603223933.2">const cssColorRegex = /^(?:(#?)([0-9a-f]{3}|[0-9a-f]{6})|((?:rgb|hsl)a?)\((-?\d+%?)[,\s]+(-?\d+%?)[,\s]+(-?\d+%?)[,\s]*(-?[\d.]+%?)?\))$/i;
-
-@others
-@language typescript
-@tabwidth -4
-</t>
-<t tx="fil.20210603223933.3">function adjustLight(color: number, amount: number) {
-    const cc = color + amount;
-    const c = amount &lt; 0 ? (cc &lt; 0 ? 0 : cc) : cc &gt; 255 ? 255 : cc;
-
-    return Math.round(c);
-}
 
 </t>
-<t tx="fil.20210603223933.4">export function darken(color: string, percentage: number) {
-    return lighten(color, -percentage);
-}
-
-</t>
-<t tx="fil.20210603223933.5">export function lighten(color: string, percentage: number) {
-    const rgba = toRgba(color);
-    // tslint:disable-next-line: triple-equals
-    if (rgba == null) { return color; }
-
-    const [r, g, b, a] = rgba;
-    const amount = (255 * percentage) / 100;
-    return `rgba(${adjustLight(r, amount)}, ${adjustLight(g, amount)}, ${adjustLight(b, amount)}, ${a})`;
-}
-
-</t>
-<t tx="fil.20210603223933.6">export function opacity(color: string, percentage: number) {
-    const rgba = toRgba(color);
-    // tslint:disable-next-line: triple-equals
-    if (rgba == null) { return color; }
-
-    const [r, g, b, a] = rgba;
-    return `rgba(${r}, ${g}, ${b}, ${a * (percentage / 100)})`;
-}
-
-</t>
-<t tx="fil.20210603223933.7">export function toRgba(color: string) {
-    color = color.trim();
-
-    const result = cssColorRegex.exec(color);
-    // tslint:disable-next-line: triple-equals
-    if (result == null) { return null; }
-
-    if (result[1] === '#') {
-        const hex = result[2];
-        switch (hex.length) {
-            case 3:
-                return [parseInt(hex[0] + hex[0], 16), parseInt(hex[1] + hex[1], 16), parseInt(hex[2] + hex[2], 16), 1];
-            case 6:
-                return [
-                    parseInt(hex.substring(0, 2), 16),
-                    parseInt(hex.substring(2, 4), 16),
-                    parseInt(hex.substring(4, 6), 16),
-                    1
-                ];
-        }
-
-        return null;
-    }
-
-    switch (result[3]) {
-        case 'rgb':
-            return [parseInt(result[4], 10), parseInt(result[5], 10), parseInt(result[6], 10), 1];
-        case 'rgba':
-            return [parseInt(result[4], 10), parseInt(result[5], 10), parseInt(result[6], 10), parseFloat(result[7])];
-        default:
-            return null;
-    }
-}
-</t>
-<t tx="fil.20210603223933.9">&lt;!DOCTYPE html&gt;
-@others
-@language html
+<t tx="fil.20210603223933.9">@language html
 @tabwidth -2
-</t>
-<t tx="fil.20210603223934.1">function listenAll(selector: string, name: string, listener: EventListener) {
-    const els = (document.querySelectorAll(selector) as unknown) as Element[];
-    for (const el of els) {
-        el.addEventListener(name, listener, false);
-    }
-}
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en" tabindex="-1"&gt;
 
-</t>
-<t tx="fil.20210603223934.10">function setVisibility(state: { [key: string]: string | boolean }) {
-    for (const el of document.querySelectorAll&lt;HTMLElement&gt;('[data-visibility]')) {
-        el.classList.toggle('hidden', !evaluateStateExpression(el.dataset.visibility!, state));
-    }
-}
-</t>
-<t tx="fil.20210603223934.11">function parseStateExpression(expression: string): [string, string, string | boolean | undefined] {
-    const [lhs, op, rhs] = expression.trim().split(/([=+!])/);
-    return [lhs.trim(), op !== undefined ? op.trim() : '=', rhs !== undefined ? rhs.trim() : rhs];
-}
+&lt;head&gt;
+  &lt;meta charset="UTF-8" /&gt;
+  &lt;meta http-equiv="Content-Security-Policy"
+    content="default-src 'none'; style-src #{webview.cspSource}; img-src #{webview.cspSource} https:; script-src 'nonce-#{nonce}';" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+  &lt;link href="#{style}" rel="stylesheet" /&gt;
+  &lt;title&gt;Leo Integration&lt;/title&gt;
+&lt;/head&gt;
 
-</t>
-<t tx="fil.20210603223934.12">function evaluateStateExpression(expression: string, changes: { [key: string]: string | boolean }): boolean {
-    let state = false;
+&lt;body class="preload"&gt;
+  &lt;div class="container"&gt;
+    &lt;header&gt;
+      &lt;a class="header__link" title="Learn more about Leo Integration"
+        href="https://github.com/boltex/leointeg#-leo-for-vs-code"&gt;
+        &lt;div class="header__logo"&gt;
+          &lt;img class="image__logo" src="#{root}/resources/leoapp128px.png" /&gt;
+          &lt;div&gt;
+            &lt;h1&gt;
+              Leo&lt;span class="header__logo--highlight"&gt;Integ&lt;/span&gt;
+            &lt;/h1&gt;
+            &lt;p class="header__subtitle"&gt;Leo for VS Code&lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/a&gt;
+      &lt;p class="header__blurb"&gt;
+        Use &lt;b&gt;Leo&lt;/b&gt;, the &lt;b&gt;Literate Editor with Outlines&lt;/b&gt;, to
+        program with &lt;b&gt;directed acyclic graphs&lt;/b&gt;, along with
+        &lt;b&gt;section-references&lt;/b&gt;, &lt;b&gt;@others&lt;/b&gt;, and
+        &lt;b&gt;clones&lt;/b&gt;.
+      &lt;/p&gt;
+    &lt;/header&gt;
 
-    for (const expr of expression.trim().split('&amp;')) {
-        const [lhs, op, rhs] = parseStateExpression(expr);
+    &lt;div class="content__area"&gt;
+      &lt;section id="welcome" class="section--full mb-0"&gt;
+        &lt;h2 class="section__title section__title--primary"&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.14&lt;/span&gt;
+        &lt;/h2&gt;
+        &lt;div class="center mt-1"&gt;
+          &lt;a class="button button--flat is-sidebar-hidden"
+            title="LeoInteg is built by the support of generous users like you!"
+            href="https://boltex.github.io/"&gt;Sponsor LeoInteg
+            &lt;span class="heart"&gt;&amp;#x2764;&lt;/span&gt;
+          &lt;/a&gt;
+          &lt;a class="button button--flat" title="LeoInteg's Features"
+            href="https://github.com/boltex/leointeg#features-"&gt;
+            See What's New in LeoInteg 1.0.14
+          &lt;/a&gt;
+        &lt;/div&gt;
+        &lt;p class="blurb center ml-0 mr-0"&gt;
+          &lt;strong&gt;LeoInteg&lt;/strong&gt;
+          is an open-source extension created by
+          &lt;a class="bold" title="My github user page" href="https://boltex.github.io/"&gt;Félix&lt;/a&gt;
+          that integrates
+          &lt;a class="bold" title="Learn more about Leo" href="https://leo-editor.github.io/leo-editor/"&gt;Leo&lt;/a&gt;
+          into VS Code.
+        &lt;/p&gt;
+        &lt;h2 class="section__title section__title--break"&gt;&lt;/h2&gt;
+        &lt;p class="section__hint mt-0 center"&gt;
+          Automate the &lt;a href="#leobridge-options" title="Setup server options"&gt;server startup&lt;/a&gt;,
+          auto-refresh for &lt;a href="#external-files" title="Setup file-change detection"&gt;external files changes&lt;/a&gt;,
+          or choose which &lt;a href="#node-commands" title="Fine-tune interface"&gt;icons&lt;/a&gt;
+          are shown, and more!
+        &lt;/p&gt;
+      &lt;/section&gt;
 
-        switch (op) {
-            case '=': {
-                // Equals
-                let value = changes[lhs];
-                if (value === undefined) {
-                    value = getSettingValue(lhs) || false;
-                }
-                state = rhs !== undefined ? rhs === String(value) : Boolean(value);
-                break;
-            }
-            case '!': {
-                // Not equals
-                let value = changes[lhs];
-                if (value === undefined) {
-                    value = getSettingValue(lhs) || false;
-                }
-                state = rhs !== undefined ? rhs !== String(value) : !value;
-                break;
-            }
-            case '+': {
-                // Contains
-                if (rhs !== undefined) {
-                    const setting = getSettingValue(lhs);
-                    state = setting !== undefined ? setting.includes(rhs.toString()) : false;
-                }
-                break;
-            }
-        }
+      &lt;section id="leobridge-options" class="section--settings"&gt;
+        &lt;div class="section__content"&gt;
+          &lt;div class="section__header"&gt;
+            &lt;h2&gt;Leo Server Options&lt;/h2&gt;
+          &lt;/div&gt;
+          &lt;div class="settings"&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="startServerAutomatically" name="startServerAutomatically" type="checkbox" data-setting /&gt;
+                &lt;label for="startServerAutomatically"&gt;Start&amp;nbsp;Server&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Run the leoserver.py server script at startup&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="connectToServerAutomatically" name="connectToServerAutomatically" type="checkbox"
+                  data-setting /&gt;
+                &lt;label for="connectToServerAutomatically"&gt;Connect&amp;nbsp;to&amp;nbsp;Server&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Connects automatically to a Leo server&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="leoEditorPath"&gt;Leo&amp;#8209;Editor&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;input id="leoEditorPath" name="leoEditorPath" type="text" maxlength="256" placeholder="C:/leo-editor"
+                  data-setting /&gt;
+                &lt;button type="button" id="chooseLeoEditorPath" name="chooseLeoEditorPath"
+                  class="button btn button--flat button--flat-primary button--choose-path"&gt;
+                  Browse For Folder...
+                &lt;/button&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Location of your Leo-Editor installation&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="pythonCommand"&gt;Python&amp;nbsp;Command&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;input id="pythonCommand" name="pythonCommand" type="text" maxlength="256"
+                  placeholder="Empty for default" data-setting /&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Command for starting python (Defaults to 'py' on windows, or
+                'python3' otherwise)&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="connectionAddress"&gt;Connection&amp;nbsp;Address&lt;/label&gt;
+                &lt;input id="connectionAddress" name="connectionAddress" type="text" maxlength="256"
+                  placeholder="Host Name, IP Address or localhost" data-setting /&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Connection host&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="connectionPort"&gt;Connection&amp;nbsp;Port&lt;/label&gt;
+                &lt;input id="connectionPort" name="connectionPort" type="number" min="0" max="65535" max-length="5"
+                  placeholder="Port Number" data-setting /&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Connection host port number&lt;/span&gt;
+            &lt;/div&gt;
 
-        if (!state) { break; }
-    }
-    return state;
-}
+            &lt;fieldset&gt;
+              &lt;legend&gt;Experimental Features&lt;/legend&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;input id="setDetached" name="setDetached" type="checkbox" data-setting /&gt;
+                  &lt;label for="setDetached"&gt;Spawn&amp;nbsp;Detached&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Server spawned with 'detached' option&lt;br&gt;
+                  (Shows dialog when quitting with unsaved files)&lt;/span&gt;
+              &lt;/div&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;label for="limitUsers"&gt;User&amp;nbsp;Limit&lt;/label&gt;
+                  &lt;input id="limitUsers" name="limitUsers" type="number" min="0" max="255" max-length="3"
+                    placeholder="1 to 255" data-setting /&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Server's max simultaneous connections&lt;/span&gt;
+              &lt;/div&gt;
+              &lt;br&gt;
+              &lt;p&gt;For a standalone, persistent, or multi-user server
+                see &lt;a href="https://leo-editor.github.io/leo-editor/leoserver.html"
+                  title="Leo server documentation"&gt;Using leoserver.py&lt;/a&gt;
+                from Leo's documentation.
+              &lt;/p&gt;
+            &lt;/fieldset&gt;
 
-</t>
-<t tx="fil.20210603223934.13">function getSettingValue(p_setting: string): any {
-    return frontConfig[p_setting];
-}
-</t>
-<t tx="fil.20210603223934.15">import { darken, lighten, opacity } from './colors';
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
 
-@others
-@language typescript
-@tabwidth -4
-</t>
-<t tx="fil.20210603223934.16">export function initializeAndWatchThemeColors() {
-    const onColorThemeChanged = () =&gt; {
-        const body = document.body;
-        const computedStyle = window.getComputedStyle(body);
+      &lt;section id="external-files" class="section--settings"&gt;
+        &lt;div class="section__content"&gt;
+          &lt;div class="section__header"&gt;
+            &lt;h2&gt;External Files Change Detection&lt;/h2&gt;
+          &lt;/div&gt;
 
-        const bodyStyle = body.style;
+          &lt;div class="settings"&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="checkForChangeExternalFiles"&gt;Check changes to external files&lt;/label&gt;
+                &lt;select id="checkForChangeExternalFiles" name="checkForChangeExternalFiles" data-setting&gt;
+                  &lt;option value="none"&gt;Default from Leo's config&lt;/option&gt;
+                  &lt;option value="force-check"&gt;Check for changes&lt;/option&gt;
+                  &lt;option value="force-ignore"&gt;Ignore all changes&lt;/option&gt;
+                &lt;/select&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Use Leo's defaults, or force either to check changes or not&lt;/span&gt;
+            &lt;/div&gt;
 
-        const font = computedStyle.getPropertyValue('--vscode-font-family').trim();
-        if (font) {
-            bodyStyle.setProperty('--font-family', font);
-            bodyStyle.setProperty('--font-size', computedStyle.getPropertyValue('--vscode-font-size').trim());
-            bodyStyle.setProperty('--font-weight', computedStyle.getPropertyValue('--vscode-font-weight').trim());
-        } else {
-            bodyStyle.setProperty(
-                '--font-family',
-                computedStyle.getPropertyValue('--vscode-editor-font-family').trim()
-            );
-            bodyStyle.setProperty('--font-size', computedStyle.getPropertyValue('--vscode-editor-font-size').trim());
-            bodyStyle.setProperty(
-                '--font-weight',
-                computedStyle.getPropertyValue('--vscode-editor-font-weight').trim()
-            );
-        }
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="defaultReloadIgnore"&gt;Force reload or ignore changes&lt;/label&gt;
+                &lt;select id="defaultReloadIgnore" name="defaultReloadIgnore" data-setting&gt;
+                  &lt;option value="none"&gt;
+                    Choose each time
+                  &lt;/option&gt;
+                  &lt;option value="yes-all"&gt;
+                    Reload All
+                  &lt;/option&gt;
+                  &lt;option value="no-all"&gt;
+                    Ignore All
+                  &lt;/option&gt;
+                &lt;/select&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Choose yourself, or set default to reload
+                or ignore changes&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
 
-        let color = computedStyle.getPropertyValue('--vscode-editor-background').trim();
-        bodyStyle.setProperty('--color-background', color);
-        bodyStyle.setProperty('--color-background--lighten-05', lighten(color, 5));
-        bodyStyle.setProperty('--color-background--darken-05', darken(color, 5));
-        bodyStyle.setProperty('--color-background--lighten-075', lighten(color, 7.5));
-        bodyStyle.setProperty('--color-background--darken-075', darken(color, 7.5));
-        bodyStyle.setProperty('--color-background--lighten-15', lighten(color, 15));
-        bodyStyle.setProperty('--color-background--darken-15', darken(color, 15));
-        bodyStyle.setProperty('--color-background--lighten-30', lighten(color, 30));
-        bodyStyle.setProperty('--color-background--darken-30', darken(color, 30));
-        bodyStyle.setProperty('--color-background--lighten-50', lighten(color, 50));
-        bodyStyle.setProperty('--color-background--darken-50', darken(color, 50));
+      &lt;section id="interface-behavior" class="section--settings"&gt;
+        &lt;div class="section__content"&gt;
+          &lt;div class="section__header"&gt;
+            &lt;h2&gt;Interface Behavior&lt;/h2&gt;
+          &lt;/div&gt;
 
-        color = computedStyle.getPropertyValue('--vscode-button-background').trim();
-        bodyStyle.setProperty('--color-button-background', color);
-        bodyStyle.setProperty('--color-button-background--darken-30', darken(color, 30));
+          &lt;div class="settings"&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="leoTreeBrowse" name="leoTreeBrowse" type="checkbox" data-setting /&gt;
+                &lt;label for="leoTreeBrowse"&gt;Use Leo Tree Browsing&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Navigate Leo's outline with Leo's shortcuts
+                and behavior instead of the default vscode
+                method&lt;br /&gt;(Arrow keys move selection
+                instead of moving a cursor when focus is on
+                Leo's outline)&lt;/span&gt;
+            &lt;/div&gt;
 
-        color = computedStyle.getPropertyValue('--vscode-button-foreground').trim();
-        bodyStyle.setProperty('--color-button-foreground', color);
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="treeKeepFocus" name="treeKeepFocus" type="checkbox" data-setting /&gt;
+                &lt;label for="treeKeepFocus"&gt;Keep focus on Outline&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Keep focus in the outline when selecting a
+                node - overridden by "&lt;strong&gt;Leo Tree Browsing&lt;/strong&gt;"&lt;/span&gt;
+            &lt;/div&gt;
 
-        color = computedStyle.getPropertyValue('--vscode-editor-foreground').trim();
-        if (!color) {
-            color = computedStyle.getPropertyValue('--vscode-foreground').trim();
-        }
-        bodyStyle.setProperty('--color-foreground', color);
-        bodyStyle.setProperty('--color-foreground--85', opacity(color, 85));
-        bodyStyle.setProperty('--color-foreground--75', opacity(color, 75));
-        bodyStyle.setProperty('--color-foreground--65', opacity(color, 65));
-        bodyStyle.setProperty('--color-foreground--50', opacity(color, 50));
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="treeKeepFocusWhenAside" name="treeKeepFocusWhenAside" type="checkbox" data-setting /&gt;
+                &lt;label for="treeKeepFocusWhenAside"&gt;Keep focus when opening on the side&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Keep focus in the outline when opening a body pane on the side&lt;/span&gt;
+            &lt;/div&gt;
 
-        color = computedStyle.getPropertyValue('--vscode-focusBorder').trim();
-        bodyStyle.setProperty('--color-focus-border', color);
+            &lt;div class="break"&gt;&lt;/div&gt;
 
-        color = computedStyle.getPropertyValue('--vscode-textLink-foreground').trim();
-        bodyStyle.setProperty('--color-link-foreground', color);
-        bodyStyle.setProperty('--color-link-foreground--darken-20', darken(color, 20));
-        bodyStyle.setProperty('--color-link-foreground--lighten-20', lighten(color, 20));
-    };
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="goAnywhereShortcut" name="goAnywhereShortcut" type="checkbox" data-setting /&gt;
+                &lt;label for="goAnywhereShortcut"&gt;Replace 'Go to File' shortcut with 'Go Anywhere'&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;
+                Make &lt;strong&gt;[Ctrl+P]&lt;/strong&gt; call Leo's &lt;strong&gt;Go Anywhere&lt;/strong&gt;
+                instead of VSCode's &lt;strong&gt;Go to File&lt;/strong&gt; when focus in the body or outline&lt;/span&gt;
+            &lt;/div&gt;
 
-    const observer = new MutationObserver(onColorThemeChanged);
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="collapseAllShortcut" name="collapseAllShortcut" type="checkbox" data-setting /&gt;
+                &lt;label for="collapseAllShortcut"&gt;Enable collapse-all shortcut for
+                  explorer&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Allows the
+                &lt;strong&gt;[Alt+'-'] keyboard shortcut&lt;/strong&gt;
+                to collapse folders in the file
+                explorer&lt;/span&gt;
+            &lt;/div&gt;
 
-    onColorThemeChanged();
-    return observer;
-}
-</t>
-<t tx="fil.20210603223934.2">function chooseLeoEditorPath() {
-    vscode.postMessage({
-        command: "chooseLeoEditorPath"
-    });
-}
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="activityViewShortcut" name="activityViewShortcut" type="checkbox" data-setting /&gt;
+                &lt;label for="activityViewShortcut"&gt;Enable 'Show LeoInteg view' shortcut&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Allows the &lt;strong&gt;[Ctrl+Shift+L] keyboard shortcut&lt;/strong&gt;
+                to reveal the Leointeg Activity View&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
 
-</t>
-<t tx="fil.20210603223934.3">function onBind() {
-    listenAll('input[type=checkbox][data-setting]', 'change', function (this: HTMLInputElement) {
-        return onInputChecked(this);
-    });
-    listenAll('input[type=text][data-setting], input:not([type])[data-setting]', 'blur', function (
-        this: HTMLInputElement
-    ) {
-        return onInputBlurred(this);
-    });
-    listenAll('input[type=text][data-setting], input:not([type])[data-setting]', 'focus', function (
-        this: HTMLInputElement
-    ) {
-        return onInputFocused(this);
-    });
-    listenAll('input[type=text][data-setting], input[type=number][data-setting]', 'input', function (
-        this: HTMLInputElement
-    ) {
-        return onInputChanged(this);
-    });
-    listenAll('select[data-setting]', 'change', function (this: HTMLSelectElement) {
-        return onDropdownChanged(this);
-    });
-    listenAll('input[type=number][data-vscode]', 'input', function (
-        this: HTMLInputElement
-    ) {
-        return onVscodeInputChanged(this);
-    });
-}
+      &lt;section id="tree-in-explorer" class="section--settings"&gt;
+        &lt;div class="section__content"&gt;
+          &lt;div class="section__header"&gt;
+            &lt;div class="setting__input setting__input--big"&gt;
+              &lt;input id="treeInExplorer" name="treeInExplorer" type="checkbox" data-setting /&gt;
+              &lt;label for="treeInExplorer"&gt;Show&amp;nbsp;Leo&amp;nbsp;Outline&amp;nbsp;in&amp;nbsp;Explorer&lt;/label&gt;
+            &lt;/div&gt;
+            &lt;p class="section__header-hint"&gt;
+              Adds an instance of the outline pane in the explorer view
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="section__preview"&gt;
+          &lt;img class="image__preview" src="#{root}/resources/treeInExplorerDisabled.png" /&gt;
+          &lt;img class="image__preview--overlay hidden" src="#{root}/resources/treeInExplorerEnabled.png"
+            data-visibility="treeInExplorer" /&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
 
-</t>
-<t tx="fil.20210603223934.4">function onDropdownChanged(element: HTMLSelectElement) {
-    if (element) {
-        const w_value = element.options[element.selectedIndex].value;
-        frontConfig[element.id] = w_value;
-    }
-    dirty!.className = "show";
-    applyChanges();
-}
+      &lt;section id="show-open-aside" class="section--settings"&gt;
+        &lt;div class="section__content"&gt;
+          &lt;div class="section__header"&gt;
+            &lt;div class="setting__input setting__input--big"&gt;
+              &lt;input id="showOpenAside" name="showOpenAside" type="checkbox" data-setting /&gt;
+              &lt;label for="showOpenAside"&gt;Show&amp;nbsp;'Open&amp;nbsp;to&amp;nbsp;the&amp;nbsp;Side'&lt;/label&gt;
+            &lt;/div&gt;
+            &lt;p class="section__header-hint"&gt;
+              Adds the command in the node's context menu
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="break"&gt;&lt;/div&gt;
+        &lt;!-- Make sure to break line after this short title. --&gt;
+        &lt;div class="section__preview"&gt;
+          &lt;img class="image__preview" src="#{root}/resources/showOpenAsideDisabled.png" /&gt;
+          &lt;img class="image__preview--overlay hidden" src="#{root}/resources/showOpenAsideEnabled.png"
+            data-visibility="showOpenAside" /&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
 
-</t>
-<t tx="fil.20210603223934.5">function onInputChecked(element: HTMLInputElement) {
-    frontConfig[element.id] = element.checked;
-    setVisibility(frontConfig);
-    dirty!.className = "show";
-    applyChanges();
-}
-</t>
-<t tx="fil.20210603223934.6">function onInputBlurred(element: HTMLInputElement) {
-    // console.log('onInputBlurred', element);
-}
-</t>
-<t tx="fil.20210603223934.7">function onInputFocused(element: HTMLInputElement) {
-    // console.log('onInputFocused', element);
-}
-</t>
-<t tx="fil.20210603223934.8">function onInputChanged(element: HTMLInputElement) {
-    if (element.type === 'number' &amp;&amp; Number(element.value) &lt; Number(element.max) &amp;&amp; Number(element.value) &gt; Number(element.min)) {
-        frontConfig[element.id] = Number(element.value);
-        element.classList.remove("is-invalid");
-    } else if (element.type === 'number' &amp;&amp; (Number(element.value) &gt; Number(element.max) || Number(element.value) &lt; Number(element.min))) {
-        // make red
-        element.classList.add("is-invalid");
-    } else if (element.type === 'text' &amp;&amp; element.value.length &lt;= element.maxLength) {
-        frontConfig[element.id] = element.value;
-    }
-    dirty!.className = "show";
-    applyChanges();
-}
+      &lt;section id="invert-contrast" class="section--settings"&gt;
+        &lt;div class="section__content"&gt;
+          &lt;div class="section__header"&gt;
+            &lt;div class="setting__input setting__input--big"&gt;
+              &lt;input id="invertNodeContrast" name="invertNodeContrast" type="checkbox" data-setting /&gt;
+              &lt;label for="invertNodeContrast"&gt;Invert Node Contrast&lt;/label&gt;
+            &lt;/div&gt;
+            &lt;p class="section__header-hint"&gt;
+              Inverts the dirty/clean border appearance of tree nodes
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="section__preview"&gt;
+          &lt;img class="image__preview" src="#{root}/resources/invertedDisabled.png" /&gt;
+          &lt;img class="image__preview--overlay hidden" src="#{root}/resources/invertedEnabled.png"
+            data-visibility="invertNodeContrast" /&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
 
-</t>
-<t tx="fil.20210603223934.9">function setControls(): void {
-    // 1- Set leointeg's own configuration settings
-    for (const key in frontConfig) {
-        if (frontConfig.hasOwnProperty(key)) {
-            const w_element = document.getElementById(key);
-            if (w_element &amp;&amp; w_element.getAttribute('type') === 'checkbox') {
-                (w_element as HTMLInputElement).checked = frontConfig[key];
-            } else if (w_element) {
-                (w_element as HTMLInputElement).value = frontConfig[key];
-            } else {
-                console.log('ERROR : w_element', key, ' is ', w_element);
-            }
-        }
-    }
-}
+      &lt;section id="node-commands" class="section--settings"&gt;
+        &lt;div class="section__content"&gt;
+          &lt;div class="section__header"&gt;
+            &lt;h2&gt;Node Commands&lt;/h2&gt;
+            &lt;p class="section__header-hint"&gt;
+              Hovering tree nodes displays an edit icon -
+              Choose more commands to display when hovering
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class="section__preview"&gt;
+            &lt;img class="image__preview" src="#{root}/resources/allIconsDisabled.png" /&gt;
 
-</t>
+            &lt;div class="image__preview--float-container"&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/bookmark.png"
+                data-visibility="showMarkOnNodes" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/copy.png" data-visibility="showCopyOnNodes" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/clone.png" data-visibility="showCloneOnNodes" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/add.png" data-visibility="showAddOnNodes" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/editHeadline.png"
+                data-visibility="showEditOnNodes" /&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class="settings"&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showEditOnNodes" name="showEditOnNodes" type="checkbox" data-setting /&gt;
+                &lt;label for="showEditOnNodes"&gt;Edit&amp;nbsp;Headline&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'Edit Headline' on hover&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showMarkOnNodes" name="showMarkOnNodes" type="checkbox" data-setting /&gt;
+                &lt;label for="showMarkOnNodes"&gt;Mark&amp;nbsp;/&amp;nbsp;Unmark&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'Mark/Unmark' on hover&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showCopyOnNodes" name="showCopyOnNodes" type="checkbox" data-setting /&gt;
+                &lt;label for="showCopyOnNodes"&gt;Copy&amp;nbsp;Node&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'Copy' on hover&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showCloneOnNodes" name="showCloneOnNodes" type="checkbox" data-setting /&gt;
+                &lt;label for="showCloneOnNodes"&gt;Clone&amp;nbsp;Node&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'Clone' on hover&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showAddOnNodes" name="showAddOnNodes" type="checkbox" data-setting /&gt;
+                &lt;label for="showAddOnNodes"&gt;Add&amp;nbsp;Node&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'Insert' on hover&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+      &lt;section id="font-sizes" class="section--settings"&gt;
+        &lt;div class="section__content"&gt;
+          &lt;div class="section__header"&gt;
+            &lt;h2&gt;Outline and Body Font Sizes&lt;/h2&gt;
+            &lt;p class="section__header-hint"&gt;
+              &lt;em&gt;Start by adjusting the Outline pane&lt;/em&gt;, by changing the global &lt;em&gt;Zoom Level&lt;/em&gt;.&lt;br&gt;
+              Then, resize the the &lt;em&gt;Body Pane font size&lt;/em&gt; by changing the &lt;em&gt;Editor Font Size&lt;/em&gt;.
+            &lt;/p&gt;
+          &lt;/div&gt;
+
+          &lt;div class="settings"&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="zoomLevel"&gt;Zoom Level&lt;/label&gt;
+                &lt;input id="zoomLevel" name="zoomLevel" type="number" min="-12" max="12" maxlength="2"
+                  placeholder="Number" data-vscode /&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;
+                Adjust the zoom level&lt;br&gt;
+                of the window.&lt;br&gt;
+                (Original size is 0 and each&lt;br&gt;
+                increment above 1 or below -1&lt;br&gt;
+                represents zooming 20%.&lt;br&gt;
+                You can also use decimals.)
+              &lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="editorFontSize"&gt;Editor Font Size&lt;/label&gt;
+                &lt;input id="editorFontSize" name="editorFontSize" type="number" min="6" max="30" maxlength="2"
+                  placeholder="Number" data-vscode /&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;
+                Controls the Text-Editor&lt;br&gt;
+                pane font size in pixels.&lt;br&gt;
+                Set this after having set the&lt;br&gt;
+                Zoom Level for the outline, as&lt;br&gt;
+                it's affected by the Zoom Level.
+              &lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+    &lt;/div&gt;
+
+    &lt;div class="sidebar"&gt;
+      &lt;div class="sidebar__group"&gt;
+        &lt;a class="button button--flat-primary" title="Support LeoInteg Development"
+          href="https://boltex.github.io/"&gt;Sponsor
+          LeoInteg &amp;#x2764;&lt;/a&gt;
+        &lt;p&gt;
+          LeoInteg is built by the support of generous users like &lt;b&gt;you&lt;/b&gt;!
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;div class="sidebar__group"&gt;
+        &lt;h2&gt;Configuration&lt;/h2&gt;
+        &lt;ul&gt;
+          &lt;li&gt;
+            &lt;a href="#leobridge-options" title="Server settings"&gt;Leo server Options&lt;/a&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;a href="#external-files" title="File change detection settings"&gt;External Files&lt;/a&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;a href="#interface-behavior" title="Outline behavior settings"&gt;Interface Behavior&lt;/a&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;a href="#tree-in-explorer" title="Outline visibility settings"&gt;Outline in Explorer&lt;/a&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;a href="#show-open-aside" title="Outline context menu settings"&gt;Open to the Side&lt;/a&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;a href="#invert-contrast" title="UI contrast settings"&gt;Invert Contrast&lt;/a&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;a href="#node-commands" title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;a href="#font-sizes" title="Font size settings"&gt;Font Sizes&lt;/a&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+
+      &lt;div class="sidebar__group"&gt;
+        &lt;h2&gt;About Leo&lt;/h2&gt;
+        &lt;ul&gt;
+          &lt;li&gt;
+            &lt;a href="https://leo-editor.github.io/leo-editor/" title="Leo's Home Page"&gt;Home Page&lt;/a&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;a href="https://leo-editor.github.io/leo-editor/leo_toc.html"
+              title="Leo's Documentation Page"&gt;Documentation&lt;/a&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;a href="https://groups.google.com/forum/#!forum/leo-editor" title="Leo Editor Forum"&gt;Forum&lt;/a&gt;
+            &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #Google Group&lt;/small&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;a href="https://github.com/leo-editor/leo-editor" title="Leo Editor on GitHub"&gt;Source&lt;/a&gt;
+            &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #GitHub&lt;/small&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div id="dirty-config-toast"&gt;Saving...&lt;/div&gt;
+  &lt;div id="saved-config-toast"&gt;Settings Saved&lt;/div&gt;
+  #{endOfBody}
+&lt;/body&gt;
+
+&lt;/html&gt;</t>
 <t tx="fil.20210603223956.2">@language css
 html {
   height: 100%;
   font-size: 62.5%;
   box-sizing: border-box;
-  scroll-behavior: smooth;
+  scroll-behavior: smooth
 }
 
 body {
@@ -20874,11 +20696,11 @@ body {
   font-family: var(--font-family);
   height: 100%;
   line-height: 1.4;
-  font-size: 100% !important;
+  font-size: 100% !important
+}
 
-  &amp;.vscode-light {
-    background-color: var(--color-background--darken-075);
-  }
+body.vscode-light {
+  background-color: var(--color-background--darken-075)
 }
 
 a {
@@ -20886,34 +20708,35 @@ a {
   color: var(--color-link-foreground);
   font-weight: 400;
   outline: none;
-  text-decoration: none;
+  text-decoration: none
+}
 
-  &amp;:not([href]):not([tabindex]):focus,
-  &amp;:not([href]):not([tabindex]):hover {
-    color: inherit;
-    text-decoration: none;
-  }
+a:not([href]):not([tabindex]):focus,
+a:not([href]):not([tabindex]):hover {
+  color: inherit;
+  text-decoration: none
+}
 
-  &amp;:focus {
-    outline-color: var(--color-focus-border);
-  }
-  &amp;:hover {
-    color: var(--color-link-foreground--lighten-20);
-  }
+a:focus {
+  outline-color: var(--color-focus-border)
+}
+
+a:hover {
+  color: var(--color-link-foreground--lighten-20)
 }
 
 a,
 a:active,
 a:focus {
-  outline: none;
+  outline: none
 }
 
 b {
-  font-weight: 600;
+  font-weight: 600
 }
 
 span.heart {
-  color: rgb(139, 49, 119);
+  color: #8b3177
 }
 
 code,
@@ -20921,17 +20744,19 @@ code,
   border-radius: 4px;
   color: var(--color-foreground);
   padding: 2px 6px 0 6px;
-  vertical-align: baseline;
+  vertical-align: baseline
+}
 
-  .vscode-dark &amp; {
-    background-color: var(--color-background--lighten-15);
-    border-bottom: 2px solid var(--color-background--lighten-15);
-  }
+.vscode-dark code,
+.vscode-dark .shortcut-key {
+  background-color: var(--color-background--lighten-15);
+  border-bottom: 2px solid var(--color-background--lighten-15)
+}
 
-  .vscode-light &amp; {
-    background-color: var(--color-background--darken-15);
-    border-bottom: 2px solid var(--color-background--darken-15);
-  }
+.vscode-light code,
+.vscode-light .shortcut-key {
+  background-color: var(--color-background--darken-15);
+  border-bottom: 2px solid var(--color-background--darken-15)
 }
 
 h1 {
@@ -20940,7 +20765,7 @@ h1 {
   font-weight: 400;
   margin: 0;
   padding: 0;
-  white-space: nowrap;
+  white-space: nowrap
 }
 
 h2 {
@@ -20948,7 +20773,7 @@ h2 {
   font-weight: 200;
   line-height: normal;
   margin: 1em 0 0.3em 0;
-  white-space: nowrap;
+  white-space: nowrap
 }
 
 h3 {
@@ -20956,7 +20781,7 @@ h3 {
   font-weight: 200;
   line-height: normal;
   margin: 1em 0 0.3em 0;
-  white-space: nowrap;
+  white-space: nowrap
 }
 
 h4 {
@@ -20964,7 +20789,7 @@ h4 {
   font-weight: 200;
   line-height: normal;
   margin: 1em 0 0.3em 0;
-  white-space: nowrap;
+  white-space: nowrap
 }
 
 header {
@@ -20974,7 +20799,7 @@ header {
   grid-gap: 1em 3em;
   align-items: center;
   justify-items: center;
-  margin: 0 3em;
+  margin: 0 3em
 }
 
 input,
@@ -20982,7 +20807,7 @@ select,
 button {
   font-family: var(--font-family);
   font-size: inherit;
-  margin: 0;
+  margin: 0
 }
 
 input[type="checkbox"] {
@@ -20990,18 +20815,18 @@ input[type="checkbox"] {
   border: none;
   cursor: pointer;
   margin: 0;
-  padding: 0 10px;
+  padding: 0 10px
+}
 
-  &amp;:focus {
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    outline: none;
-  }
+input[type="checkbox"]:focus {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  outline: none
+}
 
-  &amp;[disabled] {
-    color: var(--color-foreground--75);
-    cursor: default;
-  }
+input[type="checkbox"][disabled] {
+  color: var(--color-foreground--75);
+  cursor: default
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -21009,7 +20834,7 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  margin: 0;
+  margin: 0
 }
 
 input[type="number"],
@@ -21019,46 +20844,61 @@ input:not([type]) {
   color: var(--color-foreground);
   margin: 0 10px;
   max-width: 300px;
-  padding: 4px;
-  // width: 100%;
+  padding: 4px
+}
 
-  .vscode-dark &amp; {
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
+.vscode-dark input[type="number"],
+.vscode-dark input[type="text"],
+.vscode-dark input:not([type]) {
+  border: 1px solid rgba(255, 255, 255, 0.3)
+}
 
-  .vscode-light &amp; {
-    border: 1px solid rgba(0, 0, 0, 0.3);
-  }
+.vscode-light input[type="number"],
+.vscode-light input[type="text"],
+.vscode-light input:not([type]) {
+  border: 1px solid rgba(0, 0, 0, 0.3)
+}
 
-  &amp;:focus {
-    outline-color: var(--color-focus-border);
+input[type="number"]:focus,
+input[type="text"]:focus,
+input:not([type]):focus {
+  outline-color: var(--color-focus-border)
+}
 
-    .vscode-light &amp; {
-      background-color: rgba(255, 255, 255, 0.4);
-    }
+.vscode-light input[type="number"]:focus,
+.vscode-light input[type="text"]:focus,
+.vscode-light input:not([type]):focus {
+  background-color: rgba(255, 255, 255, 0.4)
+}
 
-    .vscode-dark &amp; {
-      background-color: rgba(0, 0, 0, 0.2);
-    }
-  }
+.vscode-dark input[type="number"]:focus,
+.vscode-dark input[type="text"]:focus,
+.vscode-dark input:not([type]):focus {
+  background-color: rgba(0, 0, 0, 0.2)
+}
 
-  &amp;.is-invalid {
-    outline-color: red !important;
-    border-color: red !important;
-  }
+input[type="number"].is-invalid,
+input[type="text"].is-invalid,
+input:not([type]).is-invalid {
+  outline-color: red !important;
+  border-color: red !important
+}
 
-  &amp;[disabled] {
-    color: var(--color-foreground--75);
-    cursor: default;
-  }
+input[type="number"][disabled],
+input[type="text"][disabled],
+input:not([type])[disabled] {
+  color: var(--color-foreground--75);
+  cursor: default
+}
 
-  &amp;::placeholder {
-    color: var(--vscode-input-placeholderForeground);
-  }
+input[type="number"]::placeholder,
+input[type="text"]::placeholder,
+input:not([type])::placeholder {
+  color: var(--vscode-input-placeholderForeground)
 }
 
 label {
-  cursor: pointer;
+  cursor: pointer
 }
 
 select {
@@ -21067,58 +20907,58 @@ select {
   cursor: pointer;
   margin: 0 0.75em;
   padding: 2px;
-  min-width: 14em;
-
-  .vscode-light &amp; {
-    border: 1px solid rgba(0, 0, 0, 0.3);
-  }
-
-  .vscode-dark &amp; {
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
-  &amp;:focus {
-    outline-color: var(--color-focus-border);
-    .vscode-light &amp; {
-      background-color: rgba(255, 255, 255, 0.4);
-    }
-
-    .vscode-dark &amp; {
-      background-color: rgba(0, 0, 0, 0.2);
-    }
-  }
-
-  &amp;[disabled] {
-    color: var(--color-foreground--75);
-    cursor: default;
-  }
+  min-width: 14em
 }
 
-select option {
-  .vscode-light &amp; {
-    background-color: var(--color-background--darken-05);
-  }
+.vscode-light select {
+  border: 1px solid rgba(0, 0, 0, 0.3)
+}
 
-  .vscode-dark &amp; {
-    background-color: var(--color-background--lighten-05);
-  }
+.vscode-dark select {
+  border: 1px solid rgba(255, 255, 255, 0.3)
+}
 
-  &amp;:focus {
-    outline-color: var(--color-focus-border);
-    .vscode-light &amp; {
-      background-color: rgba(255, 255, 255, 0.4);
-    }
+select:focus {
+  outline-color: var(--color-focus-border)
+}
 
-    .vscode-dark &amp; {
-      background-color: rgba(0, 0, 0, 0.2);
-    }
-  }
+.vscode-light select:focus {
+  background-color: rgba(255, 255, 255, 0.4)
+}
+
+.vscode-dark select:focus {
+  background-color: rgba(0, 0, 0, 0.2)
+}
+
+select[disabled] {
+  color: var(--color-foreground--75);
+  cursor: default
+}
+
+.vscode-light select option {
+  background-color: var(--color-background--darken-05)
+}
+
+.vscode-dark select option {
+  background-color: var(--color-background--lighten-05)
+}
+
+select option:focus {
+  outline-color: var(--color-focus-border)
+}
+
+.vscode-light select option:focus {
+  background-color: rgba(255, 255, 255, 0.4)
+}
+
+.vscode-dark select option:focus {
+  background-color: rgba(0, 0, 0, 0.2)
 }
 
 ul {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0
 }
 
 .button {
@@ -21134,44 +20974,45 @@ ul {
   text-decoration: none;
   text-transform: uppercase;
   user-select: none;
-  white-space: nowrap;
+  white-space: nowrap
+}
 
-  &amp;:focus {
-    outline: none;
-  }
+.button:focus {
+  outline: none
 }
 
 .button--big {
-  font-size: 1.5rem;
+  font-size: 1.5rem
 }
 
 .button--flat {
-  .vscode-light &amp; {
-    border: 1px solid rgba(0, 0, 0, 0.6);
-    color: black;
-  }
-  .vscode-dark &amp; {
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    color: white !important;
-  }
-  transition: background-color 250ms, border-color 250ms, color 250ms;
+  transition: background-color 250ms, border-color 250ms, color 250ms
+}
 
-  &amp;:hover {
-    .vscode-light &amp; {
-      background-color: var(--color-button-background--darken-30);
-      border-color: var(--color-button-background--darken-30);
-      color: white !important;
-    }
-    .vscode-dark &amp; {
-      background-color: white;
-      border-color: white;
-      color: black !important;
-    }
-  }
+.vscode-light .button--flat {
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  color: black
+}
 
-  .preload &amp; {
-    transition-duration: 0s !important;
-  }
+.vscode-dark .button--flat {
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: white !important
+}
+
+.vscode-light .button--flat:hover {
+  background-color: var(--color-button-background--darken-30);
+  border-color: var(--color-button-background--darken-30);
+  color: white !important
+}
+
+.vscode-dark .button--flat:hover {
+  background-color: white;
+  border-color: white;
+  color: black !important
+}
+
+.preload .button--flat {
+  transition-duration: 0s !important
 }
 
 .button--flat-inverse {
@@ -21179,17 +21020,17 @@ ul {
   border: 1px solid white;
   color: black !important;
   font-weight: 600;
-  transition: background-color 250ms, border-color 250ms, color 250ms;
+  transition: background-color 250ms, border-color 250ms, color 250ms
+}
 
-  &amp;:hover {
-    background: rgba(0, 0, 0, 0.2);
-    border-color: rgba(255, 255, 255, 0.6);
-    color: white !important;
-  }
+.button--flat-inverse:hover {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: white !important
+}
 
-  .preload &amp; {
-    transition-duration: 0s !important;
-  }
+.preload .button--flat-inverse {
+  transition-duration: 0s !important
 }
 
 .button--flat-primary {
@@ -21197,51 +21038,49 @@ ul {
   border: 1px solid var(--color-button-background);
   color: var(--color-button-foreground) !important;
   font-weight: 600;
-  transition: background-color 250ms, border-color 250ms, color 250ms;
+  transition: background-color 250ms, border-color 250ms, color 250ms
+}
 
-  &amp;:hover {
-    .vscode-dark &amp; {
-      background-color: white;
-      border-color: white;
-      color: black !important;
-    }
+.vscode-dark .button--flat-primary:hover {
+  background-color: white;
+  border-color: white;
+  color: black !important
+}
 
-    .vscode-light &amp; {
-      background-color: var(--color-button-background--darken-30);
-      border-color: var(--color-button-background--darken-30);
-      color: white !important;
-    }
-  }
+.vscode-light .button--flat-primary:hover {
+  background-color: var(--color-button-background--darken-30);
+  border-color: var(--color-button-background--darken-30);
+  color: white !important
+}
 
-  .preload &amp; {
-    transition-duration: 0s !important;
-  }
+.preload .button--flat-primary {
+  transition-duration: 0s !important
 }
 
 .button--choose-path {
   padding: 0.6em 0.7em;
   margin-left: 0.2rem;
-  margin-bottom: 0;
+  margin-bottom: 0
 }
 
 .blurb {
   font-size: 1.5rem;
   font-weight: 200;
   color: var(--color-foreground--65);
-  margin: 1em;
+  margin: 1em
+}
 
-  b {
-    color: var(--color-foreground--85);
-  }
+.blurb b {
+  color: var(--color-foreground--85)
+}
 
-  .vscode-light &amp; {
-    color: var(--color-foreground--75);
-  }
+.vscode-light .blurb {
+  color: var(--color-foreground--75)
 }
 
 .command {
   font-weight: 600;
-  padding: 1px 3px;
+  padding: 1px 3px
 }
 
 .container {
@@ -21251,38 +21090,41 @@ ul {
   margin: 1em auto;
   grid-gap: 1em 3em;
   max-width: 1200px;
-  min-width: 450px;
+  min-width: 450px
+}
 
-  @media all and (max-width: 768px) {
-    grid-gap: 1em 0;
+@media all and (max-width: 768px) {
+  .container {
+    grid-gap: 1em 0
   }
 }
 
 .content__area {
   grid-area: content;
-  font-size: 1.4rem;
-  // border-radius: 8x;
+  font-size: 1.4rem
+}
 
-  .vscode-dark &amp; {
-    background-color: var(--color-background--lighten-05);
-  }
+.vscode-dark .content__area {
+  background-color: var(--color-background--lighten-05)
+}
 
-  .vscode-light &amp; {
-    background-color: var(--color-background);
-  }
+.vscode-light .content__area {
+  background-color: var(--color-background)
+}
 
-  @media all and (max-width: 768px) {
-    grid-column: span 1;
+@media all and (max-width: 768px) {
+  .content__area {
+    grid-column: span 1
   }
 }
 
 .content__area--full-scroll {
   background-color: unset !important;
-  margin-bottom: 90vh;
+  margin-bottom: 90vh
+}
 
-  .section--settings {
-    margin: 0 0 1em 0;
-  }
+.content__area--full-scroll .section--settings {
+  margin: 0 0 1em 0
 }
 
 .cta {
@@ -21290,22 +21132,22 @@ ul {
   flex-wrap: wrap;
   justify-content: center;
   font-size: 1.3rem;
-  margin: 0;
+  margin: 0
+}
 
-  &amp; p {
-    margin-left: 10%;
-    margin-right: 10%;
-    margin-top: -0.5em;
-    opacity: 0.6;
-  }
+.cta p {
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: -0.5em;
+  opacity: 0.6
 }
 
 .cta--primary {
-  margin: 0 1em;
+  margin: 0 1em
 }
 
 .cta--secondary {
-  margin: 0 1em;
+  margin: 0 1em
 }
 
 .header__blurb {
@@ -21314,32 +21156,34 @@ ul {
   font-size: 1.5rem;
   font-weight: 200;
   margin: 0;
-  min-width: 345px;
+  min-width: 345px
+}
 
-  @media all and (max-width: 880px) {
-    margin: 0 2em;
+@media all and (max-width: 880px) {
+  .header__blurb {
+    margin: 0 2em
   }
 }
 
 .header__link {
   color: var(--color-foreground);
-  outline: none;
+  outline: none
+}
 
-  &amp;:hover,
-  &amp;:active,
-  &amp;:focus {
-    color: var(--color-foreground);
-    outline: none;
-  }
+.header__link:hover,
+.header__link:active,
+.header__link:focus {
+  color: var(--color-foreground);
+  outline: none
 }
 
 .header__logo {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: nowrap
 }
 
 .header__logo--highlight {
-  color: #8d3d17;
+  color: #8d3d17
 }
 
 .header__subtitle {
@@ -21347,7 +21191,7 @@ ul {
   font-size: 2rem;
   font-weight: 100;
   margin: -0.2em 0 0 0;
-  white-space: nowrap;
+  white-space: nowrap
 }
 
 .hero__area {
@@ -21355,11 +21199,11 @@ ul {
   color: var(--color-foreground--75);
   font-size: 1.5rem;
   font-weight: 200;
-  margin: 0 1em;
+  margin: 0 1em
+}
 
-  b {
-    color: var(--color-foreground--85);
-  }
+.hero__area b {
+  color: var(--color-foreground--85)
 }
 
 .hero__area--sticky {
@@ -21369,55 +21213,58 @@ ul {
   position: sticky;
   top: -1px;
   z-index: 1;
-  grid-column: span 1;
+  grid-column: span 1
+}
 
-  .vscode-light &amp; {
-    background: var(--color-background--darken-075);
-  }
+.vscode-light .hero__area--sticky {
+  background: var(--color-background--darken-075)
 }
 
 .hero__row {
   display: flex;
   flex-wrap: nowrap;
   align-items: baseline;
-  justify-content: space-between;
+  justify-content: space-between
 }
 
 .hero__subtitle {
   color: var(--color-foreground--75);
   font-size: 1.4rem;
-  margin: 0.25em 0 0 0;
+  margin: 0.25em 0 0 0
 }
 
 .hero__title {
   font-size: 4rem;
-  margin: 0;
+  margin: 0
 }
 
 .hero__title-actions {
-  margin: 0 1em;
+  margin: 0 1em
 }
 
 .hero__toolbar {
   flex: 1 1 auto;
-
   display: flex;
   justify-content: flex-end;
-  white-space: nowrap;
+  white-space: nowrap
+}
 
-  select,
-  option {
-    background-color: var(--color-background) !important;
-    margin-right: 0;
+.hero__toolbar select,
+.hero__toolbar option {
+  background-color: var(--color-background) !important;
+  margin-right: 0
+}
 
-    @media all and (max-width: 768px) {
-      margin-right: unset;
-    }
+@media all and (max-width: 768px) {
+
+  .hero__toolbar select,
+  .hero__toolbar option {
+    margin-right: unset
   }
 }
 
 .hero__toolbar-scope {
-  flex: 0 0 auto;
+  flex: 0 0 auto
 }
 
 .icon {
@@ -21427,77 +21274,49 @@ ul {
   margin-right: 3px;
   position: relative;
   width: 19px;
-  top: 9px;
-
-  h2 &amp; {
-    top: 7px;
-  }
+  top: 9px
 }
 
-// .icon__bulb {
-//   -webkit-mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"&gt;&lt;path fill-rule="evenodd" d="M11.67 8.658c-.338.334-.598.705-.781 1.114-.178.407-.268.85-.268 1.329v1.6a1.304 1.304 0 0 1-.794 1.197c-.159.068-.329.102-.509.102H7.712a1.285 1.285 0 0 1-.922-.379 1.303 1.303 0 0 1-.38-.92v-1.6c0-.479-.092-.921-.274-1.329a3.556 3.556 0 0 0-.776-1.114 4.689 4.689 0 0 1-1.006-1.437A4.187 4.187 0 0 1 4 5.5a4.432 4.432 0 0 1 .616-2.27c.197-.336.432-.64.705-.914.274-.272.578-.506.911-.702.338-.196.7-.348 1.084-.454C7.7 1.053 8.1 1 8.516 1a4.476 4.476 0 0 1 2.276.614 4.475 4.475 0 0 1 1.622 1.616 4.438 4.438 0 0 1 .616 2.27c0 .617-.117 1.191-.353 1.721a4.69 4.69 0 0 1-1.006 1.437zM9.623 10.5H7.409v2.201c0 .081.028.15.09.212.062.061.131.09.213.09h1.606a.289.289 0 0 0 .213-.09.286.286 0 0 0 .09-.212V10.5z" clip-rule="evenodd"/&gt;&lt;/svg&gt;');
-//   mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"&gt;&lt;path fill-rule="evenodd" d="M11.67 8.658c-.338.334-.598.705-.781 1.114-.178.407-.268.85-.268 1.329v1.6a1.304 1.304 0 0 1-.794 1.197c-.159.068-.329.102-.509.102H7.712a1.285 1.285 0 0 1-.922-.379 1.303 1.303 0 0 1-.38-.92v-1.6c0-.479-.092-.921-.274-1.329a3.556 3.556 0 0 0-.776-1.114 4.689 4.689 0 0 1-1.006-1.437A4.187 4.187 0 0 1 4 5.5a4.432 4.432 0 0 1 .616-2.27c.197-.336.432-.64.705-.914.274-.272.578-.506.911-.702.338-.196.7-.348 1.084-.454C7.7 1.053 8.1 1 8.516 1a4.476 4.476 0 0 1 2.276.614 4.475 4.475 0 0 1 1.622 1.616 4.438 4.438 0 0 1 .616 2.27c0 .617-.117 1.191-.353 1.721a4.69 4.69 0 0 1-1.006 1.437zM9.623 10.5H7.409v2.201c0 .081.028.15.09.212.062.061.131.09.213.09h1.606a.289.289 0 0 0 .213-.09.286.286 0 0 0 .09-.212V10.5z" clip-rule="evenodd"/&gt;&lt;/svg&gt;');
-//   -webkit-mask-repeat: no-repeat;
-//   mask-repeat: no-repeat;
-//   opacity: 0.8;
-// }
-
-// .icon__chevron-down {
-//   -webkit-mask-image: url('data:image/svg+xml;utf8,&lt;svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"&gt;&lt;path fill-rule="evenodd" clip-rule="evenodd" d="M7.97602 10.0719L12.3333 5.7146L12.952 6.33332L8.28538 11L7.66666 11L3 6.33332L3.61872 5.7146L7.97602 10.0719Z" /&gt;&lt;/svg&gt;');
-//   mask-image: url('data:image/svg+xml;utf8,&lt;svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"&gt;&lt;path fill-rule="evenodd" clip-rule="evenodd" d="M7.97602 10.0719L12.3333 5.7146L12.952 6.33332L8.28538 11L7.66666 11L3 6.33332L3.61872 5.7146L7.97602 10.0719Z" /&gt;&lt;/svg&gt;');
-//   -webkit-mask-repeat: no-repeat;
-//   mask-repeat: no-repeat;
-// }
-
-// .icon__gear {
-//   -webkit-mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"&gt;&lt;path d="M9.1 4.4L8.6 2H7.4l-.5 2.4-.7.3-2-1.3-.9.8 1.3 2-.2.7-2.4.5v1.2l2.4.5.3.8-1.3 2 .8.8 2-1.3.8.3.4 2.3h1.2l.5-2.4.8-.3 2 1.3.8-.8-1.3-2 .3-.8 2.3-.4V7.4l-2.4-.5-.3-.8 1.3-2-.8-.8-2 1.3-.7-.2zM9.4 1l.5 2.4L12 2.1l2 2-1.4 2.1 2.4.4v2.8l-2.4.5L14 12l-2 2-2.1-1.4-.5 2.4H6.6l-.5-2.4L4 13.9l-2-2 1.4-2.1L1 9.4V6.6l2.4-.5L2.1 4l2-2 2.1 1.4.4-2.4h2.8zm.6 7c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zM8 9c.6 0 1-.4 1-1s-.4-1-1-1-1 .4-1 1 .4 1 1 1z"/&gt;&lt;/svg&gt;');
-//   mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"&gt;&lt;path d="M9.1 4.4L8.6 2H7.4l-.5 2.4-.7.3-2-1.3-.9.8 1.3 2-.2.7-2.4.5v1.2l2.4.5.3.8-1.3 2 .8.8 2-1.3.8.3.4 2.3h1.2l.5-2.4.8-.3 2 1.3.8-.8-1.3-2 .3-.8 2.3-.4V7.4l-2.4-.5-.3-.8 1.3-2-.8-.8-2 1.3-.7-.2zM9.4 1l.5 2.4L12 2.1l2 2-1.4 2.1 2.4.4v2.8l-2.4.5L14 12l-2 2-2.1-1.4-.5 2.4H6.6l-.5-2.4L4 13.9l-2-2 1.4-2.1L1 9.4V6.6l2.4-.5L2.1 4l2-2 2.1 1.4.4-2.4h2.8zm.6 7c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zM8 9c.6 0 1-.4 1-1s-.4-1-1-1-1 .4-1 1 .4 1 1 1z"/&gt;&lt;/svg&gt;');
-//   -webkit-mask-repeat: no-repeat;
-//   mask-repeat: no-repeat;
-// }
-
-// .icon__info {
-//   -webkit-mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"&gt;&lt;path fill-rule="evenodd" d="M8.568 1.031A6.8 6.8 0 0 1 12.76 3.05a7.06 7.06 0 0 1 .46 9.39 6.85 6.85 0 0 1-8.58 1.74 7 7 0 0 1-3.12-3.5 7.12 7.12 0 0 1-.23-4.71 7 7 0 0 1 2.77-3.79 6.8 6.8 0 0 1 4.508-1.149zM9.04 13.88a5.89 5.89 0 0 0 3.41-2.07 6.07 6.07 0 0 0-.4-8.06 5.82 5.82 0 0 0-7.43-.74 6.06 6.06 0 0 0 .5 10.29 5.81 5.81 0 0 0 3.92.58zM8.51 7h-1v4h1V7zm0-2h-1v1h1V5z" clip-rule="evenodd"/&gt;&lt;/svg&gt;');
-//   mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"&gt;&lt;path fill-rule="evenodd" d="M8.568 1.031A6.8 6.8 0 0 1 12.76 3.05a7.06 7.06 0 0 1 .46 9.39 6.85 6.85 0 0 1-8.58 1.74 7 7 0 0 1-3.12-3.5 7.12 7.12 0 0 1-.23-4.71 7 7 0 0 1 2.77-3.79 6.8 6.8 0 0 1 4.508-1.149zM9.04 13.88a5.89 5.89 0 0 0 3.41-2.07 6.07 6.07 0 0 0-.4-8.06 5.82 5.82 0 0 0-7.43-.74 6.06 6.06 0 0 0 .5 10.29 5.81 5.81 0 0 0 3.92.58zM8.51 7h-1v4h1V7zm0-2h-1v1h1V5z" clip-rule="evenodd"/&gt;&lt;/svg&gt;');
-//   -webkit-mask-repeat: no-repeat;
-//   mask-repeat: no-repeat;
-// }
+h2 .icon {
+  top: 7px
+}
 
 .icon--md {
   height: 30px;
   width: 24px;
-  top: 12px;
+  top: 12px
 }
 
 .icon--lg {
   height: 36px;
   width: 30px;
-  top: 15px;
+  top: 15px
 }
 
 .image__logo {
   margin: 9px 1em 0 0;
   max-height: 64px;
-  max-width: 64px;
+  max-width: 64px
 }
 
 .image__preview {
   display: block;
   border-radius: 8px;
   box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8), 0px 0px 12px 1px rgba(0, 0, 0, 0.5);
-  width: 600px;
+  width: 600px
 }
+
 .image__preview__body {
   display: block;
   border-radius: 8px;
   box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8), 0px 0px 12px 1px rgba(0, 0, 0, 0.5);
-  width: 680px;
+  width: 680px
 }
 
 .image__preview--overlay {
   left: 0;
   position: absolute;
-  top: 0;
+  top: 0
 }
 
 .image__preview--float-container {
@@ -21506,7 +21325,7 @@ ul {
   top: 0;
   bottom: 0;
   right: 0;
-  padding-right: 17%;
+  padding-right: 17%
 }
 
 .image__preview__body--float-container {
@@ -21517,16 +21336,16 @@ ul {
   right: 0;
   padding-right: 7px;
   padding-left: 7px;
-  overflow: hidden;
+  overflow: hidden
 }
 
 .image__preview--float {
-  float: right;
+  float: right
 }
 
 .link__configure,
 .link__learn-more {
-  margin-left: 10px;
+  margin-left: 10px
 }
 
 .presets {
@@ -21534,117 +21353,106 @@ ul {
   justify-content: center;
   display: flex;
   width: 100%;
-  flex-wrap: wrap;
+  flex-wrap: wrap
 }
 
 section {
   display: flex;
   flex-wrap: wrap;
-
   margin-bottom: 1em;
-  padding: 1em;
+  padding: 1em
+}
 
-  h2 {
-    flex: 1 0 auto;
-
-    display: flex;
-    margin-top: 0;
-    margin-bottom: 1em;
-  }
+section h2 {
+  flex: 1 0 auto;
+  display: flex;
+  margin-top: 0;
+  margin-bottom: 1em
 }
 
 .section--full {
-  flex-flow: column;
+  flex-flow: column
 }
 
 .section--settings {
   flex: 0 1 auto;
-
   display: flex;
   flex-wrap: wrap;
-
   border-radius: 8px;
   margin: 1em;
-  padding: 1em 0 0.5em 1em;
-  // box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.15);
-
-  .vscode-dark &amp; {
-    background: var(--color-background--lighten-075);
-  }
-
-  .vscode-light &amp; {
-    background: var(--color-background--darken-05);
-  }
+  padding: 1em 0 0.5em 1em
 }
 
-.section--collapsible {
-  .vscode-light &amp; {
-    background: var(--color-background);
-  }
+.vscode-dark .section--settings {
+  background: var(--color-background--lighten-075)
+}
 
-  .section__header {
-    cursor: pointer;
-    flex: 1 0 100%;
-    margin-right: 0;
+.vscode-light .section--settings {
+  background: var(--color-background--darken-05)
+}
 
-    &amp;:after {
-      background-color: var(--color-foreground--75);
-      content: "";
-      height: 40px;
-      -webkit-mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125"&gt;&lt;path d="M50 62a3 3 0 0 1-2-1L26 44a3 3 0 0 1 3-5l21 16 21-16a3 3 0 1 1 3 5L52 61a3 3 0 0 1-2 1z"/&gt;&lt;/svg&gt;');
-      mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125"&gt;&lt;path d="M50 62a3 3 0 0 1-2-1L26 44a3 3 0 0 1 3-5l21 16 21-16a3 3 0 1 1 3 5L52 61a3 3 0 0 1-2 1z"/&gt;&lt;/svg&gt;');
-      -webkit-mask-repeat: no-repeat;
-      mask-repeat: no-repeat;
-      -webkit-mask-size: 32px 40px;
-      mask-size: 32px 40px;
-      position: absolute;
-      right: 0;
-      top: 0;
-      transition: transform 250ms ease-in-out;
-      width: 32px;
-    }
-  }
+.vscode-light .section--collapsible {
+  background: var(--color-background)
+}
 
-  &amp;.collapsed {
-    .section__header {
-      margin-bottom: 0;
+.section--collapsible .section__header {
+  cursor: pointer;
+  flex: 1 0 100%;
+  margin-right: 0
+}
 
-      &amp;:after {
-        transform: translateY(-9px) rotate(-180deg);
-      }
+.section--collapsible .section__header:after {
+  background-color: var(--color-foreground--75);
+  content: "";
+  height: 40px;
+  -webkit-mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125"&gt;&lt;path d="M50 62a3 3 0 0 1-2-1L26 44a3 3 0 0 1 3-5l21 16 21-16a3 3 0 1 1 3 5L52 61a3 3 0 0 1-2 1z"/&gt;&lt;/svg&gt;');
+  mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125"&gt;&lt;path d="M50 62a3 3 0 0 1-2-1L26 44a3 3 0 0 1 3-5l21 16 21-16a3 3 0 1 1 3 5L52 61a3 3 0 0 1-2 1z"/&gt;&lt;/svg&gt;');
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 32px 40px;
+  mask-size: 32px 40px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: transform 250ms ease-in-out;
+  width: 32px
+}
 
-      h2 {
-        margin-bottom: 0;
-      }
-    }
+.section--collapsible.collapsed .section__header {
+  margin-bottom: 0
+}
 
-    .section__collapsible {
-      display: none;
-    }
-  }
+.section--collapsible.collapsed .section__header:after {
+  transform: translateY(-9px) rotate(-180deg)
+}
+
+.section--collapsible.collapsed .section__header h2 {
+  margin-bottom: 0
+}
+
+.section--collapsible.collapsed .section__collapsible {
+  display: none
 }
 
 .section__collapsible {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap
 }
 
 .section__content {
   flex: 1 1 auto;
-
   display: flex;
-  flex-flow: column wrap;
+  flex-flow: column wrap
 }
 
 .section__group {
   flex: 1 0 100%;
-
   display: flex;
-  flex-flow: wrap-reverse;
+  flex-flow: wrap-reverse
+}
 
-  &amp; + .section__group {
-    margin-top: 1em;
-  }
+.section__group+.section__group {
+  margin-top: 1em
 }
 
 .section__header {
@@ -21654,29 +21462,27 @@ section {
   flex-flow: column;
   margin-bottom: 1em;
   margin-right: 1em;
-  position: relative;
+  position: relative
+}
 
-  h2 {
-    margin-bottom: 0;
-  }
+.section__header h2 {
+  margin-bottom: 0
+}
 
-  .link__configure,
-  .link__learn-more {
-    visibility: hidden;
-  }
+.section__header .link__configure,
+.section__header .link__learn-more {
+  visibility: hidden
+}
 
-  &amp;:hover {
-    .link__configure,
-    .link__learn-more {
-      visibility: visible;
-    }
-  }
+.section__header:hover .link__configure,
+.section__header:hover .link__learn-more {
+  visibility: visible
 }
 
 .section__header-hint {
   color: var(--color-foreground--75);
   font-weight: 200;
-  margin: 0.25em 0;
+  margin: 0.25em 0
 }
 
 .section__header-info {
@@ -21684,27 +21490,25 @@ section {
   grid-template-columns: auto auto;
   grid-gap: 1em;
   align-items: center;
-
   color: var(--color-foreground--75);
   font-weight: 200;
-  margin: 0.25em 0.5em;
+  margin: 0.25em 0.5em
+}
 
-  p {
-    margin: 0;
-    line-height: 2rem;
-  }
+.section__header-info p {
+  margin: 0;
+  line-height: 2rem
+}
 
-  .icon {
-    top: 3px;
-  }
+.section__header-info .icon {
+  top: 3px
 }
 
 .section__hint {
   flex: 0 0 auto;
-
   color: var(--color-foreground--75);
   font-weight: 200;
-  margin: 0;
+  margin: 0
 }
 
 .section__preview {
@@ -21712,77 +21516,68 @@ section {
   position: relative;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.65rem
+}
 
-  .section__collapsible &amp; {
-    margin-bottom: 1em;
-  }
+.section__collapsible .section__preview {
+  margin-bottom: 1em
 }
 
 .section__preview-hint {
   color: var(--color-foreground--75);
   font-weight: 200;
   margin: 0.5em 0.5em 0 0.5em;
-  text-align: center;
+  text-align: center
 }
-
-// .section__preview-spacer {
-// 	flex-grow: 10;
-// 	flex-shrink: 10;
-// }
 
 .section__title {
   flex: 1 0 auto;
-  margin: 0;
+  margin: 0
 }
 
 .section__title--primary {
   font-size: 3rem;
   margin: 0.3em 0;
-  justify-content: center;
+  justify-content: center
 }
 
 .section__title--break {
   margin: 0.3em 15% 0 15%;
   padding-top: 1em;
-  justify-content: center;
+  justify-content: center
+}
 
-  .vscode-dark &amp; {
-    border-top: 1px solid var(--color-background--lighten-30);
-  }
+.vscode-dark .section__title--break {
+  border-top: 1px solid var(--color-background--lighten-30)
+}
 
-  .vscode-light &amp; {
-    border-top: 1px solid var(--color-background--darken-30);
-  }
+.vscode-light .section__title--break {
+  border-top: 1px solid var(--color-background--darken-30)
 }
 
 .setting {
   flex: 0 1 auto;
   position: relative;
   margin-right: 1em;
-  min-width: 15.5em;
-
-  &amp; input[type="checkbox"] {
-    flex: 0 0 16px;
-    height: 16px;
-    margin: 0 10px 0 0;
-    position: relative;
-    top: 3px;
-    width: 16px;
-  }
-
-  &amp;[disabled] {
-    label {
-      color: var(--color-foreground--75);
-      cursor: default;
-    }
-  }
+  min-width: 15.5em
 }
 
-#interface-behavior {
-  .setting {
-    min-width: 29em;
-  }
+.setting input[type="checkbox"] {
+  flex: 0 0 16px;
+  height: 16px;
+  margin: 0 10px 0 0;
+  position: relative;
+  top: 3px;
+  width: 16px
+}
+
+.setting[disabled] label {
+  color: var(--color-foreground--75);
+  cursor: default
+}
+
+#interface-behavior .setting {
+  min-width: 29em
 }
 
 fieldset {
@@ -21793,132 +21588,102 @@ fieldset {
   border-style: solid;
   border-width: 1px;
   background-color: #80000010;
-  border-color: #92473e;
-  p {
-    margin: 0;
-    padding-right: 1em;
-    width: 100%;
-    color: var(--color-foreground--65);
-    span {
-      color: var(--color-foreground);
-    }
-  }
+  border-color: #92473e
 }
 
-// .setting--expandable {
-//   .setting__expander {
-//     background-color: var(--color-foreground--75);
-//     cursor: pointer;
-//     height: 16px;
-//     -webkit-mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125"&gt;&lt;path d="M50 62a3 3 0 0 1-2-1L26 44a3 3 0 0 1 3-5l21 16 21-16a3 3 0 1 1 3 5L52 61a3 3 0 0 1-2 1z"/&gt;&lt;/svg&gt;');
-//     mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125"&gt;&lt;path d="M50 62a3 3 0 0 1-2-1L26 44a3 3 0 0 1 3-5l21 16 21-16a3 3 0 1 1 3 5L52 61a3 3 0 0 1-2 1z"/&gt;&lt;/svg&gt;');
-//     -webkit-mask-repeat: no-repeat;
-//     mask-repeat: no-repeat;
-//     -webkit-mask-size: 32px 28px;
-//     mask-size: 32px 28px;
-//     position: relative;
-//     margin: 0;
-//     transform: translate(-9px, 4px) rotate(-90deg);
-//     transition: transform 250ms ease-in-out;
-//     width: 32px;
-//   }
+fieldset p {
+  margin: 0;
+  padding-right: 1em;
+  width: 100%;
+  color: var(--color-foreground--65)
+}
 
-//   &amp; + .settings {
-//     display: none;
-//   }
-
-//   &amp;.expanded {
-//     .setting__expander {
-//       transform: translate(-4px, 0);
-//     }
-
-//     &amp; + .settings {
-//       display: unset;
-//     }
-//   }
-// }
+fieldset p span {
+  color: var(--color-foreground)
+}
 
 .setting__input {
   display: inline-flex;
   flex-wrap: nowrap;
   align-items: baseline;
   line-height: normal;
-  margin: 0.5em 0;
+  margin: 0.5em 0
+}
 
-  input,
-  select {
-    flex-grow: 1;
+.setting__input input,
+.setting__input select {
+  flex-grow: 1
+}
 
-    &amp; + .link__configure,
-    &amp; + .link__learn-more {
-      margin-left: 0;
-    }
-  }
+.setting__input input+.link__configure,
+.setting__input input+.link__learn-more,
+.setting__input select+.link__configure,
+.setting__input select+.link__learn-more {
+  margin-left: 0
+}
 
-  input[type="text"],
-  input:not([type]) {
-    min-width: 150px;
-  }
+.setting__input input[type="text"],
+.setting__input input:not([type]) {
+  min-width: 150px
+}
 
-  label {
-    flex-grow: 0;
+.setting__input label {
+  flex-grow: 0
+}
 
-    &gt; select {
-      margin-top: 0.25em;
-    }
-  }
+.setting__input label&gt;select {
+  margin-top: 0.25em
+}
 
-  .link__learn-more,
-  .link__configure {
-    visibility: hidden;
-    max-height: 15px;
+.setting__input .link__learn-more,
+.setting__input .link__configure {
+  visibility: hidden;
+  max-height: 15px
+}
 
-    .icon {
-      display: block;
-      top: unset;
-    }
-  }
+.setting__input .link__learn-more .icon,
+.setting__input .link__configure .icon {
+  display: block;
+  top: unset
+}
 
-  &amp;:hover {
-    .link__learn-more,
-    .link__configure {
-      visibility: visible;
-    }
-  }
+.setting__input:hover .link__learn-more,
+.setting__input:hover .link__configure {
+  visibility: visible
 }
 
 .setting__input--big {
   font-size: 2.2rem;
   font-weight: 200;
+  margin: 0
+}
+
+.setting__input--big input[type="checkbox"] {
+  flex: 0 0 1.5em;
+  height: 1em;
   margin: 0;
+  position: relative;
+  top: 3px;
+  left: -5px;
+  width: 1em
+}
 
-  &amp; input[type="checkbox"] {
-    flex: 0 0 1.5em;
-    height: 1em;
-    margin: 0;
-    position: relative;
-    top: 3px;
-    left: -5px;
-    width: 1em;
-  }
+.setting__input--big label {
+  white-space: nowrap
+}
 
-  &amp; label {
-    white-space: nowrap;
-  }
-
-  .link__learn-more,
-  .link__configure {
-    max-height: 17px;
-  }
+.setting__input--big .link__learn-more,
+.setting__input--big .link__configure {
+  max-height: 17px
 }
 
 .setting__input--format {
-  display: flex;
+  display: flex
+}
 
-  input[type="text"],
-  input:not([type]) {
-    max-width: unset;
-  }
+.setting__input--format input[type="text"],
+.setting__input--format input:not([type]) {
+  max-width: unset
 }
 
 .setting__hint {
@@ -21926,25 +21691,22 @@ fieldset {
   display: block;
   font-weight: 200;
   font-size: 1.3rem;
-  margin: 0 1em 0.5em 1em;
+  margin: 0 1em 0.5em 1em
 }
 
 .settings {
   flex: 1 0 auto;
-
   display: flex;
-  flex-wrap: wrap;
-  // align-items: baseline;
-  // justify-content: space-between;
+  flex-wrap: wrap
 }
 
 .break {
   flex-basis: 100%;
-  height: 0;
+  height: 0
 }
 
 .settings--fixed {
-  display: block;
+  display: block
 }
 
 .sidebar {
@@ -21953,330 +21715,287 @@ fieldset {
   font-size: 1.3rem;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 2
+}
 
-  @media all and (max-width: 768px) {
-    display: none;
+@media all and (max-width: 768px) {
+  .sidebar {
+    display: none
   }
+}
 
-  li {
-    white-space: nowrap;
-  }
+.sidebar li {
+  white-space: nowrap
+}
 
-  .button {
-    margin: 0;
-  }
+.sidebar .button {
+  margin: 0
 }
 
 .sidebar__group {
-  margin-top: 1em;
-
-  h2 {
-    font-size: 2rem;
-  }
-
-  p {
-    font-weight: 400;
-    opacity: 0.5;
-    text-align: center;
-  }
+  margin-top: 1em
 }
 
-.sidebar__jump-link {
-  &amp;.active {
-    font-weight: 700;
+.sidebar__group h2 {
+  font-size: 2rem
+}
 
-    &amp;:before {
-      content: " ";
-      border-left: 4px solid var(--color-link-foreground--darken-20);
-      position: absolute;
-      left: -1em;
-      height: 1em;
-      padding-bottom: 4px;
+.sidebar__group p {
+  font-weight: 400;
+  opacity: 0.5;
+  text-align: center
+}
 
-      .vscode-light &amp; {
-        border-left-color: var(--color-link-foreground--lighten-20);
-      }
-    }
-  }
+.sidebar__jump-link.active {
+  font-weight: 700
+}
+
+.sidebar__jump-link.active:before {
+  content: " ";
+  border-left: 4px solid var(--color-link-foreground--darken-20);
+  position: absolute;
+  left: -1em;
+  height: 1em;
+  padding-bottom: 4px
+}
+
+.vscode-light .sidebar__jump-link.active:before {
+  border-left-color: var(--color-link-foreground--lighten-20)
 }
 
 .sponsor__image {
   opacity: 0.8;
   transition: opacity 250ms;
   transform: scale(0.6);
-  margin: -2.5em 0;
+  margin: -2.5em 0
+}
 
-  &amp;:hover {
-    opacity: 1;
-  }
+.sponsor__image:hover {
+  opacity: 1
 }
 
 .sponsor__tag {
   font-size: 1.1rem;
   margin: -1em 0.5em 0 0.5em;
   opacity: 0.5;
-  text-align: center;
+  text-align: center
 }
 
 .bold {
-  font-weight: 600;
+  font-weight: 600
 }
 
 .center {
-  text-align: center;
+  text-align: center
 }
 
 .hidden {
-  display: none !important;
+  display: none !important
 }
 
 .highlight {
   background-color: #cc5d1a;
   border-bottom: 2px solid #cc5d1a;
-  // background-color: #7e3919;
-  // border-bottom: 2px solid #85422a;
   border-radius: 3px;
   color: #f2f2f2;
   margin: 0 0.25em;
   padding: 2px 10px;
   text-align: center;
-  vertical-align: bottom;
+  vertical-align: bottom
 }
 
 .is-sidebar-hidden {
-  display: none;
+  display: none
+}
 
-  @media all and (max-width: 768px) {
-    display: initial;
+@media all and (max-width: 768px) {
+  .is-sidebar-hidden {
+    display: initial
   }
 }
 
 .mb-0 {
-  margin-bottom: 0 !important;
+  margin-bottom: 0 !important
 }
 
 .mb-05 {
-  margin-bottom: 0.5em !important;
+  margin-bottom: 0.5em !important
 }
 
 .mb-1 {
-  margin-bottom: 1em !important;
+  margin-bottom: 1em !important
 }
 
 .mb-2 {
-  margin-bottom: 2em !important;
+  margin-bottom: 2em !important
 }
 
 .ml-0 {
-  margin-left: 0 !important;
+  margin-left: 0 !important
 }
 
 .ml-1 {
-  margin-left: 1em !important;
+  margin-left: 1em !important
 }
 
 .ml-2 {
-  margin-left: 2em !important;
+  margin-left: 2em !important
 }
 
 .ml-3 {
-  margin-left: 3em !important;
+  margin-left: 3em !important
 }
 
 .ml-4 {
-  margin-left: 4em !important;
+  margin-left: 4em !important
 }
 
 .mr-0 {
-  margin-right: 0 !important;
+  margin-right: 0 !important
 }
 
 .mr-1 {
-  margin-right: 1em !important;
+  margin-right: 1em !important
 }
 
 .mr-2 {
-  margin-right: 2em !important;
+  margin-right: 2em !important
 }
 
 .mt-n1 {
-  margin-top: -1em !important;
+  margin-top: -1em !important
 }
 
 .mt-0 {
-  margin-top: 0 !important;
+  margin-top: 0 !important
 }
 
 .mt-05 {
-  margin-top: 0.5em !important;
+  margin-top: 0.5em !important
 }
 
 .mt-1 {
-  margin-top: 1em !important;
+  margin-top: 1em !important
 }
 
 .mt-2 {
-  margin-top: 2em !important;
+  margin-top: 2em !important
 }
 
 .non-interactive {
-  cursor: default !important;
+  cursor: default !important
 }
 
 .nowrap {
-  white-space: nowrap !important;
+  white-space: nowrap !important
 }
 
-.light {
-  .vscode-dark &amp; {
-    display: none;
-  }
+.vscode-dark .light {
+  display: none
 }
 
-.dark {
-  .vscode-light &amp; {
-    display: none;
-  }
+.vscode-light .dark {
+  display: none
 }
 
 ::-webkit-scrollbar-corner {
-  background-color: transparent !important;
+  background-color: transparent !important
 }
 
-@import "popup";
-</t>
-<t tx="fil.20210603223956.4">@language css
 #saved-config-toast {
   box-shadow: 0px 0px 28px 0 rgba(0, 0, 0, 0.5);
-  // background-color: #000 !important;
-
   cursor: default;
   display: block;
   padding: 1em 0.5rem;
   position: fixed;
   text-align: center;
   width: 60%;
-  // height: 200px;
   top: 50px;
   left: 50%;
   border-radius: 12px;
-  // margin-top: -100px; /* Negative half of height. */
-  margin-left: -30%; /* Negative half of width. */
+  margin-left: -30%;
   visibility: hidden;
   font-size: 2rem;
-  z-index: 100;
+  z-index: 100
+}
 
-  &amp;.show {
-    visibility: visible; /* Show the snackbar */
-    /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
-    However, delay the fade out process for 2.5 seconds */
-    // -webkit-animation: fadein 0.3s, fadeout 0.3s 0.5s;
-    // animation: fadein 0.3s, fadeout 0.3s 0.4s;
-    animation: fadein 0.5s, fadeout 0.5s 1s;
-  }
+#saved-config-toast.show {
+  visibility: visible;
+  animation: fadein 0.5s, fadeout 0.5s 1s
+}
 
-  &amp;:before {
-    // background: transparent;
-    // border: 12px solid transparent;
-    // content: '';
-    // left: 50%;
-    // position: absolute;
-    // pointer-events: none;
-    // top: -24px;
-    // z-index: 1001;
+.vscode-light #saved-config-toast:before {
+  border-bottom-color: var(--color-background--darken-075)
+}
 
-    .vscode-light &amp; {
-      border-bottom-color: var(--color-background--darken-075);
-    }
+.vscode-dark #saved-config-toast:before {
+  border-bottom-color: var(--color-background--lighten-075)
+}
 
-    .vscode-dark &amp; {
-      border-bottom-color: var(--color-background--lighten-075);
-    }
-  }
+.vscode-light #saved-config-toast {
+  background: var(--color-background--darken-075)
+}
 
-  .vscode-light &amp; {
-    background: var(--color-background--darken-075);
-  }
-
-  .vscode-dark &amp; {
-    background: var(--color-background--lighten-075);
-  }
+.vscode-dark #saved-config-toast {
+  background: var(--color-background--lighten-075)
 }
 
 #dirty-config-toast {
   box-shadow: 0px 0px 28px 0 rgba(0, 0, 0, 0.5);
-  // background-color: #000 !important;
-
   cursor: default;
   display: block;
   padding: 1em 0.5rem;
   position: fixed;
   text-align: center;
   width: 60%;
-  // height: 200px;
   top: 50px;
   left: 50%;
   border-radius: 12px;
-  // margin-top: -100px; /* Negative half of height. */
-  margin-left: -30%; /* Negative half of width. */
+  margin-left: -30%;
   visibility: hidden;
   font-size: 2rem;
-  z-index: 100;
-
-  &amp;.show {
-    visibility: visible; /* Show the snackbar */
-  }
-
-  &amp;:before {
-    // background: transparent;
-    // border: 12px solid transparent;
-    // content: '';
-    // left: 50%;
-    // position: absolute;
-    // pointer-events: none;
-    // top: -24px;
-    // z-index: 1001;
-
-    .vscode-light &amp; {
-      border-bottom-color: var(--color-background--darken-075);
-    }
-
-    .vscode-dark &amp; {
-      border-bottom-color: var(--color-background--lighten-075);
-    }
-  }
-  .vscode-light &amp; {
-    background-color: #cc5d1a;
-    color: #f2f2f2;
-  }
-
-  .vscode-dark &amp; {
-    background-color: #cc5d1a;
-    color: #f2f2f2;
-  }
+  z-index: 100
 }
 
-/* Animations to fade the snackbar in and out */
+#dirty-config-toast.show {
+  visibility: visible
+}
+
+.vscode-light #dirty-config-toast:before {
+  border-bottom-color: var(--color-background--darken-075)
+}
+
+.vscode-dark #dirty-config-toast:before {
+  border-bottom-color: var(--color-background--lighten-075)
+}
+
+.vscode-light #dirty-config-toast {
+  background-color: #cc5d1a;
+  color: #f2f2f2
+}
+
+.vscode-dark #dirty-config-toast {
+  background-color: #cc5d1a;
+  color: #f2f2f2
+}
+
 @keyframes fadein {
   from {
-    // top: 0;
-    opacity: 0.8;
+    opacity: 0.8
   }
+
   to {
-    // top: 30px;
-    opacity: 1;
+    opacity: 1
   }
 }
 
 @keyframes fadeout {
   from {
-    // top: 30px;
-    opacity: 1;
+    opacity: 1
   }
+
   to {
-    // top: 0;
-    opacity: 0;
+    opacity: 0
   }
 }
 
@@ -22284,54 +22003,52 @@ fieldset {
   margin-right: -0.4em;
   max-height: 35vh;
   overflow-y: scroll;
-  padding-right: 0.4em;
+  padding-right: 0.4em
 }
 
 .token-popup__hint {
   color: var(--color-foreground--75);
   display: inline-block;
   font-weight: 200;
-  margin: 1.25em 0.5em 0 0.25em;
+  margin: 1.25em 0.5em 0 0.25em
 }
 
 .token-popup__title {
   color: var(--color-foreground);
   font-weight: 400;
   margin: 0.25em 0 1em 0;
-  text-align: center;
+  text-align: center
 }
 
 .token-popup__table {
   border-collapse: collapse;
   color: var(--color-foreground--75);
-  table-layout: fixed;
+  table-layout: fixed
+}
 
-  &amp; tr:nth-child(even) {
-    .vscode-light &amp; {
-      background-color: rgba(0, 0, 0, 0.05);
-    }
+.vscode-light .token-popup__table tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05)
+}
 
-    .vscode-dark &amp; {
-      background-color: rgba(255, 255, 255, 0.04);
-    }
-  }
+.vscode-dark .token-popup__table tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.04)
+}
 
-  &amp; td {
-    padding: 6px;
+.token-popup__table td {
+  padding: 6px
+}
 
-    i {
-      opacity: 0.6;
-    }
-  }
+.token-popup__table td i {
+  opacity: 0.6
+}
 
-  &amp; td:first-child {
-    padding: 6px 12px;
-  }
+.token-popup__table td:first-child {
+  padding: 6px 12px
+}
 
-  &amp; td:last-child {
-    padding-right: 12px;
-    text-align: end;
-  }
+.token-popup__table td:last-child {
+  padding-right: 12px;
+  text-align: end
 }
 
 .token {
@@ -22341,22 +22058,21 @@ fieldset {
   color: white;
   cursor: pointer;
   display: inline-block;
-  padding: 1px 8px !important;
-
-  &amp;:before {
-    content: "${";
-  }
-
-  &amp;:after {
-    content: "}";
-  }
-
-  .vscode-light &amp; {
-    background: var(--color-link-foreground--lighten-20);
-    border-bottom-color: var(--color-link-foreground--lighten-20);
-  }
+  padding: 1px 8px !important
 }
-</t>
+
+.token:before {
+  content:"${"
+}
+
+.token:after {
+  content: "}"
+}
+
+.vscode-light .token {
+  background: var(--color-link-foreground--lighten-20);
+  border-bottom-color: var(--color-link-foreground--lighten-20)
+}</t>
 <t tx="fil.20210609233100.1">/**
  * * Clear leointeg's last-opened &amp; recently opened Leo files list
  */
@@ -22365,6 +22081,22 @@ public clearRecentLeoFiles(): void {
     this._context.workspaceState.update(Constants.RECENT_FILES_KEY, undefined);
     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLEARED_RECENT);
 }
+
+</t>
+<t tx="fil.20230405000235.1">## 1.0.14
+
+- Made package much smaller by fixing webpack compilation. (from 5.6mb to 760kb)
+- Added 'new', 'Open' and 'Save' icons to the outline pane's title bar.
+- Fixed links in welcome page.
+- Made package smaller by excluding image files for readme and other .md files in resources folder.
+- Fixed 'minibuffer' preserving of the body pane before opening input.
+- Added 'revert' command used to 'Revert to Saved' the currently opened Leo document.
+- Added 'tag' related commands to outline nodes context menu, and to the minibuffer.
+- Added goto-global-line functionality to the minibuffer with direct access via direct 'number' entry.
+- Fixed input box entry UI for various commands. (insert-child, insert-node, clone-find-tag, etc.)
+- Added 'tab-cycle-next' command and the Ctrl+Tab keybinding shortcut to cycle opened Leo documents.
+- Fixed the 'focus-on-tree' command, along with the Alt+T shortcut, to work from Leo panes other than the body pane.
+- Fixed 'opening' a Leo file (normally or via right-click) to force-show the main Leo panes (outline and body).
 
 </t>
 </tnodes>

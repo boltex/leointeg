@@ -18,6 +18,7 @@ export class ServerService {
 
     private _platform: string;
     private _isWin32: boolean;
+    private _skippedFirstEmpty = false; // if first ever empty line was skipped. (for esthetics only)
     public usingPort: number = 0; // set to other than zero if server is started by leointeg itself
 
     /**
@@ -65,6 +66,8 @@ export class ServerService {
                 env: process.env
             };
         */
+
+        this._skippedFirstEmpty = false;
 
         if (!p_leoEditorPath) {
             return Promise.reject(Constants.USER_MESSAGES.LEO_PATH_MISSING);
@@ -195,6 +198,12 @@ export class ServerService {
                         return;
                     }
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+
+                    this._leoIntegration.leoStates.leoConnecting = false;
+                    this._leoIntegration.leoStates.leoBridgeReady = false;
+                    this._leoIntegration.leoStates.fileOpenedReady = false;
+                    this._leoIntegration.leoStates.leoStartingServer = false;
+
                     this._serverProcess = undefined;
                     if (this._rejectPromise) {
                         this._rejectPromise(`Leo server exited with code ${p_code}`);
@@ -219,10 +228,17 @@ export class ServerService {
                 return;
             }
             utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+
+            this._leoIntegration.leoStates.leoConnecting = false;
+            this._leoIntegration.leoStates.leoBridgeReady = false;
+            this._leoIntegration.leoStates.fileOpenedReady = false;
+            this._leoIntegration.leoStates.leoStartingServer = false;
+
             this._serverProcess = undefined;
         } else {
             console.error("No Server");
         }
+
     }
 
     /**
@@ -232,6 +248,12 @@ export class ServerService {
      */
     private _processServerOutput(p_data: string): void {
         let w_dataString = p_data.toString().replace(/\n$/, ""); // remove last
+        if (!this._skippedFirstEmpty) {
+            if (w_dataString && (w_dataString.charCodeAt(0) === 10 || w_dataString.charCodeAt(0) === 13)) {
+                this._skippedFirstEmpty = true; // Skipping first empty line for esthetics only
+                return;
+            }
+        }
         w_dataString.toString().split("\n").forEach(p_line => {
             if (true || p_line) { // ? std out process line by line: json shouldn't have line breaks
                 if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {

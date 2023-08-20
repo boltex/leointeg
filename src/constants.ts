@@ -162,6 +162,7 @@ export class Constants {
             "4.  Press the *new* button.",
         SAVE_CHANGES: "Save changes to",
         BEFORE_CLOSING: "before closing?",
+        REVERT_PREVIOUS_VERSION: "Revert to previous version of ", // Trailing space intended
         CANCEL: "Cancel",
         OPEN_WITH_LEOINTEG: "Open this Leo file with LeoInteg?",
         OPEN_RECENT_FILE: "Open Recent Leo File",
@@ -173,6 +174,7 @@ export class Constants {
         STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
         PROMPT_EDIT_HEADLINE: "Edit Headline",
         PROMPT_INSERT_NODE: "Insert Node",
+        PROMPT_INSERT_CHILD: "Insert Child",
         DEFAULT_HEADLINE: "New Headline",
         TITLE_GOTO_GLOBAL_LINE: "Goto global line",
         PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
@@ -301,9 +303,9 @@ export class Constants {
         TREE_KEEP_FOCUS: "treeKeepFocus",
         TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
 
-        COLLAPSE_ALL_SHORTCUT: "leoCollapseAllShortcut",
-        ACTIVITY_VIEW_SHORTCUT: "leoActivityViewShortcut",
-        GO_ANYWHERE_SHORTCUT: "leoGoAnywhereShortcut",
+        COLLAPSE_ALL_SHORTCUT: "collapseAllShortcut",
+        ACTIVITY_VIEW_SHORTCUT: "activityViewShortcut",
+        GO_ANYWHERE_SHORTCUT: "goAnywhereShortcut",
 
         // STATUSBAR_STRING: "statusBarString",
         // STATUSBAR_COLOR: "statusBarColor",
@@ -425,9 +427,6 @@ export class Constants {
         SELECTED_CHILD: "leoChild", // Has children
         SELECTED_ATFILE: "leoAtFile", // Can be refreshed
 
-        // Statusbar Flag 'keybindings in effect'
-        LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
-
         // Outline nodes: text Flags for 'when' clauses. Used as concatenated strings.
         NODE_MARKED: "leoNodeMarked",  // Selected node is marked
         NODE_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked (Needed for regexp)
@@ -435,6 +434,7 @@ export class Constants {
         NODE_CLONED: "leoNodeCloned",
         NODE_ROOT: "leoNodeRoot",
         NODE_NOT_ROOT: "leoNodeNotRoot",
+        NODE_TAGS: "leoNodeTags",
 
         // Flags for undo nodes
         UNDO_BEAD: "leoUndoNode",
@@ -450,20 +450,20 @@ export class Constants {
         FOCUS_FIND: "leoFindFocus",
 
         // Flags that match specific LeoInteg config settings
-        // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
-        // TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
-        // SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
-        // SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,              // Hover Icons on outline nodes
-        // SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,           // Hover Icons on outline nodes
-        // SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                 // Hover Icons on outline nodes
-        // SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,               // Hover Icons on outline nodes
-        // SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
-        // SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
-        // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
-        // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
+        // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE,     // Force ar'jan's suggestion of Leo's tree behavior override
+        // TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER,   // Leo outline also in the explorer view
+        // SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,     // Show 'open aside' in context menu
+        // SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,                 // Hover Icons on outline nodes
+        // SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,             // Hover Icons on outline nodes
+        // SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                   // Hover Icons on outline nodes
+        // SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,                 // Hover Icons on outline nodes
+        // SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,               // Hover Icons on outline nodes
+        // SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,                 // Hover Icons on outline nodes
+        // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER, // Used at startup
+        // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,           // Used at startup
 
         // AUTO_CONNECT: 'leoAutoConnect',             // Used at startup by 'views-welcome'
-        // AUTO_START_SERVER: 'leoAutoStartServer',   // Used at startup by 'views-welcome'
+        // AUTO_START_SERVER: 'leoAutoStartServer',    // Used at startup by 'views-welcome'
 
         // SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
         // SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
@@ -573,6 +573,7 @@ export class Constants {
         OPEN_FILE: "!open_file", // "openFile",
         OPEN_FILES: "!open_files", //  "openFiles",
         CLOSE_FILE: "!close_file", // "closeFile",
+        REVERT: "-revert",
         SAVE_FILE: "!save_file", // "saveFile",
         // * @-Buttons
         GET_BUTTONS: "!get_buttons", // "getButtons",
@@ -726,11 +727,13 @@ export class Constants {
         SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
         SAVE_AS_LEOJS: Constants.NAME + ".saveAsLeoJsFile",
         CLOSE_FILE: Constants.NAME + ".closeLeoFile",
+        REVERT_TO_SAVED: Constants.NAME + ".revert",
         CLICK_BUTTON: Constants.NAME + ".clickButton",
         REMOVE_BUTTON: Constants.NAME + ".removeButton",
         GOTO_SCRIPT: Constants.NAME + ".gotoScript",
         MINIBUFFER: Constants.NAME + ".minibuffer",
         GIT_DIFF: Constants.NAME + ".gitDiff",
+        TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
         OPEN_ASIDE: Constants.NAME + ".openAside",
@@ -941,7 +944,9 @@ export class Constants {
         { "label": "find-quick-changed", "detail": "Lists all nodes that are changed (aka \"dirty\") since last save." },
         { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
         { "label": "marked-list", "detail": "List all marked nodes." },
-        { "label": "tag-node", "detail": "Tag the selected node." },
+
+        { "label": "remove-tag", "detail": "Prompt for a tag to remove on selected node" },
+        { "label": "remove-all-tags", "detail": "Remove all tags on selected node" },
 
         { "label": "export-headlines", "detail": "Export all headlines to an external file." },
 
@@ -958,6 +963,7 @@ export class Constants {
     ];
 
     public static unsupportedMinibufferCommands: string[] = [
+        'read-outline-only', // Seems buggy in Leo. Not present until fixed or deprecated in Leo. (removed in Leo 6.7.5)
         'restart-leo' // added to bad list for leoserver 1.0.6. (Can be removed in next leointeg version)
     ];
 
@@ -995,6 +1001,8 @@ export class Constants {
 
         "tag-children": Constants.COMMANDS.TAG_CHILDREN,
         "tag-node": Constants.COMMANDS.TAG_NODE,
+        "remove-tag": Constants.COMMANDS.REMOVE_TAG,
+        "remove-all-tags": Constants.COMMANDS.REMOVE_TAGS,
         "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
         "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
         "redo": Constants.COMMANDS.REDO,
@@ -1022,6 +1030,7 @@ export class Constants {
 
         'file-new': Constants.COMMANDS.NEW_FILE,
         'file-open-by-name': Constants.COMMANDS.OPEN_FILE,
+        'revert': Constants.COMMANDS.REVERT_TO_SAVED,
         'new': Constants.COMMANDS.NEW_FILE,
         'open-outline': Constants.COMMANDS.OPEN_FILE,
         'file-save': Constants.COMMANDS.SAVE_FILE,
