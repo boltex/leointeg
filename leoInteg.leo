@@ -20183,29 +20183,24 @@ div.col-nav {
 <t tx="fil.20210603223933.9">@language html
 @tabwidth -2
 &lt;!DOCTYPE html&gt;
-&lt;html lang="en"
-      tabindex="-1"&gt;
+&lt;html lang="en" tabindex="-1"&gt;
 
 &lt;head&gt;
   &lt;meta charset="UTF-8" /&gt;
   &lt;meta http-equiv="Content-Security-Policy"
-        content="default-src 'none'; style-src #{webview.cspSource}; img-src #{webview.cspSource} https:; script-src 'nonce-#{nonce}';" /&gt;
-  &lt;meta name="viewport"
-        content="width=device-width, initial-scale=1.0" /&gt;
-  &lt;link href="#{style}"
-        rel="stylesheet" /&gt;
+    content="default-src 'none'; style-src #{webview.cspSource}; img-src #{webview.cspSource} https:; script-src 'nonce-#{nonce}';" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+  &lt;link href="#{style}" rel="stylesheet" /&gt;
   &lt;title&gt;Leo Integration&lt;/title&gt;
 &lt;/head&gt;
 
 &lt;body class="preload"&gt;
   &lt;div class="container"&gt;
     &lt;header&gt;
-      &lt;a class="header__link"
-         title="Learn more about Leo Integration"
-         href="https://github.com/boltex/leointeg#-leo-for-vs-code"&gt;
+      &lt;a class="header__link" title="Learn more about Leo Integration"
+        href="https://github.com/boltex/leointeg#-leo-for-vs-code"&gt;
         &lt;div class="header__logo"&gt;
-          &lt;img class="image__logo"
-               src="#{root}/resources/leoapp128px.png" /&gt;
+          &lt;img class="image__logo" src="#{root}/resources/leoapp128px.png" /&gt;
           &lt;div&gt;
             &lt;h1&gt;
               Leo&lt;span class="header__logo--highlight"&gt;Integ&lt;/span&gt;
@@ -20223,49 +20218,39 @@ div.col-nav {
     &lt;/header&gt;
 
     &lt;div class="content__area"&gt;
-      &lt;section id="welcome"
-               class="section--full mb-0"&gt;
+      &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
           Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.15&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"
-             title="LeoInteg is built by the support of generous users like you!"
-             href="https://boltex.github.io/"&gt;Sponsor LeoInteg
+            title="LeoInteg is built by the support of generous users like you!"
+            href="https://boltex.github.io/"&gt;Sponsor LeoInteg
             &lt;span class="heart"&gt;&amp;#x2764;&lt;/span&gt;
           &lt;/a&gt;
-          &lt;a class="button button--flat"
-             title="LeoInteg's Features"
-             href="https://github.com/boltex/leointeg#features-"&gt;
+          &lt;a class="button button--flat" title="LeoInteg's Features"
+            href="https://github.com/boltex/leointeg#features-"&gt;
             See What's New in LeoInteg 1.0.15
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
           &lt;strong&gt;LeoInteg&lt;/strong&gt;
           is an open-source extension created by
-          &lt;a class="bold"
-             title="My github user page"
-             href="https://boltex.github.io/"&gt;Félix&lt;/a&gt;
+          &lt;a class="bold" title="My github user page" href="https://boltex.github.io/"&gt;Félix&lt;/a&gt;
           that integrates
-          &lt;a class="bold"
-             title="Learn more about Leo"
-             href="https://leo-editor.github.io/leo-editor/"&gt;Leo&lt;/a&gt;
+          &lt;a class="bold" title="Learn more about Leo" href="https://leo-editor.github.io/leo-editor/"&gt;Leo&lt;/a&gt;
           into VS Code.
         &lt;/p&gt;
         &lt;h2 class="section__title section__title--break"&gt;&lt;/h2&gt;
         &lt;p class="section__hint mt-0 center"&gt;
-          Automate the &lt;a href="#leobridge-options"
-             title="Setup server options"&gt;server startup&lt;/a&gt;,
-          auto-refresh for &lt;a href="#external-files"
-             title="Setup file-change detection"&gt;external files changes&lt;/a&gt;,
-          or choose which &lt;a href="#node-commands"
-             title="Fine-tune interface"&gt;icons&lt;/a&gt;
+          Automate the &lt;a href="#leobridge-options" title="Setup server options"&gt;server startup&lt;/a&gt;,
+          auto-refresh for &lt;a href="#external-files" title="Setup file-change detection"&gt;external files changes&lt;/a&gt;,
+          or choose which &lt;a href="#node-commands" title="Fine-tune interface"&gt;icons&lt;/a&gt;
           are shown, and more!
         &lt;/p&gt;
       &lt;/section&gt;
 
-      &lt;section id="leobridge-options"
-               class="section--settings"&gt;
+      &lt;section id="leobridge-options" class="section--settings"&gt;
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
             &lt;h2&gt;Leo Server Options&lt;/h2&gt;
@@ -20273,37 +20258,26 @@ div.col-nav {
           &lt;div class="settings"&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="startServerAutomatically"
-                       name="startServerAutomatically"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="startServerAutomatically"&gt;Start&amp;nbsp;Server&lt;/label&gt;
+                &lt;input id="startServerAutomatically" name="startServerAutomatically" type="checkbox" data-setting /&gt;
+                &lt;label for="startServerAutomatically"&gt;Auto-Start&amp;nbsp;Server&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Run the leoserver.py server script at startup&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="connectToServerAutomatically"
-                       name="connectToServerAutomatically"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="connectToServerAutomatically"&gt;Connect&amp;nbsp;to&amp;nbsp;Server&lt;/label&gt;
+                &lt;input id="connectToServerAutomatically" name="connectToServerAutomatically" type="checkbox"
+                  data-setting /&gt;
+                &lt;label for="connectToServerAutomatically"&gt;Auto-Connect&amp;nbsp;to&amp;nbsp;Server&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Connects automatically to a Leo server&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="leoEditorPath"&gt;Leo&amp;#8209;Editor&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
-                &lt;input id="leoEditorPath"
-                       name="leoEditorPath"
-                       type="text"
-                       maxlength="256"
-                       placeholder="C:/leo-editor"
-                       data-setting /&gt;
-                &lt;button type="button"
-                        id="chooseLeoEditorPath"
-                        name="chooseLeoEditorPath"
-                        class="button btn button--flat button--flat-primary button--choose-path"&gt;
+                &lt;input id="leoEditorPath" name="leoEditorPath" type="text" maxlength="256" placeholder="C:/leo-editor"
+                  data-setting /&gt;
+                &lt;button type="button" id="chooseLeoEditorPath" name="chooseLeoEditorPath"
+                  class="button btn button--flat button--flat-primary button--choose-path"&gt;
                   Browse For Folder...
                 &lt;/button&gt;
               &lt;/div&gt;
@@ -20312,12 +20286,8 @@ div.col-nav {
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="pythonCommand"&gt;Python&amp;nbsp;Command&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
-                &lt;input id="pythonCommand"
-                       name="pythonCommand"
-                       type="text"
-                       maxlength="256"
-                       placeholder="Empty for default"
-                       data-setting /&gt;
+                &lt;input id="pythonCommand" name="pythonCommand" type="text" maxlength="256"
+                  placeholder="Empty for default" data-setting /&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Command for starting python (Defaults to 'py' on windows, or
                 'python3' otherwise)&lt;/span&gt;
@@ -20325,26 +20295,16 @@ div.col-nav {
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="connectionAddress"&gt;Connection&amp;nbsp;Address&lt;/label&gt;
-                &lt;input id="connectionAddress"
-                       name="connectionAddress"
-                       type="text"
-                       maxlength="256"
-                       placeholder="Host Name, IP Address or localhost"
-                       data-setting /&gt;
+                &lt;input id="connectionAddress" name="connectionAddress" type="text" maxlength="256"
+                  placeholder="Host Name, IP Address or localhost" data-setting /&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Connection host&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="connectionPort"&gt;Connection&amp;nbsp;Port&lt;/label&gt;
-                &lt;input id="connectionPort"
-                       name="connectionPort"
-                       type="number"
-                       min="0"
-                       max="65535"
-                       max-length="5"
-                       placeholder="Port Number"
-                       data-setting /&gt;
+                &lt;input id="connectionPort" name="connectionPort" type="number" min="0" max="65535" max-length="5"
+                  placeholder="Port Number" data-setting /&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Connection host port number&lt;/span&gt;
             &lt;/div&gt;
@@ -20353,10 +20313,7 @@ div.col-nav {
               &lt;legend&gt;Experimental Features&lt;/legend&gt;
               &lt;div class="setting"&gt;
                 &lt;div class="setting__input"&gt;
-                  &lt;input id="setDetached"
-                         name="setDetached"
-                         type="checkbox"
-                         data-setting /&gt;
+                  &lt;input id="setDetached" name="setDetached" type="checkbox" data-setting /&gt;
                   &lt;label for="setDetached"&gt;Spawn&amp;nbsp;Detached&lt;/label&gt;
                 &lt;/div&gt;
                 &lt;span class="setting__hint"&gt;Server spawned with 'detached' option&lt;br&gt;
@@ -20365,21 +20322,15 @@ div.col-nav {
               &lt;div class="setting"&gt;
                 &lt;div class="setting__input"&gt;
                   &lt;label for="limitUsers"&gt;User&amp;nbsp;Limit&lt;/label&gt;
-                  &lt;input id="limitUsers"
-                         name="limitUsers"
-                         type="number"
-                         min="0"
-                         max="255"
-                         max-length="3"
-                         placeholder="1 to 255"
-                         data-setting /&gt;
+                  &lt;input id="limitUsers" name="limitUsers" type="number" min="0" max="255" max-length="3"
+                    placeholder="1 to 255" data-setting /&gt;
                 &lt;/div&gt;
                 &lt;span class="setting__hint"&gt;Server's max simultaneous connections&lt;/span&gt;
               &lt;/div&gt;
               &lt;br&gt;
               &lt;p&gt;For a standalone, persistent, or multi-user server
                 see &lt;a href="https://leo-editor.github.io/leo-editor/leoserver.html"
-                   title="Leo server documentation"&gt;Using leoserver.py&lt;/a&gt;
+                  title="Leo server documentation"&gt;Using leoserver.py&lt;/a&gt;
                 from Leo's documentation.
               &lt;/p&gt;
             &lt;/fieldset&gt;
@@ -20388,8 +20339,7 @@ div.col-nav {
         &lt;/div&gt;
       &lt;/section&gt;
 
-      &lt;section id="external-files"
-               class="section--settings"&gt;
+      &lt;section id="external-files" class="section--settings"&gt;
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
             &lt;h2&gt;External Files Change Detection&lt;/h2&gt;
@@ -20399,9 +20349,7 @@ div.col-nav {
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="checkForChangeExternalFiles"&gt;Check changes to external files&lt;/label&gt;
-                &lt;select id="checkForChangeExternalFiles"
-                        name="checkForChangeExternalFiles"
-                        data-setting&gt;
+                &lt;select id="checkForChangeExternalFiles" name="checkForChangeExternalFiles" data-setting&gt;
                   &lt;option value="none"&gt;Default from Leo's config&lt;/option&gt;
                   &lt;option value="force-check"&gt;Check for changes&lt;/option&gt;
                   &lt;option value="force-ignore"&gt;Ignore all changes&lt;/option&gt;
@@ -20413,9 +20361,7 @@ div.col-nav {
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="defaultReloadIgnore"&gt;Force reload or ignore changes&lt;/label&gt;
-                &lt;select id="defaultReloadIgnore"
-                        name="defaultReloadIgnore"
-                        data-setting&gt;
+                &lt;select id="defaultReloadIgnore" name="defaultReloadIgnore" data-setting&gt;
                   &lt;option value="none"&gt;
                     Choose each time
                   &lt;/option&gt;
@@ -20434,8 +20380,7 @@ div.col-nav {
         &lt;/div&gt;
       &lt;/section&gt;
 
-      &lt;section id="interface-behavior"
-               class="section--settings"&gt;
+      &lt;section id="interface-behavior" class="section--settings"&gt;
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
             &lt;h2&gt;Interface Behavior&lt;/h2&gt;
@@ -20444,10 +20389,7 @@ div.col-nav {
           &lt;div class="settings"&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="leoTreeBrowse"
-                       name="leoTreeBrowse"
-                       type="checkbox"
-                       data-setting /&gt;
+                &lt;input id="leoTreeBrowse" name="leoTreeBrowse" type="checkbox" data-setting /&gt;
                 &lt;label for="leoTreeBrowse"&gt;Use Leo Tree Browsing&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Navigate Leo's outline with Leo's shortcuts
@@ -20459,10 +20401,7 @@ div.col-nav {
 
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="treeKeepFocus"
-                       name="treeKeepFocus"
-                       type="checkbox"
-                       data-setting /&gt;
+                &lt;input id="treeKeepFocus" name="treeKeepFocus" type="checkbox" data-setting /&gt;
                 &lt;label for="treeKeepFocus"&gt;Keep focus on Outline&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Keep focus in the outline when selecting a
@@ -20471,10 +20410,7 @@ div.col-nav {
 
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="treeKeepFocusWhenAside"
-                       name="treeKeepFocusWhenAside"
-                       type="checkbox"
-                       data-setting /&gt;
+                &lt;input id="treeKeepFocusWhenAside" name="treeKeepFocusWhenAside" type="checkbox" data-setting /&gt;
                 &lt;label for="treeKeepFocusWhenAside"&gt;Keep focus when opening on the side&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Keep focus in the outline when opening a body pane on the side&lt;/span&gt;
@@ -20484,10 +20420,7 @@ div.col-nav {
 
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="goAnywhereShortcut"
-                       name="goAnywhereShortcut"
-                       type="checkbox"
-                       data-setting /&gt;
+                &lt;input id="goAnywhereShortcut" name="goAnywhereShortcut" type="checkbox" data-setting /&gt;
                 &lt;label for="goAnywhereShortcut"&gt;Replace 'Go to File' shortcut with 'Go Anywhere'&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;
@@ -20497,10 +20430,7 @@ div.col-nav {
 
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="collapseAllShortcut"
-                       name="collapseAllShortcut"
-                       type="checkbox"
-                       data-setting /&gt;
+                &lt;input id="collapseAllShortcut" name="collapseAllShortcut" type="checkbox" data-setting /&gt;
                 &lt;label for="collapseAllShortcut"&gt;Enable collapse-all shortcut for
                   explorer&lt;/label&gt;
               &lt;/div&gt;
@@ -20512,10 +20442,7 @@ div.col-nav {
 
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="activityViewShortcut"
-                       name="activityViewShortcut"
-                       type="checkbox"
-                       data-setting /&gt;
+                &lt;input id="activityViewShortcut" name="activityViewShortcut" type="checkbox" data-setting /&gt;
                 &lt;label for="activityViewShortcut"&gt;Enable 'Show LeoInteg view' shortcut&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Allows the &lt;strong&gt;[Ctrl+Shift+L] keyboard shortcut&lt;/strong&gt;
@@ -20525,15 +20452,11 @@ div.col-nav {
         &lt;/div&gt;
       &lt;/section&gt;
 
-      &lt;section id="tree-in-explorer"
-               class="section--settings"&gt;
+      &lt;section id="tree-in-explorer" class="section--settings"&gt;
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
             &lt;div class="setting__input setting__input--big"&gt;
-              &lt;input id="treeInExplorer"
-                     name="treeInExplorer"
-                     type="checkbox"
-                     data-setting /&gt;
+              &lt;input id="treeInExplorer" name="treeInExplorer" type="checkbox" data-setting /&gt;
               &lt;label for="treeInExplorer"&gt;Show&amp;nbsp;Leo&amp;nbsp;Outline&amp;nbsp;in&amp;nbsp;Explorer&lt;/label&gt;
             &lt;/div&gt;
             &lt;p class="section__header-hint"&gt;
@@ -20542,23 +20465,17 @@ div.col-nav {
           &lt;/div&gt;
         &lt;/div&gt;
         &lt;div class="section__preview"&gt;
-          &lt;img class="image__preview"
-               src="#{root}/resources/treeInExplorerDisabled.png" /&gt;
-          &lt;img class="image__preview--overlay hidden"
-               src="#{root}/resources/treeInExplorerEnabled.png"
-               data-visibility="treeInExplorer" /&gt;
+          &lt;img class="image__preview" src="#{root}/resources/treeInExplorerDisabled.png" /&gt;
+          &lt;img class="image__preview--overlay hidden" src="#{root}/resources/treeInExplorerEnabled.png"
+            data-visibility="treeInExplorer" /&gt;
         &lt;/div&gt;
       &lt;/section&gt;
 
-      &lt;section id="show-open-aside"
-               class="section--settings"&gt;
+      &lt;section id="show-open-aside" class="section--settings"&gt;
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
             &lt;div class="setting__input setting__input--big"&gt;
-              &lt;input id="showOpenAside"
-                     name="showOpenAside"
-                     type="checkbox"
-                     data-setting /&gt;
+              &lt;input id="showOpenAside" name="showOpenAside" type="checkbox" data-setting /&gt;
               &lt;label for="showOpenAside"&gt;Show&amp;nbsp;'Open&amp;nbsp;to&amp;nbsp;the&amp;nbsp;Side'&lt;/label&gt;
             &lt;/div&gt;
             &lt;p class="section__header-hint"&gt;
@@ -20569,23 +20486,17 @@ div.col-nav {
         &lt;div class="break"&gt;&lt;/div&gt;
         &lt;!-- Make sure to break line after this short title. --&gt;
         &lt;div class="section__preview"&gt;
-          &lt;img class="image__preview"
-               src="#{root}/resources/showOpenAsideDisabled.png" /&gt;
-          &lt;img class="image__preview--overlay hidden"
-               src="#{root}/resources/showOpenAsideEnabled.png"
-               data-visibility="showOpenAside" /&gt;
+          &lt;img class="image__preview" src="#{root}/resources/showOpenAsideDisabled.png" /&gt;
+          &lt;img class="image__preview--overlay hidden" src="#{root}/resources/showOpenAsideEnabled.png"
+            data-visibility="showOpenAside" /&gt;
         &lt;/div&gt;
       &lt;/section&gt;
 
-      &lt;section id="invert-contrast"
-               class="section--settings"&gt;
+      &lt;section id="invert-contrast" class="section--settings"&gt;
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
             &lt;div class="setting__input setting__input--big"&gt;
-              &lt;input id="invertNodeContrast"
-                     name="invertNodeContrast"
-                     type="checkbox"
-                     data-setting /&gt;
+              &lt;input id="invertNodeContrast" name="invertNodeContrast" type="checkbox" data-setting /&gt;
               &lt;label for="invertNodeContrast"&gt;Invert Node Contrast&lt;/label&gt;
             &lt;/div&gt;
             &lt;p class="section__header-hint"&gt;
@@ -20594,16 +20505,13 @@ div.col-nav {
           &lt;/div&gt;
         &lt;/div&gt;
         &lt;div class="section__preview"&gt;
-          &lt;img class="image__preview"
-               src="#{root}/resources/invertedDisabled.png" /&gt;
-          &lt;img class="image__preview--overlay hidden"
-               src="#{root}/resources/invertedEnabled.png"
-               data-visibility="invertNodeContrast" /&gt;
+          &lt;img class="image__preview" src="#{root}/resources/invertedDisabled.png" /&gt;
+          &lt;img class="image__preview--overlay hidden" src="#{root}/resources/invertedEnabled.png"
+            data-visibility="invertNodeContrast" /&gt;
         &lt;/div&gt;
       &lt;/section&gt;
 
-      &lt;section id="node-commands"
-               class="section--settings"&gt;
+      &lt;section id="node-commands" class="section--settings"&gt;
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
             &lt;h2&gt;Node Commands&lt;/h2&gt;
@@ -20613,75 +20521,51 @@ div.col-nav {
             &lt;/p&gt;
           &lt;/div&gt;
           &lt;div class="section__preview"&gt;
-            &lt;img class="image__preview"
-                 src="#{root}/resources/allIconsDisabled.png" /&gt;
+            &lt;img class="image__preview" src="#{root}/resources/allIconsDisabled.png" /&gt;
 
             &lt;div class="image__preview--float-container"&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/bookmark.png"
-                   data-visibility="showMarkOnNodes" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/copy.png"
-                   data-visibility="showCopyOnNodes" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/clone.png"
-                   data-visibility="showCloneOnNodes" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/add.png"
-                   data-visibility="showAddOnNodes" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/editHeadline.png"
-                   data-visibility="showEditOnNodes" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/bookmark.png"
+                data-visibility="showMarkOnNodes" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/copy.png" data-visibility="showCopyOnNodes" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/clone.png" data-visibility="showCloneOnNodes" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/add.png" data-visibility="showAddOnNodes" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/editHeadline.png"
+                data-visibility="showEditOnNodes" /&gt;
             &lt;/div&gt;
           &lt;/div&gt;
 
           &lt;div class="settings"&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="showEditOnNodes"
-                       name="showEditOnNodes"
-                       type="checkbox"
-                       data-setting /&gt;
+                &lt;input id="showEditOnNodes" name="showEditOnNodes" type="checkbox" data-setting /&gt;
                 &lt;label for="showEditOnNodes"&gt;Edit&amp;nbsp;Headline&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Shows 'Edit Headline' on hover&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="showMarkOnNodes"
-                       name="showMarkOnNodes"
-                       type="checkbox"
-                       data-setting /&gt;
+                &lt;input id="showMarkOnNodes" name="showMarkOnNodes" type="checkbox" data-setting /&gt;
                 &lt;label for="showMarkOnNodes"&gt;Mark&amp;nbsp;/&amp;nbsp;Unmark&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Shows 'Mark/Unmark' on hover&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="showCopyOnNodes"
-                       name="showCopyOnNodes"
-                       type="checkbox"
-                       data-setting /&gt;
+                &lt;input id="showCopyOnNodes" name="showCopyOnNodes" type="checkbox" data-setting /&gt;
                 &lt;label for="showCopyOnNodes"&gt;Copy&amp;nbsp;Node&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Shows 'Copy' on hover&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="showCloneOnNodes"
-                       name="showCloneOnNodes"
-                       type="checkbox"
-                       data-setting /&gt;
+                &lt;input id="showCloneOnNodes" name="showCloneOnNodes" type="checkbox" data-setting /&gt;
                 &lt;label for="showCloneOnNodes"&gt;Clone&amp;nbsp;Node&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Shows 'Clone' on hover&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="showAddOnNodes"
-                       name="showAddOnNodes"
-                       type="checkbox"
-                       data-setting /&gt;
+                &lt;input id="showAddOnNodes" name="showAddOnNodes" type="checkbox" data-setting /&gt;
                 &lt;label for="showAddOnNodes"&gt;Add&amp;nbsp;Node&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Shows 'Insert' on hover&lt;/span&gt;
@@ -20689,8 +20573,7 @@ div.col-nav {
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/section&gt;
-      &lt;section id="font-sizes"
-               class="section--settings"&gt;
+      &lt;section id="font-sizes" class="section--settings"&gt;
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
             &lt;h2&gt;Outline and Body Font Sizes&lt;/h2&gt;
@@ -20704,14 +20587,8 @@ div.col-nav {
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="zoomLevel"&gt;Zoom Level&lt;/label&gt;
-                &lt;input id="zoomLevel"
-                       name="zoomLevel"
-                       type="number"
-                       min="-12"
-                       max="12"
-                       maxlength="2"
-                       placeholder="Number"
-                       data-vscode /&gt;
+                &lt;input id="zoomLevel" name="zoomLevel" type="number" min="-12" max="12" maxlength="2"
+                  placeholder="Number" data-vscode /&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;
                 Adjust the zoom level&lt;br&gt;
@@ -20725,14 +20602,8 @@ div.col-nav {
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="editorFontSize"&gt;Editor Font Size&lt;/label&gt;
-                &lt;input id="editorFontSize"
-                       name="editorFontSize"
-                       type="number"
-                       min="6"
-                       max="30"
-                       maxlength="2"
-                       placeholder="Number"
-                       data-vscode /&gt;
+                &lt;input id="editorFontSize" name="editorFontSize" type="number" min="6" max="30" maxlength="2"
+                  placeholder="Number" data-vscode /&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;
                 Controls the Text-Editor&lt;br&gt;
@@ -20749,9 +20620,8 @@ div.col-nav {
 
     &lt;div class="sidebar"&gt;
       &lt;div class="sidebar__group"&gt;
-        &lt;a class="button button--flat-primary"
-           title="Support LeoInteg Development"
-           href="https://boltex.github.io/"&gt;Sponsor
+        &lt;a class="button button--flat-primary" title="Support LeoInteg Development"
+          href="https://boltex.github.io/"&gt;Sponsor
           LeoInteg &amp;#x2764;&lt;/a&gt;
         &lt;p&gt;
           LeoInteg is built by the support of generous users like &lt;b&gt;you&lt;/b&gt;!
@@ -20762,36 +20632,28 @@ div.col-nav {
         &lt;h2&gt;Configuration&lt;/h2&gt;
         &lt;ul&gt;
           &lt;li&gt;
-            &lt;a href="#leobridge-options"
-               title="Server settings"&gt;Leo server Options&lt;/a&gt;
+            &lt;a href="#leobridge-options" title="Server settings"&gt;Leo server Options&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#external-files"
-               title="File change detection settings"&gt;External Files&lt;/a&gt;
+            &lt;a href="#external-files" title="File change detection settings"&gt;External Files&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#interface-behavior"
-               title="Outline behavior settings"&gt;Interface Behavior&lt;/a&gt;
+            &lt;a href="#interface-behavior" title="Outline behavior settings"&gt;Interface Behavior&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#tree-in-explorer"
-               title="Outline visibility settings"&gt;Outline in Explorer&lt;/a&gt;
+            &lt;a href="#tree-in-explorer" title="Outline visibility settings"&gt;Outline in Explorer&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#show-open-aside"
-               title="Outline context menu settings"&gt;Open to the Side&lt;/a&gt;
+            &lt;a href="#show-open-aside" title="Outline context menu settings"&gt;Open to the Side&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#invert-contrast"
-               title="UI contrast settings"&gt;Invert Contrast&lt;/a&gt;
+            &lt;a href="#invert-contrast" title="UI contrast settings"&gt;Invert Contrast&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#node-commands"
-               title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
+            &lt;a href="#node-commands" title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#font-sizes"
-               title="Font size settings"&gt;Font Sizes&lt;/a&gt;
+            &lt;a href="#font-sizes" title="Font size settings"&gt;Font Sizes&lt;/a&gt;
           &lt;/li&gt;
         &lt;/ul&gt;
       &lt;/div&gt;
@@ -20800,21 +20662,18 @@ div.col-nav {
         &lt;h2&gt;About Leo&lt;/h2&gt;
         &lt;ul&gt;
           &lt;li&gt;
-            &lt;a href="https://leo-editor.github.io/leo-editor/"
-               title="Leo's Home Page"&gt;Home Page&lt;/a&gt;
+            &lt;a href="https://leo-editor.github.io/leo-editor/" title="Leo's Home Page"&gt;Home Page&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
             &lt;a href="https://leo-editor.github.io/leo-editor/leo_toc.html"
-               title="Leo's Documentation Page"&gt;Documentation&lt;/a&gt;
+              title="Leo's Documentation Page"&gt;Documentation&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://groups.google.com/forum/#!forum/leo-editor"
-               title="Leo Editor Forum"&gt;Forum&lt;/a&gt;
+            &lt;a href="https://groups.google.com/forum/#!forum/leo-editor" title="Leo Editor Forum"&gt;Forum&lt;/a&gt;
             &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #Google Group&lt;/small&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://github.com/leo-editor/leo-editor"
-               title="Leo Editor on GitHub"&gt;Source&lt;/a&gt;
+            &lt;a href="https://github.com/leo-editor/leo-editor" title="Leo Editor on GitHub"&gt;Source&lt;/a&gt;
             &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #GitHub&lt;/small&gt;
           &lt;/li&gt;
         &lt;/ul&gt;
