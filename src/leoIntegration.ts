@@ -54,7 +54,7 @@ export class LeoIntegration {
 
     // * General integration usage variables
     private _clipboardContent: string = "";
-    private _minibufferHistory: string[] = [];
+    private _minibufferHistory: vscode.QuickPickItem[] = [];
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -3389,9 +3389,7 @@ export class LeoIntegration {
         if (!this._minibufferHistory.length) {
             return Promise.resolve(undefined);
         }
-        const w_commandList: vscode.QuickPickItem[] = this._minibufferHistory.map(
-            p_command => { return { label: p_command }; }
-        );
+        const w_commandList: vscode.QuickPickItem[] = this._minibufferHistory;
         // Add Nav tab special commands
         const w_options: vscode.QuickPickOptions = {
             placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
@@ -3409,14 +3407,14 @@ export class LeoIntegration {
         if (p_picked &&
             p_picked.label &&
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
-            this._addToMinibufferHistory(p_picked.label);
+            this._addToMinibufferHistory(p_picked);
             return vscode.commands.executeCommand(
                 Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
             );
         }
         // * Ok, it was really a minibuffer command
         if (p_picked && p_picked.label) {
-            this._addToMinibufferHistory(p_picked.label);
+            this._addToMinibufferHistory(p_picked);
             const w_commandResult = this.nodeCommand({
                 action: "-" + p_picked.label,
                 node: undefined,
@@ -3436,14 +3434,14 @@ export class LeoIntegration {
     /**
      * Add to the minibuffer history (without duplicating entries)
      */
-    private _addToMinibufferHistory(p_commandName: string): void {
-        const w_found = this._minibufferHistory.indexOf(p_commandName);
+    private _addToMinibufferHistory(p_command: vscode.QuickPickItem): void {
+        const w_found = this._minibufferHistory.map(p_item => p_item.label).indexOf(p_command.label);
         // If found, will be removed (and placed on top)
         if (w_found >= 0) {
             this._minibufferHistory.splice(w_found, 1);
         }
         // Add to top of minibuffer history
-        this._minibufferHistory.unshift(p_commandName);
+        this._minibufferHistory.unshift(p_command);
     }
 
     /**
@@ -5249,7 +5247,7 @@ export class LeoIntegration {
                 w_index++;
             });
         } else {
-            // "No opened documents"
+            // "Only one, or no opened documents"
             return undefined;
         }
         this.finalFocus = Focus.Outline;

@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.15
+
+- Added description under command label in minibuffer-history's user input box.
+
 ## 1.0.14
 
 - Made package much smaller by fixing webpack compilation. (from 5.6mb to 760kb)
