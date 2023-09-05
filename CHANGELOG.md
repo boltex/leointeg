@@ -3,6 +3,7 @@
 ## 1.0.15
 
 - Added description under command label in minibuffer-history's user input box.
+- Fixed default keybindings for alt+home and alt+end (goto first/last visible node)
 
 ## 1.0.14
 

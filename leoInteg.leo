@@ -4765,12 +4765,12 @@ print('done')
 <t tx="ekr.20200815123601.88">{
   "command": "leointeg.scrollTop",
   "key": "alt+home",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.gotoLastSibling",
   "key": "alt+end",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.scrollTop",
@@ -19086,6 +19086,7 @@ public async tabCycle(): Promise&lt;unknown&gt; {
 <t tx="felix.20230821005233.1">## 1.0.15
 
 - Added description under command label in minibuffer-history's user input box.
+- Fixed default keybindings for alt+home and alt+end (goto first/last visible node)
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
