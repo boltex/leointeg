@@ -91,9 +91,8 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `Ctrl+Shift+L`     |     |                 | Show the LeoInteg View      |
 | `Ctrl+P`           |     |                 | Go Anywhere                 |
 | `Alt + Home`       | or  | `Home` \*       | Scroll to Top of Outline    |
-|                    |     | `End` \*        | Scroll to Bottom of Outline |
+| `Alt + End`        |     | `End` \*        | Scroll to Bottom of Outline |
 | `PgUp / pgDn`      |     |                 | 'Tree' Page-Up/Down         |
-| `Alt + End`        |     |                 | Go To Last Sibling          |
 | `Alt + N`          |     |                 | Go To Next Clone            |
 | `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree                 |
 | `Alt + G`          |     |                 | Go To Global Line           |

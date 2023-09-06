@@ -3649,7 +3649,7 @@
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
       {
-        "command": "leointeg.gotoLastSibling",
+        "command": "leointeg.scrollBottom",
         "key": "alt+end",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
