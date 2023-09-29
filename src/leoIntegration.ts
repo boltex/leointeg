@@ -3317,8 +3317,6 @@ export class LeoIntegration {
 
                 w_result.push(...w_withDetails);
 
-                // console.log('minibuffer commands', w_result);
-
                 return w_result;
             } else {
                 return [];
@@ -6335,6 +6333,9 @@ export class LeoIntegration {
                 );
                 this.launchRefresh();
                 return Promise.resolve(true);
+            }, (p_error) => {
+                // Pass to catch the rejection if escaped by the user
+                return false;
             });
     }
 

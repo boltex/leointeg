@@ -1464,6 +1464,9 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
             );
             this.launchRefresh();
             return Promise.resolve(true);
+        }, (p_error) =&gt; {
+            // Pass to catch the rejection if escaped by the user
+            return false;
         });
 }
 
@@ -11811,8 +11814,6 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
             }
 
             w_result.push(...w_withDetails);
-
-            // console.log('minibuffer commands', w_result);
 
             return w_result;
         } else {
