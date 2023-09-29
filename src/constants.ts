@@ -241,6 +241,7 @@ export class Constants {
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
+        MINIBUFFER_RCLICK_START: "@rclick-",
         MINIBUFFER_DEL_BUTTON_START: "delete-@button-",
         MINIBUFFER_COMMAND_START: "@command-",
         MINIBUFFER_USER_DEFINED: "$(run) User defined command.",

@@ -3277,6 +3277,7 @@ export class LeoIntegration {
                     .filter(
                         p_command => !p_command.detail && !(
                             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START) ||
+                            p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_RCLICK_START) ||
                             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_DEL_BUTTON_START) ||
                             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START)
                         )

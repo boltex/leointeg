@@ -5638,6 +5638,7 @@ public static USER_MESSAGES = {
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
     MINIBUFFER_BUTTON_START: "@button-",
+    MINIBUFFER_RCLICK_START: "@rclick-",
     MINIBUFFER_DEL_BUTTON_START: "delete-@button-",
     MINIBUFFER_COMMAND_START: "@command-",
     MINIBUFFER_USER_DEFINED: "$(run) User defined command.",
@@ -11771,6 +11772,7 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
                 .filter(
                     p_command =&gt; !p_command.detail &amp;&amp; !(
                         p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START) ||
+                        p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_RCLICK_START) ||
                         p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_DEL_BUTTON_START) ||
                         p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START)
                     )
