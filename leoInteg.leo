@@ -8409,13 +8409,13 @@ export function isHexColor(p_hexString: string): boolean {
 <t tx="felix.20200718220811.1"></t>
 <t tx="felix.20200718220818.1">@language md
 @tabwidth -4
-# ![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
+# ![Leo Editor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
 
 _If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it. Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review") or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub")_
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections structured as an outline, to derive or parse back your files
+### Break down your code into a structured outline that generates or parses back your source files
 
 &gt; Leo is a fundamentally different way of using and organizing data, programs and scripts.\
 &gt; [📺 Introduction Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
@@ -8459,7 +8459,6 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 
 - UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector**, **find panel**, along with a **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
-- A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files-) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
 - **Find panel** that reacts to Leo's typical keybindings, Ctrl+F, F2, F3... when focus is in the outline or body pane
@@ -8544,7 +8543,7 @@ Use either of the **Save Leo Document**, **Write File Nodes** or **Write Dirty F
 
 Leo will detect external file changes, and will ask to either **refresh from disk** or **ignore the changes**.
 
-![derive files](https://raw.githubusercontent.com/boltex/leointeg/master/resources/derived-file.gif)
+![Derive files](https://raw.githubusercontent.com/boltex/leointeg/master/resources/derived-file.gif)
 
 </t>
 <t tx="felix.20200718222053.1">## Automate External Files Synchronization
@@ -8552,7 +8551,7 @@ Leo will detect external file changes, and will ask to either **refresh from dis
 The **change detection** process can be automated to always refresh, or ignore file changes:
 A **notification** will inform you of the action taken instead.
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
+![Auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
 
 </t>
 <t tx="felix.20200718222102.1">## Extension Settings
@@ -18910,9 +18909,11 @@ private _finishOpenLastFiles(): void {
 </t>
 <t tx="felix.20230304182815.1">## Undo Panel
 
+&gt; In LeoInteg, the undo functionality is a multi-tiered system that segregates structural outline changes from text changes within the body pane. The Undo Panel captures outline alterations as individual 'Undo Beads', independent from VS Code's native text undo states. When focus resides in the body pane, the Undo keybinding triggers VS Code's text-specific undo action. However, once the focus shifts or a new node is selected, all concurrent text changes coalesce into a single 'Undo Bead' within the Undo Panel. These 'Undo Beads' can then be manipulated either through the Undo Panel or by keybindings, provided the focus is explicitly set on the outline pane. This dual-layer undo architecture enables precise control over both code and structural modifications.
+
 Use the undo / redo icons above the outline or above the undo pane itself. You can also right-click on an undo step to directly switch to that specific state!
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/undo-pane.gif)
+![Undo pane](https://raw.githubusercontent.com/boltex/leointeg/master/resources/undo-pane.gif)
 
 </t>
 <t tx="felix.20230304202815.1">## Navigating a Leo Document
@@ -18923,7 +18924,7 @@ Arrow keys, home/end, page up/down are used for basic navigation. But in order t
 
 Normally in vscode, the the **`Ctrl+P`** shortcut allows you to switch to any project file, but when the focus is in one of Leo's panels, the **`Ctrl+P`** keybinding allows you to switch to a node directly by typing (part of) it's headline.
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/goto-anywhere.gif)
+![Goto Anywhere](https://raw.githubusercontent.com/boltex/leointeg/master/resources/goto-anywhere.gif)
 
 ### Find Commands
 
@@ -18933,7 +18934,7 @@ Enter your search pattern directly in the **\&lt;find pattern here\&gt;** field.
 
 Hitting **`F3`** repeatedly will find the subsequent matches. (**`F2`** for previous matches)
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/find-in-headlines.gif)
+![Find results](https://raw.githubusercontent.com/boltex/leointeg/master/resources/find-in-headlines.gif)
 
 ### Nav and the Goto Panel
 
@@ -18943,13 +18944,13 @@ Press **`Enter`** to freeze the results and show results also found in **body te
 
 From the **Goto Pane**, you can use the arrow keys, home/end, page up/down to cycle directly to any of those matches.
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-goto-pane.gif)
+![Goto pane](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-goto-pane.gif)
 
 ### Using Tags
 
 If you check the **Tag** option, the **Nav** field and **Goto Pane** are then used to find nodes by their tag 🏷 _ua_ (user attribute).
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-tags.gif)
+![Node tags](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-tags.gif)
 
 </t>
 <t tx="felix.20230304215145.1">@language md
@@ -19089,7 +19090,7 @@ public async tabCycle(): Promise&lt;unknown&gt; {
 </t>
 <t tx="felix.20231001151916.1">## Leo Commands
 
-![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
+![Menus](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
 LeoInteg offers an extensive set of integrated commands, accessible through a variety of interfaces — toolbar buttons, dedicated menus, and intuitive keybindings. Those commands are also discoverable via the Visual Studio Code Command Palette. (accessible through F1 or Ctrl+Shift+P)
 
