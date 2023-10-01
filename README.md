@@ -1,10 +1,10 @@
-# ![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for VS Code
+# ![Leo Editor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
 
 _If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it. Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review") or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub")_
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections structured as an outline, to derive or parse back your files
+### Break down your code into a structured outline that generates or parses back your source files
 
 > Leo is a fundamentally different way of using and organizing data, programs and scripts.\
 > [📺 Introduction Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
@@ -16,7 +16,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Requirements
 
-- Leo Editor 6.7.2 or later\
+- Leo Editor 6.7.4 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
@@ -28,25 +28,30 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 - UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector**, **find panel**, along with a **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
-- A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files-) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
 - **Find panel** that reacts to Leo's typical keybindings, Ctrl+F, F2, F3... when focus is in the outline or body pane
 - **Nav and Tag panel** controls are integrated in the Find panel
 - **Goto Anywhere panel** to navigate directly from list of nodes, such as the results of Nav or Tag searches
 - **Undo History panel**, showing all actions and allowing going back, or forward, to any undo states.
-- Access **Leo commands** with context menus, hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
-  - Open body panes to the side in any 'column'
-  - Outline editing commands
-  - Find/Replace operations
-  - Clipboard operations
-  - Undo/Redo commands
 
-![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
+## Leo Commands
 
-## Leo Commands and Keybindings
+![Menus](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
-Listed here are the most useful Commands. Other commands are also available with their original keybindings.
+LeoInteg offers an extensive set of integrated commands, accessible through a variety of interfaces — toolbar buttons, dedicated menus, and intuitive keybindings. Those commands are also discoverable via the Visual Studio Code Command Palette. (accessible through F1 or Ctrl+Shift+P)
+
+### Context-Aware Keybindings
+
+The keybinding architecture is designed to be context-aware. When your focus is within the LeoInteg Body or Outline pane, LeoInteg-specific keybindings take precedence. Shift your focus outside these panes, and Visual Studio Code's native keybindings resume control.
+
+### The Minibuffer
+
+For those familiar with Leo, the 'minibuffer' serves as the nerve center for command execution. Access it through Alt+X and use the complete set of Leo's commands!
+
+## Keybindings
+
+Listed here are the most useful commands and their keyboard shortcuts.
 
 | Outline Commands |                                                                  |
 | :--------------- | :--------------------------------------------------------------- |
@@ -90,7 +95,7 @@ _Move-Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 | Tree Navigation          |                                                              |
 | :----------------------- | :----------------------------------------------------------- |
-| Show the LeoJS View      | `Ctrl+Shift+L`                                               |
+| Show the LeoInteg View   | `Ctrl+Shift+L`                                               |
 | Go Anywhere              | `Ctrl+P`                                                     |
 | Go To First Visible Node | `Home` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Alt + Home`             |
 | Go To Last Visible Node  | `End` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Alt + End`               |
@@ -118,14 +123,14 @@ Use either of the **Save Leo Document**, **Write File Nodes** or **Write Dirty F
 
 Leo will detect external file changes, and will ask to either **refresh from disk** or **ignore the changes**.
 
-![derive files](https://raw.githubusercontent.com/boltex/leointeg/master/resources/derived-file.gif)
+![Derive files](https://raw.githubusercontent.com/boltex/leointeg/master/resources/derived-file.gif)
 
 ## Automate External Files Synchronization
 
 The **change detection** process can be automated to always refresh, or ignore file changes:
 A **notification** will inform you of the action taken instead.
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
+![Auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
 
 ## Extension Settings
 
@@ -175,39 +180,39 @@ Arrow keys, home/end, page up/down are used for basic navigation. But in order t
 
 Normally in vscode, the the **`Ctrl+P`** shortcut allows you to switch to any project file, but when the focus is in one of Leo's panels, the **`Ctrl+P`** keybinding allows you to switch to a node directly by typing (part of) it's headline.
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/goto-anywhere.gif)
+![Goto Anywhere](https://raw.githubusercontent.com/boltex/leointeg/master/resources/goto-anywhere.gif)
 
 ### Find Commands
 
 With focus in Leo's outline or body pane, Hit **`Ctrl+F`** to open the _find panel_.
 
-Enter your search term directly in the **\<find pattern here\>** field. Press **`Enter`** to find the first match starting from your current position.
+Enter your search pattern directly in the **\<find pattern here\>** field. Press **`Enter`** to find the first match starting from your current position.
 
 Hitting **`F3`** repeatedly will find the subsequent matches. (**`F2`** for previous matches)
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/find-in-headlines.gif)
+![Find results](https://raw.githubusercontent.com/boltex/leointeg/master/resources/find-in-headlines.gif)
 
 ### Nav and the Goto Panel
 
-Type your search term in the **Nav** field instead to see all results show up below in leo's **Goto Pane**. This will show the headlines as you type.
+Type your search pattern in the **Nav** field instead to see all results show up below in leo's **Goto Pane**. This will show the headlines as you type.
 
 Press **`Enter`** to freeze the results and show results also found in **body text of any node**. This will add a snowflake icon ❄️ to the **Nav** field.
 
 From the **Goto Pane**, you can use the arrow keys, home/end, page up/down to cycle directly to any of those matches.
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-goto-pane.gif)
+![Goto pane](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-goto-pane.gif)
 
 ### Using Tags
 
 If you check the **Tag** option, the **Nav** field and **Goto Pane** are then used to find nodes by their tag 🏷 _ua_ (user attribute).
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-tags.gif)
+![Node tags](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-tags.gif)
 
 ## Undo Panel
 
 Use the undo / redo icons above the outline or above the undo pane itself. You can also right-click on an undo step to directly switch to that specific state!
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/undo-pane.gif)
+![Undo pane](https://raw.githubusercontent.com/boltex/leointeg/master/resources/undo-pane.gif)
 
 ## Issues
 

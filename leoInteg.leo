@@ -18,6 +18,7 @@
 <v t="felix.20200718220818.1"><vh>@clean README.md</vh>
 <v t="felix.20200718221645.1"><vh>Requirements</vh></v>
 <v t="felix.20200718222035.1"><vh>Features</vh></v>
+<v t="felix.20231001151916.1"><vh>Leo Commands</vh></v>
 <v t="felix.20200718222043.1"><vh>Keybindings</vh></v>
 <v t="felix.20200718222048.1"><vh>Derive External Files</vh></v>
 <v t="felix.20200718222053.1"><vh>Automate Synchronization</vh></v>
@@ -8408,7 +8409,7 @@ export function isHexColor(p_hexString: string): boolean {
 <t tx="felix.20200718220811.1"></t>
 <t tx="felix.20200718220818.1">@language md
 @tabwidth -4
-# ![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for VS Code
+# ![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
 
 _If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it. Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review") or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub")_
 
@@ -8445,7 +8446,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.7.2 or later\
+- Leo Editor 6.7.4 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
@@ -8465,19 +8466,12 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 - **Nav and Tag panel** controls are integrated in the Find panel
 - **Goto Anywhere panel** to navigate directly from list of nodes, such as the results of Nav or Tag searches
 - **Undo History panel**, showing all actions and allowing going back, or forward, to any undo states.
-- Access **Leo commands** with context menus, hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
-  - Open body panes to the side in any 'column'
-  - Outline editing commands
-  - Find/Replace operations
-  - Clipboard operations
-  - Undo/Redo commands
-
-![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
 </t>
-<t tx="felix.20200718222043.1">## Leo Commands and Keybindings
+<t tx="felix.20200718222043.1">
+## Keybindings
 
-Listed here are the most useful Commands. Other commands are also available with their original keybindings.
+Listed here are the most useful commands and their keyboard shortcuts.
 
 | Outline Commands |                                                                  |
 | :--------------- | :--------------------------------------------------------------- |
@@ -8521,7 +8515,7 @@ _Move-Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 | Tree Navigation          |                                                              |
 | :----------------------- | :----------------------------------------------------------- |
-| Show the LeoJS View      | `Ctrl+Shift+L`                                               |
+| Show the LeoInteg View   | `Ctrl+Shift+L`                                               |
 | Go Anywhere              | `Ctrl+P`                                                     |
 | Go To First Visible Node | `Home` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Alt + Home`             |
 | Go To Last Visible Node  | `End` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Alt + End`               |
@@ -18935,7 +18929,7 @@ Normally in vscode, the the **`Ctrl+P`** shortcut allows you to switch to any pr
 
 With focus in Leo's outline or body pane, Hit **`Ctrl+F`** to open the _find panel_.
 
-Enter your search term directly in the **\&lt;find pattern here\&gt;** field. Press **`Enter`** to find the first match starting from your current position.
+Enter your search pattern directly in the **\&lt;find pattern here\&gt;** field. Press **`Enter`** to find the first match starting from your current position.
 
 Hitting **`F3`** repeatedly will find the subsequent matches. (**`F2`** for previous matches)
 
@@ -18943,7 +18937,7 @@ Hitting **`F3`** repeatedly will find the subsequent matches. (**`F2`** for prev
 
 ### Nav and the Goto Panel
 
-Type your search term in the **Nav** field instead to see all results show up below in leo's **Goto Pane**. This will show the headlines as you type.
+Type your search pattern in the **Nav** field instead to see all results show up below in leo's **Goto Pane**. This will show the headlines as you type.
 
 Press **`Enter`** to freeze the results and show results also found in **body text of any node**. This will add a snowflake icon ❄️ to the **Nav** field.
 
@@ -19092,6 +19086,20 @@ public async tabCycle(): Promise&lt;unknown&gt; {
 - Added description under command label in minibuffer-history's user input box.
 - Fixed default keybindings for alt+home and alt+end (goto first/last visible node)
 
+</t>
+<t tx="felix.20231001151916.1">## Leo Commands
+
+![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
+
+LeoInteg offers an extensive set of integrated commands, accessible through a variety of interfaces — toolbar buttons, dedicated menus, and intuitive keybindings. Those commands are also discoverable via the Visual Studio Code Command Palette. (accessible through F1 or Ctrl+Shift+P)
+
+### Context-Aware Keybindings
+
+The keybinding architecture is designed to be context-aware. When your focus is within the LeoInteg Body or Outline pane, LeoInteg-specific keybindings take precedence. Shift your focus outside these panes, and Visual Studio Code's native keybindings resume control.
+
+### The Minibuffer
+
+For those familiar with Leo, the 'minibuffer' serves as the nerve center for command execution. Access it through Alt+X and use the complete set of Leo's commands!
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
