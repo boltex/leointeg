@@ -54,7 +54,7 @@ export class LeoIntegration {
 
     // * General integration usage variables
     private _clipboardContent: string = "";
-    private _minibufferHistory: string[] = [];
+    private _minibufferHistory: vscode.QuickPickItem[] = [];
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -1306,6 +1306,11 @@ export class LeoIntegration {
                 () => {
                     this.config.buildFromSavedSettings();
                     this.leoSettingsWebview.changedConfiguration();
+
+                    if (p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_BRANCH_OUTLINE)) {
+                        this._refreshDesc();
+                    }
+
                     if (
                         p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.INVERT_NODES) ||
                         p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_EDIT) ||
@@ -1720,23 +1725,33 @@ export class LeoIntegration {
     private _refreshDesc(): void {
         if (this.leoStates.fileOpenedReady) {
 
-            this.sendAction(
-                Constants.LEOBRIDGE.GET_BRANCH
-            ).then(
-                (p_result: LeoBridgePackage) => {
-                    let w_branch = "";
-                    if (p_result && p_result.branch) {
-                        w_branch = p_result.branch + ": ";
-                    }
+            if (this.config.showBranchInOutlineTitle) {
+                this.sendAction(
+                    Constants.LEOBRIDGE.GET_BRANCH
+                ).then(
+                    (p_result: LeoBridgePackage) => {
+                        let w_branch = "";
+                        if (p_result && p_result.branch) {
+                            w_branch = p_result.branch + ": ";
+                        }
 
-                    if (this._leoTreeView) {
-                        this._leoTreeView.description = w_branch + this._titleDesc;
+                        if (this._leoTreeView) {
+                            this._leoTreeView.description = w_branch + this._titleDesc;
+                        }
+                        if (this._leoTreeExView) {
+                            this._leoTreeExView.description = w_branch + this._titleDesc;
+                        }
                     }
-                    if (this._leoTreeExView) {
-                        this._leoTreeExView.description = w_branch + this._titleDesc;
-                    }
+                );
+            } else {
+                if (this._leoTreeView) {
+                    this._leoTreeView.description = this._titleDesc;
                 }
-            );
+                if (this._leoTreeExView) {
+                    this._leoTreeExView.description = this._titleDesc;
+                }
+            }
+
         } else {
             if (this._leoTreeView) {
                 this._leoTreeView.description = "";
@@ -3273,17 +3288,73 @@ export class LeoIntegration {
 
                 // Keep only without details and remove @buttons and delete-@buttons
                 // (keeps the minibuffer list cleaner)
-                const w_noDetails = p_result.commands
-                    .filter(
-                        p_command => !p_command.detail && !(
-                            p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START) ||
-                            p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_DEL_BUTTON_START) ||
-                            p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START)
+                const w_noDetails: vscode.QuickPickItem[] = [];
+                const stash_button: string[] = [];
+                const stash_rclick: string[] = [];
+                const stash_command: string[] = [];
+
+                for (const w_com of p_result.commands) {
+                    if (
+                        !w_com.detail && !(
+                            w_com.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START) ||
+                            w_com.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_RCLICK_START) ||
+                            w_com.label === Constants.USER_MESSAGES.MINIBUFFER_SCRIPT_BUTTON ||
+                            w_com.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_DEL_SCRIPT_BUTTON) ||
+                            w_com.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_DEL_BUTTON_START) ||
+                            w_com.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START)
                         )
-                    );
-                for (const p_command of w_noDetails) {
-                    p_command.description = Constants.USER_MESSAGES.MINIBUFFER_USER_DEFINED;
+                    ) {
+                        w_noDetails.push(w_com);
+                    }
+
+                    if (w_com.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START)) {
+                        stash_button.push(w_com.label);
+                    }
+                    if (w_com.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_RCLICK_START)) {
+                        stash_rclick.push(w_com.label);
+                    }
+                    if (w_com.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START)) {
+                        stash_command.push(w_com.label);
+                    }
                 }
+                // const w_noDetails = p_result.commands
+                //     .filter(
+                //         p_command => !p_command.detail && !(
+                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START) ||
+                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_RCLICK_START) ||
+                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_DEL_BUTTON_START) ||
+                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START)
+                //         )
+                //     );
+
+                const w_firstButtons: vscode.QuickPickItem[] = [];
+                const w_secondRClicks: vscode.QuickPickItem[] = [];
+                const w_thirdCommands: vscode.QuickPickItem[] = [];
+                const w_fourthNoName: vscode.QuickPickItem[] = [];
+
+                for (const p_command of w_noDetails) {
+                    if (stash_button.includes(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START + p_command.label)) {
+                        p_command.description = Constants.USER_MESSAGES.MINIBUFFER_BUTTON;
+                        w_firstButtons.push(p_command);
+                    }
+                    if (stash_rclick.includes(Constants.USER_MESSAGES.MINIBUFFER_RCLICK_START + p_command.label)) {
+                        p_command.description = Constants.USER_MESSAGES.MINIBUFFER_RCLICK;
+                        w_secondRClicks.push(p_command);
+
+                    }
+                    if (stash_command.includes(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START + p_command.label)) {
+                        p_command.description = Constants.USER_MESSAGES.MINIBUFFER_COMMAND;
+                        w_thirdCommands.push(p_command);
+
+                    }
+                    if (!p_command.description) {
+                        p_command.description = Constants.USER_MESSAGES.MINIBUFFER_USER_DEFINED;
+                        w_fourthNoName.push(p_command);
+                    }
+                }
+                // for (const p_command of w_noDetails) {
+                //     p_command.description = Constants.USER_MESSAGES.MINIBUFFER_USER_DEFINED;
+                // }
 
                 const w_withDetails = p_result.commands.filter(p_command => !!p_command.detail);
 
@@ -3292,19 +3363,18 @@ export class LeoIntegration {
                     return a.label < b.label ? -1 : (a.label === b.label ? 0 : 1);
                 });
 
-
                 const w_result: vscode.QuickPickItem[] = [];
 
                 if (this._minibufferHistory.length) {
-                    w_result.push({
-                        label: Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL,
-                        description: Constants.USER_MESSAGES.MINIBUFFER_HISTORY_DESC
-                    });
+                    w_result.push(Constants.MINIBUFFER_QUICK_PICK);
                 }
 
                 // Finish minibuffer list
                 if (w_noDetails.length) {
-                    w_result.push(...w_noDetails);
+                    w_result.push(...w_firstButtons);
+                    w_result.push(...w_secondRClicks);
+                    w_result.push(...w_thirdCommands);
+                    w_result.push(...w_fourthNoName);
                 }
 
                 // Separator above real commands, if needed...
@@ -3315,8 +3385,6 @@ export class LeoIntegration {
                 }
 
                 w_result.push(...w_withDetails);
-
-                // console.log('minibuffer commands', w_result);
 
                 return w_result;
             } else {
@@ -3389,9 +3457,7 @@ export class LeoIntegration {
         if (!this._minibufferHistory.length) {
             return Promise.resolve(undefined);
         }
-        const w_commandList: vscode.QuickPickItem[] = this._minibufferHistory.map(
-            p_command => { return { label: p_command }; }
-        );
+        const w_commandList: vscode.QuickPickItem[] = this._minibufferHistory;
         // Add Nav tab special commands
         const w_options: vscode.QuickPickOptions = {
             placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
@@ -3409,14 +3475,14 @@ export class LeoIntegration {
         if (p_picked &&
             p_picked.label &&
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
-            this._addToMinibufferHistory(p_picked.label);
+            this._addToMinibufferHistory(p_picked);
             return vscode.commands.executeCommand(
                 Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
             );
         }
         // * Ok, it was really a minibuffer command
         if (p_picked && p_picked.label) {
-            this._addToMinibufferHistory(p_picked.label);
+            this._addToMinibufferHistory(p_picked);
             const w_commandResult = this.nodeCommand({
                 action: "-" + p_picked.label,
                 node: undefined,
@@ -3436,14 +3502,14 @@ export class LeoIntegration {
     /**
      * Add to the minibuffer history (without duplicating entries)
      */
-    private _addToMinibufferHistory(p_commandName: string): void {
-        const w_found = this._minibufferHistory.indexOf(p_commandName);
+    private _addToMinibufferHistory(p_command: vscode.QuickPickItem): void {
+        const w_found = this._minibufferHistory.map(p_item => p_item.label).indexOf(p_command.label);
         // If found, will be removed (and placed on top)
         if (w_found >= 0) {
             this._minibufferHistory.splice(w_found, 1);
         }
         // Add to top of minibuffer history
-        this._minibufferHistory.unshift(p_commandName);
+        this._minibufferHistory.unshift(p_command);
     }
 
     /**
@@ -4831,14 +4897,44 @@ export class LeoIntegration {
      * * Set search setting in the search webview
      * @param p_id string id of the setting name
      */
-    public setSearchSetting(p_id: string): void {
+    public async setSearchSetting(p_id: string): Promise<unknown> {
+        this._isBusyTriggerSave(false, true);
+        // already instantiated & shown ?
         let w_panel: vscode.WebviewView | undefined;
-        if (this._lastTreeView === this._leoTreeExView) {
-            w_panel = this._findPanelWebviewExplorerView;
-        } else {
+
+        if (this._findPanelWebviewView && this._findPanelWebviewView.visible) {
             w_panel = this._findPanelWebviewView;
+        } else if (this._findPanelWebviewExplorerView && this._findPanelWebviewExplorerView.visible) {
+            w_panel = this._findPanelWebviewExplorerView;
         }
-        w_panel!.webview.postMessage({ type: 'setSearchSetting', id: p_id });
+
+        if (w_panel) {
+            // ALREADY VISIBLE FIND PANEL
+            w_panel!.webview.postMessage({ type: 'setSearchSetting', id: p_id });
+            return;
+        }
+        // Find panel to show based on last regular outline pane visible.
+        let w_panelID = '';
+        if (this._lastTreeView === this._leoTreeExView) {
+            w_panelID = Constants.FIND_EXPLORER_ID;
+        } else {
+            w_panelID = Constants.FIND_ID;
+        }
+        await vscode.commands.executeCommand(w_panelID + '.focus');
+
+        return new Promise((p_resolve, p_reject) => {
+            setTimeout(() => {
+                if (this._findPanelWebviewView && this._findPanelWebviewView.visible) {
+                    w_panel = this._findPanelWebviewView;
+                } else if (this._findPanelWebviewExplorerView && this._findPanelWebviewExplorerView.visible) {
+                    w_panel = this._findPanelWebviewExplorerView;
+                }
+                if (w_panel) {
+                    w_panel!.webview.postMessage({ type: 'setSearchSetting', id: p_id });
+                }
+                p_resolve(undefined);
+            }, 250);
+        });
     }
 
     /**
@@ -5225,7 +5321,7 @@ export class LeoIntegration {
                         }
                     );
             }
-        });
+        }, 150);
     }
 
     /**
@@ -5249,7 +5345,7 @@ export class LeoIntegration {
                 w_index++;
             });
         } else {
-            // "No opened documents"
+            // "Only one, or no opened documents"
             return undefined;
         }
         this.finalFocus = Focus.Outline;
@@ -5490,8 +5586,8 @@ export class LeoIntegration {
      * If unnamed file, calls anyways to let the real command print out message
      */
     public async revert(): Promise<unknown> {
-        await this._isBusyTriggerSave(true, true);
         if (this.leoStates.leoOpenedFileName) {
+            await this._isBusyTriggerSave(true, true);
 
             const w_result = await vscode.window.showInformationMessage(
                 Constants.USER_MESSAGES.REVERT_PREVIOUS_VERSION +
@@ -5510,26 +5606,28 @@ export class LeoIntegration {
             if (!w_result || w_result.title === Constants.USER_MESSAGES.NO) {
                 return;
             }
-        }
 
-        const q_commandResult = this.nodeCommand({
-            action: Constants.LEOBRIDGE.REVERT,
-            node: undefined,
-            refreshType: {
-                tree: true,
-                body: true,
-                documents: true,
-                buttons: true,
-                goto: true,
-                states: true,
-            },
-            finalFocus: Focus.NoChange, // use last
+            const q_commandResult = this.nodeCommand({
+                action: Constants.LEOBRIDGE.REVERT,
+                node: undefined,
+                refreshType: {
+                    tree: true,
+                    body: true,
+                    documents: true,
+                    buttons: true,
+                    goto: true,
+                    states: true,
+                },
+                finalFocus: Focus.NoChange, // use last
 
-        });
-        if (q_commandResult) {
-            return q_commandResult;
+            });
+            if (q_commandResult) {
+                return q_commandResult;
+            } else {
+                return Promise.reject('Revert to saved version failed');
+            }
         } else {
-            return Promise.reject('Export Headlines not added on command stack');
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.CANNOT_REVERT);
         }
 
     }
@@ -5686,6 +5784,10 @@ export class LeoIntegration {
             this.serverOpenedNode = w_openFileResult.node!;
 
             this.loadSearchSettings();
+
+            this.showBodyIfClosed = true;
+            this.showOutlineIfClosed = true;
+
             this.setupRefresh(
                 Focus.NoChange,
                 {
@@ -6336,6 +6438,9 @@ export class LeoIntegration {
                 );
                 this.launchRefresh();
                 return Promise.resolve(true);
+            }, (p_error) => {
+                // Pass to catch the rejection if escaped by the user
+                return false;
             });
     }
 

@@ -163,6 +163,7 @@ export class Constants {
         SAVE_CHANGES: "Save changes to",
         BEFORE_CLOSING: "before closing?",
         REVERT_PREVIOUS_VERSION: "Revert to previous version of ", // Trailing space intended
+        CANNOT_REVERT: "Can not revert unnamed file.",
         CANCEL: "Cancel",
         OPEN_WITH_LEOINTEG: "Open this Leo file with LeoInteg?",
         OPEN_RECENT_FILE: "Open Recent Leo File",
@@ -241,11 +242,18 @@ export class Constants {
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
+        MINIBUFFER_RCLICK_START: "@rclick-",
+        MINIBUFFER_SCRIPT_BUTTON: "script-button",
+        MINIBUFFER_DEL_SCRIPT_BUTTON: "delete-script-",
         MINIBUFFER_DEL_BUTTON_START: "delete-@button-",
         MINIBUFFER_COMMAND_START: "@command-",
         MINIBUFFER_USER_DEFINED: "$(run) User defined command.",
+        MINIBUFFER_BUTTON: "$(run) @button",
+        MINIBUFFER_RCLICK: "$(chevron-right) @rclick",
+        MINIBUFFER_COMMAND: "$(zap) @command",
+        MINIBUFFER_BAD_COMMAND: "$(error) Not Available",
         MINIBUFFER_HISTORY_LABEL: "Minibuffer History",
-        MINIBUFFER_HISTORY_DESC: "$(history) Choose from last run commands..."
+        MINIBUFFER_HISTORY_DESC: "Choose from last run commands..."
     };
 
     /**
@@ -318,6 +326,7 @@ export class Constants {
         SHOW_MARK: "showMarkOnNodes",
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
+        SHOW_BRANCH_OUTLINE: "showBranchInOutlineTitle",
 
         // SHOW_EDITION_BODY: "showEditionOnBody",
         // SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
@@ -367,6 +376,7 @@ export class Constants {
         SHOW_MARK: false,
         SHOW_CLONE: false,
         SHOW_COPY: false,
+        SHOW_BRANCH_OUTLINE: false,
 
         // SHOW_EDITION_BODY: true,
         // SHOW_CLIPBOARD_BODY: true,
@@ -392,6 +402,11 @@ export class Constants {
         LIMIT_USERS: 1
     };
 
+    public static MINIBUFFER_QUICK_PICK: vscode.QuickPickItem = {
+        label: Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL,
+        description: Constants.USER_MESSAGES.MINIBUFFER_HISTORY_DESC,
+        iconPath: new vscode.ThemeIcon("history")
+    };
     /**
      * * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
      */

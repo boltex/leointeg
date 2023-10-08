@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as path from 'path';
+import * as os from 'os';
 import { LeoIntegration } from "./leoIntegration";
 import * as utils from "./utils";
 
@@ -82,6 +83,8 @@ export class LeoSettingsProvider {
                                 this._leoIntegration.config.getConfig()
                             )};window.fontConfig = ${JSON.stringify(
                                 this._leoIntegration.config.getFontConfig()
+                            )};window.platform = ${JSON.stringify(
+                                os.platform()
                             )};</script>
                             <script nonce="${w_nonce}" src="${scriptUri}"></script>
                             `

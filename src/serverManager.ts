@@ -69,9 +69,10 @@ export class ServerService {
 
         this._skippedFirstEmpty = false;
 
-        if (!p_leoEditorPath) {
+        if (!p_leoEditorPath || !p_leoEditorPath.trim()) {
             return Promise.reject(Constants.USER_MESSAGES.LEO_PATH_MISSING);
         }
+        p_leoEditorPath = p_leoEditorPath.trim();
 
         let w_pythonPath = ""; // Command of child.spawn call
 
@@ -173,11 +174,9 @@ export class ServerService {
                     }
                     console.log(`stderr: ${p_data}`);
 
-                    this._isStarted = false;
                     if (!this._leoIntegration.activated) {
                         return;
                     }
-                    utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
 
                     this.killServer();
 
@@ -191,8 +190,9 @@ export class ServerService {
             }
             // Capture the CLOSE event and set flags on server actually closing
             if (this._serverProcess) {
+
                 this._serverProcess.on("close", (p_code: any) => {
-                    console.log(`Leo server exited with code ${p_code}`);
+                    console.log(`Leo server process closed with code ${p_code}`);
                     this._isStarted = false;
                     if (!this._leoIntegration.activated) {
                         return;
@@ -209,6 +209,44 @@ export class ServerService {
                         this._rejectPromise(`Leo server exited with code ${p_code}`);
                     }
                 });
+
+                this._serverProcess.on('error', (err: Error & { code?: string; path?: string }) => {
+                    console.error('Failed to start subprocess:', err);
+
+                    const errorTable: { [key: string]: string } = {
+                        'ENOENT': 'ENOENT: File or command not found.',
+                        'EACCES': 'EACCES: Permission denied.',
+                        'ENOMEM': 'ENOMEM: Not enough memory to start the process.',
+                        'EAGAIN': 'EAGAIN: Resource temporarily unavailable.',
+                        'EINVAL': 'EINVAL: Invalid argument.',
+                        'EMFILE': 'EMFILE: Too many open files in system.',
+                        'ENFILE': 'ENFILE: File table overflow.',
+                        'ESRCH': 'ESRCH: No such process.',
+                        'EIO': 'EIO: Input/output error.',
+                        'EISDIR': 'EISDIR: Illegal operation on a directory.'
+                    };
+
+                    let message;
+                    if (err.code === 'ENOENT') {
+                        message = "System could not resolve path to launch python: " + err.path;
+                    } else if (err.code && errorTable[err.code]) {
+                        message = "Process exited with error:" + errorTable[err.code];
+                    } else {
+                        message = "Process exited with error:" + err.message;
+                    }
+
+                    this.killServer();
+
+                    if (this._rejectPromise) {
+                        this._rejectPromise(message);
+                    }
+                });
+
+                // Capture the EXIT event
+                this._serverProcess.on('exit', (code, signal) => {
+                    console.log(`Leo server process exited with code: ${code}, signal: ${signal}`);
+                });
+
             }
             // Give out the promise that will resolve when the server is started
             return w_serverStartPromise;
@@ -222,7 +260,11 @@ export class ServerService {
     public killServer(): void {
         if (this._serverProcess) {
             // this._serverProcess.kill(); // Replaced by the tree-kill lib
-            kill(this._serverProcess.pid);
+            if (typeof this._serverProcess.pid === 'number') {
+                kill(this._serverProcess.pid);
+            } else {
+                // console.log('this._serverProcess.pid -->', this._serverProcess.pid);
+            }
             this._isStarted = false;
             if (!this._leoIntegration.activated) {
                 return;

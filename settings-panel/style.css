@@ -902,6 +902,15 @@ fieldset {
   padding-right: 0;
   border-style: solid;
   border-width: 1px;
+  flex-basis: 100%;
+}
+
+fieldset.info {
+  background-color: #00378010;
+  border-color: #3e6092
+}
+
+fieldset.alert {
   background-color: #80000010;
   border-color: #92473e
 }
@@ -1237,6 +1246,21 @@ fieldset p span {
 #saved-config-toast.show {
   visibility: visible;
   animation: fadein 0.5s, fadeout 0.5s 1s
+}
+
+#resultingCommand {
+  margin: 0 10px;
+  padding: 4px;
+  font-family: 'Courier New', monospace;
+  background-color: #12121240;
+}
+
+.cursor-default {
+  cursor: default
+}
+
+.text-italic{
+  font-style: italic;
 }
 
 .vscode-light #saved-config-toast:before {

@@ -1,22 +1,22 @@
-# ![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for VS Code
+# ![Leo Editor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
 
 _If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it. Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review") or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub")_
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections structured as an outline, to derive or parse back your files
+### Break down your code into a structured outline that generates or parses back your source files
 
 > Leo is a fundamentally different way of using and organizing data, programs and scripts.\
-> [Introduction Video 🎥](https://www.youtube.com/watch?v=SYwlfdEukD4)
+> [📺 Introduction Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
 
 See Leo, the Literate Editor with Outline, at [leo-editor.github.io/leo-editor](https://leo-editor.github.io/leo-editor/)
 or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.visualstudio.com](https://code.visualstudio.com/).
 
 ![Screenshot](https://raw.githubusercontent.com/boltex/leointeg/master/resources/animated-screenshot.gif)
 
-## Requirements 📃
+## Requirements
 
-- Leo Editor 6.7.2 or later\
+- Leo Editor 6.7.4 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
@@ -24,109 +24,115 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/](https://websockets.readthedocs.io/))
 
-## Features 🎉
+## Features
 
 - UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector**, **find panel**, along with a **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
-- A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files-) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
 - **Find panel** that reacts to Leo's typical keybindings, Ctrl+F, F2, F3... when focus is in the outline or body pane
 - **Nav and Tag panel** controls are integrated in the Find panel
 - **Goto Anywhere panel** to navigate directly from list of nodes, such as the results of Nav or Tag searches
 - **Undo History panel**, showing all actions and allowing going back, or forward, to any undo states.
-- Access **Leo commands** with context menus, hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
-  - Open body panes to the side in any 'column'
-  - Outline editing commands
-  - Find/Replace operations
-  - Clipboard operations
-  - Undo/Redo commands
 
-![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
+## Leo Commands
 
-## Leo Commands and Keybindings
+![Menus](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
-Here are the most useful Commands. Most of Leo's other commands are also available with their original keybindings.
+LeoInteg offers an extensive set of integrated commands, accessible through a variety of interfaces — toolbar buttons, dedicated menus, and intuitive keybindings. Those commands are also discoverable via the Visual Studio Code Command Palette. (accessible through F1 or Ctrl+Shift+P)
 
-| Outline Commands           |     |                    |                  |
-| :------------------------- | :-- | :----------------- | :--------------- |
-| `Ctrl + Z`                 |     | `Ctrl + Shift + Z` | Undo / Redo      |
-| `Ctrl + I`                 | or  | `Shift + Insert`   | Insert Node      |
-| `Ctrl + Insert`            |     |                    | Insert Child     |
-| `Ctrl + H`                 |     |                    | Edit Headline    |
-| `Ctrl + M`                 |     |                    | Mark / Unmark    |
-| `Ctrl + Shift + C`         |     |                    | Copy Node        |
-| `Ctrl + Shift + X`         |     |                    | Cut Node         |
-| `Ctrl + Shift + V`         |     |                    | Paste Node       |
-| `Ctrl + Shift + Backspace` | or  | `Delete`           | Delete Node      |
-| `Ctrl + Backquote`         |     |                    | Clone Node       |
-| `Ctrl + {`                 | and | `Ctrl + }`         | Promote / Demote |
+### Context-Aware Keybindings
 
-| Moving Outline Nodes |     |                         |                    |
-| :------------------- | :-- | :---------------------- | :----------------- |
-| `Ctrl + U`           | or  | `Shift [+ Alt] + Up`    | Move Outline Up    |
-| `Ctrl + D`           | or  | `Shift [+ Alt] + Down`  | Move Outline Down  |
-| `Ctrl + L`           | or  | `Shift [+ Alt] + Left`  | Move Outline Left  |
-| `Ctrl + R`           | or  | `Shift [+ Alt] + Right` | Move Outline Right |
+The keybinding architecture is designed to be context-aware. When your focus is within the LeoInteg Body or Outline pane, LeoInteg-specific keybindings take precedence. Shift your focus outside these panes, and Visual Studio Code's native keybindings resume control.
 
-_Move Outline commands need the 'Alt' key modifier only when focus is on body pane._
+### The Minibuffer
 
-| Common Operations  |     |         |     |           |     |            |                     |
-| :----------------- | :-- | :------ | :-- | :-------- | :-- | :--------- | :------------------ |
-| `Ctrl + T`         |     |         |     |           |     |            | Toggle Outline/Body |
-| `Tab`              | or  | `Enter` | or  | `Alt + D` | or  | `Ctrl + G` | Focus on Body       |
-| `Alt + T`          |     |         |     |           |     |            | Focus on Outline    |
-| `Alt + -`          |     |         |     |           |     |            | Contract All        |
-| `Ctrl + B`         |     |         |     |           |     |            | Execute Script      |
-| `Ctrl + Shift + D` |     |         |     |           |     |            | Extract             |
-| `Ctrl + Shift + N` |     |         |     |           |     |            | Extract Names       |
-| `Alt + A`          |     |         |     |           |     |            | Sort Siblings       |
-| `Ctrl + F`         |     |         |     |           |     |            | Start Search        |
-| `F3`               |     |         |     |           |     |            | Find Next           |
-| `F2`               |     |         |     |           |     |            | Find Previous       |
-| `Alt + X`          |     |         |     |           |     |            | Minibuffer Palette  |
+For those familiar with Leo, the 'minibuffer' serves as the nerve center for command execution. Access it through Alt+X and use the complete set of Leo's commands!
 
-| Tree Navigation    |     |                 |                             |
-| :----------------- | :-- | :-------------- | :-------------------------- |
-| `Ctrl+Shift+L`     |     |                 | Show the LeoInteg View      |
-| `Ctrl+P`           |     |                 | Go Anywhere                 |
-| `Alt + Home`       | or  | `Home` \*       | Scroll to Top of Outline    |
-|                    |     | `End` \*        | Scroll to Bottom of Outline |
-| `PgUp / pgDn`      |     |                 | 'Tree' Page-Up/Down         |
-| `Alt + End`        |     |                 | Go To Last Sibling          |
-| `Alt + N`          |     |                 | Go To Next Clone            |
-| `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree                 |
-| `Alt + G`          |     |                 | Go To Global Line           |
+## Keybindings
 
-**\*** _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
+Listed here are the most useful commands and their keyboard shortcuts.
 
-| File Commands      |     |     |                     |
-| :----------------- | :-- | :-- | :------------------ |
-| `Ctrl + S`         |     |     | Save Leo Document   |
-| `Ctrl + N`         |     |     | New Leo Document    |
-| `Ctrl + O`         |     |     | Open Leo Document   |
-| `Ctrl + Tab`       |     |     | Cycle Next Document |
-| `Ctrl + Shift + W` |     |     | Write File Nodes    |
-| `Ctrl + Shift + Q` |     |     | Write Dirty Files   |
+| Outline Commands |                                                                  |
+| :--------------- | :--------------------------------------------------------------- |
+| Undo / Redo      | `Ctrl + Z` &nbsp;&nbsp;/&nbsp;&nbsp; `Ctrl + Shift + Z`          |
+| Insert Node      | `Ctrl + I` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Shift + Insert`         |
+| Insert Child     | `Ctrl + Insert`                                                  |
+| Edit Headline    | `Ctrl + H`                                                       |
+| Mark / Unmark    | `Ctrl + M`                                                       |
+| Copy Node        | `Ctrl + Shift + C`                                               |
+| Cut Node         | `Ctrl + Shift + X`                                               |
+| Paste Node       | `Ctrl + Shift + V`                                               |
+| Delete Node      | `Ctrl + Shift + Backspace` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Delete` |
+| Clone Node       | `Ctrl + Backquote`                                               |
+| Promote / Demote | `Ctrl + {` &nbsp;&nbsp;_and_&nbsp;&nbsp; `Ctrl + }`              |
+
+| Moving Nodes       |                                                                 |
+| :----------------- | :-------------------------------------------------------------- |
+| Move Outline Up    | `Ctrl + U` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Shift [+ Alt] + Up`    |
+| Move Outline Down  | `Ctrl + D` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Shift [+ Alt] + Down`  |
+| Move Outline Left  | `Ctrl + L` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Shift [+ Alt] + Left`  |
+| Move Outline Right | `Ctrl + R` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Shift [+ Alt] + Right` |
+
+_Move-Outline commands need the 'Alt' key modifier only when focus is on body pane._
+
+| Common Operations   |                                                                                                                           |
+| :------------------ | :------------------------------------------------------------------------------------------------------------------------ |
+| Toggle Outline/Body | `Ctrl + T`                                                                                                                |
+| Focus on Body       | `Tab` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Enter` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Alt + D` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Ctrl + G` |
+| Focus on Outline    | `Alt + T`                                                                                                                 |
+| Contract All        | `Alt + -`                                                                                                                 |
+| Sort Siblings       | `Alt + A`                                                                                                                 |
+| Start Search        | `Ctrl + F`                                                                                                                |
+| Find Next           | `F3`                                                                                                                      |
+| Find Previous       | `F2`                                                                                                                      |
+| Replace             | `Ctrl + =`                                                                                                                |
+| Replace then Find   | `Ctrl + -`                                                                                                                |
+| Extract             | `Ctrl + Shift + D`                                                                                                        |
+| Extract Names       | `Ctrl + Shift + N`                                                                                                        |
+| Execute Script      | `Ctrl + B`                                                                                                                |
+| Minibuffer Palette  | `Alt + X`                                                                                                                 |
+
+| Tree Navigation          |                                                              |
+| :----------------------- | :----------------------------------------------------------- |
+| Show the LeoInteg View   | `Ctrl+Shift+L`                                               |
+| Go Anywhere              | `Ctrl+P`                                                     |
+| Go To First Visible Node | `Home` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Alt + Home`             |
+| Go To Last Visible Node  | `End` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Alt + End`               |
+| Tree page up/down        | `PgUp / pgDn`                                                |
+| Go To Next Clone         | `Alt + N`                                                    |
+| Browse Tree              | `Arrow Keys` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Alt + Arrow Keys` |
+| Go To Global Line        | `Alt + G`                                                    |
+
+_With the **'Leo Tree Browsing'** setting enabled by default, the arrows, home, end, pageUp/Down keys will change the outline's selection directly._
+
+| File Commands       |                    |
+| :------------------ | :----------------- |
+| Save Leo Document   | `Ctrl + S`         |
+| New Leo Document    | `Ctrl + N`         |
+| Open Leo Document   | `Ctrl + O`         |
+| Cycle Next Document | `Ctrl + Tab`       |
+| Write File Nodes    | `Ctrl + Shift + W` |
+| Write Dirty Files   | `Ctrl + Shift + Q` |
 
 ---
 
-## Derive External Files 💾
+## Derive External Files
 
-Use the **Save Leo File** command to derive external files for any type of **@file** nodes.
+Use either of the **Save Leo Document**, **Write File Nodes** or **Write Dirty Files** commands to derive external files for any type of **@file** nodes.
 
-Leo will detect derived file changes and will ask to either **refresh from disk** or **ignore the changes**.
+Leo will detect external file changes, and will ask to either **refresh from disk** or **ignore the changes**.
 
-![derive files](https://raw.githubusercontent.com/boltex/leointeg/master/resources/derived-file.gif)
+![Derive files](https://raw.githubusercontent.com/boltex/leointeg/master/resources/derived-file.gif)
 
-## Automate External Files Synchronization 🤖
+## Automate External Files Synchronization
 
 The **change detection** process can be automated to always refresh, or ignore file changes:
 A **notification** will inform you of the action taken instead.
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
+![Auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
 
-## Extension Settings 🔧
+## Extension Settings
 
 ### Open the command palette `Ctrl+Shift+P` and start typing `leo settings` to access LeoInteg's welcome/settings screen
 
@@ -141,7 +147,7 @@ A **notification** will inform you of the action taken instead.
 
 ![Settings](https://raw.githubusercontent.com/boltex/leointeg/master/resources/welcome-settings.gif)
 
-## Server Settings 🔌
+## Server Settings
 
 Although the Leo integration has one instance of the leoserver script per vscode 'project'
 window by default, the server settings also has features that allows you to use the same instance
@@ -166,7 +172,7 @@ Run the server directly with the '--help' argument to view all server options an
 
 For more information about the Leo server see [Using leoserver.py](https://leo-editor.github.io/leo-editor/leoserver.html) from Leo's official documentation.
 
-## Navigating a Leo Document 🧭
+## Navigating a Leo Document
 
 Arrow keys, home/end, page up/down are used for basic navigation. But in order to **find and goto specific nodes directly**, use the methods described below.
 
@@ -174,41 +180,43 @@ Arrow keys, home/end, page up/down are used for basic navigation. But in order t
 
 Normally in vscode, the the **`Ctrl+P`** shortcut allows you to switch to any project file, but when the focus is in one of Leo's panels, the **`Ctrl+P`** keybinding allows you to switch to a node directly by typing (part of) it's headline.
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/goto-anywhere.gif)
+![Goto Anywhere](https://raw.githubusercontent.com/boltex/leointeg/master/resources/goto-anywhere.gif)
 
 ### Find Commands
 
 With focus in Leo's outline or body pane, Hit **`Ctrl+F`** to open the _find panel_.
 
-Enter your search term directly in the **\<find pattern here\>** field. Press **`Enter`** to find the first match starting from your current position.
+Enter your search pattern directly in the **\<find pattern here\>** field. Press **`Enter`** to find the first match starting from your current position.
 
 Hitting **`F3`** repeatedly will find the subsequent matches. (**`F2`** for previous matches)
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/find-in-headlines.gif)
+![Find results](https://raw.githubusercontent.com/boltex/leointeg/master/resources/find-in-headlines.gif)
 
 ### Nav and the Goto Panel
 
-Type your search term in the **Nav** field instead to see all results show up below in leo's **Goto Pane**. This will show the headlines as you type.
+Type your search pattern in the **Nav** field instead to see all results show up below in leo's **Goto Pane**. This will show the headlines as you type.
 
 Press **`Enter`** to freeze the results and show results also found in **body text of any node**. This will add a snowflake icon ❄️ to the **Nav** field.
 
 From the **Goto Pane**, you can use the arrow keys, home/end, page up/down to cycle directly to any of those matches.
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-goto-pane.gif)
+![Goto pane](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-goto-pane.gif)
 
 ### Using Tags
 
 If you check the **Tag** option, the **Nav** field and **Goto Pane** are then used to find nodes by their tag 🏷 _ua_ (user attribute).
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-tags.gif)
+![Node tags](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-tags.gif)
 
-## Undo Panel ♻️
+## Undo Panel
+
+> In LeoInteg, the undo functionality is a multi-tiered system that segregates structural outline changes from text changes within the body pane. The Undo Panel captures outline alterations as individual 'Undo Beads', independent from VS Code's native text undo states. When focus resides in the body pane, the Undo keybinding triggers VS Code's text-specific undo action. However, once the focus shifts or a new node is selected, all concurrent text changes coalesce into a single 'Undo Bead' within the Undo Panel. These 'Undo Beads' can then be manipulated either through the Undo Panel or by keybindings, provided the focus is explicitly set on the outline pane. This dual-layer undo architecture enables precise control over both code and structural modifications.
 
 Use the undo / redo icons above the outline or above the undo pane itself. You can also right-click on an undo step to directly switch to that specific state!
 
-![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/undo-pane.gif)
+![Undo pane](https://raw.githubusercontent.com/boltex/leointeg/master/resources/undo-pane.gif)
 
-## Issues 🚧
+## Issues
 
 Common issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
 
@@ -236,7 +244,7 @@ So select at least one character to use the previously assigned original keyboar
 
 > Refer to the [issue tracker](https://github.com/boltex/leointeg/issues) page to learn more about the known issues, or to contribute with additional information if you encounter some yourself.
 
-## How It Works 🚀
+## How It Works
 
 Leo integration into VS Code is done by starting
 a [python server script](https://github.com/leo-editor/leo-editor/blob/devel/leo/core/leoserver.py) and connecting to it via
@@ -251,7 +259,7 @@ and using the outline's selected node 'gnx' as identifier.
 
 ---
 
-## Acknowledgments 🏅
+## Acknowledgments
 
 ### _Thanks to_
 
