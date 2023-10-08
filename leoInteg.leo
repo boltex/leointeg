@@ -17324,7 +17324,7 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
                     }
                 );
         }
-    });
+    }, 100);
 }
 
 </t>
@@ -19262,6 +19262,7 @@ public async tabCycle(): Promise&lt;unknown&gt; {
 - Branch for opened Leo document now hidden by default in outline's title.
 - Added new option setting "showBranchInOutlineTitle" to show the branch with the filename in the outline's title bar.
 - Settings panel now shows the resulting command used to spawn the server process (built from the various server startup settings).
+- Added a 100ms delay when selecting opened document node in document panel to fix a bug where activity bar would flash when switching from leo view to explorer view when document pane was opened.
 
 </t>
 <t tx="felix.20231001151916.1">## Leo Commands
@@ -20597,12 +20598,10 @@ div.col-nav {
               &lt;legend title="The resulting server process spawn command"&gt;Server Process Launch Command&lt;/legend&gt;
               &lt;div class="setting"&gt;
                 &lt;div class="setting__input"&gt;
-                  &lt;!-- &lt;label&gt;Launch&amp;nbsp;Command&lt;/label&gt; --&gt;
                   &lt;p id="resultingCommand" name="resultingCommand" title="The resulting server process spawn command"
                     class="cursor-default text-italic"&gt;
                   &lt;/p&gt;
                 &lt;/div&gt;
-                &lt;!-- &lt;span class="setting__hint"&gt;The resulting server process spawn command&lt;/span&gt; --&gt;
               &lt;/div&gt;
             &lt;/fieldset&gt;
             &lt;fieldset class="alert"&gt;
