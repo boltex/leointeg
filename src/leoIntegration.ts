@@ -5321,7 +5321,7 @@ export class LeoIntegration {
                         }
                     );
             }
-        }, 100);
+        }, 150);
     }
 
     /**

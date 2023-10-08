@@ -17324,7 +17324,7 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
                     }
                 );
         }
-    }, 100);
+    }, 150);
 }
 
 </t>
