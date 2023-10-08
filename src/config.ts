@@ -31,6 +31,7 @@ export class Config implements ConfigMembers {
     public showMarkOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK;
     public showCloneOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLONE;
     public showCopyOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_COPY;
+    public showBranchInOutlineTitle: boolean = Constants.CONFIG_DEFAULTS.SHOW_BRANCH_OUTLINE;
 
     // public showEditionOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDITION_BODY;
     // public showClipboardOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLIPBOARD_BODY;
@@ -92,6 +93,7 @@ export class Config implements ConfigMembers {
             showMarkOnNodes: this.showMarkOnNodes,
             showCloneOnNodes: this.showCloneOnNodes,
             showCopyOnNodes: this.showCopyOnNodes,
+            showBranchInOutlineTitle: this.showBranchInOutlineTitle,
 
             // showEditionOnBody: this.showEditionOnBody,
             // showClipboardOnBody: this.showClipboardOnBody,
@@ -306,6 +308,7 @@ export class Config implements ConfigMembers {
             this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
             this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
             this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
+            this.showBranchInOutlineTitle = GET(NAME).get(NAMES.SHOW_BRANCH_OUTLINE, DEFAULTS.SHOW_BRANCH_OUTLINE);
 
             // this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
 

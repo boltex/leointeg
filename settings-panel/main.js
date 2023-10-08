@@ -14,6 +14,11 @@
 
     const toast = document.getElementById("saved-config-toast");
     const dirty = document.getElementById("dirty-config-toast");
+    const resultingCommandEl = document.getElementById("resultingCommand");
+    const leoPythonCommandEl = document.getElementById("leoPythonCommand");
+    const leoEditorPathEl = document.getElementById("leoEditorPath");
+    const connectionPortEl = document.getElementById("connectionPort");
+    const limitUsersEl = document.getElementById("limitUsers");
 
     const oldState = vscode.getState();
     let currentCount = (oldState && oldState.count) || 0;
@@ -38,6 +43,12 @@
     vscodeFontConfig = window.fontConfig; // PRE SET BY leoSettingsWebview
     frontFontConfig = JSON.parse(JSON.stringify(vscodeFontConfig));
 
+    // @ts-expect-error
+    let vscodePlatform = window.platform; // PRE SET BY leoSettingsWebview
+    let _platform = JSON.parse(JSON.stringify(vscodePlatform));
+    console.log("_platform", _platform);
+    let _isWin32 = _platform === "win32";
+
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", event => {
         const message = event.data; // The json data that the extension sent
@@ -49,6 +60,7 @@
                     vscodeConfig = message.config;
                     frontConfig = JSON.parse(JSON.stringify(message.config));
                     setControls();
+                    applyResultingCommand();
                     break;
                 case "vscodeConfig":
                     dirty.className = dirty.className.replace("show", "");
@@ -295,7 +307,9 @@
             element.classList.remove("is-invalid");
             frontConfig[element.id] = element.value;
             showDirtyAndApplyChange();
-
+        }
+        if (element.type === 'text' || element.type === 'number') {
+            applyResultingCommand();
         }
     }
 
@@ -399,6 +413,69 @@
         return frontConfig[p_setting];
     }
 
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function resultingCommand() {
+
+        if (resultingCommandEl && leoPythonCommandEl) {
+            // @ts-expect-errorts
+            let w_serverScriptPath = (leoEditorPathEl.value && leoEditorPathEl.value.trim()) ? leoEditorPathEl.value.trim() + "/leo/core" : "";
+            if (!w_serverScriptPath.trim()) {
+                resultingCommandEl.innerHTML = "Please set your Leo-Editor installation path";
+                resultingCommandEl.style.opacity = "0.3";
+                return;
+            }
+
+            let w_pythonPath = ""; // Command of child.spawn call
+            let w_args = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
+            // @ts-expect-errorts
+            let w_leoPythonCommand = leoPythonCommandEl.value ? leoPythonCommandEl.value : "";
+
+            // @ts-expect-errorts
+            let w_usingPort = connectionPortEl.value ? connectionPortEl.value : 32125;
+            // @ts-expect-errorts
+            let w_limitUsers = limitUsersEl.value ? limitUsersEl.value : 0;
+
+            if (w_leoPythonCommand && w_leoPythonCommand.length) {
+                // Start by running command (see executeCommand for multiple useful snippets)
+                w_pythonPath = w_leoPythonCommand; // Set path
+            } else {
+                w_pythonPath = "python3";
+                if (_isWin32) {
+                    w_pythonPath = "py";
+                }
+            }
+
+            if (_isWin32 && w_pythonPath === "py") {
+                w_args.push("-3");
+            }
+            w_args.push(w_serverScriptPath.trim());
+
+
+            if (w_limitUsers > 1 &&
+                w_limitUsers < 256) {
+                w_args.push("--limit");
+                w_args.push(w_limitUsers.toString());
+            }
+
+            // Add port
+            w_args.push("--port");
+            w_args.push(w_usingPort.toString());
+
+            resultingCommandEl.innerHTML = escapeHtml(w_pythonPath + " " + w_args.join(" ")).trim();
+            resultingCommandEl.style.opacity = "1.0";
+
+        }
+
+    }
+
     function debounce(func, timeout = 300) {
         let timer;
         return (...args) => {
@@ -406,6 +483,13 @@
             timer = setTimeout(() => { func.apply(this, args); }, timeout);
         };
     }
+
+    var applyResultingCommand = debounce(
+        function () {
+            resultingCommand();
+        },
+        300
+    );
 
     var applyChanges = debounce(
         function () {
@@ -454,6 +538,7 @@
     setFontControls();
     setVisibility(frontConfig);
     onBind();
+    setTimeout(applyResultingCommand, 100);
 
 })();
 

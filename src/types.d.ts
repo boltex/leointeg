@@ -34,6 +34,7 @@ export interface ConfigMembers {
     showMarkOnNodes: boolean;
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
+    showBranchInOutlineTitle: boolean;
 
     invertNodeContrast: boolean;
     leoEditorPath: string;

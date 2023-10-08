@@ -3,7 +3,16 @@
 ## 1.0.15
 
 - Added description under command label in minibuffer-history's user input box.
-- Fixed default keybindings for alt+home and alt+end (goto first/last visible node)
+- Fixed default keybindings for alt+home and alt+end. (goto first/last visible node)
+- Fixed critical bug with the 'python command' user setting.
+- Fixed 'new' command to force-show Leo's body and outline panes.
+- Server manager now offers better error handling and status messages when starting a server and/or connecting to it.
+- Improved 'when' conditions for keybindings to have command trigger at appropriate times. (Having focus on the right panels for commands to trigger)
+- Commands that toggle search settings in the 'find' panel will make sure the panel is visible before toggling the setting.
+- Custom @button, @rclick and @command entries of the minibuffer are now shown with proper ordering, description and icon.
+- Branch for opened Leo document now hidden by default in outline's title.
+- Added new option setting "showBranchInOutlineTitle" to show the branch with the filename in the outline's title bar.
+- Settings panel now shows the resulting command used to spawn the server process (built from the various server startup settings).
 
 ## 1.0.14
 

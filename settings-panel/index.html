@@ -101,8 +101,8 @@
             </div>
             <div class="setting">
               <div class="setting__input">
-                <label for="pythonCommand">Python&nbsp;Command&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                <input id="pythonCommand" name="pythonCommand" type="text" maxlength="256"
+                <label for="leoPythonCommand">Python&nbsp;Command&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <input id="leoPythonCommand" name="leoPythonCommand" type="text" maxlength="256"
                   placeholder="Empty for default" data-setting />
               </div>
               <span class="setting__hint">Command for starting python (Defaults to 'py' on windows, or
@@ -124,8 +124,18 @@
               </div>
               <span class="setting__hint">Connection host port number</span>
             </div>
-
-            <fieldset>
+            <div class="break"></div>
+            <fieldset class="info">
+              <legend title="The resulting server process spawn command">Server Process Launch Command</legend>
+              <div class="setting">
+                <div class="setting__input">
+                  <p id="resultingCommand" name="resultingCommand" title="The resulting server process spawn command"
+                    class="cursor-default text-italic">
+                  </p>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset class="alert">
               <legend>Experimental Features</legend>
               <div class="setting">
                 <div class="setting__input">
@@ -308,6 +318,25 @@
         </div>
       </section>
 
+      <section id="show-branch-in-title" class="section--settings">
+        <div class="section__content">
+          <div class="section__header">
+            <div class="setting__input setting__input--big">
+              <input id="showBranchInOutlineTitle" name="showBranchInOutlineTitle" type="checkbox" data-setting />
+              <label for="showBranchInOutlineTitle">Show&nbsp;branch&nbsp;in&nbsp;outline&nbsp;title</label>
+            </div>
+            <p class="section__header-hint">
+              Adds the current git branch along the filename
+            </p>
+          </div>
+        </div>
+        <div class="section__preview">
+          <img class="image__preview" src="#{root}/resources/withoutbranch.png" />
+          <img class="image__preview--overlay hidden" src="#{root}/resources/withbranch.png"
+            data-visibility="showBranchInOutlineTitle" />
+        </div>
+      </section>
+
       <section id="invert-contrast" class="section--settings">
         <div class="section__content">
           <div class="section__header">
@@ -461,6 +490,9 @@
           </li>
           <li>
             <a href="#show-open-aside" title="Outline context menu settings">Open to the Side</a>
+          </li>
+          <li>
+            <a href="#show-branch-in-title" title="Outline git branch visibility settings">Show branch in title</a>
           </li>
           <li>
             <a href="#invert-contrast" title="UI contrast settings">Invert Contrast</a>
