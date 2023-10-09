@@ -31,6 +31,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20231009003516.1"><vh>1.0.16</vh></v>
 <v t="felix.20230821005233.1"><vh>1.0.15</vh></v>
 <v t="fil.20230405000235.1"><vh>1.0.14</vh></v>
 <v t="felix.20230310210120.1"><vh>1.0.13</vh></v>
@@ -2262,7 +2263,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -19285,6 +19286,11 @@ For those familiar with Leo, the 'minibuffer' serves as the nerve center for com
     iconPath: new vscode.ThemeIcon("history")
 };
 </t>
+<t tx="felix.20231009003516.1">## 1.0.16
+
+- ...
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -20505,7 +20511,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.15&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.16&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"
@@ -20515,7 +20521,7 @@ div.col-nav {
           &lt;/a&gt;
           &lt;a class="button button--flat" title="LeoInteg's Features"
             href="https://github.com/boltex/leointeg#features-"&gt;
-            See What's New in LeoInteg 1.0.15
+            See What's New in LeoInteg 1.0.16
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;

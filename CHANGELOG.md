@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.16
+
+- ...
+
 ## 1.0.15
 
 - Added description under command label in minibuffer-history's user input box.
