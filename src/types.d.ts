@@ -66,6 +66,12 @@ export interface FontSettings {
     fontSize: number;
 }
 
+export interface Version {
+    major: number;
+    minor: number;
+    patch: number;
+}
+
 /**
  * * Location of focus to be set when current/last command is resolved
  */

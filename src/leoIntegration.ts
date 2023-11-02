@@ -94,7 +94,20 @@ export class LeoIntegration {
         this._lastRefreshNodeTS = performance.now();
     }
 
+    // * Automatic leoserver startup management service
+    private _serverService: ServerService;
+    public serverVersion: {
+        major: number;
+        minor: number;
+        patch: number;
+    } = {
+            major: 0,
+            minor: 0,
+            patch: 0
+        };
+
     public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
+
     private _serverOpenedFileName: string = ""; // Server last reported opened file name.
     get serverOpenedFileName(): string {
         return this._serverOpenedFileName;
@@ -252,9 +265,6 @@ export class LeoIntegration {
     private _hibLastValue: undefined | string;
     private _hibInterrupted = false;
     private _hibDisposables: vscode.Disposable[] = [];
-
-    // * Automatic leoserver startup management service
-    private _serverService: ServerService;
 
     // * Timing
     private _needLastSelectedRefresh = false; // USED IN showBody
@@ -899,13 +909,9 @@ export class LeoIntegration {
     public checkVersion(): void {
         this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_rv: LeoBridgePackage) => {
             let w_ok = false;
-            let w_sv = Constants.MIN_SERVER_VERSION_NUMBER;
             if (p_rv && p_rv.major !== undefined && p_rv.minor !== undefined && p_rv.patch !== undefined) {
-                if (
-                    p_rv.major > w_sv.minMajor ||
-                    p_rv.major === w_sv.minMajor && p_rv.minor > w_sv.minMinor ||
-                    p_rv.major === w_sv.minMajor && p_rv.minor === w_sv.minMinor && p_rv.patch >= w_sv.minPatch
-                ) {
+                this.serverVersion = { major: p_rv.major, minor: p_rv.minor, patch: p_rv.patch };
+                if (utils.compareVersions(this.serverVersion, Constants.MIN_SERVER_VERSION_NUMBER)) {
                     w_ok = true;
                 }
             }
@@ -3277,8 +3283,20 @@ export class LeoIntegration {
         await this._isBusyTriggerSave(false, true);
 
         // TODO : real history per-commander
-        // let w_history = await this.sendAction("!get_history");
-        // console.log('w_history', w_history);
+        let w_history;
+
+        if (
+            utils.compareVersions(
+                this.serverVersion, { major: 1, minor: 0, patch: 8 }
+            )
+            // this.serverVersion.major > 1 ||
+            // this.serverVersion.major === 1 && this.serverVersion.minor > 0 ||
+            // this.serverVersion.major === 1 && this.serverVersion.minor === 0 && this.serverVersion.patch >= 8
+        ) {
+            w_history = await this.sendAction("!get_history");
+            console.log('w_history', w_history);
+        }
+
 
         // const w_newHistory = ["aa", "bb", "cc"];
         // await this.sendAction("!set_history", { history: w_newHistory });

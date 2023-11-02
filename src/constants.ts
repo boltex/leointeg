@@ -73,9 +73,9 @@ export class Constants {
      * * Minimal Leo Editor and Leo server versions
      */
     public static MIN_SERVER_VERSION_NUMBER = {
-        minMajor: 1,
-        minMinor: 0,
-        minPatch: 6
+        major: 1,
+        minor: 0,
+        patch: 6
     };
 
     /**

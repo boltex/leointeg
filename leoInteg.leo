@@ -595,6 +595,7 @@
 <v t="felix.20200718194857.2"><vh>ConfigMembers</vh></v>
 <v t="felix.20201017224340.1"><vh>ConfigSetting</vh></v>
 <v t="felix.20210727224655.1"><vh>FontSettings</vh></v>
+<v t="felix.20231102005402.1"><vh>Version</vh></v>
 <v t="felix.20220901003642.1"><vh>Focus</vh></v>
 <v t="felix.20200718194857.3"><vh>RevealType</vh></v>
 <v t="felix.20200718194857.4"><vh>ReqRefresh</vh></v>
@@ -629,6 +630,7 @@
 <v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
 <v t="felix.20210706233101.1"><vh>uniqueId</vh></v>
 <v t="felix.20210706233106.1"><vh>getUniqueId</vh></v>
+<v t="felix.20231102005126.1"><vh>compareVersions</vh></v>
 <v t="felix.20200718195558.2"><vh>padNumber2</vh></v>
 <v t="felix.20220327223745.1"><vh>cleanLeoID</vh></v>
 <v t="felix.20201106200100.1"><vh>addFileToGlobal</vh></v>
@@ -8299,7 +8301,7 @@ export interface ArchivedPosition {
 </t>
 <t tx="felix.20200718195558.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { Icon, UserCommand, ArchivedPosition } from "./types";
+import { Icon, UserCommand, ArchivedPosition, Version } from "./types";
 
 var portfinder = require('portfinder');
 
@@ -9168,7 +9170,20 @@ export class LeoIntegration {
         this._lastRefreshNodeTS = performance.now();
     }
 
+    // * Automatic leoserver startup management service
+    private _serverService: ServerService;
+    public serverVersion: {
+        major: number;
+        minor: number;
+        patch: number;
+    } = {
+            major: 0,
+            minor: 0,
+            patch: 0
+        };
+
     public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
+
     private _serverOpenedFileName: string = ""; // Server last reported opened file name.
     get serverOpenedFileName(): string {
         return this._serverOpenedFileName;
@@ -9326,9 +9341,6 @@ export class LeoIntegration {
     private _hibLastValue: undefined | string;
     private _hibInterrupted = false;
     private _hibDisposables: vscode.Disposable[] = [];
-
-    // * Automatic leoserver startup management service
-    private _serverService: ServerService;
 
     // * Timing
     private _needLastSelectedRefresh = false; // USED IN showBody
@@ -11815,8 +11827,20 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
     await this._isBusyTriggerSave(false, true);
 
     // TODO : real history per-commander
-    // let w_history = await this.sendAction("!get_history");
-    // console.log('w_history', w_history);
+    let w_history;
+
+    if (
+        utils.compareVersions(
+            this.serverVersion, { major: 1, minor: 0, patch: 8 }
+        )
+        // this.serverVersion.major &gt; 1 ||
+        // this.serverVersion.major === 1 &amp;&amp; this.serverVersion.minor &gt; 0 ||
+        // this.serverVersion.major === 1 &amp;&amp; this.serverVersion.minor === 0 &amp;&amp; this.serverVersion.patch &gt;= 8
+    ) {
+        w_history = await this.sendAction("!get_history");
+        console.log('w_history', w_history);
+    }
+
 
     // const w_newHistory = ["aa", "bb", "cc"];
     // await this.sendAction("!set_history", { history: w_newHistory });
@@ -16688,13 +16712,9 @@ export class LeoUndoNode extends vscode.TreeItem {
 public checkVersion(): void {
     this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_rv: LeoBridgePackage) =&gt; {
         let w_ok = false;
-        let w_sv = Constants.MIN_SERVER_VERSION_NUMBER;
         if (p_rv &amp;&amp; p_rv.major !== undefined &amp;&amp; p_rv.minor !== undefined &amp;&amp; p_rv.patch !== undefined) {
-            if (
-                p_rv.major &gt; w_sv.minMajor ||
-                p_rv.major === w_sv.minMajor &amp;&amp; p_rv.minor &gt; w_sv.minMinor ||
-                p_rv.major === w_sv.minMajor &amp;&amp; p_rv.minor === w_sv.minMinor &amp;&amp; p_rv.patch &gt;= w_sv.minPatch
-            ) {
+            this.serverVersion = { major: p_rv.major, minor: p_rv.minor, patch: p_rv.patch };
+            if (utils.compareVersions(this.serverVersion, Constants.MIN_SERVER_VERSION_NUMBER)) {
                 w_ok = true;
             }
         }
@@ -18729,9 +18749,9 @@ private _refreshDesc(): void {
  * * Minimal Leo Editor and Leo server versions
  */
 public static MIN_SERVER_VERSION_NUMBER = {
-    minMajor: 1,
-    minMinor: 0,
-    minPatch: 6
+    major: 1,
+    minor: 0,
+    patch: 6
 };
 
 </t>
@@ -19310,6 +19330,31 @@ private _showHeadlineInputBox(p_options: vscode.InputBoxOptions): Promise&lt;str
     });
     return q_headlineInputBox;
 }
+</t>
+<t tx="felix.20231102005126.1">/**
+ * * Compares major, minor and patch members of versions
+ * @param p_version given version 
+ * @param p_min minimal version
+ * @returns true if at least minimal version
+ */
+export function compareVersions(p_version: Version, p_min: Version): boolean {
+    if (
+        p_version.major &gt; p_min.major ||
+        p_version.major === p_min.major &amp;&amp; p_version.minor &gt; p_min.minor ||
+        p_version.major === p_min.major &amp;&amp; p_version.minor === p_min.minor &amp;&amp; p_version.patch &gt;= p_min.patch
+    ) {
+        return true;
+    }
+    return false;
+}
+
+</t>
+<t tx="felix.20231102005402.1">export interface Version {
+    major: number;
+    minor: number;
+    patch: number;
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
