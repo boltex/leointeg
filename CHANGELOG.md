@@ -2,7 +2,7 @@
 
 ## 1.0.16
 
-- ...
+- Editing a headline, when inserting or renaming a node, can now be interrupted by most other keyboard shortcuts and commands.
 
 ## 1.0.15
 

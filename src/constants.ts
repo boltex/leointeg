@@ -433,6 +433,7 @@ export class Constants {
         LEO_CAN_HOIST: "leoCanHoist", // isNotRoot equivalent
         LEO_IN_CHAPTER: "leoInChapter",
         LEO_TOP_HOIST_CHAPTER: "leoTopHoistChapter",
+        LEO_EDIT_HEADLINE: "leoEditHeadline",
 
         // 'states' flags about current selection, for visibility and commands availability
         SELECTED_MARKED: "leoMarked", // no need for unmarked here, use !leoMarked

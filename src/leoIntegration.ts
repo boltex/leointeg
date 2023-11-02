@@ -245,13 +245,13 @@ export class LeoIntegration {
     // * Status Bar
     // private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
 
-    // * Edit/Insert Headline Input Box options instance, setup so clicking outside cancels the headline change
-    private _headlineInputOptions: vscode.InputBoxOptions = {
-        ignoreFocusOut: false,
-        value: '',
-        valueSelection: undefined,
-        prompt: '',
-    };
+    // * Edit/Insert Headline Input Box System made with 'createInputBox'.
+    private _hib: undefined | vscode.InputBox;
+    private _hibResolve: undefined | ((value: string | PromiseLike<string | undefined> | undefined) => void);
+    private _onDidHideResolve: undefined | ((value: PromiseLike<void> | undefined) => void);
+    private _hibLastValue: undefined | string;
+    private _hibInterrupted = false;
+    private _hibDisposables: vscode.Disposable[] = [];
 
     // * Automatic leoserver startup management service
     private _serverService: ServerService;
@@ -1215,7 +1215,7 @@ export class LeoIntegration {
      * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
      * @returns a promise that resolves when the possible saving process is finished
      */
-    private _isBusyTriggerSave(p_all: boolean, p_forcedVsCodeSave?: boolean): Promise<boolean> {
+    private _isBusyTriggerSave(p_all: boolean, p_forcedVsCodeSave?: boolean): Promise<unknown> {
         if (this._isBusy(p_all)) {
             return Promise.reject('Command stack busy'); // Warn user to wait for end of busy state
         }
@@ -1524,7 +1524,7 @@ export class LeoIntegration {
             this._checkPreviewMode(p_editor);
         }
         if (!p_internalCall) {
-            this.triggerBodySave(true); // Save in case edits were pending
+            this.triggerBodySave(true, true); // Save in case edits were pending
         }
         // removed until proper API for knowing focus placement
         // // * Status flag check
@@ -1552,7 +1552,7 @@ export class LeoIntegration {
         if (p_columnChangeEvent && p_columnChangeEvent.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
             this._checkPreviewMode(p_columnChangeEvent.textEditor);
         }
-        this.triggerBodySave(true);
+        this.triggerBodySave(true, true);
     }
 
     /**
@@ -1571,7 +1571,7 @@ export class LeoIntegration {
                 }
             });
         }
-        this.triggerBodySave(true);
+        this.triggerBodySave(true, true);
     }
 
     /**
@@ -1580,7 +1580,7 @@ export class LeoIntegration {
      */
     public _changedWindowState(p_windowState: vscode.WindowState): void {
         // no other action
-        this.triggerBodySave(true);
+        this.triggerBodySave(true, true);
     }
 
     /**
@@ -1788,11 +1788,27 @@ export class LeoIntegration {
     }
 
     /**
-     * * Save body to Leo if its dirty. That is, only if a change has been made to the body 'document' so far
+     * * Validate headline edit input box if active, or, Save body to the Leo app if its dirty.
      * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
      * @returns a promise that resolves when the possible saving process is finished
      */
-    public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise<boolean> {
+    public triggerBodySave(p_forcedVsCodeSave?: boolean, p_fromFocusChange?: boolean): Promise<unknown> {
+
+        // * Check if headline edit input box is active. Validate it with current value.
+        if (!p_fromFocusChange && this._hib && this._hib.enabled) {
+            this._hibInterrupted = true;
+            this._hib.enabled = false;
+            this._hibLastValue = this._hib.value;
+            this._hib.hide();
+            if (this._onDidHideResolve) {
+                console.error('IN triggerBodySave AND _onDidHideResolve PROMISE ALREADY EXISTS!');
+            }
+            const w_resolveAfterEditHeadline = new Promise<void>((p_resolve, p_reject) => {
+                this._onDidHideResolve = p_resolve;
+            });
+            return w_resolveAfterEditHeadline;
+        }
+
         // * Save body to Leo if a change has been made to the body 'document' so far
         let q_savePromise: Promise<boolean>;
         if (
@@ -2850,10 +2866,8 @@ export class LeoIntegration {
             const w_edit = new vscode.WorkspaceEdit();
             w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
             q_edit = vscode.workspace.applyEdit(w_edit).then(() => {
-                // console.log('applyEdit done');
                 return true;
             }, () => {
-                // console.log('applyEdit failed');
                 return false;
             });
         } else {
@@ -2861,10 +2875,8 @@ export class LeoIntegration {
         }
         Promise.all([q_save, q_edit])
             .then(() => {
-                // console.log('cleaned both');
                 return this.closeBody();
             }, () => {
-                // console.log('cleaned both failed');
                 return true;
             });
 
@@ -3264,6 +3276,21 @@ export class LeoIntegration {
         // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
         await this._isBusyTriggerSave(false, true);
 
+        // TODO : real history per-commander
+        // let w_history = await this.sendAction("!get_history");
+        // console.log('w_history', w_history);
+
+        // const w_newHistory = ["aa", "bb", "cc"];
+        // await this.sendAction("!set_history", { history: w_newHistory });
+
+        // w_history = await this.sendAction("!get_history");
+        // console.log('w_history again', w_history);
+
+        // w_history = await this.sendAction("!add_history", { command: "xxx" });
+
+        // w_history = await this.sendAction("!get_history");
+        // console.log('w_history again again!', w_history);
+
         const q_commandList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
             Constants.LEOBRIDGE.GET_COMMANDS
         ).then((p_result: LeoBridgePackage) => {
@@ -3317,44 +3344,21 @@ export class LeoIntegration {
                         stash_command.push(w_com.label);
                     }
                 }
-                // const w_noDetails = p_result.commands
-                //     .filter(
-                //         p_command => !p_command.detail && !(
-                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START) ||
-                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_RCLICK_START) ||
-                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_DEL_BUTTON_START) ||
-                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START)
-                //         )
-                //     );
-
-                const w_firstButtons: vscode.QuickPickItem[] = [];
-                const w_secondRClicks: vscode.QuickPickItem[] = [];
-                const w_thirdCommands: vscode.QuickPickItem[] = [];
-                const w_fourthNoName: vscode.QuickPickItem[] = [];
 
                 for (const p_command of w_noDetails) {
                     if (stash_button.includes(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START + p_command.label)) {
                         p_command.description = Constants.USER_MESSAGES.MINIBUFFER_BUTTON;
-                        w_firstButtons.push(p_command);
                     }
                     if (stash_rclick.includes(Constants.USER_MESSAGES.MINIBUFFER_RCLICK_START + p_command.label)) {
                         p_command.description = Constants.USER_MESSAGES.MINIBUFFER_RCLICK;
-                        w_secondRClicks.push(p_command);
-
                     }
                     if (stash_command.includes(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START + p_command.label)) {
                         p_command.description = Constants.USER_MESSAGES.MINIBUFFER_COMMAND;
-                        w_thirdCommands.push(p_command);
-
                     }
                     if (!p_command.description) {
                         p_command.description = Constants.USER_MESSAGES.MINIBUFFER_USER_DEFINED;
-                        w_fourthNoName.push(p_command);
                     }
                 }
-                // for (const p_command of w_noDetails) {
-                //     p_command.description = Constants.USER_MESSAGES.MINIBUFFER_USER_DEFINED;
-                // }
 
                 const w_withDetails = p_result.commands.filter(p_command => !!p_command.detail);
 
@@ -3371,10 +3375,7 @@ export class LeoIntegration {
 
                 // Finish minibuffer list
                 if (w_noDetails.length) {
-                    w_result.push(...w_firstButtons);
-                    w_result.push(...w_secondRClicks);
-                    w_result.push(...w_thirdCommands);
-                    w_result.push(...w_fourthNoName);
+                    w_result.push(...w_noDetails);
                 }
 
                 // Separator above real commands, if needed...
@@ -3495,7 +3496,7 @@ export class LeoIntegration {
                 },
                 finalFocus: Focus.NoChange, // TODO: Fetch focus location from Leo?
             });
-            return w_commandResult ? w_commandResult : Promise.reject('Command not added');
+            return w_commandResult;
         }
     }
 
@@ -3512,6 +3513,60 @@ export class LeoIntegration {
         this._minibufferHistory.unshift(p_command);
     }
 
+    /**
+     * Show a headline input box that resolves to undefined only with escape.
+     * Other Leo commands interrupt by accepting the value entered so far.
+     */
+    private _showHeadlineInputBox(p_options: vscode.InputBoxOptions): Promise<string | undefined> {
+
+        const hib = vscode.window.createInputBox();
+        this._hibLastValue = undefined; // Prepare for 'cancel' as default.
+        const q_headlineInputBox = new Promise<string | undefined>((p_resolve, p_reject) => {
+
+            hib.ignoreFocusOut = !!p_options.ignoreFocusOut;
+            hib.value = p_options.value!;
+            hib.valueSelection = p_options.valueSelection;
+            hib.prompt = p_options.prompt;
+            this._hibDisposables.push(hib.onDidAccept(() => {
+                if (this._hib) {
+                    this._hib.enabled = false;
+                    this._hibLastValue = this._hib.value;
+                    this._hib.hide();
+                }
+            }, this));
+            if (this._hibResolve) {
+                console.error('IN _showHeadlineInputBox AND THE _hibResolve PROMISE ALREADY EXISTS!');
+            }
+            this._hibResolve = p_resolve;
+            // onDidHide handles CANCEL AND ACCEPT AND INTERCEPT !
+            this._hibDisposables.push(hib.onDidHide(() => {
+                if (this._hib) {
+                    this._hibLastValue = this._hib.value; // * FORCE VALUE EVEN WHEN CANCELLING LIKE IN ORIGINAL LEO !
+                }
+                this.leoStates.leoEditHeadline = false;
+                if (this._hibResolve) {
+                    // RESOLVE whatever value was set otherwise undefined will mean 'canceled'.
+                    this._hibResolve(this._hibLastValue);
+                    // Dispose of everything disposable with the edit headline process.
+                    for (const disp of this._hibDisposables) {
+                        disp.dispose();
+                    }
+                    // Empty related global variables.
+                    this._hibDisposables = [];
+                    this._hibResolve = undefined;
+                    this._hib = undefined;
+                } else {
+                    console.log('ERROR ON onDidHide NO _hibResolve !');
+                }
+            }, this));
+            this._hibDisposables.push(hib);
+            // setup finished, set command context and show it! 
+            this._hib = hib;
+            this.leoStates.leoEditHeadline = true;
+            this._hib.show();
+        });
+        return q_headlineInputBox;
+    }
     /**
      * * Previous / Next Node Buttons
      * @param p_next Flag to mean 'next' instead of default 'previous'
@@ -3542,13 +3597,13 @@ export class LeoIntegration {
      * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
      * @returns a promise with the package gotten back from Leo when asked to select the tree node
      */
-    public selectTreeNode(
+    public async selectTreeNode(
         p_node: ArchivedPosition,
         p_internalCall?: boolean,
         p_aside?: boolean
     ): Promise<void | LeoBridgePackage | vscode.TextEditor> {
 
-        this.triggerBodySave(true);
+        await this.triggerBodySave(true);
 
         // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
         if (p_aside && p_node !== this.lastSelectedNode) {
@@ -3618,9 +3673,9 @@ export class LeoIntegration {
      * (see command stack 'rules' in commandStack.ts)
      */
 
-    public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise<LeoBridgePackage> | undefined {
+    public async nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise<LeoBridgePackage | undefined> {
         // No forced vscode save-triggers for direct calls from extension.js
-        this.triggerBodySave();
+        await this.triggerBodySave();
         if (p_isNavigation) {
             // If any navigation command is used from outline or command palette: show body.
             this.showBodyIfClosed = true;
@@ -3650,7 +3705,7 @@ export class LeoIntegration {
         p_isMark: boolean,
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
         // No need to wait for body-save trigger for marking/un-marking a node
         const q_commandResult = this.nodeCommand({
             action: p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE,
@@ -3676,10 +3731,17 @@ export class LeoIntegration {
      */
     public async editHeadline(
         p_node?: ArchivedPosition,
-        p_fromOutline?: boolean
+        p_fromOutline?: boolean,
+        p_prompt?: string
     ): Promise<LeoBridgePackage | undefined> {
 
+        if (this._hib && this._hib.enabled) {
+            return Promise.resolve(undefined); // DO NOT REACT IF ALREADY EDITING A HEADLINE! 
+        }
+
         await this._isBusyTriggerSave(false, true);
+
+        let w_finalFocus: Focus = p_fromOutline ? Focus.Outline : Focus.Body; // Use w_fromOutline for where we intend to leave focus when done with the insert
 
         if (!p_node && this.lastSelectedNode) {
             p_node = this.lastSelectedNode; // Gets last selected node if called via keyboard shortcut or command palette (not set in command stack class)
@@ -3687,31 +3749,38 @@ export class LeoIntegration {
         if (!p_node) {
             return Promise.reject('No node selected');
         }
-        this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
-        this._renamingHeadline = p_node.headline;
-        this._headlineInputOptions.value = p_node.headline; // preset input pop up
 
-        const w_newHeadline = await vscode.window.showInputBox(this._headlineInputOptions);
+        const w_headlineInputOptions: vscode.InputBoxOptions = {
+            ignoreFocusOut: false,
+            value: p_node.headline,  // preset input pop up
+            valueSelection: undefined,
+            prompt: p_prompt || Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE,
+        };
+        let w_newHeadline = await this._showHeadlineInputBox(w_headlineInputOptions);
 
+        let q_commandResult;
         if ((typeof w_newHeadline !== "undefined") && w_newHeadline !== this._renamingHeadline) {
             // Is different!
             p_node!.headline = w_newHeadline;
-            const q_commandResult = this.nodeCommand({
+            q_commandResult = this.nodeCommand({
                 action: Constants.LEOBRIDGE.SET_HEADLINE,
                 node: p_node,
                 refreshType: { tree: true, states: true },
-                finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
+                finalFocus: w_finalFocus,
                 name: w_newHeadline,
             });
-            if (q_commandResult) {
-                return q_commandResult;
-            } else {
-                return Promise.reject('Edit Headline not added on command stack');
-            }
+            q_commandResult;
+
         } else {
             // Canceled
-            return Promise.resolve(undefined);
+            q_commandResult = Promise.resolve(undefined);
         }
+        q_commandResult.then(() => {
+            if (this._onDidHideResolve) {
+                this._onDidHideResolve(undefined);
+                this._onDidHideResolve = undefined;
+            }
+        });
     }
 
     /**
@@ -3721,60 +3790,79 @@ export class LeoIntegration {
      * @param p_interrupt Signifies the insert action is actually interrupting itself (e.g. rapid CTRL+I actions by the user)
      * @returns Promise of LeoBridgePackage from execution the server.
      */
-    public insertNode(
+    public async insertNode(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean,
-        p_asChild?: boolean,
-        p_interrupt?: boolean
-    ): Promise<LeoBridgePackage> {
-        let w_finalFocus: Focus = p_fromOutline ? Focus.Outline : Focus.Body; // Use w_fromOutline for where we intend to leave focus when done with the insert
-        if (p_interrupt) {
-            this._focusInterrupt = true;
-            w_finalFocus = Focus.NoChange; // Going to use last state
+        p_asChild?: boolean
+    ): Promise<LeoBridgePackage | undefined> {
+
+        let w_hadHib = false;
+        if (this._hib && this._hib.enabled) {
+            w_hadHib = true;
         }
+
+        // Use w_fromOutline for where we intend to leave focus when done with the insert
+        let w_finalFocus: Focus = p_fromOutline ? Focus.Outline : Focus.Body;
+        if (w_hadHib) {
+            this._focusInterrupt = true; // this will affect next refresh by triggerbodysave, not the refresh of this pass
+        }
+
         // if no node parameter, the front command stack CAN be busy, but if a node is passed, stack must be free
         if (!p_node || !this._isBusy()) {
-            this.triggerBodySave(true); // Don't wait for saving to resolve because we're waiting for user input anyways
+            await this.triggerBodySave(true); // Don't wait for saving to resolve because we're waiting for user input anyways
             // this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
-            if (p_asChild) {
-                this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_CHILD;
-            } else {
-                this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
+
+            const w_headlineInputOptions: vscode.InputBoxOptions = {
+                ignoreFocusOut: false,
+                value: Constants.USER_MESSAGES.DEFAULT_HEADLINE,
+                valueSelection: undefined,
+                prompt: p_asChild ? Constants.USER_MESSAGES.PROMPT_INSERT_CHILD : Constants.USER_MESSAGES.PROMPT_INSERT_NODE
+            };
+
+            const p_newHeadline = await this._showHeadlineInputBox(w_headlineInputOptions);
+
+            // return new Promise<LeoBridgePackage|undefined>((p_resolve, p_reject) => {
+
+            if (this._hibInterrupted) {
+                w_finalFocus = Focus.NoChange;
+                this._hibInterrupted = false;
             }
-            this._headlineInputOptions.value = Constants.USER_MESSAGES.DEFAULT_HEADLINE;
-            return new Promise<LeoBridgePackage>((p_resolve, p_reject) => {
-                vscode.window.showInputBox(this._headlineInputOptions).then((p_newHeadline) => {
-                    // * if node has child and is expanded: turn p_asChild to true!
-                    if (
-                        p_node &&
-                        p_node.expanded // === vscode.TreeItemCollapsibleState.Expanded
-                    ) {
-                        p_asChild = true;
-                    }
-                    if (
-                        !p_node &&
-                        this.lastSelectedNode &&
-                        this.lastSelectedNode.expanded //  === vscode.TreeItemCollapsibleState.Expanded
-                    ) {
-                        p_asChild = true;
-                    }
-                    let w_action = p_newHeadline
-                        ? (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_NAMED_PNODE)
-                        : (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_PNODE : Constants.LEOBRIDGE.INSERT_PNODE);
-                    const q_commandResult = this.nodeCommand({
-                        action: w_action,
-                        node: p_node,
-                        refreshType: { tree: true, states: true },
-                        finalFocus: w_finalFocus,
-                        name: p_newHeadline,
-                    });
-                    if (q_commandResult) {
-                        q_commandResult.then((p_package) => p_resolve(p_package));
-                    } else {
-                        p_reject(w_action + ' not added on command stack');
-                    }
-                });
+
+            // * if node has child and is expanded: turn p_asChild to true!
+            if (
+                p_node &&
+                p_node.expanded // === vscode.TreeItemCollapsibleState.Expanded
+            ) {
+                p_asChild = true;
+            }
+            if (
+                !p_node &&
+                this.lastSelectedNode &&
+                this.lastSelectedNode.expanded //  === vscode.TreeItemCollapsibleState.Expanded
+            ) {
+                p_asChild = true;
+            }
+            let w_action = p_newHeadline
+                ? (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_NAMED_PNODE)
+                : (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_PNODE : Constants.LEOBRIDGE.INSERT_PNODE);
+            const q_commandResult = this.nodeCommand({
+                action: w_action,
+                node: p_node,
+                refreshType: { tree: true, states: true },
+                finalFocus: w_finalFocus,
+                name: p_newHeadline,
             });
+            return q_commandResult.then((p_package) => {
+                if (this._onDidHideResolve) {
+                    this._onDidHideResolve(undefined);
+                    this._onDidHideResolve = undefined;
+                }
+                // p_resolve(p_package);
+                return p_package;
+            });
+
+            // });
+
         } else {
             return Promise.reject('Insert node not added on command stack');
         }
@@ -3786,7 +3874,7 @@ export class LeoIntegration {
     public async copyNode(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3796,25 +3884,19 @@ export class LeoIntegration {
             refreshType: {},
             finalFocus: p_fromOutline ? Focus.Outline : Focus.Body
         });
-
-        if (w_commandResult) {
-            return w_commandResult.then(p_package => {
-                if (p_package.string) {
-                    this.replaceClipboardWith(p_package.string);
-                } else {
-                }
-                return p_package;
-            });
-
-        } else {
-            return Promise.reject('Copy Node not added on command stack');
-        }
+        return w_commandResult.then(p_package => {
+            if (p_package && p_package.string) {
+                this.replaceClipboardWith(p_package.string);
+            } else {
+            }
+            return p_package;
+        });
     }
 
     /**
      * * Place the XML or JSON Leo outline tree on the clipboard for the given node.
      */
-    public async copyNodeAsJson(): Promise<LeoBridgePackage> {
+    public async copyNodeAsJson(): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3824,19 +3906,14 @@ export class LeoIntegration {
             refreshType: {},
             finalFocus: Focus.NoChange,
         });
+        return w_commandResult.then(p_package => {
+            if (p_package && p_package.string) {
+                this.replaceClipboardWith(p_package.string);
+            } else {
+            }
+            return p_package;
+        });
 
-        if (w_commandResult) {
-            return w_commandResult.then(p_package => {
-                if (p_package.string) {
-                    this.replaceClipboardWith(p_package.string);
-                } else {
-                }
-                return p_package;
-            });
-
-        } else {
-            return Promise.reject('Copy Node As JSON not added on command stack');
-        }
     }
 
     /**
@@ -3853,17 +3930,12 @@ export class LeoIntegration {
             finalFocus: Focus.NoChange,
         });
 
-        if (w_commandResult) {
-            return w_commandResult.then(p_package => {
-                if (p_package.node) {
-                    this.replaceClipboardWith(p_package.node.gnx);
-                }
-                return p_package;
-            });
-
-        } else {
-            return Promise.reject('Copy Gnx not added on command stack');
-        }
+        return w_commandResult.then(p_package => {
+            if (p_package && p_package.node) {
+                this.replaceClipboardWith(p_package.node.gnx);
+            }
+            return p_package;
+        });
     }
 
     /**
@@ -3872,7 +3944,7 @@ export class LeoIntegration {
     public async cutNode(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3883,17 +3955,12 @@ export class LeoIntegration {
             finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
         });
 
-        if (w_commandResult) {
-            return w_commandResult.then(p_package => {
-                if (p_package.string) {
-                    this.replaceClipboardWith(p_package.string);
-                }
-                return p_package;
-            });
-
-        } else {
-            return Promise.reject('Cut Node not added on command stack');
-        }
+        return w_commandResult.then(p_package => {
+            if (p_package && p_package.string) {
+                this.replaceClipboardWith(p_package.string);
+            }
+            return p_package;
+        });
 
     }
 
@@ -3903,7 +3970,7 @@ export class LeoIntegration {
     public async pasteNode(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3916,12 +3983,7 @@ export class LeoIntegration {
             name: text,
             finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
         });
-
-        if (w_commandResult) {
-            return w_commandResult;
-        } else {
-            return Promise.reject('Cut Node not added on command stack');
-        }
+        return w_commandResult;
 
     }
 
@@ -3931,7 +3993,7 @@ export class LeoIntegration {
     public async pasteAsCloneNode(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3944,12 +4006,7 @@ export class LeoIntegration {
             name: text,
             finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
         });
-
-        if (w_commandResult) {
-            return w_commandResult;
-        } else {
-            return Promise.reject('Cut Node not added on command stack');
-        }
+        return w_commandResult;
     }
 
     /**
@@ -3958,7 +4015,7 @@ export class LeoIntegration {
     public async pasteAsTemplate(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3971,12 +4028,7 @@ export class LeoIntegration {
             name: text,
             finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
         });
-
-        if (w_commandResult) {
-            return w_commandResult;
-        } else {
-            return Promise.reject('Cut Node not added on command stack');
-        }
+        return w_commandResult;
     }
 
     /**
@@ -5028,7 +5080,7 @@ export class LeoIntegration {
     public gotoGlobalLine(p_lineNumber?: number): void {
         if (p_lineNumber === null || p_lineNumber === undefined) {
             this.triggerBodySave(false)
-                .then((p_saveResult: boolean) => {
+                .then(() => {
                     return vscode.window.showInputBox({
                         title: Constants.USER_MESSAGES.TITLE_GOTO_GLOBAL_LINE,
                         placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_GOTO_GLOBAL_LINE,
@@ -5060,7 +5112,7 @@ export class LeoIntegration {
      */
     public tagChildren(): void {
         this.triggerBodySave(false)
-            .then((p_saveResult: boolean) => {
+            .then(() => {
                 return vscode.window.showInputBox({
                     title: Constants.USER_MESSAGES.TITLE_TAG_CHILDREN,
                     placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
@@ -5101,7 +5153,7 @@ export class LeoIntegration {
      */
     public tagNode(p_node?: ArchivedPosition): void {
         this.triggerBodySave(false)
-            .then((p_saveResult: boolean) => {
+            .then(() => {
                 return vscode.window.showInputBox({
                     title: Constants.USER_MESSAGES.TITLE_TAG_NODE,
                     placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
@@ -5150,7 +5202,7 @@ export class LeoIntegration {
 
         if ((p_node && p_node.nodeTags) || (this.lastSelectedNode && this.lastSelectedNode.nodeTags)) {
             this.triggerBodySave(false)
-                .then((p_saveResult) => {
+                .then(() => {
                     return this.sendAction(
                         Constants.LEOBRIDGE.GET_UA,
                         p_node ? utils.buildNodeCommand(p_node) : undefined
@@ -5223,7 +5275,7 @@ export class LeoIntegration {
     public removeTags(p_node?: ArchivedPosition): void {
         if ((p_node && p_node.nodeTags) || (this.lastSelectedNode && this.lastSelectedNode.nodeTags)) {
             this.triggerBodySave(false)
-                .then((p_saveResult: boolean) => {
+                .then(() => {
                     this.sendAction(
                         Constants.LEOBRIDGE.REMOVE_TAGS,
                         p_node ? utils.buildNodeCommand(p_node) : undefined
@@ -5253,7 +5305,7 @@ export class LeoIntegration {
      */
     public cloneFindTag(): void {
         this.triggerBodySave(false)
-            .then((p_saveResult: boolean) => {
+            .then(() => {
                 const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
                 return vscode.window.showInputBox({
                     value: w_startValue,
@@ -5480,9 +5532,7 @@ export class LeoIntegration {
                     finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
                     name: '',
                 });
-                return q_commandResult
-                    ? q_commandResult
-                    : Promise.reject('Save file not added on command stack');
+                return q_commandResult;
             } else {
                 return this.saveAsLeoFile(p_fromOutline); // Override this command call if file is unnamed!
             }
