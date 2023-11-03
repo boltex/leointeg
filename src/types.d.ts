@@ -211,6 +211,7 @@ export interface LeoBridgePackage {
     branch?: string;
     commit?: string;
     chapters?: string[], // get_chapters
+    history?: string[],
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
     messages?: string[]; // get_goto

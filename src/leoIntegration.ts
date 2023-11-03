@@ -54,7 +54,6 @@ export class LeoIntegration {
 
     // * General integration usage variables
     private _clipboardContent: string = "";
-    private _minibufferHistory: vscode.QuickPickItem[] = [];
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -3282,32 +3281,11 @@ export class LeoIntegration {
         // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
         await this._isBusyTriggerSave(false, true);
 
-        // TODO : real history per-commander
-        let w_history;
-
-        if (
-            utils.compareVersions(
-                this.serverVersion, { major: 1, minor: 0, patch: 8 }
-            )
-            // this.serverVersion.major > 1 ||
-            // this.serverVersion.major === 1 && this.serverVersion.minor > 0 ||
-            // this.serverVersion.major === 1 && this.serverVersion.minor === 0 && this.serverVersion.patch >= 8
-        ) {
-            w_history = await this.sendAction("!get_history");
-            console.log('w_history', w_history);
+        let w_history: string[] = [];
+        if (utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 8 })) {
+            const w_historyPackage = await this.sendAction("!get_history");
+            w_history = w_historyPackage.history || [];
         }
-
-
-        // const w_newHistory = ["aa", "bb", "cc"];
-        // await this.sendAction("!set_history", { history: w_newHistory });
-
-        // w_history = await this.sendAction("!get_history");
-        // console.log('w_history again', w_history);
-
-        // w_history = await this.sendAction("!add_history", { command: "xxx" });
-
-        // w_history = await this.sendAction("!get_history");
-        // console.log('w_history again again!', w_history);
 
         const q_commandList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
             Constants.LEOBRIDGE.GET_COMMANDS
@@ -3387,7 +3365,7 @@ export class LeoIntegration {
 
                 const w_result: vscode.QuickPickItem[] = [];
 
-                if (this._minibufferHistory.length) {
+                if (w_history.length) {
                     w_result.push(Constants.MINIBUFFER_QUICK_PICK);
                 }
 
@@ -3397,7 +3375,7 @@ export class LeoIntegration {
                 }
 
                 // Separator above real commands, if needed...
-                if (w_noDetails.length || this._minibufferHistory.length) {
+                if (w_noDetails.length || w_history.length) {
                     w_result.push({
                         label: "", kind: vscode.QuickPickItemKind.Separator
                     });
@@ -3460,7 +3438,7 @@ export class LeoIntegration {
 
         // First, check for undo-history list being requested
         if (w_picked && w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
-            return this._showMinibufferHistory();
+            return this._showMinibufferHistory(w_choices, w_history);
         }
         if (w_picked) {
             return this._doMinibufferCommand(w_picked);
@@ -3471,37 +3449,62 @@ export class LeoIntegration {
      * * Opens quickPick of minibuffer's commands history
      * @returns Promise that resolves when the chosen command is placed on the front-end command stack
      */
-    private async _showMinibufferHistory(): Promise<LeoBridgePackage | undefined> {
+    private async _showMinibufferHistory(p_choices: vscode.QuickPickItem[], p_history: string[]): Promise<LeoBridgePackage | undefined> {
 
-        if (!this._minibufferHistory.length) {
+        if (!p_history || !p_history.length) {
             return Promise.resolve(undefined);
         }
-        const w_commandList: vscode.QuickPickItem[] = this._minibufferHistory;
+
+        // Build from list of strings (labels).
+        let w_commandList: vscode.QuickPickItem[] = [];
+        for (const w_command of p_history) {
+            let w_found = false;
+            for (const w_pick of p_choices) {
+                if (w_pick.label === w_command) {
+                    w_commandList.push(w_pick);
+                    w_found = true;
+                    break;
+                }
+            }
+            if (!w_found) {
+                w_commandList.push({
+                    label: w_command,
+                    description: Constants.USER_MESSAGES.MINIBUFFER_BAD_COMMAND,
+                    detail: `No command function for ${w_command}`
+                });
+            }
+        }
+        if (!w_commandList.length) {
+            return;
+        }
+
         // Add Nav tab special commands
         const w_options: vscode.QuickPickOptions = {
             placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
             matchOnDetail: true,
         };
-        const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
+        const w_picked = await vscode.window.showQuickPick(w_commandList.reverse(), w_options);
         return this._doMinibufferCommand(w_picked);
     }
 
     /**
      * * Perform chosen minibuffer command
      */
-    private async _doMinibufferCommand(p_picked: vscode.QuickPickItem | undefined): Promise<LeoBridgePackage | undefined> {
-        // * First check for overridden command: Exit by doing the overridden command
+    private async _doMinibufferCommand(p_picked?: vscode.QuickPickItem): Promise<LeoBridgePackage | undefined> {
+        // First, add to minibuffer history for that commander.
+        if (p_picked && utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 8 })) {
+            await this.sendAction("!add_history", { command: p_picked.label });
+        }
+        // Second, check for overridden command: Exit by doing the overridden command.
         if (p_picked &&
             p_picked.label &&
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
-            this._addToMinibufferHistory(p_picked);
             return vscode.commands.executeCommand(
                 Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
             );
         }
-        // * Ok, it was really a minibuffer command
+        // Ok, it was really a minibuffer command
         if (p_picked && p_picked.label) {
-            this._addToMinibufferHistory(p_picked);
             const w_commandResult = this.nodeCommand({
                 action: "-" + p_picked.label,
                 node: undefined,
@@ -3516,19 +3519,6 @@ export class LeoIntegration {
             });
             return w_commandResult;
         }
-    }
-
-    /**
-     * Add to the minibuffer history (without duplicating entries)
-     */
-    private _addToMinibufferHistory(p_command: vscode.QuickPickItem): void {
-        const w_found = this._minibufferHistory.map(p_item => p_item.label).indexOf(p_command.label);
-        // If found, will be removed (and placed on top)
-        if (w_found >= 0) {
-            this._minibufferHistory.splice(w_found, 1);
-        }
-        // Add to top of minibuffer history
-        this._minibufferHistory.unshift(p_command);
     }
 
     /**

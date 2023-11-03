@@ -425,7 +425,6 @@
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
 <v t="felix.20220824144905.1"><vh>_showMinibufferHistory</vh></v>
 <v t="felix.20220825004838.1"><vh>_doMinibufferCommand</vh></v>
-<v t="felix.20230222213432.1"><vh>_addToMinibufferHistory</vh></v>
 <v t="felix.20231101204323.1"><vh>_showHeadlineInputBox</vh></v>
 <v t="felix.20220806151009.1"><vh>prevNextNode</vh></v>
 <v t="felix.20200719025231.52"><vh>selectTreeNode</vh></v>
@@ -8028,6 +8027,7 @@ export interface LeoBridgePackage {
     branch?: string;
     commit?: string;
     chapters?: string[], // get_chapters
+    history?: string[],
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
     messages?: string[]; // get_goto
@@ -9130,7 +9130,6 @@ export class LeoIntegration {
 
     // * General integration usage variables
     private _clipboardContent: string = "";
-    private _minibufferHistory: vscode.QuickPickItem[] = [];
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -11826,32 +11825,11 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
     // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
     await this._isBusyTriggerSave(false, true);
 
-    // TODO : real history per-commander
-    let w_history;
-
-    if (
-        utils.compareVersions(
-            this.serverVersion, { major: 1, minor: 0, patch: 8 }
-        )
-        // this.serverVersion.major &gt; 1 ||
-        // this.serverVersion.major === 1 &amp;&amp; this.serverVersion.minor &gt; 0 ||
-        // this.serverVersion.major === 1 &amp;&amp; this.serverVersion.minor === 0 &amp;&amp; this.serverVersion.patch &gt;= 8
-    ) {
-        w_history = await this.sendAction("!get_history");
-        console.log('w_history', w_history);
+    let w_history: string[] = [];
+    if (utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 8 })) {
+        const w_historyPackage = await this.sendAction("!get_history");
+        w_history = w_historyPackage.history || [];
     }
-
-
-    // const w_newHistory = ["aa", "bb", "cc"];
-    // await this.sendAction("!set_history", { history: w_newHistory });
-
-    // w_history = await this.sendAction("!get_history");
-    // console.log('w_history again', w_history);
-
-    // w_history = await this.sendAction("!add_history", { command: "xxx" });
-
-    // w_history = await this.sendAction("!get_history");
-    // console.log('w_history again again!', w_history);
 
     const q_commandList: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
         Constants.LEOBRIDGE.GET_COMMANDS
@@ -11931,7 +11909,7 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
 
             const w_result: vscode.QuickPickItem[] = [];
 
-            if (this._minibufferHistory.length) {
+            if (w_history.length) {
                 w_result.push(Constants.MINIBUFFER_QUICK_PICK);
             }
 
@@ -11941,7 +11919,7 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
             }
 
             // Separator above real commands, if needed...
-            if (w_noDetails.length || this._minibufferHistory.length) {
+            if (w_noDetails.length || w_history.length) {
                 w_result.push({
                     label: "", kind: vscode.QuickPickItemKind.Separator
                 });
@@ -12004,7 +11982,7 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
 
     // First, check for undo-history list being requested
     if (w_picked &amp;&amp; w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
-        return this._showMinibufferHistory();
+        return this._showMinibufferHistory(w_choices, w_history);
     }
     if (w_picked) {
         return this._doMinibufferCommand(w_picked);
@@ -18177,18 +18155,41 @@ public isTsStillValid(ts: number): boolean {
  * * Opens quickPick of minibuffer's commands history
  * @returns Promise that resolves when the chosen command is placed on the front-end command stack
  */
-private async _showMinibufferHistory(): Promise&lt;LeoBridgePackage | undefined&gt; {
+private async _showMinibufferHistory(p_choices: vscode.QuickPickItem[], p_history: string[]): Promise&lt;LeoBridgePackage | undefined&gt; {
 
-    if (!this._minibufferHistory.length) {
+    if (!p_history || !p_history.length) {
         return Promise.resolve(undefined);
     }
-    const w_commandList: vscode.QuickPickItem[] = this._minibufferHistory;
+
+    // Build from list of strings (labels).
+    let w_commandList: vscode.QuickPickItem[] = [];
+    for (const w_command of p_history) {
+        let w_found = false;
+        for (const w_pick of p_choices) {
+            if (w_pick.label === w_command) {
+                w_commandList.push(w_pick);
+                w_found = true;
+                break;
+            }
+        }
+        if (!w_found) {
+            w_commandList.push({
+                label: w_command,
+                description: Constants.USER_MESSAGES.MINIBUFFER_BAD_COMMAND,
+                detail: `No command function for ${w_command}`
+            });
+        }
+    }
+    if (!w_commandList.length) {
+        return;
+    }
+
     // Add Nav tab special commands
     const w_options: vscode.QuickPickOptions = {
         placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
         matchOnDetail: true,
     };
-    const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
+    const w_picked = await vscode.window.showQuickPick(w_commandList.reverse(), w_options);
     return this._doMinibufferCommand(w_picked);
 }
 
@@ -18196,19 +18197,21 @@ private async _showMinibufferHistory(): Promise&lt;LeoBridgePackage | undefined&
 <t tx="felix.20220825004838.1">/**
  * * Perform chosen minibuffer command
  */
-private async _doMinibufferCommand(p_picked: vscode.QuickPickItem | undefined): Promise&lt;LeoBridgePackage | undefined&gt; {
-    // * First check for overridden command: Exit by doing the overridden command
+private async _doMinibufferCommand(p_picked?: vscode.QuickPickItem): Promise&lt;LeoBridgePackage | undefined&gt; {
+    // First, add to minibuffer history for that commander.
+    if (p_picked &amp;&amp; utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 8 })) {
+        await this.sendAction("!add_history", { command: p_picked.label });
+    }
+    // Second, check for overridden command: Exit by doing the overridden command.
     if (p_picked &amp;&amp;
         p_picked.label &amp;&amp;
         Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
-        this._addToMinibufferHistory(p_picked);
         return vscode.commands.executeCommand(
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
         );
     }
-    // * Ok, it was really a minibuffer command
+    // Ok, it was really a minibuffer command
     if (p_picked &amp;&amp; p_picked.label) {
-        this._addToMinibufferHistory(p_picked);
         const w_commandResult = this.nodeCommand({
             action: "-" + p_picked.label,
             node: undefined,
@@ -19010,20 +19013,6 @@ public async interactiveSearch(p_backward: boolean, p_regex: boolean, p_word: bo
 }
 
 </t>
-<t tx="felix.20230222213432.1">/**
- * Add to the minibuffer history (without duplicating entries)
- */
-private _addToMinibufferHistory(p_command: vscode.QuickPickItem): void {
-    const w_found = this._minibufferHistory.map(p_item =&gt; p_item.label).indexOf(p_command.label);
-    // If found, will be removed (and placed on top)
-    if (w_found &gt;= 0) {
-        this._minibufferHistory.splice(w_found, 1);
-    }
-    // Add to top of minibuffer history
-    this._minibufferHistory.unshift(p_command);
-}
-
-</t>
 <t tx="felix.20230226173728.1">{
   "view": "leoIntegration",
   "contents": "Starting Server...",
@@ -19264,6 +19253,7 @@ For those familiar with Leo, the 'minibuffer' serves as the nerve center for com
 <t tx="felix.20231009003516.1">## 1.0.16
 
 - Editing a headline, when inserting or renaming a node, can now be interrupted by most other keyboard shortcuts and commands.
+- Fixed minibuffer history so that each opened Leo document has its own minibuffer command history: Requires Leo 6.7.5
 
 </t>
 <t tx="felix.20231101200432.1">private _leoEditHeadline: boolean = false;
