@@ -330,6 +330,7 @@
 <v t="felix.20200719025231.4"><vh>Server</vh>
 <v t="felix.20200719025231.5"><vh>sendAction</vh></v>
 <v t="felix.20200719025231.6"><vh>startNetworkServices</vh></v>
+<v t="felix.20231102230431.1"><vh>findInstallPath</vh></v>
 <v t="felix.20200719025231.7"><vh>startServer</vh></v>
 <v t="felix.20210717204048.1"><vh>killServer</vh></v>
 <v t="felix.20210802162424.1"><vh>stopConnection</vh></v>
@@ -10999,6 +11000,10 @@ public async saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage |
  * Starts a leoBridge server, and/or establish a connection to a server, based on config settings.
  */
 public startNetworkServices(): void {
+    // TODO : If config setting for leo's installation is empty or wrong, try to find it
+    if (!this.config.leoEditorPath.trim()) {
+        this.findInstallPath();
+    }
     // * Check settings and start a server accordingly
     if (this.config.startServerAutomatically) {
         if (this.config.limitUsers &gt; 1) {
@@ -19343,6 +19348,27 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
     major: number;
     minor: number;
     patch: number;
+}
+
+</t>
+<t tx="felix.20231102230431.1">public findInstallPath(): void {
+    // Spawn process to find Leo's installation folder with command line tricks
+    console.log('TODO : findInstallPath');
+
+    /* 
+        Scenario 1: Leo is in PATH, for example it's been installed with pipx. Use Leo to report it's own location.
+        echo g.es_print(g.app.loadManager.computeLeoDir()) &gt; tmp_locate_leo_dir.leox
+        leo-messages --silent --script=tmp_locate_leo_dir.leox
+        del tmp_locate_leo_dir.leox
+        Output:
+
+        C:/apps/pipx/venvs/leo/Lib/site-packages/leo
+        As far as I can tell Leo doesn't have a "interpret the following as a script" like python -c "..." to enable dispensing with the file writing-reading-delete loop.
+
+        Scenario 2: Python is in PATH and Leo has been installed to it
+        python -c "import leo; import os; print(os.path.dirname(leo.__file__))"
+    */
+
 }
 
 </t>

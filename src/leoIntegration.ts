@@ -594,6 +594,10 @@ export class LeoIntegration {
      * Starts a leoBridge server, and/or establish a connection to a server, based on config settings.
      */
     public startNetworkServices(): void {
+        // TODO : If config setting for leo's installation is empty or wrong, try to find it
+        if (!this.config.leoEditorPath.trim()) {
+            this.findInstallPath();
+        }
         // * Check settings and start a server accordingly
         if (this.config.startServerAutomatically) {
             if (this.config.limitUsers > 1) {
@@ -616,6 +620,26 @@ export class LeoIntegration {
         } else {
             this.leoStates.leoStartupFinished = true;
         }
+    }
+
+    public findInstallPath(): void {
+        // Spawn process to find Leo's installation folder with command line tricks
+        console.log('TODO : findInstallPath');
+
+        /* 
+            Scenario 1: Leo is in PATH, for example it's been installed with pipx. Use Leo to report it's own location.
+            echo g.es_print(g.app.loadManager.computeLeoDir()) > tmp_locate_leo_dir.leox
+            leo-messages --silent --script=tmp_locate_leo_dir.leox
+            del tmp_locate_leo_dir.leox
+            Output:
+    
+            C:/apps/pipx/venvs/leo/Lib/site-packages/leo
+            As far as I can tell Leo doesn't have a "interpret the following as a script" like python -c "..." to enable dispensing with the file writing-reading-delete loop.
+    
+            Scenario 2: Python is in PATH and Leo has been installed to it
+            python -c "import leo; import os; print(os.path.dirname(leo.__file__))"
+        */
+
     }
 
     /**
