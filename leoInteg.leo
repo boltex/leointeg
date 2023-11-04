@@ -19353,46 +19353,41 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 }
 
 </t>
-<t tx="felix.20231102230431.1">public findInstallPath(): void {
+<t tx="felix.20231102230431.1">public async findInstallPath(): void {
 
     // Find Leo's installation folder with command line tricks from Matt Wilkie 
-    const isWindows = process.platform === 'win32';
     const options = { encoding: 'utf-8' as BufferEncoding };
 
-    console.log('IS Windows: ', isWindows);
+    console.log('NO PATH : findInstallPath');
 
-    if (isWindows) {
-        console.log('NO PATH : findInstallPath');
+    // Your command
+    let output = "";
+    try {
+        output = execSync('pytdhon -c "import leo; import os; print(os.path.dirname(leo.__file__))"', options);
+        console.log('Command 1 executed successfully:', output);
+    } catch (error) {
+        output = ""; // Clear to make sure
+    }
 
-        // Your command
-        let output = "";
+    if (!output) {
         try {
-            output = execSync('python -c "import leo; import os; print(os.path.dirname(leo.__file__))"', options);
-            console.log('Command 1 executed successfully:', output);
+            execSync('echo g.es_print(g.app.loadManager.computeLeoDir()) &gt; tmp_locate_leo_dir.leox', options);
+            output = execSync('leo-messages --silent --script=tmp_locate_leo_dir.leox', options);
+            execSync('del tmp_locate_leo_dir.leox', options);
+            console.log('Command 2 executed successfully:', output);
         } catch (error) {
             output = ""; // Clear to make sure
+            console.error('Command failed:', error);
         }
+    }
 
-        if (!output) {
-            try {
-                execSync('echo g.es_print(g.app.loadManager.computeLeoDir()) &gt; tmp_locate_leo_dir.leox', options);
-                output = execSync('leo-messages --silent --script=tmp_locate_leo_dir.leox', options);
-                execSync('del tmp_locate_leo_dir.leox', options);
-                console.log('Command 2 executed successfully:', output);
-            } catch (error) {
-                output = ""; // Clear to make sure
-                console.error('Command failed:', error);
-            }
-        }
+    if (output) {
+        //
+        // Set config option to the proper leo path.
+        console.log('Set config option to :', output);
 
-        if (output) {
-            //
-            // Set config option to the proper leo path.
-            console.log('Set config option to :', output);
-
-        } else {
-            console.log('------ findInstallPath NOT FOUND ! ------');
-        }
+    } else {
+        console.log('------ findInstallPath NOT FOUND ! ------');
     }
 }
 

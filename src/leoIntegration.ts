@@ -623,21 +623,18 @@ export class LeoIntegration {
         }
     }
 
-    public findInstallPath(): void {
+    public async findInstallPath(): Promise<string> {
 
-        // Find Leo's installation folder with command line tricks from Matt Wilkie 
-        const isWindows = process.platform === 'win32';
-        const options = { encoding: 'utf-8' as BufferEncoding };
-
-        console.log('IS Windows: ', isWindows);
-
-        if (isWindows) {
+        return new Promise((p_resolve, p_reject) => {
+            // Find Leo's installation folder with command line tricks from Matt Wilkie 
+            const options = { encoding: 'utf-8' as BufferEncoding };
+            const isWindows = process.platform === 'win32';
             console.log('NO PATH : findInstallPath');
 
             // Your command
             let output = "";
             try {
-                output = execSync('python -c "import leo; import os; print(os.path.dirname(leo.__file__))"', options);
+                output = execSync('pytdhon -c "import leo; import os; print(os.path.dirname(leo.__file__))"', options);
                 console.log('Command 1 executed successfully:', output);
             } catch (error) {
                 output = ""; // Clear to make sure
@@ -645,9 +642,17 @@ export class LeoIntegration {
 
             if (!output) {
                 try {
-                    execSync('echo g.es_print(g.app.loadManager.computeLeoDir()) > tmp_locate_leo_dir.leox', options);
+                    if (isWindows) {
+                        execSync('echo g.es_print(g.app.loadManager.computeLeoDir()) > tmp_locate_leo_dir.leox', options);
+                    } else {
+                        execSync('echo "g.es_print(g.app.loadManager.computeLeoDir())" > tmp_locate_leo_dir.leox', options);
+                    }
                     output = execSync('leo-messages --silent --script=tmp_locate_leo_dir.leox', options);
-                    execSync('del tmp_locate_leo_dir.leox', options);
+                    if (isWindows) {
+                        execSync('del tmp_locate_leo_dir.leox', options);
+                    } else {
+                        execSync('rm tmp_locate_leo_dir.leox', options);
+                    }
                     console.log('Command 2 executed successfully:', output);
                 } catch (error) {
                     output = ""; // Clear to make sure
@@ -660,10 +665,14 @@ export class LeoIntegration {
                 // Set config option to the proper leo path.
                 console.log('Set config option to :', output);
 
+                p_resolve(output);
             } else {
                 console.log('------ findInstallPath NOT FOUND ! ------');
+                p_resolve(""); // Empty string when not found.
             }
-        }
+        });
+
+
     }
 
     /**
