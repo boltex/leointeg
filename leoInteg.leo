@@ -19374,8 +19374,6 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
             }
         }
 
-        console.log('NO PATH : findInstallPath');
-
         // Your command
         let output = "";
         try {
@@ -19385,7 +19383,7 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
             output = ""; // Clear to make sure
         }
 
-        if (!output) {
+        if (output) {
             try {
                 if (isWindows) {
                     execSync('echo g.es_print(g.app.loadManager.computeLeoDir()) &gt; tmp_locate_leo_dir.leox', options);
@@ -19414,11 +19412,15 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
             }
         }
 
-        if (output) {
+        if (output &amp;&amp; output.trim()) {
+
+            output = output.trim();
+
+            if (output.endsWith('/leo') || output.endsWith('\\leo')) {
+                output = output.slice(0, -4);
+            }
 
             // Set config option to the proper leo path.
-            console.log('Set config option to :', output);
-
             this.config.setLeoIntegSettings(
                 [{
                     code: Constants.CONFIG_NAMES.LEO_EDITOR_PATH,
@@ -19433,7 +19435,6 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
             p_resolve(""); // Empty string when not found.
         }
     });
-
 
 }
 

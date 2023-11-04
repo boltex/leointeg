@@ -644,8 +644,6 @@ export class LeoIntegration {
                 }
             }
 
-            console.log('NO PATH : findInstallPath');
-
             // Your command
             let output = "";
             try {
@@ -655,7 +653,7 @@ export class LeoIntegration {
                 output = ""; // Clear to make sure
             }
 
-            if (!output) {
+            if (output) {
                 try {
                     if (isWindows) {
                         execSync('echo g.es_print(g.app.loadManager.computeLeoDir()) > tmp_locate_leo_dir.leox', options);
@@ -684,11 +682,15 @@ export class LeoIntegration {
                 }
             }
 
-            if (output) {
+            if (output && output.trim()) {
+
+                output = output.trim();
+
+                if (output.endsWith('/leo') || output.endsWith('\\leo')) {
+                    output = output.slice(0, -4);
+                }
 
                 // Set config option to the proper leo path.
-                console.log('Set config option to :', output);
-
                 this.config.setLeoIntegSettings(
                     [{
                         code: Constants.CONFIG_NAMES.LEO_EDITOR_PATH,
@@ -703,7 +705,6 @@ export class LeoIntegration {
                 p_resolve(""); // Empty string when not found.
             }
         });
-
 
     }
 
