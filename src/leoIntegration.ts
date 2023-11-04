@@ -595,32 +595,38 @@ export class LeoIntegration {
      * Starts a leoBridge server, and/or establish a connection to a server, based on config settings.
      */
     public startNetworkServices(): void {
-        // TODO : If config setting for leo's installation is empty or wrong, try to find it
+
+        let q_checkPath;
         if (!this.config.leoEditorPath.trim()) {
-            this.findInstallPath();
-        }
-        // * Check settings and start a server accordingly
-        if (this.config.startServerAutomatically) {
-            if (this.config.limitUsers > 1) {
-                utils.findSingleAvailablePort(this.config.connectionPort)
-                    .then((p_availablePort) => {
-                        this.startServer();
-                    }, (p_reason) => {
-                        // Rejected: Multi user port IN USE so skip start
-                        if (this.config.connectToServerAutomatically) {
-                            // Still try to connect if auto-connect is 'on'
-                            this.connect();
-                        }
-                    });
-            } else {
-                this.startServer();
-            }
-        } else if (this.config.connectToServerAutomatically) {
-            // * (via settings) Connect to Leo Bridge server automatically without starting one first
-            this.connect();
+            q_checkPath = this.findInstallPath();
         } else {
-            this.leoStates.leoStartupFinished = true;
+            q_checkPath = Promise.resolve();
         }
+
+        // * Check settings and start a server accordingly
+        q_checkPath.then(() => {
+            if (this.config.startServerAutomatically) {
+                if (this.config.limitUsers > 1) {
+                    utils.findSingleAvailablePort(this.config.connectionPort)
+                        .then((p_availablePort) => {
+                            this.startServer();
+                        }, (p_reason) => {
+                            // Rejected: Multi user port IN USE so skip start
+                            if (this.config.connectToServerAutomatically) {
+                                // Still try to connect if auto-connect is 'on'
+                                this.connect();
+                            }
+                        });
+                } else {
+                    this.startServer();
+                }
+            } else if (this.config.connectToServerAutomatically) {
+                // * (via settings) Connect to Leo Bridge server automatically without starting one first
+                this.connect();
+            } else {
+                this.leoStates.leoStartupFinished = true;
+            }
+        });
     }
 
     public async findInstallPath(): Promise<string> {
@@ -679,13 +685,21 @@ export class LeoIntegration {
             }
 
             if (output) {
-                //
+
                 // Set config option to the proper leo path.
                 console.log('Set config option to :', output);
 
-                p_resolve(output);
+                this.config.setLeoIntegSettings(
+                    [{
+                        code: Constants.CONFIG_NAMES.LEO_EDITOR_PATH,
+                        value: output
+                    }]
+                ).then(() => {
+                    this.leoSettingsWebview.changedConfiguration();
+                    vscode.window.showInformationMessage('Leo-Editor installation folder found automatically as ' + output);
+                    p_resolve(output);
+                });
             } else {
-                console.log('------ findInstallPath NOT FOUND ! ------');
                 p_resolve(""); // Empty string when not found.
             }
         });
