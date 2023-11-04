@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
 import * as path from "path";
@@ -623,23 +624,46 @@ export class LeoIntegration {
     }
 
     public findInstallPath(): void {
-        // Spawn process to find Leo's installation folder with command line tricks
-        console.log('TODO : findInstallPath');
 
-        /* 
-            Scenario 1: Leo is in PATH, for example it's been installed with pipx. Use Leo to report it's own location.
-            echo g.es_print(g.app.loadManager.computeLeoDir()) > tmp_locate_leo_dir.leox
-            leo-messages --silent --script=tmp_locate_leo_dir.leox
-            del tmp_locate_leo_dir.leox
-            Output:
-    
-            C:/apps/pipx/venvs/leo/Lib/site-packages/leo
-            As far as I can tell Leo doesn't have a "interpret the following as a script" like python -c "..." to enable dispensing with the file writing-reading-delete loop.
-    
-            Scenario 2: Python is in PATH and Leo has been installed to it
-            python -c "import leo; import os; print(os.path.dirname(leo.__file__))"
-        */
+        // Find Leo's installation folder with command line tricks from Matt Wilkie 
+        const isWindows = process.platform === 'win32';
+        const options = { encoding: 'utf-8' as BufferEncoding };
 
+        console.log('IS Windows: ', isWindows);
+
+        if (isWindows) {
+            console.log('NO PATH : findInstallPath');
+
+            // Your command
+            let output = "";
+            try {
+                output = execSync('python -c "import leo; import os; print(os.path.dirname(leo.__file__))"', options);
+                console.log('Command 1 executed successfully:', output);
+            } catch (error) {
+                output = ""; // Clear to make sure
+            }
+
+            if (!output) {
+                try {
+                    execSync('echo g.es_print(g.app.loadManager.computeLeoDir()) > tmp_locate_leo_dir.leox', options);
+                    output = execSync('leo-messages --silent --script=tmp_locate_leo_dir.leox', options);
+                    execSync('del tmp_locate_leo_dir.leox', options);
+                    console.log('Command 2 executed successfully:', output);
+                } catch (error) {
+                    output = ""; // Clear to make sure
+                    console.error('Command failed:', error);
+                }
+            }
+
+            if (output) {
+                //
+                // Set config option to the proper leo path.
+                console.log('Set config option to :', output);
+
+            } else {
+                console.log('------ findInstallPath NOT FOUND ! ------');
+            }
+        }
     }
 
     /**

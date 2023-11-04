@@ -273,6 +273,7 @@ and using the outline's selected node 'gnx' as identifier.
 - [Kevin Henderson](https://github.com/kghenderson) for his suggestions and support
 - [Ville M. Vainio](https://github.com/vivainio) for his Nav tab original concept
 - [Jacob M. Peck](https://github.com/gatesphere) for his Tags tab original concept
+- [Matt Wilkie](https://github.com/maphew) for his contributions and support
 
 ---
 

@@ -8648,6 +8648,7 @@ and using the outline's selected node 'gnx' as identifier.
 - [Kevin Henderson](https://github.com/kghenderson) for his suggestions and support
 - [Ville M. Vainio](https://github.com/vivainio) for his Nav tab original concept
 - [Jacob M. Peck](https://github.com/gatesphere) for his Tags tab original concept
+- [Matt Wilkie](https://github.com/maphew) for his contributions and support
 
 </t>
 <t tx="felix.20200718222417.1">## 0.1.12
@@ -8871,6 +8872,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
 <t tx="felix.20200719025231.1">import * as vscode from 'vscode';
+import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
 import * as path from "path";
@@ -19352,23 +19354,46 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 
 </t>
 <t tx="felix.20231102230431.1">public findInstallPath(): void {
-    // Spawn process to find Leo's installation folder with command line tricks
-    console.log('TODO : findInstallPath');
 
-    /* 
-        Scenario 1: Leo is in PATH, for example it's been installed with pipx. Use Leo to report it's own location.
-        echo g.es_print(g.app.loadManager.computeLeoDir()) &gt; tmp_locate_leo_dir.leox
-        leo-messages --silent --script=tmp_locate_leo_dir.leox
-        del tmp_locate_leo_dir.leox
-        Output:
+    // Find Leo's installation folder with command line tricks from Matt Wilkie 
+    const isWindows = process.platform === 'win32';
+    const options = { encoding: 'utf-8' as BufferEncoding };
 
-        C:/apps/pipx/venvs/leo/Lib/site-packages/leo
-        As far as I can tell Leo doesn't have a "interpret the following as a script" like python -c "..." to enable dispensing with the file writing-reading-delete loop.
+    console.log('IS Windows: ', isWindows);
 
-        Scenario 2: Python is in PATH and Leo has been installed to it
-        python -c "import leo; import os; print(os.path.dirname(leo.__file__))"
-    */
+    if (isWindows) {
+        console.log('NO PATH : findInstallPath');
 
+        // Your command
+        let output = "";
+        try {
+            output = execSync('python -c "import leo; import os; print(os.path.dirname(leo.__file__))"', options);
+            console.log('Command 1 executed successfully:', output);
+        } catch (error) {
+            output = ""; // Clear to make sure
+        }
+
+        if (!output) {
+            try {
+                execSync('echo g.es_print(g.app.loadManager.computeLeoDir()) &gt; tmp_locate_leo_dir.leox', options);
+                output = execSync('leo-messages --silent --script=tmp_locate_leo_dir.leox', options);
+                execSync('del tmp_locate_leo_dir.leox', options);
+                console.log('Command 2 executed successfully:', output);
+            } catch (error) {
+                output = ""; // Clear to make sure
+                console.error('Command failed:', error);
+            }
+        }
+
+        if (output) {
+            //
+            // Set config option to the proper leo path.
+            console.log('Set config option to :', output);
+
+        } else {
+            console.log('------ findInstallPath NOT FOUND ! ------');
+        }
+    }
 }
 
 </t>
