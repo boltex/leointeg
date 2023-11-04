@@ -648,12 +648,11 @@ export class LeoIntegration {
             let output = "";
             try {
                 output = execSync(python + ' -c "import leo; import os; print(os.path.dirname(leo.__file__))"', options);
-                console.log('Command 1 executed successfully:', output);
             } catch (error) {
                 output = ""; // Clear to make sure
             }
 
-            if (output) {
+            if (!output) {
                 try {
                     if (isWindows) {
                         execSync('echo g.es_print(g.app.loadManager.computeLeoDir()) > tmp_locate_leo_dir.leox', options);
@@ -669,10 +668,8 @@ export class LeoIntegration {
 
                     output = execSync('leo-messages --silent --script=tmp_locate_leo_dir.leox', options);
 
-                    console.log('Command 2 executed successfully:', output);
                 } catch (error) {
                     output = ""; // Clear to make sure
-                    console.error('Command failed:', error);
                 } finally {
                     if (isWindows) {
                         execSync('del tmp_locate_leo_dir.leox', options);
