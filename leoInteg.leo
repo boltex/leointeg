@@ -11438,8 +11438,7 @@ public startServer(): void {
             (p_reason) =&gt; {
                 // This context flag will remove the 'connecting' welcome view
                 this.leoStates.leoStartingServer = false;
-                // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-                // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+                this.leoStates.leoStartupFinished = true;
                 if (
                     [Constants.USER_MESSAGES.LEO_PATH_MISSING,
                     Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT].includes(p_reason)
@@ -11555,11 +11554,6 @@ public cancelConnect(p_message?: string): void {
     showMessageFn(
         p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED
     );
-
-    // to change the 'viewsWelcome' content.
-    // bring back to !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically"
-    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
     this.leoStates.leoStartupFinished = true;
     this.leoStates.leoConnecting = false;
     this.leoStates.fileOpenedReady = false;

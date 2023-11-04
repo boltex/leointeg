@@ -736,10 +736,9 @@ export class LeoIntegration {
                     }
                 },
                 (p_reason) => {
-                    // This context flag will remove the 'connecting' welcome view
+                    // This context flag will remove the 'Starting server' welcome view
                     this.leoStates.leoStartingServer = false;
-                    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-                    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+                    this.leoStates.leoStartupFinished = true;
                     if (
                         [Constants.USER_MESSAGES.LEO_PATH_MISSING,
                         Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT].includes(p_reason)
@@ -777,6 +776,7 @@ export class LeoIntegration {
      * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
      */
     public connect(): void {
+        console.log("COMMECT !!!! ");
         if (this.leoStates.leoBridgeReady || this.leoStates.leoConnecting) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
             return;
@@ -867,11 +867,6 @@ export class LeoIntegration {
         showMessageFn(
             p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED
         );
-
-        // to change the 'viewsWelcome' content.
-        // bring back to !leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
-        // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-        // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
         this.leoStates.leoStartupFinished = true;
         this.leoStates.leoConnecting = false;
         this.leoStates.fileOpenedReady = false;
