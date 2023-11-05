@@ -3373,7 +3373,6 @@ export class LeoIntegration {
             Constants.LEOBRIDGE.GET_COMMANDS
         ).then((p_result: LeoBridgePackage) => {
             if (p_result.commands && p_result.commands.length) {
-                console.log([...p_result.commands.map(cc => cc.label)]);
                 const w_regexp = new RegExp('\\s+', 'g');
                 p_result.commands.forEach(p_command => {
                     if (p_command.detail) {

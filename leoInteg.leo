@@ -11843,7 +11843,6 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
         Constants.LEOBRIDGE.GET_COMMANDS
     ).then((p_result: LeoBridgePackage) =&gt; {
         if (p_result.commands &amp;&amp; p_result.commands.length) {
-            console.log([...p_result.commands.map(cc =&gt; cc.label)]);
             const w_regexp = new RegExp('\\s+', 'g');
             p_result.commands.forEach(p_command =&gt; {
                 if (p_command.detail) {
