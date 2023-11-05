@@ -3,7 +3,8 @@
 ## 1.0.16
 
 - Editing a headline, when inserting or renaming a node, can now be interrupted by most other keyboard shortcuts and commands.
-- Fixed minibuffer history so that each opened Leo document has its own minibuffer command history: Requires Leo 6.7.5
+- Fixed minibuffer history so that each opened Leo document has its own minibuffer command history: Requires Leo 6.7.5.
+- Implemented more of the original Leo's easter eggs: Pressing 'm' in the nav input launches the 'marked-list' command.
 
 ## 1.0.15
 
