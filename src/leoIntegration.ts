@@ -776,7 +776,7 @@ export class LeoIntegration {
      * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
      */
     public connect(): void {
-        console.log("COMMECT !!!! ");
+
         if (this.leoStates.leoBridgeReady || this.leoStates.leoConnecting) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
             return;
@@ -3373,6 +3373,7 @@ export class LeoIntegration {
             Constants.LEOBRIDGE.GET_COMMANDS
         ).then((p_result: LeoBridgePackage) => {
             if (p_result.commands && p_result.commands.length) {
+                console.log([...p_result.commands.map(cc => cc.label)]);
                 const w_regexp = new RegExp('\\s+', 'g');
                 p_result.commands.forEach(p_command => {
                     if (p_command.detail) {
@@ -4411,9 +4412,12 @@ export class LeoIntegration {
     /**
      * * List all marked nodes.
      */
-    public async findQuickMarked(): Promise<unknown> {
+    public async findQuickMarked(p_preserveFocus?: boolean): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
         this._leoGotoProvider.refreshTreeRoot();
+        if (p_preserveFocus) {
+            return;
+        }
         return this.showGotoPane();
     }
 

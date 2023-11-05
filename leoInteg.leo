@@ -11436,7 +11436,7 @@ public startServer(): void {
                 }
             },
             (p_reason) =&gt; {
-                // This context flag will remove the 'connecting' welcome view
+                // This context flag will remove the 'Starting server' welcome view
                 this.leoStates.leoStartingServer = false;
                 this.leoStates.leoStartupFinished = true;
                 if (
@@ -11463,6 +11463,7 @@ public startServer(): void {
  * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
  */
 public connect(): void {
+
     if (this.leoStates.leoBridgeReady || this.leoStates.leoConnecting) {
         vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
         return;
@@ -11842,6 +11843,7 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
         Constants.LEOBRIDGE.GET_COMMANDS
     ).then((p_result: LeoBridgePackage) =&gt; {
         if (p_result.commands &amp;&amp; p_result.commands.length) {
+            console.log([...p_result.commands.map(cc =&gt; cc.label)]);
             const w_regexp = new RegExp('\\s+', 'g');
             p_result.commands.forEach(p_command =&gt; {
                 if (p_command.detail) {
@@ -15285,6 +15287,21 @@ public getTextFromClipboard(): string {
             }
 
         }
+        if (searchSettings.navText === "m" &amp;&amp; !searchSettings.isTag) {
+            // ! Easter Egg: calls 'marked-list', which list all marked nodes !
+            navSearchTimer = setTimeout(() =&gt; {
+                if (navTextDirty) {
+                    navTextDirty = false;
+                    if (navSearchTimer) {
+                        clearTimeout(navSearchTimer);
+                    }
+                    sendSearchConfig();
+                }
+                vscode.postMessage({ type: 'leoNavMarkedList' });
+
+            }, 40); // Shorter delay for this command
+            return false;
+        }
 
         // User changed text in nav text input
         if (frozen || searchSettings.navText.length &lt; 3) {
@@ -15976,9 +15993,12 @@ public async findQuickHistory(): Promise&lt;unknown&gt; {
 <t tx="felix.20220308213605.1">/**
  * * List all marked nodes.
  */
-public async findQuickMarked(): Promise&lt;unknown&gt; {
+public async findQuickMarked(p_preserveFocus?: boolean): Promise&lt;unknown&gt; {
     await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
     this._leoGotoProvider.refreshTreeRoot();
+    if (p_preserveFocus) {
+        return;
+    }
     return this.showGotoPane();
 }
 
@@ -19641,6 +19661,10 @@ import * as utils from "./utils";
                 }
                 case 'leoNavClear': {
                     this._leoIntegration.navTextClear();
+                    break;
+                }
+                case 'leoNavMarkedList': {
+                    this._leoIntegration.findQuickMarked(true);
                     break;
                 }
                 case 'gotFocus': {

@@ -88,6 +88,21 @@
             }
 
         }
+        if (searchSettings.navText === "m" && !searchSettings.isTag) {
+            // ! Easter Egg: calls 'marked-list', which list all marked nodes !
+            navSearchTimer = setTimeout(() => {
+                if (navTextDirty) {
+                    navTextDirty = false;
+                    if (navSearchTimer) {
+                        clearTimeout(navSearchTimer);
+                    }
+                    sendSearchConfig();
+                }
+                vscode.postMessage({ type: 'leoNavMarkedList' });
+
+            }, 40); // Shorter delay for this command
+            return false;
+        }
 
         // User changed text in nav text input
         if (frozen || searchSettings.navText.length < 3) {
