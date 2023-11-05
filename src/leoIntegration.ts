@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
 import * as path from "path";
@@ -594,28 +595,114 @@ export class LeoIntegration {
      * Starts a leoBridge server, and/or establish a connection to a server, based on config settings.
      */
     public startNetworkServices(): void {
-        // * Check settings and start a server accordingly
-        if (this.config.startServerAutomatically) {
-            if (this.config.limitUsers > 1) {
-                utils.findSingleAvailablePort(this.config.connectionPort)
-                    .then((p_availablePort) => {
-                        this.startServer();
-                    }, (p_reason) => {
-                        // Rejected: Multi user port IN USE so skip start
-                        if (this.config.connectToServerAutomatically) {
-                            // Still try to connect if auto-connect is 'on'
-                            this.connect();
-                        }
-                    });
-            } else {
-                this.startServer();
-            }
-        } else if (this.config.connectToServerAutomatically) {
-            // * (via settings) Connect to Leo Bridge server automatically without starting one first
-            this.connect();
+
+        let q_checkPath;
+        if (!this.config.leoEditorPath.trim()) {
+            q_checkPath = this.findInstallPath();
         } else {
-            this.leoStates.leoStartupFinished = true;
+            q_checkPath = Promise.resolve();
         }
+
+        // * Check settings and start a server accordingly
+        q_checkPath.then(() => {
+            if (this.config.startServerAutomatically) {
+                if (this.config.limitUsers > 1) {
+                    utils.findSingleAvailablePort(this.config.connectionPort)
+                        .then((p_availablePort) => {
+                            this.startServer();
+                        }, (p_reason) => {
+                            // Rejected: Multi user port IN USE so skip start
+                            if (this.config.connectToServerAutomatically) {
+                                // Still try to connect if auto-connect is 'on'
+                                this.connect();
+                            }
+                        });
+                } else {
+                    this.startServer();
+                }
+            } else if (this.config.connectToServerAutomatically) {
+                // * (via settings) Connect to Leo Bridge server automatically without starting one first
+                this.connect();
+            } else {
+                this.leoStates.leoStartupFinished = true;
+            }
+        });
+    }
+
+    public async findInstallPath(): Promise<string> {
+
+        return new Promise((p_resolve, p_reject) => {
+            // Find Leo's installation folder with command line tricks from Matt Wilkie 
+            const options = { encoding: 'utf-8' as BufferEncoding };
+            const isWindows = process.platform === 'win32';
+            let hasCreated = false;
+            let python = this.config.leoPythonCommand;
+            if (!python) {
+                python = Constants.DEFAULT_PYTHON;
+                if (isWindows) {
+                    python = Constants.WIN32_PYTHON;
+                }
+            }
+
+            // Your command
+            let output = "";
+            try {
+                output = execSync(python + ' -c "import leo; import os; print(os.path.dirname(leo.__file__))"', options);
+            } catch (error) {
+                output = ""; // Clear to make sure
+            }
+
+            if (!output) {
+                try {
+                    if (isWindows) {
+                        execSync('echo g.es_print(g.app.loadManager.computeLeoDir()) > tmp_locate_leo_dir.leox', options);
+                    } else {
+                        execSync('echo "g.es_print(g.app.loadManager.computeLeoDir())" > tmp_locate_leo_dir.leox', options);
+                    }
+                    hasCreated = true;
+
+                } catch (e) {
+                    // pass
+                }
+                try {
+
+                    output = execSync('leo-messages --silent --script=tmp_locate_leo_dir.leox', options);
+
+                } catch (error) {
+                    output = ""; // Clear to make sure
+                } finally {
+                    if (isWindows) {
+                        execSync('del tmp_locate_leo_dir.leox', options);
+                    } else {
+                        execSync('rm tmp_locate_leo_dir.leox', options);
+                    }
+                }
+            }
+
+            if (output && output.trim()) {
+
+                output = output.trim();
+
+                if (output.endsWith('/leo') || output.endsWith('\\leo')) {
+                    output = output.slice(0, -4);
+                }
+
+                // Set config option to the proper leo path.
+                this.config.setLeoIntegSettings(
+                    [{
+                        code: Constants.CONFIG_NAMES.LEO_EDITOR_PATH,
+                        value: output
+                    }]
+                ).then(() => {
+                    this.leoSettingsWebview.changedConfiguration();
+                    vscode.window.showInformationMessage('Leo-Editor installation folder found automatically as ' + output);
+                    p_resolve(output);
+                });
+            } else {
+                p_resolve(""); // Empty string when not found.
+            }
+        });
+
     }
 
     /**
@@ -649,10 +736,9 @@ export class LeoIntegration {
                     }
                 },
                 (p_reason) => {
-                    // This context flag will remove the 'connecting' welcome view
+                    // This context flag will remove the 'Starting server' welcome view
                     this.leoStates.leoStartingServer = false;
-                    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-                    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+                    this.leoStates.leoStartupFinished = true;
                     if (
                         [Constants.USER_MESSAGES.LEO_PATH_MISSING,
                         Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT].includes(p_reason)
@@ -690,6 +776,7 @@ export class LeoIntegration {
      * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
      */
     public connect(): void {
+
         if (this.leoStates.leoBridgeReady || this.leoStates.leoConnecting) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
             return;
@@ -780,11 +867,6 @@ export class LeoIntegration {
         showMessageFn(
             p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED
         );
-
-        // to change the 'viewsWelcome' content.
-        // bring back to !leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
-        // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-        // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
         this.leoStates.leoStartupFinished = true;
         this.leoStates.leoConnecting = false;
         this.leoStates.fileOpenedReady = false;
@@ -4329,9 +4411,12 @@ export class LeoIntegration {
     /**
      * * List all marked nodes.
      */
-    public async findQuickMarked(): Promise<unknown> {
+    public async findQuickMarked(p_preserveFocus?: boolean): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
         this._leoGotoProvider.refreshTreeRoot();
+        if (p_preserveFocus && (this._leoGoto.visible || this._leoGotoExplorer.visible)) {
+            return Promise.resolve();
+        }
         return this.showGotoPane();
     }
 
