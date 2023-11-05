@@ -15995,8 +15995,8 @@ public async findQuickHistory(): Promise&lt;unknown&gt; {
 public async findQuickMarked(p_preserveFocus?: boolean): Promise&lt;unknown&gt; {
     await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
     this._leoGotoProvider.refreshTreeRoot();
-    if (p_preserveFocus) {
-        return;
+    if (p_preserveFocus &amp;&amp; (this._leoGoto.visible || this._leoGotoExplorer.visible)) {
+        return Promise.resolve();
     }
     return this.showGotoPane();
 }

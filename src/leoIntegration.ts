@@ -4414,8 +4414,8 @@ export class LeoIntegration {
     public async findQuickMarked(p_preserveFocus?: boolean): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
         this._leoGotoProvider.refreshTreeRoot();
-        if (p_preserveFocus) {
-            return;
+        if (p_preserveFocus && (this._leoGoto.visible || this._leoGotoExplorer.visible)) {
+            return Promise.resolve();
         }
         return this.showGotoPane();
     }
