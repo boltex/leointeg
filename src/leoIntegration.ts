@@ -2179,6 +2179,17 @@ export class LeoIntegration {
 
         const w_showBodyNoFocus: boolean = this.finalFocus.valueOf() !== Focus.Body;
 
+        // * Force refresh tree when body update required for 'navigation/insert node' commands
+        if (
+            this.showBodyIfClosed &&
+            this.showOutlineIfClosed &&
+            !this.isOutlineVisible() &&
+            this._refreshType.body
+        ) {
+            // console.log('HAD TO ADJUST!');
+            this._refreshType.tree = true;
+        }
+
         // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
         if (this._refreshType.tree) {
             this._refreshType.tree = false;
@@ -3891,7 +3902,10 @@ export class LeoIntegration {
             w_hadHib = true;
         }
 
-        // Use w_fromOutline for where we intend to leave focus when done with the insert
+        if (!this.isOutlineVisible()) {
+            p_fromOutline = false;
+        }
+
         let w_finalFocus: Focus = p_fromOutline ? Focus.Outline : Focus.Body;
         if (w_hadHib) {
             this._focusInterrupt = true; // this will affect next refresh by triggerbodysave, not the refresh of this pass
@@ -3935,13 +3949,26 @@ export class LeoIntegration {
             let w_action = p_newHeadline
                 ? (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_NAMED_PNODE)
                 : (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_PNODE : Constants.LEOBRIDGE.INSERT_PNODE);
-            const q_commandResult = this.nodeCommand({
-                action: w_action,
-                node: p_node,
-                refreshType: { tree: true, states: true },
-                finalFocus: w_finalFocus,
-                name: p_newHeadline,
-            });
+
+            let q_commandResult;
+            const w_refreshType: ReqRefresh = { states: true };
+
+            if (this.isOutlineVisible()) {
+                w_refreshType.tree = true;
+            } else {
+                w_refreshType.body = true;
+            }
+
+            q_commandResult = this.nodeCommand(
+                {
+                    action: w_action,
+                    node: p_node,
+                    refreshType: w_refreshType,
+                    finalFocus: w_finalFocus,
+                    name: p_newHeadline,
+                }
+            );
+
             return q_commandResult.then((p_package) => {
                 if (this._onDidHideResolve) {
                     this._onDidHideResolve(undefined);

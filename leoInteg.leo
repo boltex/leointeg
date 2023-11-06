@@ -1296,6 +1296,17 @@ private async _launchRefresh(): Promise&lt;unknown&gt; {
 
     const w_showBodyNoFocus: boolean = this.finalFocus.valueOf() !== Focus.Body;
 
+    // * Force refresh tree when body update required for 'navigation/insert node' commands
+    if (
+        this.showBodyIfClosed &amp;&amp;
+        this.showOutlineIfClosed &amp;&amp;
+        !this.isOutlineVisible() &amp;&amp;
+        this._refreshType.body
+    ) {
+        // console.log('HAD TO ADJUST!');
+        this._refreshType.tree = true;
+    }
+
     // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
     if (this._refreshType.tree) {
         this._refreshType.tree = false;
@@ -5606,7 +5617,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_LEO_VERSION_STRING: "Please update: Leo 6.7.2 required.",
+    MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.5 is recommended.",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
     MINIBUFFER_BUTTON_START: "@button-",
@@ -10841,7 +10852,10 @@ public async insertNode(
         w_hadHib = true;
     }
 
-    // Use w_fromOutline for where we intend to leave focus when done with the insert
+    if (!this.isOutlineVisible()) {
+        p_fromOutline = false;
+    }
+
     let w_finalFocus: Focus = p_fromOutline ? Focus.Outline : Focus.Body;
     if (w_hadHib) {
         this._focusInterrupt = true; // this will affect next refresh by triggerbodysave, not the refresh of this pass
@@ -10885,13 +10899,26 @@ public async insertNode(
         let w_action = p_newHeadline
             ? (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_NAMED_PNODE)
             : (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_PNODE : Constants.LEOBRIDGE.INSERT_PNODE);
-        const q_commandResult = this.nodeCommand({
-            action: w_action,
-            node: p_node,
-            refreshType: { tree: true, states: true },
-            finalFocus: w_finalFocus,
-            name: p_newHeadline,
-        });
+
+        let q_commandResult;
+        const w_refreshType: ReqRefresh = { states: true };
+
+        if (this.isOutlineVisible()) {
+            w_refreshType.tree = true;
+        } else {
+            w_refreshType.body = true;
+        }
+
+        q_commandResult = this.nodeCommand(
+            {
+                action: w_action,
+                node: p_node,
+                refreshType: w_refreshType,
+                finalFocus: w_finalFocus,
+                name: p_newHeadline,
+            }
+        );
+
         return q_commandResult.then((p_package) =&gt; {
             if (this._onDidHideResolve) {
                 this._onDidHideResolve(undefined);
@@ -18780,7 +18807,7 @@ private _refreshDesc(): void {
 public static MIN_SERVER_VERSION_NUMBER = {
     major: 1,
     minor: 0,
-    patch: 6
+    patch: 8
 };
 
 </t>
@@ -19279,7 +19306,8 @@ For those familiar with Leo, the 'minibuffer' serves as the nerve center for com
 <t tx="felix.20231009003516.1">## 1.0.16
 
 - Editing a headline, when inserting or renaming a node, can now be interrupted by most other keyboard shortcuts and commands.
-- Fixed minibuffer history so that each opened Leo document has its own minibuffer command history: Requires Leo 6.7.5
+- Fixed minibuffer history so that each opened Leo document has its own minibuffer command history: Requires Leo 6.7.5.
+- Implemented more of the original Leo's easter eggs: Pressing 'm' in the nav input launches the 'marked-list' command.
 
 </t>
 <t tx="felix.20231101200432.1">private _leoEditHeadline: boolean = false;
