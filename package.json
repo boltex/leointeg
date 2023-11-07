@@ -37,7 +37,7 @@
   ],
   "qna": false,
   "main": "./dist/extension",
-  "icon": "resources/leoapp128px.png",
+  "icon": "resources/leoapp256px.png",
   "galleryBanner": {
     "color": "#fff3dc",
     "theme": "light"
