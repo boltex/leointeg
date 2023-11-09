@@ -2313,7 +2313,7 @@ print('done')
   ],
   "qna": false,
   "main": "./dist/extension",
-  "icon": "resources/leoapp128px.png",
+  "icon": "resources/leoapp256px.png",
   "galleryBanner": {
     "color": "#fff3dc",
     "theme": "light"
@@ -8476,7 +8476,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.7.4 or later\
+- Leo Editor 6.7.5 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
@@ -8570,6 +8570,15 @@ _With the **'Leo Tree Browsing'** setting enabled by default, the arrows, home, 
 <t tx="felix.20200718222048.1">## Derive External Files
 
 Use either of the **Save Leo Document**, **Write File Nodes** or **Write Dirty Files** commands to derive external files for any type of **@file** nodes.
+
+| @\&lt;file\&gt; Kind | Sentinels | @others | .leo Data | Write Only |
+| :------------- | :-------: | :-----: | :-------: | :--------: |
+| @asis          |    ❌     |   ❌    |    ✔️     |     ✔️     |
+| @auto          |    ❌     |   ✔️    |    ❌     |     ❌     |
+| @clean         |    ❌     |   ✔️    |    ✔️     |     ❌     |
+| @edit          |    ❌     |   ❌    |    ❌     |     ❌     |
+| @file          |    ✔️     |   ✔️    |    ❌     |     ❌     |
+| @nosent        |    ❌     |   ✔️    |    ✔️     |     ✔️     |
 
 Leo will detect external file changes, and will ask to either **refresh from disk** or **ignore the changes**.
 
