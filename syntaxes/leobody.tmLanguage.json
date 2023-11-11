@@ -13,9 +13,6 @@
             "include": "#leo-languages"
         },
         {
-            "include": "#leo-section-delims"
-        },
-        {
             "include": "#leo-no-color"
         },
         {
@@ -56,25 +53,6 @@
                     "endCaptures": {
                         "1": {
                             "name": "keyword"
-                        }
-                    }
-                }
-            ]
-        },
-        "leo-section-delims": {
-            "patterns": [
-                {
-                    "name": "markup.inline.raw",
-                    "begin": "^(@raw)($|\\s+)",
-                    "end": "^(@end_raw)($|\\s+)",
-                    "beginCaptures": {
-                        "0": {
-                            "name": "invalid"
-                        }
-                    },
-                    "endCaptures": {
-                        "0": {
-                            "name": "invalid"
                         }
                     }
                 }
