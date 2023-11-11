@@ -1183,7 +1183,7 @@ private _revealNode(
     if (this._leoTreeView.visible) {
         w_treeview = this._leoTreeView;
     }
-    if (this._leoTreeExView.visible &amp;&amp; this.config.treeInExplorer) {
+    if (this._leoTreeExView.visible &amp;&amp; this.config.treeInExplorer &amp;&amp; !vscode.workspace.getConfiguration('leojs').get('treeInExplorer', false)) {
         w_treeview = this._leoTreeExView;
     }
     if (!w_treeview &amp;&amp; (this.showOutlineIfClosed || (p_options &amp;&amp; p_options.focus))) {
@@ -4872,7 +4872,7 @@ print('done')
       "id": "leoIntegrationExplorer",
       "name": "Leo Integration",
       "contextualTitle": "Leo",
-      "when": "config.leoIntegration.treeInExplorer",
+      "when": "config.leoIntegration.treeInExplorer &amp;&amp; !config.leojs.treeInExplorer",
       "visibility": "visible"
     },
     {
@@ -4881,35 +4881,35 @@ print('done')
       "contextualTitle": "Leo",
       "name": "Leo Find",
       "title": "Leo Find",
-      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened",
+      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened &amp;&amp; !config.leojs.treeInExplorer",
       "visibility": "collapsed"
     },
     {
       "id": "leoGotoPanelExplorer",
       "name": "Leo Goto",
       "contextualTitle": "Leo",
-      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened",
+      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened &amp;&amp; !config.leojs.treeInExplorer",
       "visibility": "collapsed"
     },
     {
       "id": "leoDocumentsExplorer",
       "name": "Leo Documents",
       "contextualTitle": "Leo",
-      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened",
+      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened &amp;&amp; !config.leojs.treeInExplorer",
       "visibility": "collapsed"
     },
     {
       "id": "leoUndosExplorer",
       "name": "Leo Undo History",
       "contextualTitle": "Leo",
-      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened",
+      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened &amp;&amp; !config.leojs.treeInExplorer",
       "visibility": "collapsed"
     },
     {
       "id": "leoButtonsExplorer",
       "name": "Leo Buttons",
       "contextualTitle": "Leo",
-      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened",
+      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened &amp;&amp; !config.leojs.treeInExplorer",
       "visibility": "collapsed"
     }
   ],
@@ -9649,6 +9649,8 @@ private _onActiveEditorChanged(
 </t>
 <t tx="felix.20200719025231.3">constructor(private _context: vscode.ExtensionContext) {
 
+    const w_effectiveLeojsInExplorer = vscode.workspace.getConfiguration('leojs').get('treeInExplorer', false);
+
     // * Setup States
     this.leoStates = new LeoStates(_context, this);
 
@@ -9717,7 +9719,7 @@ private _onActiveEditorChanged(
     );
 
     // * Init this._lastTreeView based on config only assuming explorer is default sidebar view
-    this._lastTreeView = this.config.treeInExplorer ? this._leoTreeExView : this._leoTreeView;
+    this._lastTreeView = (this.config.treeInExplorer &amp;&amp; !w_effectiveLeojsInExplorer) ? this._leoTreeExView : this._leoTreeView;
 
     // * Create Leo Opened Documents Treeview Providers and tree views
     this._leoDocumentsProvider = new LeoDocumentsProvider(this);
@@ -9788,7 +9790,7 @@ private _onActiveEditorChanged(
         )
     );
     // * Set 'last' goto tree view visible
-    this._leoGotoProvider.setLastGotoView(this.config.treeInExplorer ? this._leoGotoExplorer : this._leoGoto);
+    this._leoGotoProvider.setLastGotoView((this.config.treeInExplorer &amp;&amp; !w_effectiveLeojsInExplorer) ? this._leoGotoExplorer : this._leoGoto);
 
     // * Create 'Undo History' Treeview Providers and tree views
     this._leoUndosProvider = new LeoUndosProvider(this);
@@ -14541,7 +14543,7 @@ private _bodySaveDeactivate(
 {
   "command": "workbench.view.extension.leoIntegrationView",
   "key": "ctrl+shift+l",
-  "when": "config.leoIntegration.activityViewShortcut &amp;&amp; !editorHasSelection &amp;&amp; !inSearchEditor &amp;&amp; focusedView != workbench.view.search"
+  "when": "!config.leojs.activityViewShortcut &amp;&amp; config.leoIntegration.activityViewShortcut &amp;&amp; !editorHasSelection &amp;&amp; !inSearchEditor &amp;&amp; focusedView != workbench.view.search"
 }
 </t>
 <t tx="felix.20210816230003.1">## 0.1.17

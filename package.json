@@ -237,7 +237,7 @@
           "id": "leoIntegrationExplorer",
           "name": "Leo Integration",
           "contextualTitle": "Leo",
-          "when": "config.leoIntegration.treeInExplorer",
+          "when": "config.leoIntegration.treeInExplorer && !config.leojs.treeInExplorer",
           "visibility": "visible"
         },
         {
@@ -246,35 +246,35 @@
           "contextualTitle": "Leo",
           "name": "Leo Find",
           "title": "Leo Find",
-          "when": "config.leoIntegration.treeInExplorer && leoTreeOpened",
+          "when": "config.leoIntegration.treeInExplorer && leoTreeOpened && !config.leojs.treeInExplorer",
           "visibility": "collapsed"
         },
         {
           "id": "leoGotoPanelExplorer",
           "name": "Leo Goto",
           "contextualTitle": "Leo",
-          "when": "config.leoIntegration.treeInExplorer && leoTreeOpened",
+          "when": "config.leoIntegration.treeInExplorer && leoTreeOpened && !config.leojs.treeInExplorer",
           "visibility": "collapsed"
         },
         {
           "id": "leoDocumentsExplorer",
           "name": "Leo Documents",
           "contextualTitle": "Leo",
-          "when": "config.leoIntegration.treeInExplorer && leoTreeOpened",
+          "when": "config.leoIntegration.treeInExplorer && leoTreeOpened && !config.leojs.treeInExplorer",
           "visibility": "collapsed"
         },
         {
           "id": "leoUndosExplorer",
           "name": "Leo Undo History",
           "contextualTitle": "Leo",
-          "when": "config.leoIntegration.treeInExplorer && leoTreeOpened",
+          "when": "config.leoIntegration.treeInExplorer && leoTreeOpened && !config.leojs.treeInExplorer",
           "visibility": "collapsed"
         },
         {
           "id": "leoButtonsExplorer",
           "name": "Leo Buttons",
           "contextualTitle": "Leo",
-          "when": "config.leoIntegration.treeInExplorer && leoTreeOpened",
+          "when": "config.leoIntegration.treeInExplorer && leoTreeOpened && !config.leojs.treeInExplorer",
           "visibility": "collapsed"
         }
       ],
@@ -3860,7 +3860,7 @@
       {
         "command": "workbench.view.extension.leoIntegrationView",
         "key": "ctrl+shift+l",
-        "when": "config.leoIntegration.activityViewShortcut && !editorHasSelection && !inSearchEditor && focusedView != workbench.view.search"
+        "when": "!config.leojs.activityViewShortcut && config.leoIntegration.activityViewShortcut && !editorHasSelection && !inSearchEditor && focusedView != workbench.view.search"
       }
     ],
     "resourceLabelFormatters": [

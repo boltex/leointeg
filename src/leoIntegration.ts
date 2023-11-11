@@ -297,6 +297,8 @@ export class LeoIntegration {
 
     constructor(private _context: vscode.ExtensionContext) {
 
+        const w_effectiveLeojsInExplorer = vscode.workspace.getConfiguration('leojs').get('treeInExplorer', false);
+
         // * Setup States
         this.leoStates = new LeoStates(_context, this);
 
@@ -365,7 +367,7 @@ export class LeoIntegration {
         );
 
         // * Init this._lastTreeView based on config only assuming explorer is default sidebar view
-        this._lastTreeView = this.config.treeInExplorer ? this._leoTreeExView : this._leoTreeView;
+        this._lastTreeView = (this.config.treeInExplorer && !w_effectiveLeojsInExplorer) ? this._leoTreeExView : this._leoTreeView;
 
         // * Create Leo Opened Documents Treeview Providers and tree views
         this._leoDocumentsProvider = new LeoDocumentsProvider(this);
@@ -436,7 +438,7 @@ export class LeoIntegration {
             )
         );
         // * Set 'last' goto tree view visible
-        this._leoGotoProvider.setLastGotoView(this.config.treeInExplorer ? this._leoGotoExplorer : this._leoGoto);
+        this._leoGotoProvider.setLastGotoView((this.config.treeInExplorer && !w_effectiveLeojsInExplorer) ? this._leoGotoExplorer : this._leoGoto);
 
         // * Create 'Undo History' Treeview Providers and tree views
         this._leoUndosProvider = new LeoUndosProvider(this);
@@ -2437,7 +2439,7 @@ export class LeoIntegration {
         if (this._leoTreeView.visible) {
             w_treeview = this._leoTreeView;
         }
-        if (this._leoTreeExView.visible && this.config.treeInExplorer) {
+        if (this._leoTreeExView.visible && this.config.treeInExplorer && !vscode.workspace.getConfiguration('leojs').get('treeInExplorer', false)) {
             w_treeview = this._leoTreeExView;
         }
         if (!w_treeview && (this.showOutlineIfClosed || (p_options && p_options.focus))) {
