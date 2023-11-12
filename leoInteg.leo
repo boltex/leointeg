@@ -8487,7 +8487,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718222035.1">## Features
 
-- UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector**, **find panel**, along with a **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector** along with a **Log Window** [output channel](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
 - **Derived files change detection**. See [External Files](#derive-external-files-) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
@@ -8660,9 +8660,9 @@ and using the outline's selected node 'gnx' as identifier.
 
 - [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leo-editor.github.io/leo-editor/)
 - [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
-- [Vitalije](https://github.com/vitalije) for his contributions and support
-- [Arjan](https://github.com/ar-jan) for his suggestions and ideas
-- [Thomas](https://github.com/tbpassin) for his contributions and support
+- [Vitalije Milošević](https://github.com/vitalije) for his contributions and support
+- [Arjan Mossel](https://github.com/ar-jan) for his suggestions and ideas
+- [Thomas Passin](https://github.com/tbpassin) for his contributions and support
 - [Viktor](https://github.com/ranvik14) for his contributions and support
 - [Gaurami](https://github.com/ATikhonov2) for his suggestions, bug reports and support
 - [Kevin Henderson](https://github.com/kghenderson) for his suggestions and support
