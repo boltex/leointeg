@@ -8447,8 +8447,7 @@ _If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.gi
 
 ### Break down your code into a structured outline that generates or parses back your source files
 
-&gt; Leo is a fundamentally different way of using and organizing data, programs and scripts.\
-&gt; [📺 Introduction Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
+&gt; Leo is a fundamentally different way of using and organizing data, programs and scripts. [📺 Introduction Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
 
 See Leo, the Literate Editor with Outline, at [leo-editor.github.io/leo-editor](https://leo-editor.github.io/leo-editor/)
 or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.visualstudio.com](https://code.visualstudio.com/).
@@ -8489,7 +8488,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 
 - UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector** along with a **Log Window** [output channel](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
-- **Derived files change detection**. See [External Files](#derive-external-files-) below for more details
+- **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
 - **Find panel** that reacts to Leo's typical keybindings, Ctrl+F, F2, F3... when focus is in the outline or body pane
 - **Nav and Tag panel** controls are integrated in the Find panel
