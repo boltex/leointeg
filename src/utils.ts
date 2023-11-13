@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { Icon, UserCommand, ArchivedPosition } from "./types";
+import { Icon, UserCommand, ArchivedPosition, Version } from "./types";
 
 var portfinder = require('portfinder');
 
@@ -15,6 +15,23 @@ var uniqueId: number = 0;
 export function getUniqueId(): string {
     const id = uniqueId++;
     return id.toString();
+}
+
+/**
+ * * Compares major, minor and patch members of versions
+ * @param p_version given version 
+ * @param p_min minimal version
+ * @returns true if at least minimal version
+ */
+export function compareVersions(p_version: Version, p_min: Version): boolean {
+    if (
+        p_version.major > p_min.major ||
+        p_version.major === p_min.major && p_version.minor > p_min.minor ||
+        p_version.major === p_min.major && p_version.minor === p_min.minor && p_version.patch >= p_min.patch
+    ) {
+        return true;
+    }
+    return false;
 }
 
 /**

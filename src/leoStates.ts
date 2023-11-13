@@ -201,6 +201,7 @@ export class LeoStates {
         this._leoInChapter = p_value;
         this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_IN_CHAPTER, p_value);
     }
+
     private _leoTopHoistChapter: boolean = false;
     get leoTopHoistChapter(): boolean {
         return this._leoTopHoistChapter;
@@ -209,7 +210,17 @@ export class LeoStates {
         this._leoTopHoistChapter = p_value;
         this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_TOP_HOIST_CHAPTER, p_value);
     }
-    // * 'states' flags about current selection, for visibility and commands availability
+
+    private _leoEditHeadline: boolean = false;
+    get leoEditHeadline(): boolean {
+        return this._leoEditHeadline;
+    }
+    set leoEditHeadline(p_value: boolean) {
+        this._leoEditHeadline = p_value;
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_EDIT_HEADLINE, p_value);
+    }
+    
+    // * 'states' flags about current selection, for visibility and commands availability=
     private _leoMarked: boolean = false;
     get leoMarked(): boolean {
         return this._leoMarked;

@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
 import * as path from "path";
@@ -54,7 +55,6 @@ export class LeoIntegration {
 
     // * General integration usage variables
     private _clipboardContent: string = "";
-    private _minibufferHistory: vscode.QuickPickItem[] = [];
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -94,7 +94,20 @@ export class LeoIntegration {
         this._lastRefreshNodeTS = performance.now();
     }
 
+    // * Automatic leoserver startup management service
+    private _serverService: ServerService;
+    public serverVersion: {
+        major: number;
+        minor: number;
+        patch: number;
+    } = {
+            major: 0,
+            minor: 0,
+            patch: 0
+        };
+
     public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
+
     private _serverOpenedFileName: string = ""; // Server last reported opened file name.
     get serverOpenedFileName(): string {
         return this._serverOpenedFileName;
@@ -160,6 +173,12 @@ export class LeoIntegration {
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
 
     private _preventShowBody = false; // Used when refreshing treeview from config: It requires not to open the body pane when refreshing
+
+    // * Reveal Timers
+    private _gotSelectedNodeBodyTimer: undefined | NodeJS.Timeout;
+    private _gotSelectedNodeRevealTimer: undefined | NodeJS.Timeout;
+    private _showBodySwitchBodyTimer: undefined | NodeJS.Timeout;
+    private _leoDocumentsRevealTimer: undefined | NodeJS.Timeout;
 
     // * Documents Pane
     private _leoDocumentsProvider: LeoDocumentsProvider;
@@ -245,16 +264,13 @@ export class LeoIntegration {
     // * Status Bar
     // private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
 
-    // * Edit/Insert Headline Input Box options instance, setup so clicking outside cancels the headline change
-    private _headlineInputOptions: vscode.InputBoxOptions = {
-        ignoreFocusOut: false,
-        value: '',
-        valueSelection: undefined,
-        prompt: '',
-    };
-
-    // * Automatic leoserver startup management service
-    private _serverService: ServerService;
+    // * Edit/Insert Headline Input Box System made with 'createInputBox'.
+    private _hib: undefined | vscode.InputBox;
+    private _hibResolve: undefined | ((value: string | PromiseLike<string | undefined> | undefined) => void);
+    private _onDidHideResolve: undefined | ((value: PromiseLike<void> | undefined) => void);
+    private _hibLastValue: undefined | string;
+    private _hibInterrupted = false;
+    private _hibDisposables: vscode.Disposable[] = [];
 
     // * Timing
     private _needLastSelectedRefresh = false; // USED IN showBody
@@ -286,6 +302,8 @@ export class LeoIntegration {
     public launchRefresh: (() => void);
 
     constructor(private _context: vscode.ExtensionContext) {
+
+        const w_effectiveLeojsInExplorer = vscode.workspace.getConfiguration('leojs').get('treeInExplorer', false);
 
         // * Setup States
         this.leoStates = new LeoStates(_context, this);
@@ -355,7 +373,7 @@ export class LeoIntegration {
         );
 
         // * Init this._lastTreeView based on config only assuming explorer is default sidebar view
-        this._lastTreeView = this.config.treeInExplorer ? this._leoTreeExView : this._leoTreeView;
+        this._lastTreeView = (this.config.treeInExplorer && !w_effectiveLeojsInExplorer) ? this._leoTreeExView : this._leoTreeView;
 
         // * Create Leo Opened Documents Treeview Providers and tree views
         this._leoDocumentsProvider = new LeoDocumentsProvider(this);
@@ -426,7 +444,7 @@ export class LeoIntegration {
             )
         );
         // * Set 'last' goto tree view visible
-        this._leoGotoProvider.setLastGotoView(this.config.treeInExplorer ? this._leoGotoExplorer : this._leoGoto);
+        this._leoGotoProvider.setLastGotoView((this.config.treeInExplorer && !w_effectiveLeojsInExplorer) ? this._leoGotoExplorer : this._leoGoto);
 
         // * Create 'Undo History' Treeview Providers and tree views
         this._leoUndosProvider = new LeoUndosProvider(this);
@@ -585,28 +603,114 @@ export class LeoIntegration {
      * Starts a leoBridge server, and/or establish a connection to a server, based on config settings.
      */
     public startNetworkServices(): void {
-        // * Check settings and start a server accordingly
-        if (this.config.startServerAutomatically) {
-            if (this.config.limitUsers > 1) {
-                utils.findSingleAvailablePort(this.config.connectionPort)
-                    .then((p_availablePort) => {
-                        this.startServer();
-                    }, (p_reason) => {
-                        // Rejected: Multi user port IN USE so skip start
-                        if (this.config.connectToServerAutomatically) {
-                            // Still try to connect if auto-connect is 'on'
-                            this.connect();
-                        }
-                    });
-            } else {
-                this.startServer();
-            }
-        } else if (this.config.connectToServerAutomatically) {
-            // * (via settings) Connect to Leo Bridge server automatically without starting one first
-            this.connect();
+
+        let q_checkPath;
+        if (!this.config.leoEditorPath.trim()) {
+            q_checkPath = this.findInstallPath();
         } else {
-            this.leoStates.leoStartupFinished = true;
+            q_checkPath = Promise.resolve();
         }
+
+        // * Check settings and start a server accordingly
+        q_checkPath.then(() => {
+            if (this.config.startServerAutomatically) {
+                if (this.config.limitUsers > 1) {
+                    utils.findSingleAvailablePort(this.config.connectionPort)
+                        .then((p_availablePort) => {
+                            this.startServer();
+                        }, (p_reason) => {
+                            // Rejected: Multi user port IN USE so skip start
+                            if (this.config.connectToServerAutomatically) {
+                                // Still try to connect if auto-connect is 'on'
+                                this.connect();
+                            }
+                        });
+                } else {
+                    this.startServer();
+                }
+            } else if (this.config.connectToServerAutomatically) {
+                // * (via settings) Connect to Leo Bridge server automatically without starting one first
+                this.connect();
+            } else {
+                this.leoStates.leoStartupFinished = true;
+            }
+        });
+    }
+
+    public async findInstallPath(): Promise<string> {
+
+        return new Promise((p_resolve, p_reject) => {
+            // Find Leo's installation folder with command line tricks from Matt Wilkie 
+            const options = { encoding: 'utf-8' as BufferEncoding };
+            const isWindows = process.platform === 'win32';
+            let hasCreated = false;
+            let python = this.config.leoPythonCommand;
+            if (!python) {
+                python = Constants.DEFAULT_PYTHON;
+                if (isWindows) {
+                    python = Constants.WIN32_PYTHON;
+                }
+            }
+
+            // Your command
+            let output = "";
+            try {
+                output = execSync(python + ' -c "import leo; import os; print(os.path.dirname(leo.__file__))"', options);
+            } catch (error) {
+                output = ""; // Clear to make sure
+            }
+
+            if (!output) {
+                try {
+                    if (isWindows) {
+                        execSync('echo g.es_print(g.app.loadManager.computeLeoDir()) > tmp_locate_leo_dir.leox', options);
+                    } else {
+                        execSync('echo "g.es_print(g.app.loadManager.computeLeoDir())" > tmp_locate_leo_dir.leox', options);
+                    }
+                    hasCreated = true;
+
+                } catch (e) {
+                    // pass
+                }
+                try {
+
+                    output = execSync('leo-messages --silent --script=tmp_locate_leo_dir.leox', options);
+
+                } catch (error) {
+                    output = ""; // Clear to make sure
+                } finally {
+                    if (isWindows) {
+                        execSync('del tmp_locate_leo_dir.leox', options);
+                    } else {
+                        execSync('rm tmp_locate_leo_dir.leox', options);
+                    }
+                }
+            }
+
+            if (output && output.trim()) {
+
+                output = output.trim();
+
+                if (output.endsWith('/leo') || output.endsWith('\\leo')) {
+                    output = output.slice(0, -4);
+                }
+
+                // Set config option to the proper leo path.
+                this.config.setLeoIntegSettings(
+                    [{
+                        code: Constants.CONFIG_NAMES.LEO_EDITOR_PATH,
+                        value: output
+                    }]
+                ).then(() => {
+                    this.leoSettingsWebview.changedConfiguration();
+                    vscode.window.showInformationMessage('Leo-Editor installation folder found automatically as ' + output);
+                    p_resolve(output);
+                });
+            } else {
+                p_resolve(""); // Empty string when not found.
+            }
+        });
+
     }
 
     /**
@@ -640,10 +744,9 @@ export class LeoIntegration {
                     }
                 },
                 (p_reason) => {
-                    // This context flag will remove the 'connecting' welcome view
+                    // This context flag will remove the 'Starting server' welcome view
                     this.leoStates.leoStartingServer = false;
-                    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-                    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+                    this.leoStates.leoStartupFinished = true;
                     if (
                         [Constants.USER_MESSAGES.LEO_PATH_MISSING,
                         Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT].includes(p_reason)
@@ -681,6 +784,7 @@ export class LeoIntegration {
      * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
      */
     public connect(): void {
+
         if (this.leoStates.leoBridgeReady || this.leoStates.leoConnecting) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
             return;
@@ -771,11 +875,6 @@ export class LeoIntegration {
         showMessageFn(
             p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED
         );
-
-        // to change the 'viewsWelcome' content.
-        // bring back to !leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
-        // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-        // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
         this.leoStates.leoStartupFinished = true;
         this.leoStates.leoConnecting = false;
         this.leoStates.fileOpenedReady = false;
@@ -899,13 +998,9 @@ export class LeoIntegration {
     public checkVersion(): void {
         this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_rv: LeoBridgePackage) => {
             let w_ok = false;
-            let w_sv = Constants.MIN_SERVER_VERSION_NUMBER;
             if (p_rv && p_rv.major !== undefined && p_rv.minor !== undefined && p_rv.patch !== undefined) {
-                if (
-                    p_rv.major > w_sv.minMajor ||
-                    p_rv.major === w_sv.minMajor && p_rv.minor > w_sv.minMinor ||
-                    p_rv.major === w_sv.minMajor && p_rv.minor === w_sv.minMinor && p_rv.patch >= w_sv.minPatch
-                ) {
+                this.serverVersion = { major: p_rv.major, minor: p_rv.minor, patch: p_rv.patch };
+                if (utils.compareVersions(this.serverVersion, Constants.MIN_SERVER_VERSION_NUMBER)) {
                     w_ok = true;
                 }
             }
@@ -1215,7 +1310,7 @@ export class LeoIntegration {
      * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
      * @returns a promise that resolves when the possible saving process is finished
      */
-    private _isBusyTriggerSave(p_all: boolean, p_forcedVsCodeSave?: boolean): Promise<boolean> {
+    private _isBusyTriggerSave(p_all: boolean, p_forcedVsCodeSave?: boolean): Promise<unknown> {
         if (this._isBusy(p_all)) {
             return Promise.reject('Command stack busy'); // Warn user to wait for end of busy state
         }
@@ -1524,7 +1619,7 @@ export class LeoIntegration {
             this._checkPreviewMode(p_editor);
         }
         if (!p_internalCall) {
-            this.triggerBodySave(true); // Save in case edits were pending
+            this.triggerBodySave(true, true); // Save in case edits were pending
         }
         // removed until proper API for knowing focus placement
         // // * Status flag check
@@ -1552,7 +1647,7 @@ export class LeoIntegration {
         if (p_columnChangeEvent && p_columnChangeEvent.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
             this._checkPreviewMode(p_columnChangeEvent.textEditor);
         }
-        this.triggerBodySave(true);
+        this.triggerBodySave(true, true);
     }
 
     /**
@@ -1571,7 +1666,7 @@ export class LeoIntegration {
                 }
             });
         }
-        this.triggerBodySave(true);
+        this.triggerBodySave(true, true);
     }
 
     /**
@@ -1580,7 +1675,7 @@ export class LeoIntegration {
      */
     public _changedWindowState(p_windowState: vscode.WindowState): void {
         // no other action
-        this.triggerBodySave(true);
+        this.triggerBodySave(true, true);
     }
 
     /**
@@ -1788,11 +1883,27 @@ export class LeoIntegration {
     }
 
     /**
-     * * Save body to Leo if its dirty. That is, only if a change has been made to the body 'document' so far
+     * * Validate headline edit input box if active, or, Save body to the Leo app if its dirty.
      * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
      * @returns a promise that resolves when the possible saving process is finished
      */
-    public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise<boolean> {
+    public triggerBodySave(p_forcedVsCodeSave?: boolean, p_fromFocusChange?: boolean): Promise<unknown> {
+
+        // * Check if headline edit input box is active. Validate it with current value.
+        if (!p_fromFocusChange && this._hib && this._hib.enabled) {
+            this._hibInterrupted = true;
+            this._hib.enabled = false;
+            this._hibLastValue = this._hib.value;
+            this._hib.hide();
+            if (this._onDidHideResolve) {
+                console.error('IN triggerBodySave AND _onDidHideResolve PROMISE ALREADY EXISTS!');
+            }
+            const w_resolveAfterEditHeadline = new Promise<void>((p_resolve, p_reject) => {
+                this._onDidHideResolve = p_resolve;
+            });
+            return w_resolveAfterEditHeadline;
+        }
+
         // * Save body to Leo if a change has been made to the body 'document' so far
         let q_savePromise: Promise<boolean>;
         if (
@@ -2076,6 +2187,17 @@ export class LeoIntegration {
 
         const w_showBodyNoFocus: boolean = this.finalFocus.valueOf() !== Focus.Body;
 
+        // * Force refresh tree when body update required for 'navigation/insert node' commands
+        if (
+            this.showBodyIfClosed &&
+            this.showOutlineIfClosed &&
+            !this.isOutlineVisible() &&
+            this._refreshType.body
+        ) {
+            // console.log('HAD TO ADJUST!');
+            this._refreshType.tree = true;
+        }
+
         // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
         if (this._refreshType.tree) {
             this._refreshType.tree = false;
@@ -2323,7 +2445,7 @@ export class LeoIntegration {
         if (this._leoTreeView.visible) {
             w_treeview = this._leoTreeView;
         }
-        if (this._leoTreeExView.visible && this.config.treeInExplorer) {
+        if (this._leoTreeExView.visible && this.config.treeInExplorer && !vscode.workspace.getConfiguration('leojs').get('treeInExplorer', false)) {
             w_treeview = this._leoTreeExView;
         }
         if (!w_treeview && (this.showOutlineIfClosed || (p_options && p_options.focus))) {
@@ -2388,13 +2510,19 @@ export class LeoIntegration {
 
         ) {
             // ! MINIMAL TIMEOUT REQUIRED ! WHY ?? (works so leave)
-            setTimeout(() => {
+            if (this._gotSelectedNodeBodyTimer) {
+                clearTimeout(this._gotSelectedNodeBodyTimer);
+            }
+            this._gotSelectedNodeBodyTimer = setTimeout(() => {
                 this.showBody(false, this.finalFocus.valueOf() !== Focus.Body); // SAME with scroll information specified
             }, 25);
         } else {
 
             if (this._revealType) {
-                setTimeout(() => {
+                if (this._gotSelectedNodeRevealTimer) {
+                    clearTimeout(this._gotSelectedNodeRevealTimer);
+                }
+                this._gotSelectedNodeRevealTimer = setTimeout(() => {
                     this._lastTreeView.reveal(p_element, {
                         select: true,
                         focus: w_focusTree
@@ -2850,10 +2978,8 @@ export class LeoIntegration {
             const w_edit = new vscode.WorkspaceEdit();
             w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
             q_edit = vscode.workspace.applyEdit(w_edit).then(() => {
-                // console.log('applyEdit done');
                 return true;
             }, () => {
-                // console.log('applyEdit failed');
                 return false;
             });
         } else {
@@ -2861,10 +2987,8 @@ export class LeoIntegration {
         }
         Promise.all([q_save, q_edit])
             .then(() => {
-                // console.log('cleaned both');
                 return this.closeBody();
             }, () => {
-                // console.log('cleaned both failed');
                 return true;
             });
 
@@ -2980,9 +3104,11 @@ export class LeoIntegration {
                 // }
 
                 if (w_needRefreshFlag) {
-
+                    if (this._showBodySwitchBodyTimer) {
+                        clearTimeout(this._showBodySwitchBodyTimer);
+                    }
                     // redo apply to body!
-                    setTimeout(() => {
+                    this._showBodySwitchBodyTimer = setTimeout(() => {
                         if (this.lastSelectedNode) {
                             this._switchBody(false, p_preventTakingFocus);
                         }
@@ -3264,6 +3390,12 @@ export class LeoIntegration {
         // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
         await this._isBusyTriggerSave(false, true);
 
+        let w_history: string[] = [];
+        if (utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 8 })) {
+            const w_historyPackage = await this.sendAction("!get_history");
+            w_history = w_historyPackage.history || [];
+        }
+
         const q_commandList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
             Constants.LEOBRIDGE.GET_COMMANDS
         ).then((p_result: LeoBridgePackage) => {
@@ -3317,44 +3449,21 @@ export class LeoIntegration {
                         stash_command.push(w_com.label);
                     }
                 }
-                // const w_noDetails = p_result.commands
-                //     .filter(
-                //         p_command => !p_command.detail && !(
-                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START) ||
-                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_RCLICK_START) ||
-                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_DEL_BUTTON_START) ||
-                //             p_command.label.startsWith(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START)
-                //         )
-                //     );
-
-                const w_firstButtons: vscode.QuickPickItem[] = [];
-                const w_secondRClicks: vscode.QuickPickItem[] = [];
-                const w_thirdCommands: vscode.QuickPickItem[] = [];
-                const w_fourthNoName: vscode.QuickPickItem[] = [];
 
                 for (const p_command of w_noDetails) {
                     if (stash_button.includes(Constants.USER_MESSAGES.MINIBUFFER_BUTTON_START + p_command.label)) {
                         p_command.description = Constants.USER_MESSAGES.MINIBUFFER_BUTTON;
-                        w_firstButtons.push(p_command);
                     }
                     if (stash_rclick.includes(Constants.USER_MESSAGES.MINIBUFFER_RCLICK_START + p_command.label)) {
                         p_command.description = Constants.USER_MESSAGES.MINIBUFFER_RCLICK;
-                        w_secondRClicks.push(p_command);
-
                     }
                     if (stash_command.includes(Constants.USER_MESSAGES.MINIBUFFER_COMMAND_START + p_command.label)) {
                         p_command.description = Constants.USER_MESSAGES.MINIBUFFER_COMMAND;
-                        w_thirdCommands.push(p_command);
-
                     }
                     if (!p_command.description) {
                         p_command.description = Constants.USER_MESSAGES.MINIBUFFER_USER_DEFINED;
-                        w_fourthNoName.push(p_command);
                     }
                 }
-                // for (const p_command of w_noDetails) {
-                //     p_command.description = Constants.USER_MESSAGES.MINIBUFFER_USER_DEFINED;
-                // }
 
                 const w_withDetails = p_result.commands.filter(p_command => !!p_command.detail);
 
@@ -3365,20 +3474,17 @@ export class LeoIntegration {
 
                 const w_result: vscode.QuickPickItem[] = [];
 
-                if (this._minibufferHistory.length) {
+                if (w_history.length) {
                     w_result.push(Constants.MINIBUFFER_QUICK_PICK);
                 }
 
                 // Finish minibuffer list
                 if (w_noDetails.length) {
-                    w_result.push(...w_firstButtons);
-                    w_result.push(...w_secondRClicks);
-                    w_result.push(...w_thirdCommands);
-                    w_result.push(...w_fourthNoName);
+                    w_result.push(...w_noDetails);
                 }
 
                 // Separator above real commands, if needed...
-                if (w_noDetails.length || this._minibufferHistory.length) {
+                if (w_noDetails.length || w_history.length) {
                     w_result.push({
                         label: "", kind: vscode.QuickPickItemKind.Separator
                     });
@@ -3441,7 +3547,7 @@ export class LeoIntegration {
 
         // First, check for undo-history list being requested
         if (w_picked && w_picked.label === Constants.USER_MESSAGES.MINIBUFFER_HISTORY_LABEL) {
-            return this._showMinibufferHistory();
+            return this._showMinibufferHistory(w_choices, w_history);
         }
         if (w_picked) {
             return this._doMinibufferCommand(w_picked);
@@ -3452,37 +3558,62 @@ export class LeoIntegration {
      * * Opens quickPick of minibuffer's commands history
      * @returns Promise that resolves when the chosen command is placed on the front-end command stack
      */
-    private async _showMinibufferHistory(): Promise<LeoBridgePackage | undefined> {
+    private async _showMinibufferHistory(p_choices: vscode.QuickPickItem[], p_history: string[]): Promise<LeoBridgePackage | undefined> {
 
-        if (!this._minibufferHistory.length) {
+        if (!p_history || !p_history.length) {
             return Promise.resolve(undefined);
         }
-        const w_commandList: vscode.QuickPickItem[] = this._minibufferHistory;
+
+        // Build from list of strings (labels).
+        let w_commandList: vscode.QuickPickItem[] = [];
+        for (const w_command of p_history) {
+            let w_found = false;
+            for (const w_pick of p_choices) {
+                if (w_pick.label === w_command) {
+                    w_commandList.push(w_pick);
+                    w_found = true;
+                    break;
+                }
+            }
+            if (!w_found) {
+                w_commandList.push({
+                    label: w_command,
+                    description: Constants.USER_MESSAGES.MINIBUFFER_BAD_COMMAND,
+                    detail: `No command function for ${w_command}`
+                });
+            }
+        }
+        if (!w_commandList.length) {
+            return;
+        }
+
         // Add Nav tab special commands
         const w_options: vscode.QuickPickOptions = {
             placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
             matchOnDetail: true,
         };
-        const w_picked = await vscode.window.showQuickPick(w_commandList, w_options);
+        const w_picked = await vscode.window.showQuickPick(w_commandList.reverse(), w_options);
         return this._doMinibufferCommand(w_picked);
     }
 
     /**
      * * Perform chosen minibuffer command
      */
-    private async _doMinibufferCommand(p_picked: vscode.QuickPickItem | undefined): Promise<LeoBridgePackage | undefined> {
-        // * First check for overridden command: Exit by doing the overridden command
+    private async _doMinibufferCommand(p_picked?: vscode.QuickPickItem): Promise<LeoBridgePackage | undefined> {
+        // First, add to minibuffer history for that commander.
+        if (p_picked && utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 8 })) {
+            await this.sendAction("!add_history", { command: p_picked.label });
+        }
+        // Second, check for overridden command: Exit by doing the overridden command.
         if (p_picked &&
             p_picked.label &&
             Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
-            this._addToMinibufferHistory(p_picked);
             return vscode.commands.executeCommand(
                 Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
             );
         }
-        // * Ok, it was really a minibuffer command
+        // Ok, it was really a minibuffer command
         if (p_picked && p_picked.label) {
-            this._addToMinibufferHistory(p_picked);
             const w_commandResult = this.nodeCommand({
                 action: "-" + p_picked.label,
                 node: undefined,
@@ -3495,23 +3626,64 @@ export class LeoIntegration {
                 },
                 finalFocus: Focus.NoChange, // TODO: Fetch focus location from Leo?
             });
-            return w_commandResult ? w_commandResult : Promise.reject('Command not added');
+            return w_commandResult;
         }
     }
 
     /**
-     * Add to the minibuffer history (without duplicating entries)
+     * Show a headline input box that resolves to undefined only with escape.
+     * Other Leo commands interrupt by accepting the value entered so far.
      */
-    private _addToMinibufferHistory(p_command: vscode.QuickPickItem): void {
-        const w_found = this._minibufferHistory.map(p_item => p_item.label).indexOf(p_command.label);
-        // If found, will be removed (and placed on top)
-        if (w_found >= 0) {
-            this._minibufferHistory.splice(w_found, 1);
-        }
-        // Add to top of minibuffer history
-        this._minibufferHistory.unshift(p_command);
-    }
+    private _showHeadlineInputBox(p_options: vscode.InputBoxOptions): Promise<string | undefined> {
 
+        const hib = vscode.window.createInputBox();
+        this._hibLastValue = undefined; // Prepare for 'cancel' as default.
+        const q_headlineInputBox = new Promise<string | undefined>((p_resolve, p_reject) => {
+
+            hib.ignoreFocusOut = !!p_options.ignoreFocusOut;
+            hib.value = p_options.value!;
+            hib.valueSelection = p_options.valueSelection;
+            hib.prompt = p_options.prompt;
+            this._hibDisposables.push(hib.onDidAccept(() => {
+                if (this._hib) {
+                    this._hib.enabled = false;
+                    this._hibLastValue = this._hib.value;
+                    this._hib.hide();
+                }
+            }, this));
+            if (this._hibResolve) {
+                console.error('IN _showHeadlineInputBox AND THE _hibResolve PROMISE ALREADY EXISTS!');
+            }
+            this._hibResolve = p_resolve;
+            // onDidHide handles CANCEL AND ACCEPT AND INTERCEPT !
+            this._hibDisposables.push(hib.onDidHide(() => {
+                if (this._hib) {
+                    this._hibLastValue = this._hib.value; // * FORCE VALUE EVEN WHEN CANCELLING LIKE IN ORIGINAL LEO !
+                }
+                this.leoStates.leoEditHeadline = false;
+                if (this._hibResolve) {
+                    // RESOLVE whatever value was set otherwise undefined will mean 'canceled'.
+                    this._hibResolve(this._hibLastValue);
+                    // Dispose of everything disposable with the edit headline process.
+                    for (const disp of this._hibDisposables) {
+                        disp.dispose();
+                    }
+                    // Empty related global variables.
+                    this._hibDisposables = [];
+                    this._hibResolve = undefined;
+                    this._hib = undefined;
+                } else {
+                    console.log('ERROR ON onDidHide NO _hibResolve !');
+                }
+            }, this));
+            this._hibDisposables.push(hib);
+            // setup finished, set command context and show it! 
+            this._hib = hib;
+            this.leoStates.leoEditHeadline = true;
+            this._hib.show();
+        });
+        return q_headlineInputBox;
+    }
     /**
      * * Previous / Next Node Buttons
      * @param p_next Flag to mean 'next' instead of default 'previous'
@@ -3542,13 +3714,13 @@ export class LeoIntegration {
      * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
      * @returns a promise with the package gotten back from Leo when asked to select the tree node
      */
-    public selectTreeNode(
+    public async selectTreeNode(
         p_node: ArchivedPosition,
         p_internalCall?: boolean,
         p_aside?: boolean
     ): Promise<void | LeoBridgePackage | vscode.TextEditor> {
 
-        this.triggerBodySave(true);
+        await this.triggerBodySave(true);
 
         // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
         if (p_aside && p_node !== this.lastSelectedNode) {
@@ -3618,9 +3790,9 @@ export class LeoIntegration {
      * (see command stack 'rules' in commandStack.ts)
      */
 
-    public nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise<LeoBridgePackage> | undefined {
+    public async nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise<LeoBridgePackage | undefined> {
         // No forced vscode save-triggers for direct calls from extension.js
-        this.triggerBodySave();
+        await this.triggerBodySave();
         if (p_isNavigation) {
             // If any navigation command is used from outline or command palette: show body.
             this.showBodyIfClosed = true;
@@ -3650,7 +3822,7 @@ export class LeoIntegration {
         p_isMark: boolean,
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
         // No need to wait for body-save trigger for marking/un-marking a node
         const q_commandResult = this.nodeCommand({
             action: p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE,
@@ -3676,10 +3848,17 @@ export class LeoIntegration {
      */
     public async editHeadline(
         p_node?: ArchivedPosition,
-        p_fromOutline?: boolean
+        p_fromOutline?: boolean,
+        p_prompt?: string
     ): Promise<LeoBridgePackage | undefined> {
 
+        if (this._hib && this._hib.enabled) {
+            return Promise.resolve(undefined); // DO NOT REACT IF ALREADY EDITING A HEADLINE! 
+        }
+
         await this._isBusyTriggerSave(false, true);
+
+        let w_finalFocus: Focus = p_fromOutline ? Focus.Outline : Focus.Body; // Use w_fromOutline for where we intend to leave focus when done with the insert
 
         if (!p_node && this.lastSelectedNode) {
             p_node = this.lastSelectedNode; // Gets last selected node if called via keyboard shortcut or command palette (not set in command stack class)
@@ -3687,31 +3866,38 @@ export class LeoIntegration {
         if (!p_node) {
             return Promise.reject('No node selected');
         }
-        this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
-        this._renamingHeadline = p_node.headline;
-        this._headlineInputOptions.value = p_node.headline; // preset input pop up
 
-        const w_newHeadline = await vscode.window.showInputBox(this._headlineInputOptions);
+        const w_headlineInputOptions: vscode.InputBoxOptions = {
+            ignoreFocusOut: false,
+            value: p_node.headline,  // preset input pop up
+            valueSelection: undefined,
+            prompt: p_prompt || Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE,
+        };
+        let w_newHeadline = await this._showHeadlineInputBox(w_headlineInputOptions);
 
+        let q_commandResult;
         if ((typeof w_newHeadline !== "undefined") && w_newHeadline !== this._renamingHeadline) {
             // Is different!
             p_node!.headline = w_newHeadline;
-            const q_commandResult = this.nodeCommand({
+            q_commandResult = this.nodeCommand({
                 action: Constants.LEOBRIDGE.SET_HEADLINE,
                 node: p_node,
                 refreshType: { tree: true, states: true },
-                finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
+                finalFocus: w_finalFocus,
                 name: w_newHeadline,
             });
-            if (q_commandResult) {
-                return q_commandResult;
-            } else {
-                return Promise.reject('Edit Headline not added on command stack');
-            }
+            q_commandResult;
+
         } else {
             // Canceled
-            return Promise.resolve(undefined);
+            q_commandResult = Promise.resolve(undefined);
         }
+        q_commandResult.then(() => {
+            if (this._onDidHideResolve) {
+                this._onDidHideResolve(undefined);
+                this._onDidHideResolve = undefined;
+            }
+        });
     }
 
     /**
@@ -3721,60 +3907,95 @@ export class LeoIntegration {
      * @param p_interrupt Signifies the insert action is actually interrupting itself (e.g. rapid CTRL+I actions by the user)
      * @returns Promise of LeoBridgePackage from execution the server.
      */
-    public insertNode(
+    public async insertNode(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean,
-        p_asChild?: boolean,
-        p_interrupt?: boolean
-    ): Promise<LeoBridgePackage> {
-        let w_finalFocus: Focus = p_fromOutline ? Focus.Outline : Focus.Body; // Use w_fromOutline for where we intend to leave focus when done with the insert
-        if (p_interrupt) {
-            this._focusInterrupt = true;
-            w_finalFocus = Focus.NoChange; // Going to use last state
+        p_asChild?: boolean
+    ): Promise<LeoBridgePackage | undefined> {
+
+        let w_hadHib = false;
+        if (this._hib && this._hib.enabled) {
+            w_hadHib = true;
         }
+
+        if (!this.isOutlineVisible()) {
+            p_fromOutline = false;
+        }
+
+        let w_finalFocus: Focus = p_fromOutline ? Focus.Outline : Focus.Body;
+        if (w_hadHib) {
+            this._focusInterrupt = true; // this will affect next refresh by triggerbodysave, not the refresh of this pass
+        }
+
         // if no node parameter, the front command stack CAN be busy, but if a node is passed, stack must be free
         if (!p_node || !this._isBusy()) {
-            this.triggerBodySave(true); // Don't wait for saving to resolve because we're waiting for user input anyways
+            await this.triggerBodySave(true); // Don't wait for saving to resolve because we're waiting for user input anyways
             // this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
-            if (p_asChild) {
-                this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_CHILD;
-            } else {
-                this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
+
+            const w_headlineInputOptions: vscode.InputBoxOptions = {
+                ignoreFocusOut: false,
+                value: Constants.USER_MESSAGES.DEFAULT_HEADLINE,
+                valueSelection: undefined,
+                prompt: p_asChild ? Constants.USER_MESSAGES.PROMPT_INSERT_CHILD : Constants.USER_MESSAGES.PROMPT_INSERT_NODE
+            };
+
+            const p_newHeadline = await this._showHeadlineInputBox(w_headlineInputOptions);
+
+            // return new Promise<LeoBridgePackage|undefined>((p_resolve, p_reject) => {
+
+            if (this._hibInterrupted) {
+                w_finalFocus = Focus.NoChange;
+                this._hibInterrupted = false;
             }
-            this._headlineInputOptions.value = Constants.USER_MESSAGES.DEFAULT_HEADLINE;
-            return new Promise<LeoBridgePackage>((p_resolve, p_reject) => {
-                vscode.window.showInputBox(this._headlineInputOptions).then((p_newHeadline) => {
-                    // * if node has child and is expanded: turn p_asChild to true!
-                    if (
-                        p_node &&
-                        p_node.expanded // === vscode.TreeItemCollapsibleState.Expanded
-                    ) {
-                        p_asChild = true;
-                    }
-                    if (
-                        !p_node &&
-                        this.lastSelectedNode &&
-                        this.lastSelectedNode.expanded //  === vscode.TreeItemCollapsibleState.Expanded
-                    ) {
-                        p_asChild = true;
-                    }
-                    let w_action = p_newHeadline
-                        ? (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_NAMED_PNODE)
-                        : (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_PNODE : Constants.LEOBRIDGE.INSERT_PNODE);
-                    const q_commandResult = this.nodeCommand({
-                        action: w_action,
-                        node: p_node,
-                        refreshType: { tree: true, states: true },
-                        finalFocus: w_finalFocus,
-                        name: p_newHeadline,
-                    });
-                    if (q_commandResult) {
-                        q_commandResult.then((p_package) => p_resolve(p_package));
-                    } else {
-                        p_reject(w_action + ' not added on command stack');
-                    }
-                });
+
+            // * if node has child and is expanded: turn p_asChild to true!
+            if (
+                p_node &&
+                p_node.expanded // === vscode.TreeItemCollapsibleState.Expanded
+            ) {
+                p_asChild = true;
+            }
+            if (
+                !p_node &&
+                this.lastSelectedNode &&
+                this.lastSelectedNode.expanded //  === vscode.TreeItemCollapsibleState.Expanded
+            ) {
+                p_asChild = true;
+            }
+            let w_action = p_newHeadline
+                ? (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_NAMED_PNODE)
+                : (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_PNODE : Constants.LEOBRIDGE.INSERT_PNODE);
+
+            let q_commandResult;
+            const w_refreshType: ReqRefresh = { states: true };
+
+            if (this.isOutlineVisible()) {
+                w_refreshType.tree = true;
+            } else {
+                w_refreshType.body = true;
+            }
+
+            q_commandResult = this.nodeCommand(
+                {
+                    action: w_action,
+                    node: p_node,
+                    refreshType: w_refreshType,
+                    finalFocus: w_finalFocus,
+                    name: p_newHeadline,
+                }
+            );
+
+            return q_commandResult.then((p_package) => {
+                if (this._onDidHideResolve) {
+                    this._onDidHideResolve(undefined);
+                    this._onDidHideResolve = undefined;
+                }
+                // p_resolve(p_package);
+                return p_package;
             });
+
+            // });
+
         } else {
             return Promise.reject('Insert node not added on command stack');
         }
@@ -3786,7 +4007,7 @@ export class LeoIntegration {
     public async copyNode(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3796,25 +4017,19 @@ export class LeoIntegration {
             refreshType: {},
             finalFocus: p_fromOutline ? Focus.Outline : Focus.Body
         });
-
-        if (w_commandResult) {
-            return w_commandResult.then(p_package => {
-                if (p_package.string) {
-                    this.replaceClipboardWith(p_package.string);
-                } else {
-                }
-                return p_package;
-            });
-
-        } else {
-            return Promise.reject('Copy Node not added on command stack');
-        }
+        return w_commandResult.then(p_package => {
+            if (p_package && p_package.string) {
+                this.replaceClipboardWith(p_package.string);
+            } else {
+            }
+            return p_package;
+        });
     }
 
     /**
      * * Place the XML or JSON Leo outline tree on the clipboard for the given node.
      */
-    public async copyNodeAsJson(): Promise<LeoBridgePackage> {
+    public async copyNodeAsJson(): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3824,19 +4039,14 @@ export class LeoIntegration {
             refreshType: {},
             finalFocus: Focus.NoChange,
         });
+        return w_commandResult.then(p_package => {
+            if (p_package && p_package.string) {
+                this.replaceClipboardWith(p_package.string);
+            } else {
+            }
+            return p_package;
+        });
 
-        if (w_commandResult) {
-            return w_commandResult.then(p_package => {
-                if (p_package.string) {
-                    this.replaceClipboardWith(p_package.string);
-                } else {
-                }
-                return p_package;
-            });
-
-        } else {
-            return Promise.reject('Copy Node As JSON not added on command stack');
-        }
     }
 
     /**
@@ -3853,17 +4063,12 @@ export class LeoIntegration {
             finalFocus: Focus.NoChange,
         });
 
-        if (w_commandResult) {
-            return w_commandResult.then(p_package => {
-                if (p_package.node) {
-                    this.replaceClipboardWith(p_package.node.gnx);
-                }
-                return p_package;
-            });
-
-        } else {
-            return Promise.reject('Copy Gnx not added on command stack');
-        }
+        return w_commandResult.then(p_package => {
+            if (p_package && p_package.node) {
+                this.replaceClipboardWith(p_package.node.gnx);
+            }
+            return p_package;
+        });
     }
 
     /**
@@ -3872,7 +4077,7 @@ export class LeoIntegration {
     public async cutNode(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3883,17 +4088,12 @@ export class LeoIntegration {
             finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
         });
 
-        if (w_commandResult) {
-            return w_commandResult.then(p_package => {
-                if (p_package.string) {
-                    this.replaceClipboardWith(p_package.string);
-                }
-                return p_package;
-            });
-
-        } else {
-            return Promise.reject('Cut Node not added on command stack');
-        }
+        return w_commandResult.then(p_package => {
+            if (p_package && p_package.string) {
+                this.replaceClipboardWith(p_package.string);
+            }
+            return p_package;
+        });
 
     }
 
@@ -3903,7 +4103,7 @@ export class LeoIntegration {
     public async pasteNode(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3916,12 +4116,7 @@ export class LeoIntegration {
             name: text,
             finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
         });
-
-        if (w_commandResult) {
-            return w_commandResult;
-        } else {
-            return Promise.reject('Cut Node not added on command stack');
-        }
+        return w_commandResult;
 
     }
 
@@ -3931,7 +4126,7 @@ export class LeoIntegration {
     public async pasteAsCloneNode(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3944,12 +4139,7 @@ export class LeoIntegration {
             name: text,
             finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
         });
-
-        if (w_commandResult) {
-            return w_commandResult;
-        } else {
-            return Promise.reject('Cut Node not added on command stack');
-        }
+        return w_commandResult;
     }
 
     /**
@@ -3958,7 +4148,7 @@ export class LeoIntegration {
     public async pasteAsTemplate(
         p_node?: ArchivedPosition,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Promise<LeoBridgePackage | undefined> {
 
         await this._isBusyTriggerSave(false, true);
 
@@ -3971,12 +4161,7 @@ export class LeoIntegration {
             name: text,
             finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
         });
-
-        if (w_commandResult) {
-            return w_commandResult;
-        } else {
-            return Promise.reject('Cut Node not added on command stack');
-        }
+        return w_commandResult;
     }
 
     /**
@@ -4269,9 +4454,12 @@ export class LeoIntegration {
     /**
      * * List all marked nodes.
      */
-    public async findQuickMarked(): Promise<unknown> {
+    public async findQuickMarked(p_preserveFocus?: boolean): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
         this._leoGotoProvider.refreshTreeRoot();
+        if (p_preserveFocus && (this._leoGoto.visible || this._leoGotoExplorer.visible)) {
+            return Promise.resolve();
+        }
         return this.showGotoPane();
     }
 
@@ -5028,7 +5216,7 @@ export class LeoIntegration {
     public gotoGlobalLine(p_lineNumber?: number): void {
         if (p_lineNumber === null || p_lineNumber === undefined) {
             this.triggerBodySave(false)
-                .then((p_saveResult: boolean) => {
+                .then(() => {
                     return vscode.window.showInputBox({
                         title: Constants.USER_MESSAGES.TITLE_GOTO_GLOBAL_LINE,
                         placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_GOTO_GLOBAL_LINE,
@@ -5060,7 +5248,7 @@ export class LeoIntegration {
      */
     public tagChildren(): void {
         this.triggerBodySave(false)
-            .then((p_saveResult: boolean) => {
+            .then(() => {
                 return vscode.window.showInputBox({
                     title: Constants.USER_MESSAGES.TITLE_TAG_CHILDREN,
                     placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
@@ -5101,7 +5289,7 @@ export class LeoIntegration {
      */
     public tagNode(p_node?: ArchivedPosition): void {
         this.triggerBodySave(false)
-            .then((p_saveResult: boolean) => {
+            .then(() => {
                 return vscode.window.showInputBox({
                     title: Constants.USER_MESSAGES.TITLE_TAG_NODE,
                     placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
@@ -5150,7 +5338,7 @@ export class LeoIntegration {
 
         if ((p_node && p_node.nodeTags) || (this.lastSelectedNode && this.lastSelectedNode.nodeTags)) {
             this.triggerBodySave(false)
-                .then((p_saveResult) => {
+                .then(() => {
                     return this.sendAction(
                         Constants.LEOBRIDGE.GET_UA,
                         p_node ? utils.buildNodeCommand(p_node) : undefined
@@ -5223,7 +5411,7 @@ export class LeoIntegration {
     public removeTags(p_node?: ArchivedPosition): void {
         if ((p_node && p_node.nodeTags) || (this.lastSelectedNode && this.lastSelectedNode.nodeTags)) {
             this.triggerBodySave(false)
-                .then((p_saveResult: boolean) => {
+                .then(() => {
                     this.sendAction(
                         Constants.LEOBRIDGE.REMOVE_TAGS,
                         p_node ? utils.buildNodeCommand(p_node) : undefined
@@ -5253,7 +5441,7 @@ export class LeoIntegration {
      */
     public cloneFindTag(): void {
         this.triggerBodySave(false)
-            .then((p_saveResult: boolean) => {
+            .then(() => {
                 const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
                 return vscode.window.showInputBox({
                     value: w_startValue,
@@ -5294,7 +5482,10 @@ export class LeoIntegration {
     public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
         this.leoStates.leoChanged = p_documentNode.documentEntry.changed; // also set here since slightly newer.
         this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
-        setTimeout(() => {
+        if (this._leoDocumentsRevealTimer) {
+            clearTimeout(this._leoDocumentsRevealTimer);
+        }
+        this._leoDocumentsRevealTimer = setTimeout(() => {
             if (!this._leoDocuments.visible && !this._leoDocumentsExplorer.visible) {
                 return;
             }
@@ -5480,9 +5671,7 @@ export class LeoIntegration {
                     finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
                     name: '',
                 });
-                return q_commandResult
-                    ? q_commandResult
-                    : Promise.reject('Save file not added on command stack');
+                return q_commandResult;
             } else {
                 return this.saveAsLeoFile(p_fromOutline); // Override this command call if file is unnamed!
             }

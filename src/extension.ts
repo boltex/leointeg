@@ -385,8 +385,8 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         // Special command for when inserting rapidly more than one node without
         // even specifying a headline label, such as spamming CTRL+I rapidly.
-        [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, false, true)],
-        [CMD.INSERT_CHILD_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, true, true)],
+        // [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, false, true)],
+        // [CMD.INSERT_CHILD_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, true, true)],
 
         [CMD.MARK, (p_ap: ArchivedPosition) => w_leo.changeMark(true, p_ap, true)],
         [CMD.MARK_SELECTION, () => w_leo.changeMark(true, U, false)],

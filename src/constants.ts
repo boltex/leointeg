@@ -73,9 +73,9 @@ export class Constants {
      * * Minimal Leo Editor and Leo server versions
      */
     public static MIN_SERVER_VERSION_NUMBER = {
-        minMajor: 1,
-        minMinor: 0,
-        minPatch: 6
+        major: 1,
+        minor: 0,
+        patch: 8
     };
 
     /**
@@ -238,7 +238,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_LEO_VERSION_STRING: "Please update: Leo 6.7.2 required.",
+        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.5 is recommended.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
@@ -433,6 +433,7 @@ export class Constants {
         LEO_CAN_HOIST: "leoCanHoist", // isNotRoot equivalent
         LEO_IN_CHAPTER: "leoInChapter",
         LEO_TOP_HOIST_CHAPTER: "leoTopHoistChapter",
+        LEO_EDIT_HEADLINE: "leoEditHeadline",
 
         // 'states' flags about current selection, for visibility and commands availability
         SELECTED_MARKED: "leoMarked", // no need for unmarked here, use !leoMarked

@@ -66,6 +66,12 @@ export interface FontSettings {
     fontSize: number;
 }
 
+export interface Version {
+    major: number;
+    minor: number;
+    patch: number;
+}
+
 /**
  * * Location of focus to be set when current/last command is resolved
  */
@@ -205,6 +211,7 @@ export interface LeoBridgePackage {
     branch?: string;
     commit?: string;
     chapters?: string[], // get_chapters
+    history?: string[],
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
     messages?: string[]; // get_goto
