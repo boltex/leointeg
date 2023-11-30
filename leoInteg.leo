@@ -2278,7 +2278,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -2824,7 +2824,11 @@ print('done')
   "command": "leointeg.recentLeoFiles",
   "enablement": "leoBridgeReady",
   "category": "Leo",
-  "title": "Recent Files"
+  "title": "Recent Files",
+  "icon": {
+    "light": "resources/light/open-recent.svg",
+    "dark": "resources/dark/open-recent.svg"
+  }
 },
 {
   "command": "leointeg.switchLeoFile",
@@ -20729,7 +20733,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.16&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.17&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"
@@ -20739,7 +20743,7 @@ div.col-nav {
           &lt;/a&gt;
           &lt;a class="button button--flat" title="LeoInteg's Features"
             href="https://github.com/boltex/leointeg#features-"&gt;
-            See What's New in LeoInteg 1.0.16
+            See What's New in LeoInteg 1.0.17
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;

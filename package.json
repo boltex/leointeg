@@ -778,7 +778,11 @@
         "command": "leointeg.recentLeoFiles",
         "enablement": "leoBridgeReady",
         "category": "Leo",
-        "title": "Recent Files"
+        "title": "Recent Files",
+        "icon": {
+          "light": "resources/light/open-recent.svg",
+          "dark": "resources/dark/open-recent.svg"
+        }
       },
       {
         "command": "leointeg.switchLeoFile",
