@@ -2862,6 +2862,11 @@
           "group": "navigation@9"
         },
         {
+          "command": "leointeg.recentLeoFiles",
+          "when": "view =~ /^leoDocuments/ && leoBridgeReady",
+          "group": "navigation@8"
+        },
+        {
           "command": "leointeg.findQuickSelected",
           "when": "view =~ /^leoGotoPanel/ && leoTreeOpened",
           "group": "navigation@1"

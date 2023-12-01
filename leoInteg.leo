@@ -6,14 +6,6 @@
 <preferences/>
 <find_panel_settings/>
 <vnodes>
-<v t="ekr.20200722190504.1"><vh>Startup</vh>
-<v t="ekr.20200724052304.1"><vh>@button backup</vh></v>
-<v t="ekr.20200808100711.1"><vh>@settings</vh>
-<v t="ekr.20200808100717.1"><vh>@string target-language = plain</vh></v>
-</v>
-<v t="ekr.20200722125546.1"><vh>script: Print all command names</vh></v>
-<v t="ekr.20200815113508.1"><vh>script: Find empty nodes that have no children</vh></v>
-</v>
 <v t="felix.20200718220811.1"><vh>Documentation</vh>
 <v t="felix.20200718220818.1"><vh>@clean README.md</vh>
 <v t="felix.20200718221645.1"><vh>Requirements</vh></v>
@@ -31,6 +23,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20231130225803.1"><vh>1.0.17</vh></v>
 <v t="felix.20231009003516.1"><vh>1.0.16</vh></v>
 <v t="felix.20230821005233.1"><vh>1.0.15</vh></v>
 <v t="fil.20230405000235.1"><vh>1.0.14</vh></v>
@@ -652,6 +645,7 @@
 <v t="felix.20200718195558.8"><vh>isIconChangedByEdit</vh></v>
 <v t="felix.20200718195558.9"><vh>isHexColor</vh></v>
 <v t="felix.20220327230102.1"><vh>isAlphaNum</vh></v>
+<v t="felix.20231130222754.1"><vh>fixSlashesDriveLetter</vh></v>
 <v t="felix.20200718195558.10"><vh>strToLeoUri</vh></v>
 <v t="felix.20200718195558.11"><vh>leoUriToStr</vh></v>
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
@@ -710,34 +704,9 @@
 </v>
 </vnodes>
 <tnodes>
-<t tx="ekr.20200722125546.1">@language python
-
-g.cls()
-d = c.commandsDict  # keys are command names, values are functions.
-for command_name in sorted(d):
-    if command_name.startswith('@'):
-        continue
-    func = d.get(command_name)
-    # Prefer func.__func_name__ to func.__name__: Leo's decorators change func.__name__!
-    func_name = getattr(func, '__func_name__', func.__name__)
-    # print(f"{command_name:&gt;40} {func_name}")
-    print(command_name)
-print('len(d)', len(d))
-
-</t>
-<t tx="ekr.20200722190504.1"></t>
 <t tx="ekr.20200722190517.1"></t>
-<t tx="ekr.20200724052304.1">c.backup_helper(sub_dir='leoInteg')
-</t>
 <t tx="ekr.20200808100339.1">@language typescript
 </t>
-<t tx="ekr.20200808100711.1"></t>
-<t tx="ekr.20200808100717.1">The default language if no @language or @comment is in effect.
-
-Valid values are (case is ignored):
-
-actionscript,c,csharp,css,cweb,elisp,html,java,latex,
-pascal,perl,perlpod,php,plain,plsql,python,rapidq,rebol,shell,tcltk.</t>
 <t tx="ekr.20200815083608.1">/**
  * * Handles the functions called by Leo through leoBridge such as adding a log pane entry, runAskYesNoDialog for file changes, etc.
  * * Some config settings affect this behavior, such as defaultReloadIgnore and checkForChangeExternalFiles
@@ -2256,21 +2225,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
-</t>
-<t tx="ekr.20200815113508.1">@language python
-g.cls()
-
-def is_significant(p):
-    s = p.b
-    for ch in '()[]{};':
-        s = s.replace(ch, '')
-    return s.strip()
-
-for p in c.all_unique_positions():
-    if not is_significant(p) and not p.hasChildren():
-        print(p.h)
-print('done')
-
 </t>
 <t tx="ekr.20200815123601.1">@language json
 @tabwidth -2
@@ -7263,6 +7217,7 @@ public refreshTreeRoot(): void {
 <t tx="felix.20200718165721.1"></t>
 <t tx="felix.20200718170429.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
+import * as utils from './utils';
 import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
 
 @language typescript
@@ -7337,7 +7292,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean, p_customTitle?: string): Promise&lt
                     this._fileBrowserActive = false;
                     if (p_chosenLeoFile) {
                         // single string
-                        p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                        p_resolve(utils.fixSlashesDriveLetter(p_chosenLeoFile.fsPath));
                     } else {
                         p_resolve(""); // not rejection - resolve empty string
                     }
@@ -7355,7 +7310,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean, p_customTitle?: string): Promise&lt
                     this._fileBrowserActive = false;
                     if (p_chosenLeoFile) {
                         // array instead of single string
-                        p_resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                        p_resolve(utils.fixSlashesDriveLetter(p_chosenLeoFile[0].fsPath));
                     } else {
                         p_resolve("");
                     }
@@ -9091,6 +9046,8 @@ private _removeLastFile(p_file: string): Thenable&lt;void&gt; {
  * @returns A promise that resolves when the a file is finally opened, rejected otherwise
  */
 public async showRecentLeoFiles(): Promise&lt;LeoBridgePackage | undefined&gt; {
+    // TODO 
+    console.log("TODO : showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO");
     const w_recentFiles: string[] =
         this._context.workspaceState.get(Constants.RECENT_FILES_KEY) || [];
     let q_chooseFile: Thenable&lt;string | undefined&gt;;
@@ -12091,6 +12048,11 @@ public static VSCODE_COMMANDS = {
     "group": "navigation@9"
   },
   {
+    "command": "leointeg.recentLeoFiles",
+    "when": "view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@8"
+  },
+  {
     "command": "leointeg.findQuickSelected",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
@@ -13855,7 +13817,7 @@ public getImportFileUrls(p_fileTypes?: { [name: string]: string[]; }, p_single?:
                 if (p_chosenLeoFiles) {
                     // array instead of single string
                     const w_result = p_chosenLeoFiles.map(function (e) {
-                        return e.fsPath.replace(/\\/g, "/").trim();
+                        return utils.fixSlashesDriveLetter(e.fsPath);
                     });
                     p_resolve(w_result); // Replace backslashes for windows support
                 } else {
@@ -14780,7 +14742,7 @@ public getLeoJsFileUrl(): Promise&lt;string&gt; {
                 this._fileBrowserActive = false;
                 if (p_chosenLeoFile) {
                     // single string
-                    p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                    p_resolve(utils.fixSlashesDriveLetter(p_chosenLeoFile.fsPath));
                 } else {
                     p_resolve(""); // not rejection - resolve empty string
                 }
@@ -18118,7 +18080,7 @@ public getExportFileUrl(p_title: string, p_fileTypes: { [name: string]: string[]
                 this._fileBrowserActive = false;
                 if (p_chosenLeoFile) {
                     // single string
-                    p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                    p_resolve(utils.fixSlashesDriveLetter(p_chosenLeoFile.fsPath));
                 } else {
                     p_resolve(""); // not rejection - resolve empty string
                 }
@@ -19507,6 +19469,22 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
     });
 
 }
+
+</t>
+<t tx="felix.20231130222754.1">export function fixSlashesDriveLetter(p_path: string): string {
+    if (!p_path) {
+        return '';
+    }
+    p_path = p_path.split('\\').join('/');
+    return p_path.replace(/^([a-z]):/, (match, driveLetter) =&gt; driveLetter.toUpperCase() + ':');
+
+}
+
+</t>
+<t tx="felix.20231130225803.1">## 1.0.17
+
+- Global settings now save data with proper drive letter capitalization (For windows OS)
+- Added icon for 'Open Recent-files list' command on the documents panel.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
