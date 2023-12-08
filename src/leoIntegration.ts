@@ -3128,9 +3128,10 @@ export class LeoIntegration {
 
                 if (p_tab.input &&
                     (p_tab.input as vscode.TabInputText).uri &&
+                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
                     (p_tab.input as vscode.TabInputText).uri.fsPath === w_openedDocument.uri.fsPath) {
                     vscode.workspace.textDocuments.forEach((p_textDocument) => {
-                        if (p_textDocument.uri.fsPath === (p_tab.input as vscode.TabInputText).uri.fsPath) {
+                        if (p_textDocument.uri.scheme === Constants.URI_LEO_SCHEME && p_textDocument.uri.fsPath === (p_tab.input as vscode.TabInputText).uri.fsPath) {
                             this._bodyTextDocument = p_textDocument; // vscode.workspace.openTextDocument
                             this._bodyMainSelectionColumn = p_tab.group.viewColumn;
                             if (p_preventReveal) {
