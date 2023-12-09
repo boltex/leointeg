@@ -19491,6 +19491,7 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 
 - Global settings now save data with proper drive letter capitalization (For windows OS)
 - Added icon for 'Open Recent-files list' command on the documents panel.
+- Fixed conflict with leojs for body with same gnx.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
