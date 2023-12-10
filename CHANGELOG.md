@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.18
+
+- Changes
+
 ## 1.0.17
 
 - Global settings now save data with proper drive letter capitalization (For windows OS)
