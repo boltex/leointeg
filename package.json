@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -778,7 +778,11 @@
         "command": "leointeg.recentLeoFiles",
         "enablement": "leoBridgeReady",
         "category": "Leo",
-        "title": "Recent Files"
+        "title": "Recent Files",
+        "icon": {
+          "light": "resources/light/open-recent.svg",
+          "dark": "resources/dark/open-recent.svg"
+        }
       },
       {
         "command": "leointeg.switchLeoFile",
@@ -2856,6 +2860,11 @@
           "command": "leointeg.showLogPane",
           "when": "view =~ /^leoDocuments|^leoButtons/ && leoBridgeReady",
           "group": "navigation@9"
+        },
+        {
+          "command": "leointeg.recentLeoFiles",
+          "when": "view =~ /^leoDocuments/ && leoBridgeReady",
+          "group": "navigation@8"
         },
         {
           "command": "leointeg.findQuickSelected",

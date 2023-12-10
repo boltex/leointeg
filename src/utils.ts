@@ -371,6 +371,15 @@ export function isAlphaNum(str: string): boolean {
     return true;
 }
 
+export function fixSlashesDriveLetter(p_path: string): string {
+    if (!p_path) {
+        return '';
+    }
+    p_path = p_path.split('\\').join('/');
+    return p_path.replace(/^([a-z]):/, (match, driveLetter) => driveLetter.toUpperCase() + ':');
+
+}
+
 /**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
  * with a scheme header like "leo:/" or 'more:/'

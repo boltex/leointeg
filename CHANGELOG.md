@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.17
+
+- Global settings now save data with proper drive letter capitalization (For windows OS)
+- Added icon for 'Open Recent-files list' command on the documents panel.
+- Fixed conflict with leojs for body with same gnx.
+
 ## 1.0.16
 
 - Editing a headline, when inserting or renaming a node, can now be interrupted by most other keyboard shortcuts and commands.

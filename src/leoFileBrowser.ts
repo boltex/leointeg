@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
+import * as utils from './utils';
 import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
 
 /**
@@ -69,7 +70,7 @@ export class LeoFilesBrowser {
                     if (p_chosenLeoFiles) {
                         // array instead of single string
                         const w_result = p_chosenLeoFiles.map(function (e) {
-                            return e.fsPath.replace(/\\/g, "/").trim();
+                            return utils.fixSlashesDriveLetter(e.fsPath);
                         });
                         p_resolve(w_result); // Replace backslashes for windows support
                     } else {
@@ -109,7 +110,7 @@ export class LeoFilesBrowser {
                         this._fileBrowserActive = false;
                         if (p_chosenLeoFile) {
                             // single string
-                            p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                            p_resolve(utils.fixSlashesDriveLetter(p_chosenLeoFile.fsPath));
                         } else {
                             p_resolve(""); // not rejection - resolve empty string
                         }
@@ -127,7 +128,7 @@ export class LeoFilesBrowser {
                         this._fileBrowserActive = false;
                         if (p_chosenLeoFile) {
                             // array instead of single string
-                            p_resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                            p_resolve(utils.fixSlashesDriveLetter(p_chosenLeoFile[0].fsPath));
                         } else {
                             p_resolve("");
                         }
@@ -157,7 +158,7 @@ export class LeoFilesBrowser {
                     this._fileBrowserActive = false;
                     if (p_chosenLeoFile) {
                         // single string
-                        p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                        p_resolve(utils.fixSlashesDriveLetter(p_chosenLeoFile.fsPath));
                     } else {
                         p_resolve(""); // not rejection - resolve empty string
                     }
@@ -186,7 +187,7 @@ export class LeoFilesBrowser {
                     this._fileBrowserActive = false;
                     if (p_chosenLeoFile) {
                         // single string
-                        p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                        p_resolve(utils.fixSlashesDriveLetter(p_chosenLeoFile.fsPath));
                     } else {
                         p_resolve(""); // not rejection - resolve empty string
                     }
