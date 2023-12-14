@@ -3876,7 +3876,7 @@
       {
         "scheme": "leo",
         "formatting": {
-          "label": "LEO: BODY",
+          "label": "Leo: Body",
           "separator": "/",
           "workspaceSuffix": ""
         }

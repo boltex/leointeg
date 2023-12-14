@@ -4818,7 +4818,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   {
     "scheme": "leo",
     "formatting": {
-      "label": "LEO: BODY",
+      "label": "Leo: Body",
       "separator": "/",
       "workspaceSuffix": ""
     }
@@ -19497,7 +19497,7 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 </t>
 <t tx="felix.20231210150154.1">## 1.0.18
 
-- Changes
+- Fixed body pane label for its editor window.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

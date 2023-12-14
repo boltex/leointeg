@@ -2,7 +2,7 @@
 
 ## 1.0.18
 
-- Changes
+- Fixed body pane label for its editor window.
 
 ## 1.0.17
 
