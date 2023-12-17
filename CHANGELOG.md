@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.19
+
+- Fixed ...
+
 ## 1.0.18
 
 - Fixed body pane tab label identifier.
