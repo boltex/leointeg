@@ -1597,13 +1597,13 @@
       {
         "command": "leointeg.gotoNextCloneSelection",
         "category": "Leo",
-        "enablement": "leoTreeOpened && leoCloned",
+        "enablement": "leoTreeOpened",
         "title": "Goto Next Clone"
       },
       {
         "command": "leointeg.gotoNextCloneSelectionFromOutline",
         "category": "Leo",
-        "enablement": "leoTreeOpened && leoCloned",
+        "enablement": "leoTreeOpened",
         "title": "Goto Next Clone"
       },
       {

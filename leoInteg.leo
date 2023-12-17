@@ -1722,26 +1722,26 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.GOTO_NEXT_CLONE, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: p_ap,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Outline
 }, true)],
 [CMD.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Body
 }, true)],
 [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Outline
 }, true)],
 
 [CMD.GOTO_NEXT_MARKED, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_MARKED,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Outline
 }, true)],
 [CMD.GOTO_FIRST_SIBLING, () =&gt; w_leo.nodeCommand({
@@ -3532,13 +3532,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.gotoNextCloneSelection",
   "category": "Leo",
-  "enablement": "leoTreeOpened &amp;&amp; leoCloned",
+  "enablement": "leoTreeOpened",
   "title": "Goto Next Clone"
 },
 {
   "command": "leointeg.gotoNextCloneSelectionFromOutline",
   "category": "Leo",
-  "enablement": "leoTreeOpened &amp;&amp; leoCloned",
+  "enablement": "leoTreeOpened",
   "title": "Goto Next Clone"
 },
 </t>
