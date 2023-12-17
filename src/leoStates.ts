@@ -219,7 +219,7 @@ export class LeoStates {
         this._leoEditHeadline = p_value;
         this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_EDIT_HEADLINE, p_value);
     }
-    
+
     // * 'states' flags about current selection, for visibility and commands availability=
     private _leoMarked: boolean = false;
     get leoMarked(): boolean {

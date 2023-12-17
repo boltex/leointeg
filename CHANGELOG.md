@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.18
+
+- Fixed body pane tab label identifier.
+- Fixed goto-next-clone and goto-next-marked commands refresh cycles.
+- Added 'Show Recent Files' button to panel if no files are opened.
+
 ## 1.0.17
 
 - Global settings now save data with proper drive letter capitalization (For windows OS)

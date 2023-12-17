@@ -219,26 +219,26 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.GOTO_NEXT_CLONE, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: p_ap,
-            refreshType: REFRESH_NODE_BODY,
+            refreshType: REFRESH_TREE_BODY,
             finalFocus: Focus.Outline
         }, true)],
         [CMD.GOTO_NEXT_CLONE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: U,
-            refreshType: REFRESH_NODE_BODY,
+            refreshType: REFRESH_TREE_BODY,
             finalFocus: Focus.Body
         }, true)],
         [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: U,
-            refreshType: REFRESH_NODE_BODY,
+            refreshType: REFRESH_TREE_BODY,
             finalFocus: Focus.Outline
         }, true)],
 
         [CMD.GOTO_NEXT_MARKED, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_MARKED,
             node: U,
-            refreshType: REFRESH_NODE_BODY,
+            refreshType: REFRESH_TREE_BODY,
             finalFocus: Focus.Outline
         }, true)],
         [CMD.GOTO_FIRST_SIBLING, () => w_leo.nodeCommand({

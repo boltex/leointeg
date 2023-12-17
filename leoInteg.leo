@@ -23,6 +23,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20231210150154.1"><vh>1.0.18</vh></v>
 <v t="felix.20231130225803.1"><vh>1.0.17</vh></v>
 <v t="felix.20231009003516.1"><vh>1.0.16</vh></v>
 <v t="felix.20230821005233.1"><vh>1.0.15</vh></v>
@@ -1721,26 +1722,26 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.GOTO_NEXT_CLONE, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: p_ap,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Outline
 }, true)],
 [CMD.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Body
 }, true)],
 [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Outline
 }, true)],
 
 [CMD.GOTO_NEXT_MARKED, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_MARKED,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Outline
 }, true)],
 [CMD.GOTO_FIRST_SIBLING, () =&gt; w_leo.nodeCommand({
@@ -2232,7 +2233,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -3531,13 +3532,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.gotoNextCloneSelection",
   "category": "Leo",
-  "enablement": "leoTreeOpened &amp;&amp; leoCloned",
+  "enablement": "leoTreeOpened",
   "title": "Goto Next Clone"
 },
 {
   "command": "leointeg.gotoNextCloneSelectionFromOutline",
   "category": "Leo",
-  "enablement": "leoTreeOpened &amp;&amp; leoCloned",
+  "enablement": "leoTreeOpened",
   "title": "Goto Next Clone"
 },
 </t>
@@ -3752,12 +3753,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 </t>
 <t tx="ekr.20200815123601.34">{
   "view": "leoIntegration",
-  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
   "when": "leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; !leoStartingServer &amp;&amp; !leoConnecting &amp;&amp; leoStartupFinished"
 },
 {
   "view": "leoIntegrationExplorer",
-  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
   "when": "leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; !leoStartingServer &amp;&amp; !leoConnecting &amp;&amp; leoStartupFinished"
 },
 </t>
@@ -4817,7 +4818,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   {
     "scheme": "leo",
     "formatting": {
-      "label": "LEO: BODY",
+      "label": "Leo: Body",
       "separator": "/",
       "workspaceSuffix": ""
     }
@@ -9046,8 +9047,8 @@ private _removeLastFile(p_file: string): Thenable&lt;void&gt; {
  * @returns A promise that resolves when the a file is finally opened, rejected otherwise
  */
 public async showRecentLeoFiles(): Promise&lt;LeoBridgePackage | undefined&gt; {
-    // TODO 
-    console.log("TODO : showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO");
+    // TODO showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO
+    // console.log("TODO : showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO");
     const w_recentFiles: string[] =
         this._context.workspaceState.get(Constants.RECENT_FILES_KEY) || [];
     let q_chooseFile: Thenable&lt;string | undefined&gt;;
@@ -12056,6 +12057,11 @@ public static VSCODE_COMMANDS = {
     "command": "leointeg.recentLeoFiles",
     "when": "view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
     "group": "navigation@8"
+  },
+  {
+    "command": "leointeg.recentLeoFiles",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened",
+    "group": "navigation@1"
   },
   {
     "command": "leointeg.findQuickSelected",
@@ -19494,6 +19500,13 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 - Fixed conflict with leojs for body with same gnx.
 
 </t>
+<t tx="felix.20231210150154.1">## 1.0.18
+
+- Fixed body pane tab label identifier.
+- Fixed goto-next-clone and goto-next-marked commands refresh cycles.
+- Added 'Show Recent Files' button to panel if no files are opened.
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -20718,7 +20731,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.17&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.18&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"
@@ -20728,7 +20741,7 @@ div.col-nav {
           &lt;/a&gt;
           &lt;a class="button button--flat" title="LeoInteg's Features"
             href="https://github.com/boltex/leointeg#features-"&gt;
-            See What's New in LeoInteg 1.0.17
+            See What's New in LeoInteg 1.0.18
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;

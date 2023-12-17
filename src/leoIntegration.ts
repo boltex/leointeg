@@ -1206,8 +1206,8 @@ export class LeoIntegration {
      * @returns A promise that resolves when the a file is finally opened, rejected otherwise
      */
     public async showRecentLeoFiles(): Promise<LeoBridgePackage | undefined> {
-        // TODO 
-        console.log("TODO : showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO");
+        // TODO showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO
+        // console.log("TODO : showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO");
         const w_recentFiles: string[] =
             this._context.workspaceState.get(Constants.RECENT_FILES_KEY) || [];
         let q_chooseFile: Thenable<string | undefined>;
