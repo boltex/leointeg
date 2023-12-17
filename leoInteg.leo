@@ -9047,8 +9047,8 @@ private _removeLastFile(p_file: string): Thenable&lt;void&gt; {
  * @returns A promise that resolves when the a file is finally opened, rejected otherwise
  */
 public async showRecentLeoFiles(): Promise&lt;LeoBridgePackage | undefined&gt; {
-    // TODO 
-    console.log("TODO : showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO");
+    // TODO showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO
+    // console.log("TODO : showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO");
     const w_recentFiles: string[] =
         this._context.workspaceState.get(Constants.RECENT_FILES_KEY) || [];
     let q_chooseFile: Thenable&lt;string | undefined&gt;;
