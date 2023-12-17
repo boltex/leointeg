@@ -2245,12 +2245,12 @@
       },
       {
         "view": "leoIntegration",
-        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady && !leoTreeOpened && !leoStartingServer && !leoConnecting && leoStartupFinished"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady && !leoTreeOpened && !leoStartingServer && !leoConnecting && leoStartupFinished"
       },
       {
@@ -2865,6 +2865,11 @@
           "command": "leointeg.recentLeoFiles",
           "when": "view =~ /^leoDocuments/ && leoBridgeReady",
           "group": "navigation@8"
+        },
+        {
+          "command": "leointeg.recentLeoFiles",
+          "when": "view =~ /^leoIntegration/ && leoBridgeReady && !leoTreeOpened",
+          "group": "navigation@1"
         },
         {
           "command": "leointeg.findQuickSelected",

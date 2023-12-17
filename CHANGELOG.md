@@ -2,7 +2,9 @@
 
 ## 1.0.18
 
-- Fixed body pane label for its editor window.
+- Fixed body pane tab label identifier.
+- Fixed goto-next-clone and goto-next-marked commands refresh cycles.
+- Added 'Show Recent Files' button to panel if no files are opened.
 
 ## 1.0.17
 

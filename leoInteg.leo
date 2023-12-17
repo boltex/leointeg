@@ -3753,12 +3753,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 </t>
 <t tx="ekr.20200815123601.34">{
   "view": "leoIntegration",
-  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
   "when": "leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; !leoStartingServer &amp;&amp; !leoConnecting &amp;&amp; leoStartupFinished"
 },
 {
   "view": "leoIntegrationExplorer",
-  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
   "when": "leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; !leoStartingServer &amp;&amp; !leoConnecting &amp;&amp; leoStartupFinished"
 },
 </t>
@@ -12059,6 +12059,11 @@ public static VSCODE_COMMANDS = {
     "group": "navigation@8"
   },
   {
+    "command": "leointeg.recentLeoFiles",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
     "command": "leointeg.findQuickSelected",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
@@ -19497,7 +19502,9 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 </t>
 <t tx="felix.20231210150154.1">## 1.0.18
 
-- Fixed body pane label for its editor window.
+- Fixed body pane tab label identifier.
+- Fixed goto-next-clone and goto-next-marked commands refresh cycles.
+- Added 'Show Recent Files' button to panel if no files are opened.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
