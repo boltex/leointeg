@@ -3353,9 +3353,6 @@ export class LeoIntegration {
                 w_language !== this._bodyTextDocument.languageId &&
                 utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
             ) {
-                console.log('refreshBodyStates language was : ', this._bodyTextDocument.languageId);
-                console.log('setting language: ', w_language);
-
                 this._setBodyLanguage(this._bodyTextDocument, w_language);
             }
         });
