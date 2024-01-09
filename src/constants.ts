@@ -77,7 +77,7 @@ export class Constants {
     public static MIN_SERVER_VERSION_NUMBER = {
         major: 1,
         minor: 0,
-        patch: 8
+        patch: 9,
     };
 
     /**

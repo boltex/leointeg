@@ -18836,7 +18836,7 @@ private _refreshDesc(): void {
 public static MIN_SERVER_VERSION_NUMBER = {
     major: 1,
     minor: 0,
-    patch: 8
+    patch: 9,
 };
 
 </t>
@@ -19587,6 +19587,7 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 
 </t>
 <t tx="felix.20240107210250.1">import * as vscode from 'vscode';
+import { Constants } from "./constants";
 
 export class UnlProvider implements vscode.DocumentLinkProvider {
 
@@ -19641,14 +19642,14 @@ export class UnlProvider implements vscode.DocumentLinkProvider {
         while ((match = this.gnxUnlRegex.exec(text)) !== null) {
             const range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
             const args = encodeURIComponent(JSON.stringify({ unl: match[0], scheme: scheme }));
-            links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:leointeg.handleUnl?${args}`)));
+            links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:${Constants.COMMANDS.HANDLE_UNL}?${args}`)));
         }
 
         //  Headline - based UNLs
         while ((match = this.headlineUnlRegex.exec(text)) !== null) {
             const range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
             const args = encodeURIComponent(JSON.stringify({ unl: match[0], scheme: scheme }));
-            links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:leointeg.handleUnl?${args}`)));
+            links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:${Constants.COMMANDS.HANDLE_UNL}?${args}`)));
         }
 
         return links;
