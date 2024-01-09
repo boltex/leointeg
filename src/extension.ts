@@ -588,6 +588,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.STOP_SERVER, () => w_leo.killServer()],
         [CMD.CHOOSE_LEO_FOLDER, () => w_leo.chooseLeoFolder()],
         [CMD.SET_LEOID, () => w_leo.setLeoID()],
+        [CMD.HANDLE_UNL, (p_arg: { unl: string, scheme: string }) => w_leo.handleUnl(p_arg)],
 
         // Called by nodes in tree when selected either by mouse, or with enter
         [CMD.SELECT_NODE, (p_node: LeoApOutlineNode) => w_leo.selectTreeNode(p_node.position, false, false)],

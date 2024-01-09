@@ -39,6 +39,8 @@ export class Constants {
     public static URI_LEO_SCHEME: string = "leo";
     public static URI_FILE_SCHEME: string = "file";
     public static URI_SCHEME_HEADER: string = "leo:/";
+    public static URI_UNTITLED_SCHEME: string = 'untitled';
+    public static OUTPUT_CHANNEL_LANGUAGE = 'Log';
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
     public static UNTITLED_FILE_NAME: string = "untitled";
     public static RECENT_FILES_KEY: string = "leoRecentFiles";
@@ -559,6 +561,7 @@ export class Constants {
         GET_VERSION: "!get_version",
         GET_LEOID: "!get_leoid",
         SET_LEOID: "!set_leoid",
+        HANDLE_UNL: "!handle_unl",
         // * Server Commands
         GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
         APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -732,6 +735,7 @@ export class Constants {
         STOP_SERVER: Constants.NAME + ".stopServer",
         CONNECT: Constants.NAME + ".connectToServer",
         SET_LEOID: Constants.NAME + ".setLeoID",
+        HANDLE_UNL: Constants.NAME + ".handleUnl",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
         OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
         CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",

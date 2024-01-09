@@ -39,6 +39,7 @@ import { LeoFindPanelProvider } from './leoFindPanelWebview';
 import { LeoSettingsProvider } from './leoSettingsWebview';
 import { LeoGotoProvider, LeoGotoNode } from './leoGoto';
 import { LeoUndosProvider, LeoUndoNode } from './leoUndos';
+import { UnlProvider } from "./unlProvider";
 
 /**
  * * Orchestrates Leo integration into vscode
@@ -52,6 +53,9 @@ export class LeoIntegration {
 
     // * State flags
     public leoStates: LeoStates;
+
+    // * UNL link provider
+    public linkProvider: UnlProvider;
 
     // * General integration usage variables
     private _clipboardContent: string = "";
@@ -332,6 +336,20 @@ export class LeoIntegration {
 
         // * Setup frontend command stack
         this._commandStack = new CommandStack(_context, this);
+
+        // * UNL and URL link handler provider
+        this.linkProvider = new UnlProvider();
+        this._context.subscriptions.push(
+            vscode.languages.registerDocumentLinkProvider(
+                [
+                    { scheme: Constants.URI_FILE_SCHEME },
+                    { scheme: Constants.URI_UNTITLED_SCHEME },
+                    { scheme: Constants.URI_LEO_SCHEME },
+                    { language: Constants.OUTPUT_CHANNEL_LANGUAGE }
+                ],
+                this.linkProvider
+            )
+        );
 
         // * Create a single data provider for both outline trees, Leo view and Explorer view
         this._leoTreeProvider = new LeoApOutlineProvider(this.nodeIcons, !!this.config.invertNodeContrast, this);
@@ -784,6 +802,7 @@ export class LeoIntegration {
      * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
      */
     public connect(): void {
+        this.showLogPane();
 
         if (this.leoStates.leoBridgeReady || this.leoStates.leoConnecting) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
@@ -1045,6 +1064,55 @@ export class LeoIntegration {
             return this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, p_config);
         } else {
             return Promise.reject('Leo Bridge Not Ready');
+        }
+    }
+
+    public async handleUnl(p_arg: { unl: string, scheme: string }): Promise<void> {
+
+        if (!this.leoStates.leoBridgeReady || !this.leoStates.fileOpenedReady) {
+            this.addLogPaneEntry('Handle UNL: No Commander started');
+            return;
+        }
+
+        const leoJsExtension = vscode.extensions.getExtension('boltex.leojs');
+        if (leoJsExtension !== undefined && leoJsExtension.isActive) {
+            // If leojs is active only honor UNLS clicked in LeoInteg Panels only.
+            if (p_arg.scheme !== Constants.URI_LEO_SCHEME) {
+                console.log('LeoJS active: UNL ignored by LeoInteg');
+                return;
+            }
+        }
+        await this.triggerBodySave(true);
+        try {
+
+            if (p_arg.unl) {
+
+                return this.sendAction(
+                    Constants.LEOBRIDGE.HANDLE_UNL,
+                    { unl: p_arg.unl }
+                ).then((p_result: LeoBridgePackage) => {
+                    this.setupRefresh(
+                        Focus.NoChange,
+                        {
+                            tree: true,
+                            body: true,
+                            goto: true,
+                            states: true,
+                            documents: true,
+                            buttons: true
+                        }
+                    );
+                    this.launchRefresh();
+                    this.loadSearchSettings();
+
+                });
+
+            } else {
+                console.log('NO ARGUMENT FOR HANDLE URL! ', p_arg);
+            }
+        }
+        catch (e) {
+            console.log('FAILED HANDLE URL! ', p_arg);
         }
     }
 
@@ -1738,7 +1806,7 @@ export class LeoIntegration {
                 // TODO : uncomment and test this to fix replace / replace-then-find!!
                 if (
                     this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
-                    p_textDocumentChange.document.getText() === this._leoFileSystem.lastBodyData
+                    p_textDocumentChange.document.getText().replace(/\r\n/g, "\n") === this._leoFileSystem.lastBodyData
                 ) {
                     // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
                     // Set proper cursor insertion point and selection range.
@@ -1998,7 +2066,7 @@ export class LeoIntegration {
 
             const w_param = {
                 gnx: utils.leoUriToStr(p_document.uri),
-                body: p_document.getText(),
+                body: p_document.getText().replace(/\r\n/g, "\n"),
             };
             // Don't wait for promise!
             this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
@@ -2028,7 +2096,7 @@ export class LeoIntegration {
     ): Promise<LeoBridgePackage> {
         const w_param = {
             gnx: utils.leoUriToStr(p_document.uri),
-            body: p_document.getText(),
+            body: p_document.getText().replace(/\r\n/g, "\n"),
         };
         return this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
     }
@@ -4421,7 +4489,7 @@ export class LeoIntegration {
             const editor = vscode.window.activeTextEditor;
             const selection = editor.selection;
             if (!selection.isEmpty) {
-                const text = editor.document.getText(selection);
+                const text = editor.document.getText(selection).replace(/\r\n/g, "\n");
                 return this.findQuick(text);
             }
         }

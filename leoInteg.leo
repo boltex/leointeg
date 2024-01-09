@@ -335,6 +335,7 @@
 <v t="felix.20220705220032.1"><vh>checkVersion</vh></v>
 <v t="felix.20210613210351.1"><vh>chooseLeoFolder</vh></v>
 <v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
+<v t="felix.20240107202609.1"><vh>handleUnl</vh></v>
 </v>
 <v t="felix.20200719025231.10"><vh>Recently Opened Files</vh>
 <v t="felix.20200719025231.11"><vh>_openLastFiles</vh></v>
@@ -585,6 +586,7 @@
 <v t="ekr.20200815091220.1"><vh>_gotTerminalData</vh></v>
 </v>
 </v>
+<v t="felix.20240107210250.1"><vh>@clean src/unlProvider.ts</vh></v>
 <v t="felix.20200718194857.1"><vh>@clean src/types.d.ts</vh>
 <v t="felix.20210727225050.1"><vh>IVsCodeApi</vh></v>
 <v t="felix.20200718194857.2"><vh>ConfigMembers</vh></v>
@@ -2092,6 +2094,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.STOP_SERVER, () =&gt; w_leo.killServer()],
 [CMD.CHOOSE_LEO_FOLDER, () =&gt; w_leo.chooseLeoFolder()],
 [CMD.SET_LEOID, () =&gt; w_leo.setLeoID()],
+[CMD.HANDLE_UNL, (p_arg: { unl: string, scheme: string }) =&gt; w_leo.handleUnl(p_arg)],
 
 // Called by nodes in tree when selected either by mouse, or with enter
 [CMD.SELECT_NODE, (p_node: LeoApOutlineNode) =&gt; w_leo.selectTreeNode(p_node.position, false, false)],
@@ -4973,6 +4976,7 @@ public static LEOBRIDGE = {
     GET_VERSION: "!get_version",
     GET_LEOID: "!get_leoid",
     SET_LEOID: "!set_leoid",
+    HANDLE_UNL: "!handle_unl",
     // * Server Commands
     GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
     APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -5147,6 +5151,7 @@ public static COMMANDS = {
     STOP_SERVER: Constants.NAME + ".stopServer",
     CONNECT: Constants.NAME + ".connectToServer",
     SET_LEOID: Constants.NAME + ".setLeoID",
+    HANDLE_UNL: Constants.NAME + ".handleUnl",
     SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
     OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
     CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",
@@ -5404,6 +5409,8 @@ public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
 public static URI_LEO_SCHEME: string = "leo";
 public static URI_FILE_SCHEME: string = "file";
 public static URI_SCHEME_HEADER: string = "leo:/";
+public static URI_UNTITLED_SCHEME: string = 'untitled';
+public static OUTPUT_CHANNEL_LANGUAGE = 'Log';
 public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
 public static UNTITLED_FILE_NAME: string = "untitled";
 public static RECENT_FILES_KEY: string = "leoRecentFiles";
@@ -8892,6 +8899,7 @@ import { LeoFindPanelProvider } from './leoFindPanelWebview';
 import { LeoSettingsProvider } from './leoSettingsWebview';
 import { LeoGotoProvider, LeoGotoNode } from './leoGoto';
 import { LeoUndosProvider, LeoUndoNode } from './leoUndos';
+import { UnlProvider } from "./unlProvider";
 
 @others
 @language typescript
@@ -9112,6 +9120,9 @@ export class LeoIntegration {
 
     // * State flags
     public leoStates: LeoStates;
+
+    // * UNL link provider
+    public linkProvider: UnlProvider;
 
     // * General integration usage variables
     private _clipboardContent: string = "";
@@ -9647,6 +9658,20 @@ private _onActiveEditorChanged(
     // * Setup frontend command stack
     this._commandStack = new CommandStack(_context, this);
 
+    // * UNL and URL link handler provider
+    this.linkProvider = new UnlProvider();
+    this._context.subscriptions.push(
+        vscode.languages.registerDocumentLinkProvider(
+            [
+                { scheme: Constants.URI_FILE_SCHEME },
+                { scheme: Constants.URI_UNTITLED_SCHEME },
+                { scheme: Constants.URI_LEO_SCHEME },
+                { language: Constants.OUTPUT_CHANNEL_LANGUAGE }
+            ],
+            this.linkProvider
+        )
+    );
+
     // * Create a single data provider for both outline trees, Leo view and Explorer view
     this._leoTreeProvider = new LeoApOutlineProvider(this.nodeIcons, !!this.config.invertNodeContrast, this);
 
@@ -9926,7 +9951,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
             // TODO : uncomment and test this to fix replace / replace-then-find!!
             if (
                 this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &amp;&amp;
-                p_textDocumentChange.document.getText() === this._leoFileSystem.lastBodyData
+                p_textDocumentChange.document.getText().replace(/\r\n/g, "\n") === this._leoFileSystem.lastBodyData
             ) {
                 // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
                 // Set proper cursor insertion point and selection range.
@@ -10076,7 +10101,7 @@ private async _bodySaveDocument(
 
         const w_param = {
             gnx: utils.leoUriToStr(p_document.uri),
-            body: p_document.getText(),
+            body: p_document.getText().replace(/\r\n/g, "\n"),
         };
         // Don't wait for promise!
         this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
@@ -11476,6 +11501,7 @@ public startServer(): void {
  * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
  */
 public connect(): void {
+    this.showLogPane();
 
     if (this.leoStates.leoBridgeReady || this.leoStates.leoConnecting) {
         vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
@@ -14515,7 +14541,7 @@ private _bodySaveDeactivate(
 ): Promise&lt;LeoBridgePackage&gt; {
     const w_param = {
         gnx: utils.leoUriToStr(p_document.uri),
-        body: p_document.getText(),
+        body: p_document.getText().replace(/\r\n/g, "\n"),
     };
     return this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
 }
@@ -14921,9 +14947,6 @@ public refreshBodyStates(): void {
             w_language !== this._bodyTextDocument.languageId &amp;&amp;
             utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
         ) {
-            console.log('refreshBodyStates language was : ', this._bodyTextDocument.languageId);
-            console.log('setting language: ', w_language);
-
             this._setBodyLanguage(this._bodyTextDocument, w_language);
         }
     });
@@ -15561,7 +15584,7 @@ public getTextFromClipboard(): string {
             if (w_input) {
                 // @ts-expect-error
                 w_input.placeholder = "&lt;tag pattern here&gt;";
-                w_input.title = "Enter a tag name to list tagged nodes in the Goto pane&amp;#013;Clear this field to list all tags used in this file";
+                w_input.title = "Enter a tag name to list tagged nodes in the Goto pane\nClear this field to list all tags used in this file";
             }
 
             // @ts-expect-error
@@ -15580,7 +15603,7 @@ public getTextFromClipboard(): string {
             if (w_input) {
                 // @ts-expect-error
                 w_input.placeholder = "&lt;nav pattern here&gt;";
-                w_input.title = "Typing searches headlines interactively&amp;#013;Enter freezes input and searches body text";
+                w_input.title = "Typing searches headlines interactively\nEnter freezes input and searches body text";
             }
             // @ts-expect-error
             w_showParent.disabled = false;
@@ -15974,7 +15997,7 @@ public findQuickSelected(): Thenable&lt;unknown&gt; {
         const editor = vscode.window.activeTextEditor;
         const selection = editor.selection;
         if (!selection.isEmpty) {
-            const text = editor.document.getText(selection);
+            const text = editor.document.getText(selection).replace(/\r\n/g, "\n");
             return this.findQuick(text);
         }
     }
@@ -19512,6 +19535,125 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 
 - Fixed ...
 
+</t>
+<t tx="felix.20240107202609.1">public async handleUnl(p_arg: { unl: string, scheme: string }): Promise&lt;void&gt; {
+
+    if (!this.leoStates.leoBridgeReady || !this.leoStates.fileOpenedReady) {
+        this.addLogPaneEntry('Handle UNL: No Commander started');
+        return;
+    }
+
+    const leoJsExtension = vscode.extensions.getExtension('boltex.leojs');
+    if (leoJsExtension !== undefined &amp;&amp; leoJsExtension.isActive) {
+        // If leojs is active only honor UNLS clicked in LeoInteg Panels only.
+        if (p_arg.scheme !== Constants.URI_LEO_SCHEME) {
+            console.log('LeoJS active: UNL ignored by LeoInteg');
+            return;
+        }
+    }
+    await this.triggerBodySave(true);
+    try {
+
+        if (p_arg.unl) {
+
+            return this.sendAction(
+                Constants.LEOBRIDGE.HANDLE_UNL,
+                { unl: p_arg.unl }
+            ).then((p_result: LeoBridgePackage) =&gt; {
+                this.setupRefresh(
+                    Focus.NoChange,
+                    {
+                        tree: true,
+                        body: true,
+                        goto: true,
+                        states: true,
+                        documents: true,
+                        buttons: true
+                    }
+                );
+                this.launchRefresh();
+                this.loadSearchSettings();
+
+            });
+
+        } else {
+            console.log('NO ARGUMENT FOR HANDLE URL! ', p_arg);
+        }
+    }
+    catch (e) {
+        console.log('FAILED HANDLE URL! ', p_arg);
+    }
+}
+
+</t>
+<t tx="felix.20240107210250.1">import * as vscode from 'vscode';
+
+export class UnlProvider implements vscode.DocumentLinkProvider {
+
+    /*
+        * GNX-based UNL Samples
+        unl:gnx://leoPy.leo#ekr.20230626064652.1
+        unl:gnx://myProject.leo#node12345678.1
+        unl:gnx://codeRepo.leo#function.20231231.1
+    
+        * Headline-based UNL Samples
+        unl://C:/leo.repo/leo-editor/leo/doc/LeoDocs.leo#Getting Started--&gt;Introduction
+        unl://D:/work/notes.leo#Meeting Notes--&gt;2023--&gt;March--&gt;Project X Discussion
+        unl://myDocuments/notes.leo#Ideas--&gt;New Concepts--&gt;brainstorming-session
+        unl://relativePath/myFile.leo#Chapter 1--&gt;Section 2--&gt;Paragraph 3
+        unl://C:/projects/leoProject.leo#Code Review--&gt;Module 1--&gt;Function XYZ--&gt;Improvements
+    
+        * Mixed Characters and Edge Cases
+        unl://path/to/file.leo#Headline-with-Dashes--&gt;Sub-section--&gt;Item 1
+        unl://anotherPath/docs.leo#Special Characters!--&gt;@$%^&amp;*
+        unl://leoFile.leo#Testing--&gt;Edge--&gt;Cases--&gt;with--&gt;Multiple Separators
+
+        REFERENCE IN leoGlobals.py
+         2. New in Leo 6.7.4: UNLs based on gnx's (global node indices):
+        
+            Links of the form `unl:gnx:` + `//{outline}#{gnx}` open the given
+            outline and select the first outline node with the given gnx. These UNLs
+            will work as long as the node exists anywhere in the outline.
+        
+            For example, the link: `unl:gnx://#ekr.20031218072017.2406` refers to this
+            outline's "Code" node. Try it. The link works in this outline.
+
+    */
+
+    // private gnxUnlRegex = /\bunl:gnx:[^\r\n#]*#\S*/g; // This allows spaces and content after the UNL.
+    // private headlineUnlRegex = /\bunl:(?!gnx:)[^\r\n#]*#[^\r\n]*\S/g; // This goes on until end of line.
+
+    // *It seems that the double slash is required for valid UNLs (as per this comment in p.get_UNL and related methods in leoNodes.py)
+
+    // All unls must contain a file part: f"//{file-name}#"
+    // The file-name may be empty.
+
+    private gnxUnlRegex = /\bunl:gnx:\/\/[^\r\n#]*#\S*/g; // This allows spaces and content after the UNL.
+    private headlineUnlRegex = /\bunl:\/\/[^\r\n#]*#[^\r\n]*\S/g; // This goes on until end of line.
+
+    public provideDocumentLinks(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult&lt;vscode.DocumentLink[]&gt; {
+        const text = document.getText();
+        const links: vscode.DocumentLink[] = [];
+        const scheme = document.uri.scheme;
+        let match;
+
+        // GNX-based UNLs
+        while ((match = this.gnxUnlRegex.exec(text)) !== null) {
+            const range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
+            const args = encodeURIComponent(JSON.stringify({ unl: match[0], scheme: scheme }));
+            links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:leointeg.handleUnl?${args}`)));
+        }
+
+        //  Headline - based UNLs
+        while ((match = this.headlineUnlRegex.exec(text)) !== null) {
+            const range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
+            const args = encodeURIComponent(JSON.stringify({ unl: match[0], scheme: scheme }));
+            links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:leointeg.handleUnl?${args}`)));
+        }
+
+        return links;
+    }
+}
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
