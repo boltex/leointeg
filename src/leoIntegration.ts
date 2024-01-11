@@ -6199,9 +6199,10 @@ export class LeoIntegration {
                             {
                                 tree: true,
                                 body: true,
-                                documents: true,
-                                // buttons: false,
+                                goto: true,
                                 states: true,
+                                documents: true,
+                                buttons: true
                             }
                         );
                         return this.launchRefresh();
@@ -6441,9 +6442,10 @@ export class LeoIntegration {
                             {
                                 tree: true,
                                 body: true,
-                                documents: true,
-                                // buttons: false,
+                                goto: true,
                                 states: true,
+                                documents: true,
+                                buttons: true
                             }
                         );
                         return this.launchRefresh();
@@ -6619,9 +6621,10 @@ export class LeoIntegration {
                             {
                                 tree: true,
                                 body: true,
-                                documents: true,
-                                // buttons: false,
+                                goto: true,
                                 states: true,
+                                documents: true,
+                                buttons: true
                             }
                         );
                         return this.launchRefresh();
@@ -6761,7 +6764,10 @@ export class LeoIntegration {
             {
                 tree: true,
                 body: true,
+                goto: true,
                 states: true,
+                documents: true,
+                buttons: true
             },
             w_package.node
         );

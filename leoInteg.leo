@@ -13805,9 +13805,10 @@ public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                         {
                             tree: true,
                             body: true,
-                            documents: true,
-                            // buttons: false,
+                            goto: true,
                             states: true,
+                            documents: true,
+                            buttons: true
                         }
                     );
                     return this.launchRefresh();
@@ -14893,7 +14894,10 @@ public async gotoScript(p_node: LeoButtonNode): Promise&lt;any&gt; {
         {
             tree: true,
             body: true,
+            goto: true,
             states: true,
+            documents: true,
+            buttons: true
         },
         w_package.node
     );
@@ -17896,9 +17900,10 @@ public removeSentinels(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                         {
                             tree: true,
                             body: true,
-                            documents: true,
-                            // buttons: false,
+                            goto: true,
                             states: true,
+                            documents: true,
+                            buttons: true
                         }
                     );
                     return this.launchRefresh();
@@ -18077,9 +18082,10 @@ public readFileIntoNode(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                         {
                             tree: true,
                             body: true,
-                            documents: true,
-                            // buttons: false,
+                            goto: true,
                             states: true,
+                            documents: true,
+                            buttons: true
                         }
                     );
                     return this.launchRefresh();
