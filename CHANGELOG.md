@@ -2,8 +2,8 @@
 
 ## 1.0.19
 
-- Fixed tooltips in find panel
-- Added UNL support: Requires Leo 6.7.7
+- Fixed tooltips in find panel.
+- Added UNL support: Requires Leo 6.7.7.
 - Fixed 'goto-script' refresh cycle.
 - @button panel now run scripts with run icon button instead of selecting the entry.
 
