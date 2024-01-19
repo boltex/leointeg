@@ -710,10 +710,7 @@
         "title": "Execute Script",
         "category": "Leo",
         "enablement": "leoTreeOpened",
-        "icon": {
-          "light": "resources/light/execute.svg",
-          "dark": "resources/dark/execute.svg"
-        }
+        "icon": "$(play)"
       },
       {
         "command": "leointeg.minibuffer",
@@ -726,6 +723,13 @@
         "category": "Leo",
         "enablement": "leoTreeOpened",
         "title": "Goto Script"
+      },
+      {
+        "command": "leointeg.clickButton",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Click Button",
+        "icon": "$(play)"
       },
       {
         "command": "leointeg.removeButton",
@@ -2357,6 +2361,10 @@
     "menus": {
       "commandPalette": [
         {
+          "command": "leointeg.clickButton",
+          "when": "false"
+        },
+        {
           "command": "leointeg.gotoScript",
           "when": "false"
         },
@@ -3167,6 +3175,11 @@
           "command": "leointeg.gotoNextClone",
           "when": "leoTreeOpened && viewItem =~ /leoNodeCloned/",
           "group": "leoNodeContext3@3"
+        },
+        {
+          "command": "leointeg.clickButton",
+          "when": "leoTreeOpened && viewItem =~ /^leoButtonNode|^leoButtonAdd/",
+          "group": "inline@1"
         },
         {
           "command": "leointeg.removeButton",

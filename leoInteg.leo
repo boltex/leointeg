@@ -2713,10 +2713,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "title": "Execute Script",
   "category": "Leo",
   "enablement": "leoTreeOpened",
-  "icon": {
-    "light": "resources/light/execute.svg",
-    "dark": "resources/dark/execute.svg"
-  }
+  "icon": "$(play)"
 },
 {
   "command": "leointeg.minibuffer",
@@ -2729,6 +2726,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "category": "Leo",
   "enablement": "leoTreeOpened",
   "title": "Goto Script"
+},
+{
+  "command": "leointeg.clickButton",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Click Button",
+  "icon": "$(play)"
 },
 {
   "command": "leointeg.removeButton",
@@ -3870,6 +3874,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 </t>
 <t tx="ekr.20200815123601.5"></t>
 <t tx="ekr.20200815123601.58">{
+  "command": "leointeg.clickButton",
+  "when": "false"
+},
+{
   "command": "leointeg.gotoScript",
   "when": "false"
 },
@@ -6967,21 +6975,9 @@ export class LeoButtonNode extends vscode.TreeItem {
         private _leoIntegration: LeoIntegration
     ) {
         super(button.name);
-        // Cleanup button name of any directives starting with '@'
-        // super(
-        //     button.name.split(" ")
-        //         .filter(item =&gt; item[0] !== "@")
-        //         .join(" ")
-        //         .trim()
-        // );
 
         this._id = utils.getUniqueId();
-        // Setup this instance (just differentiate 'script-button' for now)
-        this.command = {
-            command: Constants.COMMANDS.CLICK_BUTTON,
-            title: '',
-            arguments: [this]
-        };
+
         this._isAdd = (this.button.index.startsWith(Constants.BUTTON_STRINGS.NULL_WIDGET) &amp;&amp;
             this.button.name === Constants.BUTTON_STRINGS.SCRIPT_BUTTON);
         this.rclicks = button.rclicks ? button.rclicks : [];
@@ -12387,6 +12383,11 @@ public static VSCODE_COMMANDS = {
     "command": "leointeg.gotoNextClone",
     "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNodeCloned/",
     "group": "leoNodeContext3@3"
+  },
+  {
+    "command": "leointeg.clickButton",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /^leoButtonNode|^leoButtonAdd/",
+    "group": "inline@1"
   },
   {
     "command": "leointeg.removeButton",
@@ -19539,7 +19540,10 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 </t>
 <t tx="felix.20231216214036.1">## 1.0.19
 
-- Fixed ...
+- Fixed tooltips in find panel
+- Added UNL support: Requires Leo 6.7.7
+- Fixed 'goto-script' refresh cycle.
+- @button panel now run scripts with run icon button instead of selecting the entry.
 
 </t>
 <t tx="felix.20240107202609.1">public async handleUnl(p_arg: { unl: string, scheme: string }): Promise&lt;void&gt; {
