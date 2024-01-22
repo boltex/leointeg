@@ -176,7 +176,7 @@ export class Config implements ConfigMembers {
                     .update("zoomLevel", p_settings.zoomLevel, true);
             } else {
                 vscode.window.showInformationMessage(
-                    "Value for zoom level should be between -12 and 12"
+                    Constants.USER_MESSAGES.ZOOM_LEVEL_RANGE_LIMIT
                 );
             }
         }
@@ -186,7 +186,7 @@ export class Config implements ConfigMembers {
                     .update("fontSize", p_settings.fontSize, true);
             } else {
                 vscode.window.showInformationMessage(
-                    "Value for font size should be between 6 and 30"
+                    Constants.USER_MESSAGES.FONT_SIZE_RANGE_LIMIT
                 );
             }
         }
@@ -209,6 +209,18 @@ export class Config implements ConfigMembers {
     }
 
     /**
+     * * Sets all 'bodywrap' vscode settings
+     */
+    public setBodyWrap(): Thenable<void> {
+        let w_totalConfigName = "";
+        for (const w_lang of Constants.LANGUAGES) {
+            let langWrap = '[' + Constants.LEO_LANGUAGE_PREFIX + w_lang + Constants.LEO_WRAP_SUFFIX + ']';
+            w_totalConfigName += langWrap;
+        }
+        return vscode.workspace.getConfiguration().update(w_totalConfigName, { 'editor.wordWrap': 'on' }, vscode.ConfigurationTarget.Global);
+    }
+
+    /**
      * * Check if the workbench.editor.enablePreview flag is set
      * @param p_forced Forces the setting instead of just suggesting with a message
      */
@@ -223,15 +235,16 @@ export class Config implements ConfigMembers {
         if (w_result === false) {
             if (p_forced) {
                 this.setEnablePreview();
-                vscode.window.showInformationMessage("'Enable Preview' setting was set");
+                vscode.window.showInformationMessage(Constants.USER_MESSAGES.ENABLE_PREVIEW_SET);
             } else {
                 if (!this._leoIntegration.leoStates.leoStartupFinished) {
                     return;
                 }
-                vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
+                vscode.window.showWarningMessage(Constants.USER_MESSAGES.ENABLE_PREVIEW_RECOMMEND, Constants.USER_MESSAGES.FIX_IT)
                     .then(p_chosenButton => {
-                        if (p_chosenButton === "Fix it") {
+                        if (p_chosenButton === Constants.USER_MESSAGES.FIX_IT) {
                             vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
+                            vscode.window.showInformationMessage(Constants.USER_MESSAGES.ENABLE_PREVIEW_SET);
                         }
                     });
             }
@@ -253,18 +266,52 @@ export class Config implements ConfigMembers {
         if (w_result === true) {
             if (p_forced) {
                 this.clearCloseEmptyGroups();
-                vscode.window.showInformationMessage("'Close Empty Groups' setting was cleared");
+                vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLOSE_EMPTY_CLEARED);
             } else {
                 if (!this._leoIntegration.leoStates.leoStartupFinished) {
                     return;
                 }
-                vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
+                vscode.window.showWarningMessage(Constants.USER_MESSAGES.CLOSE_EMPTY_RECOMMEND, Constants.USER_MESSAGES.FIX_IT)
                     .then(p_chosenButton => {
-                        if (p_chosenButton === "Fix it") {
+                        if (p_chosenButton === Constants.USER_MESSAGES.FIX_IT) {
                             vscode.commands.executeCommand(Constants.COMMANDS.CLEAR_CLOSE_EMPTY_GROUPS);
+                            vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLOSE_EMPTY_CLEARED);
                         }
                     });
             }
+        }
+    }
+
+    public checkBodyWrap(p_forced?: boolean): void {
+        let w_missing = false;
+
+        let w_languageSettings: Record<string, boolean> | undefined;
+        let w_totalConfigName = "";
+
+        for (const w_lang of Constants.LANGUAGES) {
+            let langWrap = '[' + Constants.LEO_LANGUAGE_PREFIX + w_lang + Constants.LEO_WRAP_SUFFIX + ']';
+            w_totalConfigName += langWrap;
+            // w_languageSettings = vscode.workspace.getConfiguration(langWrap);
+        }
+        w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName);
+
+        if (!w_languageSettings || !w_languageSettings['editor.wordWrap']) {
+            w_missing = true;
+        }
+
+        if (w_missing && p_forced) {
+            void this.setBodyWrap();
+            // ! NOT warning the user for this forced setting at startup because its internal to LeoJS only !
+        } else if (w_missing && !p_forced) {
+            void vscode.window.showWarningMessage(
+                Constants.USER_MESSAGES.BODY_WRAP_RECOMMEND,
+                Constants.USER_MESSAGES.FIX_IT
+            ).then(p_chosenButton => {
+                if (p_chosenButton === Constants.USER_MESSAGES.FIX_IT) {
+                    void vscode.commands.executeCommand(Constants.COMMANDS.SET_BODY_WRAP_SETTINGS);
+                    void vscode.window.showInformationMessage(Constants.USER_MESSAGES.BODY_WRAP_SET);
+                }
+            });
         }
     }
 
