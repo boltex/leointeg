@@ -36,6 +36,8 @@ export class Constants {
     public static JS_FILE_EXTENSION: string = "leojs";
 
     public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
+    public static LEO_WRAP_SUFFIX: string = ".wrap"; // all lowercase.
+
     public static URI_LEO_SCHEME: string = "leo";
     public static URI_FILE_SCHEME: string = "file";
     public static URI_SCHEME_HEADER: string = "leo:/";
@@ -70,6 +72,28 @@ export class Constants {
     public static GOTO_DEBOUNCE_DELAY: number = 50;
 
     public static LOG_ALERT_COLOR: string = 'red';
+
+    /**
+     * Supported Languages
+     */
+    public static LANGUAGES = [
+        "plain",
+        "python",
+        "javascript",
+        "typescript",
+        "c",
+        "cpp",
+        "css",
+        "fortran",
+        "fortran90",
+        "html",
+        "java",
+        "json",
+        "markdown",
+        "php",
+        "restructuredtext",
+        "rust",
+    ];
 
     /**
      * * Minimal Leo Editor and Leo server versions
@@ -255,7 +279,17 @@ export class Constants {
         MINIBUFFER_COMMAND: "$(zap) @command",
         MINIBUFFER_BAD_COMMAND: "$(error) Not Available",
         MINIBUFFER_HISTORY_LABEL: "Minibuffer History",
-        MINIBUFFER_HISTORY_DESC: "Choose from last run commands..."
+        MINIBUFFER_HISTORY_DESC: "Choose from last run commands...",
+
+        ZOOM_LEVEL_RANGE_LIMIT: "Value for zoom level should be between -12 and 12",
+        FONT_SIZE_RANGE_LIMIT: "Value for font size should be between 6 and 30",
+        BODY_WRAP_RECOMMEND: "'leojsbody' wordWrap settings are recommended (some currently missing)",
+        BODY_WRAP_SET: "'leojsbody' wordWrap settings were set",
+        FIX_IT: "Fix it",
+        ENABLE_PREVIEW_SET: "'Enable Preview' setting was set",
+        ENABLE_PREVIEW_RECOMMEND: "'Enable Preview' setting is recommended (currently disabled)",
+        CLOSE_EMPTY_CLEARED: "'Close Empty Groups' setting was cleared",
+        CLOSE_EMPTY_RECOMMEND: "'Close Empty Groups' setting is NOT recommended!",
     };
 
     /**
@@ -415,6 +449,7 @@ export class Constants {
     public static CONTEXT_FLAGS = {
         // Main flags for connection and opened file
         STARTUP_FINISHED: "leoStartupFinished", // Initial extension finished auto-server-start-connect
+        LEO_OPENING_FILE: "leoOpeningFile",
         STARTING_SERVER: "leoStartingServer",
         CONNECTING: "leoConnecting", // Initial extension finished auto-server-start-connect
         BRIDGE_READY: "leoBridgeReady", // Connected to leoBridge
@@ -946,6 +981,7 @@ export class Constants {
         TOGGLE_FIND_WORD_OPTION: Constants.NAME + ".toggleFindWordOption",
         TOGGLE_FIND_SEARCH_BODY_OPTION: Constants.NAME + ".toggleFindSearchBodyOption",
         TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
+        SET_BODY_WRAP_SETTINGS: Constants.NAME + ".setBodyWrapSettings",
         SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
         CLEAR_CLOSE_EMPTY_GROUPS: Constants.NAME + ".clearCloseEmptyGroups",
     };

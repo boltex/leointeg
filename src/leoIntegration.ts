@@ -1501,6 +1501,7 @@ export class LeoIntegration {
         setTimeout(() => {
             this.config.checkEnablePreview();
             this.config.checkCloseEmptyGroups();
+            this.config.checkBodyWrap();
         }, 150);
     }
 
@@ -3130,13 +3131,10 @@ export class LeoIntegration {
 
                 let w_gnx: string | undefined = p_bodyStates.selection?.gnx; // ? To verify if better than w_openedDocumentGnx ?
 
-                // TODO : Apply tabwidth
-                // console.log('TABWIDTH: ', w_tabWidth);
-                // TODO : Apply Wrap
-                // console.log('WRAP: ', w_wrap);
-
                 // Replace language string if in 'exceptions' array
-                w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
+                w_language = Constants.LEO_LANGUAGE_PREFIX +
+                    (Constants.LANGUAGE_CODES[w_language] || w_language) +
+                    (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
 
                 let w_debugMessage = "";
                 let w_needRefreshFlag = false;
@@ -3412,7 +3410,9 @@ export class LeoIntegration {
             // console.log('WRAP: ', w_wrap);
 
             // Replace language string if in 'exceptions' array
-            w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
+            w_language = Constants.LEO_LANGUAGE_PREFIX +
+                (Constants.LANGUAGE_CODES[w_language] || w_language) +
+                (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
 
             // Apply language if the selected node is still the same after all those events
             if (this._bodyTextDocument &&
@@ -6039,6 +6039,7 @@ export class LeoIntegration {
      */
     public async newLeoFile(): Promise<LeoBridgePackage> {
         await this._isBusyTriggerSave(true, true);
+        await utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, true);
         const w_openFileResult = await this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, { filename: "" });
         if (w_openFileResult.total) {
             this.serverHasOpenedFile = true;
@@ -6062,12 +6063,18 @@ export class LeoIntegration {
                 }
             );
             this.launchRefresh();
+            setTimeout(() => {
+                void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+            }, 60);
             return w_openFileResult;
         } else {
             this.serverHasOpenedFile = false;
             this.serverOpenedFileName = "";
             this.serverOpenedNode = undefined;
             this.launchRefresh();
+            setTimeout(() => {
+                void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+            }, 60);
             return Promise.reject('New Leo File Error');
         }
     }
@@ -6087,6 +6094,7 @@ export class LeoIntegration {
                 let q_openedFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
                 if (p_leoFileUri && p_leoFileUri.fsPath && p_leoFileUri.fsPath.trim()) {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
+                    void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, true);
                     q_openedFile = this.sendAction(
                         Constants.LEOBRIDGE.OPEN_FILE,
                         { filename: w_fixedFilePath }
@@ -6095,6 +6103,7 @@ export class LeoIntegration {
                     q_openedFile = this._leoFilesBrowser.getLeoFileUrl().then(
                         (p_chosenLeoFile) => {
                             if (p_chosenLeoFile.trim()) {
+                                void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, true);
                                 return this.sendAction(
                                     Constants.LEOBRIDGE.OPEN_FILE,
                                     { filename: p_chosenLeoFile }
@@ -6141,15 +6150,21 @@ export class LeoIntegration {
                             this.serverOpenedNode = undefined;
                         }
                         this.launchRefresh();
-
+                        setTimeout(() => {
+                            void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+                        }, 60);
                         return p_openFileResult;
                     } else {
+                        setTimeout(() => {
+                            void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+                        }, 60);
                         return Promise.resolve(undefined); // User cancelled chooser.
                     }
                 },
                 (p_errorOpen) => {
                     // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
                     console.log('in .then not opened or already opened');
+                    void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
                     return Promise.reject(p_errorOpen);
                 }
             );

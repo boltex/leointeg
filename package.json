@@ -334,6 +334,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.plain.language-configuration.json"
+      },
+      {
+        "id": "leobody.plain.wrap",
+        "aliases": [
+          "Leo Body Plain",
+          "leobody"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.plain.language-configuration.json"
       },
       {
@@ -345,6 +364,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.python.language-configuration.json"
+      },
+      {
+        "id": "leobody.python.wrap",
+        "aliases": [
+          "Leo Body Python",
+          "leobody.python"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.python.language-configuration.json"
       },
       {
@@ -356,6 +394,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.typescript.language-configuration.json"
+      },
+      {
+        "id": "leobody.typescript.wrap",
+        "aliases": [
+          "Leo Body Typescript",
+          "leobody.typescript"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.typescript.language-configuration.json"
       },
       {
@@ -367,6 +424,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.javascript.language-configuration.json"
+      },
+      {
+        "id": "leobody.javascript.wrap",
+        "aliases": [
+          "Leo Body Javascript",
+          "leobody.javascript"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.javascript.language-configuration.json"
       },
       {
@@ -378,6 +454,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.c.language-configuration.json"
+      },
+      {
+        "id": "leobody.c.wrap",
+        "aliases": [
+          "Leo Body c",
+          "leobody.c"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.c.language-configuration.json"
       },
       {
@@ -389,6 +484,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.cpp.language-configuration.json"
+      },
+      {
+        "id": "leobody.cpp.wrap",
+        "aliases": [
+          "Leo Body C++",
+          "leobody.cpp"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.cpp.language-configuration.json"
       },
       {
@@ -400,6 +514,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.css.language-configuration.json"
+      },
+      {
+        "id": "leobody.css.wrap",
+        "aliases": [
+          "Leo Body CSS",
+          "leobody.css"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.css.language-configuration.json"
       },
       {
@@ -411,6 +544,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.fortran.language-configuration.json"
+      },
+      {
+        "id": "leobody.fortran.wrap",
+        "aliases": [
+          "Leo Body Fortran",
+          "leobody.fortran"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.fortran.language-configuration.json"
       },
       {
@@ -422,6 +574,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.fortran.language-configuration.json"
+      },
+      {
+        "id": "leobody.fortran90.wrap",
+        "aliases": [
+          "Leo Body Fortran90",
+          "leobody.fortran90"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.fortran.language-configuration.json"
       },
       {
@@ -433,6 +604,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.html.language-configuration.json"
+      },
+      {
+        "id": "leobody.html.wrap",
+        "aliases": [
+          "Leo Body HTML",
+          "leobody.html"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.html.language-configuration.json"
       },
       {
@@ -444,6 +634,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.java.language-configuration.json"
+      },
+      {
+        "id": "leobody.java.wrap",
+        "aliases": [
+          "Leo Body Java",
+          "leobody.java"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.java.language-configuration.json"
       },
       {
@@ -455,6 +664,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.json.language-configuration.json"
+      },
+      {
+        "id": "leobody.json.wrap",
+        "aliases": [
+          "Leo Body Json",
+          "leobody.json"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.json.language-configuration.json"
       },
       {
@@ -466,6 +694,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.markdown.language-configuration.json"
+      },
+      {
+        "id": "leobody.markdown.wrap",
+        "aliases": [
+          "Leo Body Markdown",
+          "leobody.markdown"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.markdown.language-configuration.json"
       },
       {
@@ -477,6 +724,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.php.language-configuration.json"
+      },
+      {
+        "id": "leobody.php.wrap",
+        "aliases": [
+          "Leo Body PHP",
+          "leobody.php"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.php.language-configuration.json"
       },
       {
@@ -488,6 +754,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.rst.language-configuration.json"
+      },
+      {
+        "id": "leobody.restructuredtext.wrap",
+        "aliases": [
+          "Leo Body reStructuredText",
+          "leobody.restructuredtext"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.rst.language-configuration.json"
       },
       {
@@ -499,6 +784,25 @@
         "extensions": [
           ""
         ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.rust.language-configuration.json"
+      },
+      {
+        "id": "leobody.rust.wrap",
+        "aliases": [
+          "Leo Body Rust",
+          "leobody.rust"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
         "configuration": "./language-configurations/leobody.rust.language-configuration.json"
       }
     ],
@@ -509,7 +813,17 @@
         "path": "./syntaxes/leobody.plain.tmLanguage.json"
       },
       {
+        "language": "leobody.plain.wrap",
+        "scopeName": "source.leobody.plain",
+        "path": "./syntaxes/leobody.plain.tmLanguage.json"
+      },
+      {
         "language": "leobody.python",
+        "scopeName": "source.leobody.python",
+        "path": "./syntaxes/leobody.python.tmLanguage.json"
+      },
+      {
+        "language": "leobody.python.wrap",
         "scopeName": "source.leobody.python",
         "path": "./syntaxes/leobody.python.tmLanguage.json"
       },
@@ -519,7 +833,17 @@
         "path": "./syntaxes/leobody.typescript.tmLanguage.json"
       },
       {
+        "language": "leobody.typescript.wrap",
+        "scopeName": "source.leobody.typescript",
+        "path": "./syntaxes/leobody.typescript.tmLanguage.json"
+      },
+      {
         "language": "leobody.javascript",
+        "scopeName": "source.leobody.javascript",
+        "path": "./syntaxes/leobody.javascript.tmLanguage.json"
+      },
+      {
+        "language": "leobody.javascript.wrap",
         "scopeName": "source.leobody.javascript",
         "path": "./syntaxes/leobody.javascript.tmLanguage.json"
       },
@@ -529,7 +853,17 @@
         "path": "./syntaxes/leobody.c.tmLanguage.json"
       },
       {
+        "language": "leobody.c.wrap",
+        "scopeName": "source.leobody.c",
+        "path": "./syntaxes/leobody.c.tmLanguage.json"
+      },
+      {
         "language": "leobody.cpp",
+        "scopeName": "source.leobody.cpp",
+        "path": "./syntaxes/leobody.cpp.tmLanguage.json"
+      },
+      {
+        "language": "leobody.cpp.wrap",
         "scopeName": "source.leobody.cpp",
         "path": "./syntaxes/leobody.cpp.tmLanguage.json"
       },
@@ -539,7 +873,17 @@
         "path": "./syntaxes/leobody.css.tmLanguage.json"
       },
       {
+        "language": "leobody.css.wrap",
+        "scopeName": "source.leobody.css",
+        "path": "./syntaxes/leobody.css.tmLanguage.json"
+      },
+      {
         "language": "leobody.fortran",
+        "scopeName": "source.leobody.fortran",
+        "path": "./syntaxes/leobody.fortran.tmLanguage.json"
+      },
+      {
+        "language": "leobody.fortran.wrap",
         "scopeName": "source.leobody.fortran",
         "path": "./syntaxes/leobody.fortran.tmLanguage.json"
       },
@@ -549,7 +893,17 @@
         "path": "./syntaxes/leobody.fortran90.tmLanguage.json"
       },
       {
+        "language": "leobody.fortran90.wrap",
+        "scopeName": "source.leobody.fortran90",
+        "path": "./syntaxes/leobody.fortran90.tmLanguage.json"
+      },
+      {
         "language": "leobody.html",
+        "scopeName": "source.leobody.html",
+        "path": "./syntaxes/leobody.html.tmLanguage.json"
+      },
+      {
+        "language": "leobody.html.wrap",
         "scopeName": "source.leobody.html",
         "path": "./syntaxes/leobody.html.tmLanguage.json"
       },
@@ -559,7 +913,17 @@
         "path": "./syntaxes/leobody.java.tmLanguage.json"
       },
       {
+        "language": "leobody.java.wrap",
+        "scopeName": "source.leobody.java",
+        "path": "./syntaxes/leobody.java.tmLanguage.json"
+      },
+      {
         "language": "leobody.json",
+        "scopeName": "source.leobody.json",
+        "path": "./syntaxes/leobody.json.tmLanguage.json"
+      },
+      {
+        "language": "leobody.json.wrap",
         "scopeName": "source.leobody.json",
         "path": "./syntaxes/leobody.json.tmLanguage.json"
       },
@@ -569,7 +933,17 @@
         "path": "./syntaxes/leobody.markdown.tmLanguage.json"
       },
       {
+        "language": "leobody.markdown.wrap",
+        "scopeName": "source.leobody.markdown",
+        "path": "./syntaxes/leobody.markdown.tmLanguage.json"
+      },
+      {
         "language": "leobody.php",
+        "scopeName": "source.leobody.php",
+        "path": "./syntaxes/leobody.php.tmLanguage.json"
+      },
+      {
+        "language": "leobody.php.wrap",
         "scopeName": "source.leobody.php",
         "path": "./syntaxes/leobody.php.tmLanguage.json"
       },
@@ -579,7 +953,17 @@
         "path": "./syntaxes/leobody.rst.tmLanguage.json"
       },
       {
+        "language": "leobody.restructuredtext.wrap",
+        "scopeName": "source.leobody.restructuredtext",
+        "path": "./syntaxes/leobody.rst.tmLanguage.json"
+      },
+      {
         "language": "leobody.rust",
+        "scopeName": "source.leobody.rust",
+        "path": "./syntaxes/leobody.rust.tmLanguage.json"
+      },
+      {
+        "language": "leobody.rust.wrap",
         "scopeName": "source.leobody.rust",
         "path": "./syntaxes/leobody.rust.tmLanguage.json"
       },
@@ -600,7 +984,23 @@
           "source.leobody.python",
           "source.leobody.restructuredtext",
           "source.leobody.rust",
-          "source.leobody.typescript"
+          "source.leobody.typescript",
+          "source.leobody.c.wrap",
+          "source.leobody.cpp.wrap",
+          "source.leobody.css.wrap",
+          "source.leobody.fortran.wrap",
+          "source.leobody.fortran90.wrap",
+          "source.leobody.html.wrap",
+          "source.leobody.java.wrap",
+          "source.leobody.javascript.wrap",
+          "source.leobody.json.wrap",
+          "source.leobody.markdown.wrap",
+          "source.leobody.php.wrap",
+          "source.leobody.plain.wrap",
+          "source.leobody.python.wrap",
+          "source.leobody.restructuredtext.wrap",
+          "source.leobody.rust.wrap",
+          "source.leobody.typescript.wrap"
         ],
         "path": "./syntaxes/leobody.tmLanguage.json",
         "scopeName": "leo.injection"
@@ -612,7 +1012,15 @@
         "path": "./snippets/c.code-snippets"
       },
       {
+        "language": "leobody.c.wrap",
+        "path": "./snippets/c.code-snippets"
+      },
+      {
         "language": "leobody.cpp",
+        "path": "./snippets/cpp.code-snippets"
+      },
+      {
+        "language": "leobody.cpp.wrap",
         "path": "./snippets/cpp.code-snippets"
       },
       {
@@ -620,7 +1028,15 @@
         "path": "./snippets/fortran90.code-snippets"
       },
       {
+        "language": "leobody.fortran90.wrap",
+        "path": "./snippets/fortran90.code-snippets"
+      },
+      {
         "language": "leobody.javascript",
+        "path": "./snippets/javascript.code-snippets"
+      },
+      {
+        "language": "leobody.javascript.wrap",
         "path": "./snippets/javascript.code-snippets"
       },
       {
@@ -628,7 +1044,15 @@
         "path": "./snippets/typescript.code-snippets"
       },
       {
+        "language": "leobody.typescript.wrap",
+        "path": "./snippets/typescript.code-snippets"
+      },
+      {
         "language": "leobody.java",
+        "path": "./snippets/java.code-snippets"
+      },
+      {
+        "language": "leobody.java.wrap",
         "path": "./snippets/java.code-snippets"
       },
       {
@@ -636,7 +1060,15 @@
         "path": "./snippets/php.code-snippets"
       },
       {
+        "language": "leobody.php.wrap",
+        "path": "./snippets/php.code-snippets"
+      },
+      {
         "language": "leobody.markdown",
+        "path": "./snippets/markdown.code-snippets"
+      },
+      {
+        "language": "leobody.markdown.wrap",
         "path": "./snippets/markdown.code-snippets"
       },
       {
@@ -644,8 +1076,178 @@
         "path": "./snippets/restructuredtext.code-snippets"
       },
       {
+        "language": "leobody.restructuredtext.wrap",
+        "path": "./snippets/restructuredtext.code-snippets"
+      },
+      {
         "language": "leobody.rust",
         "path": "./snippets/rust.code-snippets"
+      },
+      {
+        "language": "leobody.rust.wrap",
+        "path": "./snippets/rust.code-snippets"
+      }
+    ],
+    "viewsWelcome": [
+      {
+        "view": "leoIntegration",
+        "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting && !leoStartingServer || !leoBridgeReady && !leoServerStarted && !config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting && !leoStartingServer || !leoBridgeReady && !leoServerStarted && !config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer"
+      },
+      {
+        "view": "leoIntegration",
+        "contents": "Starting Server...",
+        "when": "leoStartingServer || !leoBridgeReady && config.leoIntegration.startServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Starting Server...",
+        "when": "leoStartingServer || !leoBridgeReady && config.leoIntegration.startServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
+      },
+      {
+        "view": "leoIntegration",
+        "contents": "Opening file...",
+        "when": "leoBridgeReady && !leoTreeOpened && leoStartupFinished && leoOpeningFile"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Opening file...",
+        "when": "leoBridgeReady && !leoTreeOpened && leoStartupFinished && leoOpeningFile"
+      },
+      {
+        "view": "leoIntegration",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "!leoBridgeReady && leoServerStarted && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer && !leoStartupFinished || leoStartupFinished && !leoBridgeReady && leoServerStarted && !leoConnecting && !leoStartingServer"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "!leoBridgeReady && leoServerStarted && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer && !leoStartupFinished || leoStartupFinished && !leoBridgeReady && leoServerStarted && !leoConnecting && !leoStartingServer"
+      },
+      {
+        "view": "leoIntegration",
+        "contents": "Connecting...",
+        "when": "leoConnecting || !leoBridgeReady && !config.leoIntegration.startServerAutomatically && config.leoIntegration.connectToServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Connecting...",
+        "when": "leoConnecting || !leoBridgeReady && !config.leoIntegration.startServerAutomatically && config.leoIntegration.connectToServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
+      },
+      {
+        "view": "leoIntegration",
+        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "leoBridgeReady && !leoTreeOpened && !leoStartingServer && !leoConnecting && leoStartupFinished && !leoOpeningFile"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "leoBridgeReady && !leoTreeOpened && !leoStartingServer && !leoConnecting && leoStartupFinished && !leoOpeningFile"
+      },
+      {
+        "view": "leoDocuments",
+        "contents": "Not connected",
+        "when": "!leoBridgeReady"
+      },
+      {
+        "view": "leoDocumentsExplorer",
+        "contents": "Not connected",
+        "when": "!leoBridgeReady"
+      },
+      {
+        "view": "leoDocuments",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoDocumentsExplorer",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoButtons",
+        "contents": "Not connected",
+        "when": "!leoBridgeReady"
+      },
+      {
+        "view": "leoButtonsExplorer",
+        "contents": "Not connected",
+        "when": "!leoBridgeReady"
+      },
+      {
+        "view": "leoButtons",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoButtonsExplorer",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoButtons",
+        "contents": "There are no @buttons in this outline",
+        "when": "leoBridgeReady && leoTreeOpened"
+      },
+      {
+        "view": "leoButtonsExplorer",
+        "contents": "There are no @buttons in this outline",
+        "when": "leoBridgeReady && leoTreeOpened"
+      },
+      {
+        "view": "leoGotoPanel",
+        "contents": "Not connected",
+        "when": "!leoTreeOpened"
+      },
+      {
+        "view": "leoGotoPanelExplorer",
+        "contents": "Not connected",
+        "when": "!leoTreeOpened"
+      },
+      {
+        "view": "leoGotoPanel",
+        "contents": "No Results",
+        "when": "leoTreeOpened"
+      },
+      {
+        "view": "leoGotoPanelExplorer",
+        "contents": "No Results",
+        "when": "leoTreeOpened"
+      },
+      {
+        "view": "leoFindPanel",
+        "contents": "Not connected",
+        "when": "!leoTreeOpened"
+      },
+      {
+        "view": "leoFindPanelExplorer",
+        "contents": "Not connected",
+        "when": "!leoTreeOpened"
+      },
+      {
+        "view": "leoUndos",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoUndosExplorer",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoUndos",
+        "contents": "Can't undo",
+        "when": "leoBridgeReady && leoTreeOpened"
+      },
+      {
+        "view": "leoUndosExplorer",
+        "contents": "Can't undo",
+        "when": "leoBridgeReady && leoTreeOpened"
       }
     ],
     "commands": [
@@ -2206,158 +2808,6 @@
         "title": "Move Marked Nodes"
       }
     ],
-    "viewsWelcome": [
-      {
-        "view": "leoIntegration",
-        "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting && !leoStartingServer || !leoBridgeReady && !leoServerStarted && !config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer"
-      },
-      {
-        "view": "leoIntegrationExplorer",
-        "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && !leoServerStarted && leoStartupFinished && !leoConnecting && !leoStartingServer || !leoBridgeReady && !leoServerStarted && !config.leoIntegration.startServerAutomatically && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer"
-      },
-      {
-        "view": "leoIntegration",
-        "contents": "Starting Server...",
-        "when": "leoStartingServer || !leoBridgeReady && config.leoIntegration.startServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
-      },
-      {
-        "view": "leoIntegrationExplorer",
-        "contents": "Starting Server...",
-        "when": "leoStartingServer || !leoBridgeReady && config.leoIntegration.startServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
-      },
-      {
-        "view": "leoIntegration",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && leoServerStarted && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer && !leoStartupFinished || leoStartupFinished && !leoBridgeReady && leoServerStarted && !leoConnecting && !leoStartingServer"
-      },
-      {
-        "view": "leoIntegrationExplorer",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "!leoBridgeReady && leoServerStarted && !config.leoIntegration.connectToServerAutomatically && !leoConnecting && !leoStartingServer && !leoStartupFinished || leoStartupFinished && !leoBridgeReady && leoServerStarted && !leoConnecting && !leoStartingServer"
-      },
-      {
-        "view": "leoIntegration",
-        "contents": "Connecting...",
-        "when": "leoConnecting || !leoBridgeReady && !config.leoIntegration.startServerAutomatically && config.leoIntegration.connectToServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
-      },
-      {
-        "view": "leoIntegrationExplorer",
-        "contents": "Connecting...",
-        "when": "leoConnecting || !leoBridgeReady && !config.leoIntegration.startServerAutomatically && config.leoIntegration.connectToServerAutomatically && !leoStartingServer && !leoConnecting && !leoStartupFinished"
-      },
-      {
-        "view": "leoIntegration",
-        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "leoBridgeReady && !leoTreeOpened && !leoStartingServer && !leoConnecting && leoStartupFinished"
-      },
-      {
-        "view": "leoIntegrationExplorer",
-        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-        "when": "leoBridgeReady && !leoTreeOpened && !leoStartingServer && !leoConnecting && leoStartupFinished"
-      },
-      {
-        "view": "leoDocuments",
-        "contents": "Not connected",
-        "when": "!leoBridgeReady"
-      },
-      {
-        "view": "leoDocumentsExplorer",
-        "contents": "Not connected",
-        "when": "!leoBridgeReady"
-      },
-      {
-        "view": "leoDocuments",
-        "contents": "There are no Leo files currently opened",
-        "when": "leoBridgeReady && !leoTreeOpened"
-      },
-      {
-        "view": "leoDocumentsExplorer",
-        "contents": "There are no Leo files currently opened",
-        "when": "leoBridgeReady && !leoTreeOpened"
-      },
-      {
-        "view": "leoButtons",
-        "contents": "Not connected",
-        "when": "!leoBridgeReady"
-      },
-      {
-        "view": "leoButtonsExplorer",
-        "contents": "Not connected",
-        "when": "!leoBridgeReady"
-      },
-      {
-        "view": "leoButtons",
-        "contents": "There are no Leo files currently opened",
-        "when": "leoBridgeReady && !leoTreeOpened"
-      },
-      {
-        "view": "leoButtonsExplorer",
-        "contents": "There are no Leo files currently opened",
-        "when": "leoBridgeReady && !leoTreeOpened"
-      },
-      {
-        "view": "leoButtons",
-        "contents": "There are no @buttons in this outline",
-        "when": "leoBridgeReady && leoTreeOpened"
-      },
-      {
-        "view": "leoButtonsExplorer",
-        "contents": "There are no @buttons in this outline",
-        "when": "leoBridgeReady && leoTreeOpened"
-      },
-      {
-        "view": "leoGotoPanel",
-        "contents": "Not connected",
-        "when": "!leoTreeOpened"
-      },
-      {
-        "view": "leoGotoPanelExplorer",
-        "contents": "Not connected",
-        "when": "!leoTreeOpened"
-      },
-      {
-        "view": "leoGotoPanel",
-        "contents": "No Results",
-        "when": "leoTreeOpened"
-      },
-      {
-        "view": "leoGotoPanelExplorer",
-        "contents": "No Results",
-        "when": "leoTreeOpened"
-      },
-      {
-        "view": "leoFindPanel",
-        "contents": "Not connected",
-        "when": "!leoTreeOpened"
-      },
-      {
-        "view": "leoFindPanelExplorer",
-        "contents": "Not connected",
-        "when": "!leoTreeOpened"
-      },
-      {
-        "view": "leoUndos",
-        "contents": "There are no Leo files currently opened",
-        "when": "leoBridgeReady && !leoTreeOpened"
-      },
-      {
-        "view": "leoUndosExplorer",
-        "contents": "There are no Leo files currently opened",
-        "when": "leoBridgeReady && !leoTreeOpened"
-      },
-      {
-        "view": "leoUndos",
-        "contents": "Can't undo",
-        "when": "leoBridgeReady && leoTreeOpened"
-      },
-      {
-        "view": "leoUndosExplorer",
-        "contents": "Can't undo",
-        "when": "leoBridgeReady && leoTreeOpened"
-      }
-    ],
     "menus": {
       "commandPalette": [
         {
@@ -3896,7 +4346,8 @@
         "formatting": {
           "label": "Leo: Body",
           "separator": "/",
-          "workspaceSuffix": ""
+          "workspaceSuffix": "",
+          "workspaceTooltip": "Leo Body Pane"
         }
       }
     ]
