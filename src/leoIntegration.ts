@@ -39,6 +39,7 @@ import { LeoFindPanelProvider } from './leoFindPanelWebview';
 import { LeoSettingsProvider } from './leoSettingsWebview';
 import { LeoGotoProvider, LeoGotoNode } from './leoGoto';
 import { LeoUndosProvider, LeoUndoNode } from './leoUndos';
+import { UnlProvider } from "./unlProvider";
 
 /**
  * * Orchestrates Leo integration into vscode
@@ -52,6 +53,9 @@ export class LeoIntegration {
 
     // * State flags
     public leoStates: LeoStates;
+
+    // * UNL link provider
+    public linkProvider: UnlProvider;
 
     // * General integration usage variables
     private _clipboardContent: string = "";
@@ -332,6 +336,20 @@ export class LeoIntegration {
 
         // * Setup frontend command stack
         this._commandStack = new CommandStack(_context, this);
+
+        // * UNL and URL link handler provider
+        this.linkProvider = new UnlProvider();
+        this._context.subscriptions.push(
+            vscode.languages.registerDocumentLinkProvider(
+                [
+                    { scheme: Constants.URI_FILE_SCHEME },
+                    { scheme: Constants.URI_UNTITLED_SCHEME },
+                    { scheme: Constants.URI_LEO_SCHEME },
+                    { language: Constants.OUTPUT_CHANNEL_LANGUAGE }
+                ],
+                this.linkProvider
+            )
+        );
 
         // * Create a single data provider for both outline trees, Leo view and Explorer view
         this._leoTreeProvider = new LeoApOutlineProvider(this.nodeIcons, !!this.config.invertNodeContrast, this);
@@ -784,6 +802,7 @@ export class LeoIntegration {
      * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
      */
     public connect(): void {
+        this.showLogPane();
 
         if (this.leoStates.leoBridgeReady || this.leoStates.leoConnecting) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
@@ -1045,6 +1064,55 @@ export class LeoIntegration {
             return this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, p_config);
         } else {
             return Promise.reject('Leo Bridge Not Ready');
+        }
+    }
+
+    public async handleUnl(p_arg: { unl: string, scheme: string }): Promise<void> {
+
+        if (!this.leoStates.leoBridgeReady || !this.leoStates.fileOpenedReady) {
+            this.addLogPaneEntry('Handle UNL: No Commander started');
+            return;
+        }
+
+        const leoJsExtension = vscode.extensions.getExtension('boltex.leojs');
+        if (leoJsExtension !== undefined && leoJsExtension.isActive) {
+            // If leojs is active only honor UNLS clicked in LeoInteg Panels only.
+            if (p_arg.scheme !== Constants.URI_LEO_SCHEME) {
+                console.log('LeoJS active: UNL ignored by LeoInteg');
+                return;
+            }
+        }
+        await this.triggerBodySave(true);
+        try {
+
+            if (p_arg.unl) {
+
+                return this.sendAction(
+                    Constants.LEOBRIDGE.HANDLE_UNL,
+                    { unl: p_arg.unl }
+                ).then((p_result: LeoBridgePackage) => {
+                    this.setupRefresh(
+                        Focus.NoChange,
+                        {
+                            tree: true,
+                            body: true,
+                            goto: true,
+                            states: true,
+                            documents: true,
+                            buttons: true
+                        }
+                    );
+                    this.launchRefresh();
+                    this.loadSearchSettings();
+
+                });
+
+            } else {
+                console.log('NO ARGUMENT FOR HANDLE URL! ', p_arg);
+            }
+        }
+        catch (e) {
+            console.log('FAILED HANDLE URL! ', p_arg);
         }
     }
 
@@ -1433,6 +1501,7 @@ export class LeoIntegration {
         setTimeout(() => {
             this.config.checkEnablePreview();
             this.config.checkCloseEmptyGroups();
+            this.config.checkBodyWrap();
         }, 150);
     }
 
@@ -1738,7 +1807,7 @@ export class LeoIntegration {
                 // TODO : uncomment and test this to fix replace / replace-then-find!!
                 if (
                     this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
-                    p_textDocumentChange.document.getText() === this._leoFileSystem.lastBodyData
+                    p_textDocumentChange.document.getText().replace(/\r\n/g, "\n") === this._leoFileSystem.lastBodyData
                 ) {
                     // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
                     // Set proper cursor insertion point and selection range.
@@ -1998,7 +2067,7 @@ export class LeoIntegration {
 
             const w_param = {
                 gnx: utils.leoUriToStr(p_document.uri),
-                body: p_document.getText(),
+                body: p_document.getText().replace(/\r\n/g, "\n"),
             };
             // Don't wait for promise!
             this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
@@ -2028,7 +2097,7 @@ export class LeoIntegration {
     ): Promise<LeoBridgePackage> {
         const w_param = {
             gnx: utils.leoUriToStr(p_document.uri),
-            body: p_document.getText(),
+            body: p_document.getText().replace(/\r\n/g, "\n"),
         };
         return this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
     }
@@ -3062,13 +3131,10 @@ export class LeoIntegration {
 
                 let w_gnx: string | undefined = p_bodyStates.selection?.gnx; // ? To verify if better than w_openedDocumentGnx ?
 
-                // TODO : Apply tabwidth
-                // console.log('TABWIDTH: ', w_tabWidth);
-                // TODO : Apply Wrap
-                // console.log('WRAP: ', w_wrap);
-
                 // Replace language string if in 'exceptions' array
-                w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
+                w_language = Constants.LEO_LANGUAGE_PREFIX +
+                    (Constants.LANGUAGE_CODES[w_language] || w_language) +
+                    (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
 
                 let w_debugMessage = "";
                 let w_needRefreshFlag = false;
@@ -3344,7 +3410,9 @@ export class LeoIntegration {
             // console.log('WRAP: ', w_wrap);
 
             // Replace language string if in 'exceptions' array
-            w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
+            w_language = Constants.LEO_LANGUAGE_PREFIX +
+                (Constants.LANGUAGE_CODES[w_language] || w_language) +
+                (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
 
             // Apply language if the selected node is still the same after all those events
             if (this._bodyTextDocument &&
@@ -3353,9 +3421,6 @@ export class LeoIntegration {
                 w_language !== this._bodyTextDocument.languageId &&
                 utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
             ) {
-                console.log('refreshBodyStates language was : ', this._bodyTextDocument.languageId);
-                console.log('setting language: ', w_language);
-
                 this._setBodyLanguage(this._bodyTextDocument, w_language);
             }
         });
@@ -4424,7 +4489,7 @@ export class LeoIntegration {
             const editor = vscode.window.activeTextEditor;
             const selection = editor.selection;
             if (!selection.isEmpty) {
-                const text = editor.document.getText(selection);
+                const text = editor.document.getText(selection).replace(/\r\n/g, "\n");
                 return this.findQuick(text);
             }
         }
@@ -5974,6 +6039,7 @@ export class LeoIntegration {
      */
     public async newLeoFile(): Promise<LeoBridgePackage> {
         await this._isBusyTriggerSave(true, true);
+        await utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, true);
         const w_openFileResult = await this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, { filename: "" });
         if (w_openFileResult.total) {
             this.serverHasOpenedFile = true;
@@ -5997,12 +6063,18 @@ export class LeoIntegration {
                 }
             );
             this.launchRefresh();
+            setTimeout(() => {
+                void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+            }, 60);
             return w_openFileResult;
         } else {
             this.serverHasOpenedFile = false;
             this.serverOpenedFileName = "";
             this.serverOpenedNode = undefined;
             this.launchRefresh();
+            setTimeout(() => {
+                void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+            }, 60);
             return Promise.reject('New Leo File Error');
         }
     }
@@ -6022,6 +6094,7 @@ export class LeoIntegration {
                 let q_openedFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
                 if (p_leoFileUri && p_leoFileUri.fsPath && p_leoFileUri.fsPath.trim()) {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
+                    void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, true);
                     q_openedFile = this.sendAction(
                         Constants.LEOBRIDGE.OPEN_FILE,
                         { filename: w_fixedFilePath }
@@ -6030,6 +6103,7 @@ export class LeoIntegration {
                     q_openedFile = this._leoFilesBrowser.getLeoFileUrl().then(
                         (p_chosenLeoFile) => {
                             if (p_chosenLeoFile.trim()) {
+                                void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, true);
                                 return this.sendAction(
                                     Constants.LEOBRIDGE.OPEN_FILE,
                                     { filename: p_chosenLeoFile }
@@ -6076,15 +6150,21 @@ export class LeoIntegration {
                             this.serverOpenedNode = undefined;
                         }
                         this.launchRefresh();
-
+                        setTimeout(() => {
+                            void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+                        }, 60);
                         return p_openFileResult;
                     } else {
+                        setTimeout(() => {
+                            void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+                        }, 60);
                         return Promise.resolve(undefined); // User cancelled chooser.
                     }
                 },
                 (p_errorOpen) => {
                     // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
                     console.log('in .then not opened or already opened');
+                    void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
                     return Promise.reject(p_errorOpen);
                 }
             );
@@ -6134,9 +6214,10 @@ export class LeoIntegration {
                             {
                                 tree: true,
                                 body: true,
-                                documents: true,
-                                // buttons: false,
+                                goto: true,
                                 states: true,
+                                documents: true,
+                                buttons: true
                             }
                         );
                         return this.launchRefresh();
@@ -6376,9 +6457,10 @@ export class LeoIntegration {
                             {
                                 tree: true,
                                 body: true,
-                                documents: true,
-                                // buttons: false,
+                                goto: true,
                                 states: true,
+                                documents: true,
+                                buttons: true
                             }
                         );
                         return this.launchRefresh();
@@ -6554,9 +6636,10 @@ export class LeoIntegration {
                             {
                                 tree: true,
                                 body: true,
-                                documents: true,
-                                // buttons: false,
+                                goto: true,
                                 states: true,
+                                documents: true,
+                                buttons: true
                             }
                         );
                         return this.launchRefresh();
@@ -6696,7 +6779,10 @@ export class LeoIntegration {
             {
                 tree: true,
                 body: true,
+                goto: true,
                 states: true,
+                documents: true,
+                buttons: true
             },
             w_package.node
         );

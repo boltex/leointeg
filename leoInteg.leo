@@ -23,6 +23,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20231216214036.1"><vh>1.0.19</vh></v>
 <v t="felix.20231210150154.1"><vh>1.0.18</vh></v>
 <v t="felix.20231130225803.1"><vh>1.0.17</vh></v>
 <v t="felix.20231009003516.1"><vh>1.0.16</vh></v>
@@ -89,25 +90,6 @@
 <v t="ekr.20200815123601.10"><vh>languages</vh></v>
 <v t="ekr.20200815123601.11"><vh>grammars</vh></v>
 <v t="ekr.20200815123601.12"><vh>snippets</vh></v>
-<v t="ekr.20200815123601.13"><vh>commands</vh>
-<v t="ekr.20200815123601.15"><vh>Show Webviews</vh></v>
-<v t="ekr.20200815123601.16"><vh>Server</vh></v>
-<v t="ekr.20200815123601.17"><vh>Scripting &amp; @buttons</vh></v>
-<v t="ekr.20200815123601.18"><vh>Show UI Panes</vh></v>
-<v t="ekr.20200815123601.19"><vh>Leo File Documents</vh></v>
-<v t="felix.20220808231327.1"><vh>Import Export Files</vh></v>
-<v t="ekr.20200815123601.20"><vh>Tree View</vh></v>
-<v t="ekr.20200815123601.21"><vh>Node Editing</vh></v>
-<v t="felix.20201105010614.1"><vh>Text Editing</vh></v>
-<v t="ekr.20200815123601.22"><vh>Move Nodes</vh></v>
-<v t="ekr.20200815123601.23"><vh>Outline Editing</vh></v>
-<v t="ekr.20200815123601.24"><vh>Goto Nodes</vh></v>
-<v t="ekr.20200815123601.25"><vh>Hoist/Dehoist</vh></v>
-<v t="ekr.20200815123601.26"><vh>Undo/Redo</vh></v>
-<v t="felix.20210517001143.1"><vh>Search</vh></v>
-<v t="felix.20220307235733.1"><vh>Nav</vh></v>
-<v t="felix.20210517001459.1"><vh>Mark Nodes</vh></v>
-</v>
 <v t="ekr.20200815123601.28"><vh>viewsWelcome</vh>
 <v t="ekr.20200815123601.29"><vh>Leo Integration</vh>
 <v t="ekr.20200815123601.30"><vh>Not Ready: [start], [connect] and settings</vh></v>
@@ -132,6 +114,25 @@
 <v t="felix.20220706220120.1"><vh>Not Ready</vh></v>
 <v t="felix.20220706220128.1"><vh>Ready: No Undos</vh></v>
 </v>
+</v>
+<v t="ekr.20200815123601.13"><vh>commands</vh>
+<v t="ekr.20200815123601.15"><vh>Show Webviews</vh></v>
+<v t="ekr.20200815123601.16"><vh>Server</vh></v>
+<v t="ekr.20200815123601.17"><vh>Scripting &amp; @buttons</vh></v>
+<v t="ekr.20200815123601.18"><vh>Show UI Panes</vh></v>
+<v t="ekr.20200815123601.19"><vh>Leo File Documents</vh></v>
+<v t="felix.20220808231327.1"><vh>Import Export Files</vh></v>
+<v t="ekr.20200815123601.20"><vh>Tree View</vh></v>
+<v t="ekr.20200815123601.21"><vh>Node Editing</vh></v>
+<v t="felix.20201105010614.1"><vh>Text Editing</vh></v>
+<v t="ekr.20200815123601.22"><vh>Move Nodes</vh></v>
+<v t="ekr.20200815123601.23"><vh>Outline Editing</vh></v>
+<v t="ekr.20200815123601.24"><vh>Goto Nodes</vh></v>
+<v t="ekr.20200815123601.25"><vh>Hoist/Dehoist</vh></v>
+<v t="ekr.20200815123601.26"><vh>Undo/Redo</vh></v>
+<v t="felix.20210517001143.1"><vh>Search</vh></v>
+<v t="felix.20220307235733.1"><vh>Nav</vh></v>
+<v t="felix.20210517001459.1"><vh>Mark Nodes</vh></v>
 </v>
 <v t="ekr.20200815123601.42"><vh>menus</vh>
 <v t="ekr.20200815123601.43"><vh>commandPalette</vh>
@@ -196,14 +197,17 @@
 <v t="felix.20210727224135.1"><vh>setFontConfig</vh></v>
 <v t="felix.20210818223534.1"><vh>setEnablePreview</vh></v>
 <v t="felix.20210821203119.1"><vh>clearCloseEmptyGroups</vh></v>
+<v t="felix.20240121200443.1"><vh>setBodyWrap</vh></v>
 <v t="felix.20210818225820.1"><vh>checkEnablePreview</vh></v>
 <v t="felix.20210821202347.1"><vh>checkCloseEmptyGroups</vh></v>
+<v t="felix.20240121200637.1"><vh>checkBodyWrap</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
 </v>
 <v t="felix.20200718020912.1"><vh>@clean src/constants.ts</vh>
 <v t="felix.20200718020912.2"><vh>class Constants</vh>
 <v t="felix.20200718020912.3"><vh>general constants</vh></v>
+<v t="felix.20240121194014.1"><vh>supported languages</vh></v>
 <v t="felix.20221127172926.1"><vh>server minimal version</vh></v>
 <v t="felix.20210530233134.1"><vh>find panel ids</vh></v>
 <v t="felix.20200718020912.5"><vh>workbench interface panels</vh></v>
@@ -334,6 +338,7 @@
 <v t="felix.20220705220032.1"><vh>checkVersion</vh></v>
 <v t="felix.20210613210351.1"><vh>chooseLeoFolder</vh></v>
 <v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
+<v t="felix.20240107202609.1"><vh>handleUnl</vh></v>
 </v>
 <v t="felix.20200719025231.10"><vh>Recently Opened Files</vh>
 <v t="felix.20200719025231.11"><vh>_openLastFiles</vh></v>
@@ -584,6 +589,7 @@
 <v t="ekr.20200815091220.1"><vh>_gotTerminalData</vh></v>
 </v>
 </v>
+<v t="felix.20240107210250.1"><vh>@clean src/unlProvider.ts</vh></v>
 <v t="felix.20200718194857.1"><vh>@clean src/types.d.ts</vh>
 <v t="felix.20210727225050.1"><vh>IVsCodeApi</vh></v>
 <v t="felix.20200718194857.2"><vh>ConfigMembers</vh></v>
@@ -2091,6 +2097,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.STOP_SERVER, () =&gt; w_leo.killServer()],
 [CMD.CHOOSE_LEO_FOLDER, () =&gt; w_leo.chooseLeoFolder()],
 [CMD.SET_LEOID, () =&gt; w_leo.setLeoID()],
+[CMD.HANDLE_UNL, (p_arg: { unl: string, scheme: string }) =&gt; w_leo.handleUnl(p_arg)],
 
 // Called by nodes in tree when selected either by mouse, or with enter
 [CMD.SELECT_NODE, (p_node: LeoApOutlineNode) =&gt; w_leo.selectTreeNode(p_node.position, false, false)],
@@ -2224,6 +2231,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.TOGGLE_FIND_SEARCH_BODY_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_BODY)],
 [CMD.TOGGLE_FIND_SEARCH_HEADLINE_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_HEADLINE)],
 
+[CMD.SET_BODY_WRAP_SETTINGS, () =&gt; w_leo.config.setBodyWrap()],
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
 </t>
@@ -2233,7 +2241,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -2325,6 +2333,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.plain.language-configuration.json"
+  },
+  {
+    "id": "leobody.plain.wrap",
+    "aliases": [
+      "Leo Body Plain",
+      "leobody"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.plain.language-configuration.json"
   },
   {
@@ -2336,6 +2363,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.python.language-configuration.json"
+  },
+  {
+    "id": "leobody.python.wrap",
+    "aliases": [
+      "Leo Body Python",
+      "leobody.python"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.python.language-configuration.json"
   },
   {
@@ -2347,6 +2393,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.typescript.language-configuration.json"
+  },
+  {
+    "id": "leobody.typescript.wrap",
+    "aliases": [
+      "Leo Body Typescript",
+      "leobody.typescript"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.typescript.language-configuration.json"
   },
   {
@@ -2358,6 +2423,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.javascript.language-configuration.json"
+  },
+  {
+    "id": "leobody.javascript.wrap",
+    "aliases": [
+      "Leo Body Javascript",
+      "leobody.javascript"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.javascript.language-configuration.json"
   },
   {
@@ -2369,6 +2453,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.c.language-configuration.json"
+  },
+  {
+    "id": "leobody.c.wrap",
+    "aliases": [
+      "Leo Body c",
+      "leobody.c"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.c.language-configuration.json"
   },
   {
@@ -2380,6 +2483,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.cpp.language-configuration.json"
+  },
+  {
+    "id": "leobody.cpp.wrap",
+    "aliases": [
+      "Leo Body C++",
+      "leobody.cpp"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.cpp.language-configuration.json"
   },
   {
@@ -2391,6 +2513,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.css.language-configuration.json"
+  },
+  {
+    "id": "leobody.css.wrap",
+    "aliases": [
+      "Leo Body CSS",
+      "leobody.css"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.css.language-configuration.json"
   },
   {
@@ -2402,6 +2543,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.fortran.language-configuration.json"
+  },
+  {
+    "id": "leobody.fortran.wrap",
+    "aliases": [
+      "Leo Body Fortran",
+      "leobody.fortran"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.fortran.language-configuration.json"
   },
   {
@@ -2413,6 +2573,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.fortran.language-configuration.json"
+  },
+  {
+    "id": "leobody.fortran90.wrap",
+    "aliases": [
+      "Leo Body Fortran90",
+      "leobody.fortran90"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.fortran.language-configuration.json"
   },
   {
@@ -2424,6 +2603,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.html.language-configuration.json"
+  },
+  {
+    "id": "leobody.html.wrap",
+    "aliases": [
+      "Leo Body HTML",
+      "leobody.html"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.html.language-configuration.json"
   },
   {
@@ -2435,6 +2633,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.java.language-configuration.json"
+  },
+  {
+    "id": "leobody.java.wrap",
+    "aliases": [
+      "Leo Body Java",
+      "leobody.java"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.java.language-configuration.json"
   },
   {
@@ -2446,6 +2663,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.json.language-configuration.json"
+  },
+  {
+    "id": "leobody.json.wrap",
+    "aliases": [
+      "Leo Body Json",
+      "leobody.json"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.json.language-configuration.json"
   },
   {
@@ -2457,6 +2693,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.markdown.language-configuration.json"
+  },
+  {
+    "id": "leobody.markdown.wrap",
+    "aliases": [
+      "Leo Body Markdown",
+      "leobody.markdown"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.markdown.language-configuration.json"
   },
   {
@@ -2468,6 +2723,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.php.language-configuration.json"
+  },
+  {
+    "id": "leobody.php.wrap",
+    "aliases": [
+      "Leo Body PHP",
+      "leobody.php"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.php.language-configuration.json"
   },
   {
@@ -2479,6 +2753,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.rst.language-configuration.json"
+  },
+  {
+    "id": "leobody.restructuredtext.wrap",
+    "aliases": [
+      "Leo Body reStructuredText",
+      "leobody.restructuredtext"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.rst.language-configuration.json"
   },
   {
@@ -2490,6 +2783,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "extensions": [
       ""
     ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.rust.language-configuration.json"
+  },
+  {
+    "id": "leobody.rust.wrap",
+    "aliases": [
+      "Leo Body Rust",
+      "leobody.rust"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
     "configuration": "./language-configurations/leobody.rust.language-configuration.json"
   }
 ],
@@ -2501,7 +2813,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./syntaxes/leobody.plain.tmLanguage.json"
   },
   {
+    "language": "leobody.plain.wrap",
+    "scopeName": "source.leobody.plain",
+    "path": "./syntaxes/leobody.plain.tmLanguage.json"
+  },
+  {
     "language": "leobody.python",
+    "scopeName": "source.leobody.python",
+    "path": "./syntaxes/leobody.python.tmLanguage.json"
+  },
+  {
+    "language": "leobody.python.wrap",
     "scopeName": "source.leobody.python",
     "path": "./syntaxes/leobody.python.tmLanguage.json"
   },
@@ -2511,7 +2833,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./syntaxes/leobody.typescript.tmLanguage.json"
   },
   {
+    "language": "leobody.typescript.wrap",
+    "scopeName": "source.leobody.typescript",
+    "path": "./syntaxes/leobody.typescript.tmLanguage.json"
+  },
+  {
     "language": "leobody.javascript",
+    "scopeName": "source.leobody.javascript",
+    "path": "./syntaxes/leobody.javascript.tmLanguage.json"
+  },
+  {
+    "language": "leobody.javascript.wrap",
     "scopeName": "source.leobody.javascript",
     "path": "./syntaxes/leobody.javascript.tmLanguage.json"
   },
@@ -2521,7 +2853,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./syntaxes/leobody.c.tmLanguage.json"
   },
   {
+    "language": "leobody.c.wrap",
+    "scopeName": "source.leobody.c",
+    "path": "./syntaxes/leobody.c.tmLanguage.json"
+  },
+  {
     "language": "leobody.cpp",
+    "scopeName": "source.leobody.cpp",
+    "path": "./syntaxes/leobody.cpp.tmLanguage.json"
+  },
+  {
+    "language": "leobody.cpp.wrap",
     "scopeName": "source.leobody.cpp",
     "path": "./syntaxes/leobody.cpp.tmLanguage.json"
   },
@@ -2531,7 +2873,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./syntaxes/leobody.css.tmLanguage.json"
   },
   {
+    "language": "leobody.css.wrap",
+    "scopeName": "source.leobody.css",
+    "path": "./syntaxes/leobody.css.tmLanguage.json"
+  },
+  {
     "language": "leobody.fortran",
+    "scopeName": "source.leobody.fortran",
+    "path": "./syntaxes/leobody.fortran.tmLanguage.json"
+  },
+  {
+    "language": "leobody.fortran.wrap",
     "scopeName": "source.leobody.fortran",
     "path": "./syntaxes/leobody.fortran.tmLanguage.json"
   },
@@ -2541,7 +2893,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./syntaxes/leobody.fortran90.tmLanguage.json"
   },
   {
+    "language": "leobody.fortran90.wrap",
+    "scopeName": "source.leobody.fortran90",
+    "path": "./syntaxes/leobody.fortran90.tmLanguage.json"
+  },
+  {
     "language": "leobody.html",
+    "scopeName": "source.leobody.html",
+    "path": "./syntaxes/leobody.html.tmLanguage.json"
+  },
+  {
+    "language": "leobody.html.wrap",
     "scopeName": "source.leobody.html",
     "path": "./syntaxes/leobody.html.tmLanguage.json"
   },
@@ -2551,7 +2913,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./syntaxes/leobody.java.tmLanguage.json"
   },
   {
+    "language": "leobody.java.wrap",
+    "scopeName": "source.leobody.java",
+    "path": "./syntaxes/leobody.java.tmLanguage.json"
+  },
+  {
     "language": "leobody.json",
+    "scopeName": "source.leobody.json",
+    "path": "./syntaxes/leobody.json.tmLanguage.json"
+  },
+  {
+    "language": "leobody.json.wrap",
     "scopeName": "source.leobody.json",
     "path": "./syntaxes/leobody.json.tmLanguage.json"
   },
@@ -2561,7 +2933,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./syntaxes/leobody.markdown.tmLanguage.json"
   },
   {
+    "language": "leobody.markdown.wrap",
+    "scopeName": "source.leobody.markdown",
+    "path": "./syntaxes/leobody.markdown.tmLanguage.json"
+  },
+  {
     "language": "leobody.php",
+    "scopeName": "source.leobody.php",
+    "path": "./syntaxes/leobody.php.tmLanguage.json"
+  },
+  {
+    "language": "leobody.php.wrap",
     "scopeName": "source.leobody.php",
     "path": "./syntaxes/leobody.php.tmLanguage.json"
   },
@@ -2571,7 +2953,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./syntaxes/leobody.rst.tmLanguage.json"
   },
   {
+    "language": "leobody.restructuredtext.wrap",
+    "scopeName": "source.leobody.restructuredtext",
+    "path": "./syntaxes/leobody.rst.tmLanguage.json"
+  },
+  {
     "language": "leobody.rust",
+    "scopeName": "source.leobody.rust",
+    "path": "./syntaxes/leobody.rust.tmLanguage.json"
+  },
+  {
+    "language": "leobody.rust.wrap",
     "scopeName": "source.leobody.rust",
     "path": "./syntaxes/leobody.rust.tmLanguage.json"
   },
@@ -2592,7 +2984,23 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "source.leobody.python",
       "source.leobody.restructuredtext",
       "source.leobody.rust",
-      "source.leobody.typescript"
+      "source.leobody.typescript",
+      "source.leobody.c.wrap",
+      "source.leobody.cpp.wrap",
+      "source.leobody.css.wrap",
+      "source.leobody.fortran.wrap",
+      "source.leobody.fortran90.wrap",
+      "source.leobody.html.wrap",
+      "source.leobody.java.wrap",
+      "source.leobody.javascript.wrap",
+      "source.leobody.json.wrap",
+      "source.leobody.markdown.wrap",
+      "source.leobody.php.wrap",
+      "source.leobody.plain.wrap",
+      "source.leobody.python.wrap",
+      "source.leobody.restructuredtext.wrap",
+      "source.leobody.rust.wrap",
+      "source.leobody.typescript.wrap"
     ],
     "path": "./syntaxes/leobody.tmLanguage.json",
     "scopeName": "leo.injection"
@@ -2605,7 +3013,15 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./snippets/c.code-snippets"
   },
   {
+    "language": "leobody.c.wrap",
+    "path": "./snippets/c.code-snippets"
+  },
+  {
     "language": "leobody.cpp",
+    "path": "./snippets/cpp.code-snippets"
+  },
+  {
+    "language": "leobody.cpp.wrap",
     "path": "./snippets/cpp.code-snippets"
   },
   {
@@ -2613,7 +3029,15 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./snippets/fortran90.code-snippets"
   },
   {
+    "language": "leobody.fortran90.wrap",
+    "path": "./snippets/fortran90.code-snippets"
+  },
+  {
     "language": "leobody.javascript",
+    "path": "./snippets/javascript.code-snippets"
+  },
+  {
+    "language": "leobody.javascript.wrap",
     "path": "./snippets/javascript.code-snippets"
   },
   {
@@ -2621,7 +3045,15 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./snippets/typescript.code-snippets"
   },
   {
+    "language": "leobody.typescript.wrap",
+    "path": "./snippets/typescript.code-snippets"
+  },
+  {
     "language": "leobody.java",
+    "path": "./snippets/java.code-snippets"
+  },
+  {
+    "language": "leobody.java.wrap",
     "path": "./snippets/java.code-snippets"
   },
   {
@@ -2629,7 +3061,15 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./snippets/php.code-snippets"
   },
   {
+    "language": "leobody.php.wrap",
+    "path": "./snippets/php.code-snippets"
+  },
+  {
     "language": "leobody.markdown",
+    "path": "./snippets/markdown.code-snippets"
+  },
+  {
+    "language": "leobody.markdown.wrap",
     "path": "./snippets/markdown.code-snippets"
   },
   {
@@ -2637,7 +3077,15 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./snippets/restructuredtext.code-snippets"
   },
   {
+    "language": "leobody.restructuredtext.wrap",
+    "path": "./snippets/restructuredtext.code-snippets"
+  },
+  {
     "language": "leobody.rust",
+    "path": "./snippets/rust.code-snippets"
+  },
+  {
+    "language": "leobody.rust.wrap",
     "path": "./snippets/rust.code-snippets"
   }
 ],
@@ -2709,10 +3157,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "title": "Execute Script",
   "category": "Leo",
   "enablement": "leoTreeOpened",
-  "icon": {
-    "light": "resources/light/execute.svg",
-    "dark": "resources/dark/execute.svg"
-  }
+  "icon": "$(play)"
 },
 {
   "command": "leointeg.minibuffer",
@@ -2725,6 +3170,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "category": "Leo",
   "enablement": "leoTreeOpened",
   "title": "Goto Script"
+},
+{
+  "command": "leointeg.clickButton",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Click Button",
+  "icon": "$(play)"
 },
 {
   "command": "leointeg.removeButton",
@@ -3731,6 +4183,16 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 </t>
 <t tx="ekr.20200815123601.31">{
   "view": "leoIntegration",
+  "contents": "Opening file...",
+  "when": "leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoStartupFinished &amp;&amp; leoOpeningFile"
+},
+{
+  "view": "leoIntegrationExplorer",
+  "contents": "Opening file...",
+  "when": "leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoStartupFinished &amp;&amp; leoOpeningFile"
+},
+{
+  "view": "leoIntegration",
   "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
   "when": "!leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !config.leoIntegration.connectToServerAutomatically &amp;&amp; !leoConnecting &amp;&amp; !leoStartingServer &amp;&amp; !leoStartupFinished || leoStartupFinished &amp;&amp; !leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !leoConnecting &amp;&amp; !leoStartingServer"
 },
@@ -3754,12 +4216,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 <t tx="ekr.20200815123601.34">{
   "view": "leoIntegration",
   "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; !leoStartingServer &amp;&amp; !leoConnecting &amp;&amp; leoStartupFinished"
+  "when": "leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; !leoStartingServer &amp;&amp; !leoConnecting &amp;&amp; leoStartupFinished &amp;&amp; !leoOpeningFile"
 },
 {
   "view": "leoIntegrationExplorer",
   "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\n[Create Leo File](command:leointeg.newLeoFile)\n[Recent Leo Files](command:leointeg.recentLeoFiles)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; !leoStartingServer &amp;&amp; !leoConnecting &amp;&amp; leoStartupFinished"
+  "when": "leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; !leoStartingServer &amp;&amp; !leoConnecting &amp;&amp; leoStartupFinished &amp;&amp; !leoOpeningFile"
 },
 </t>
 <t tx="ekr.20200815123601.35"></t>
@@ -3866,6 +4328,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 </t>
 <t tx="ekr.20200815123601.5"></t>
 <t tx="ekr.20200815123601.58">{
+  "command": "leointeg.clickButton",
+  "when": "false"
+},
+{
   "command": "leointeg.gotoScript",
   "when": "false"
 },
@@ -4820,7 +5286,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "formatting": {
       "label": "Leo: Body",
       "separator": "/",
-      "workspaceSuffix": ""
+      "workspaceSuffix": "",
+      "workspaceTooltip": "Leo Body Pane"
     }
   }
 ]
@@ -4972,6 +5439,7 @@ public static LEOBRIDGE = {
     GET_VERSION: "!get_version",
     GET_LEOID: "!get_leoid",
     SET_LEOID: "!set_leoid",
+    HANDLE_UNL: "!handle_unl",
     // * Server Commands
     GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
     APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -5146,6 +5614,7 @@ public static COMMANDS = {
     STOP_SERVER: Constants.NAME + ".stopServer",
     CONNECT: Constants.NAME + ".connectToServer",
     SET_LEOID: Constants.NAME + ".setLeoID",
+    HANDLE_UNL: Constants.NAME + ".handleUnl",
     SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
     OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
     CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",
@@ -5356,6 +5825,7 @@ public static COMMANDS = {
     TOGGLE_FIND_WORD_OPTION: Constants.NAME + ".toggleFindWordOption",
     TOGGLE_FIND_SEARCH_BODY_OPTION: Constants.NAME + ".toggleFindSearchBodyOption",
     TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
+    SET_BODY_WRAP_SETTINGS: Constants.NAME + ".setBodyWrapSettings",
     SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
     CLEAR_CLOSE_EMPTY_GROUPS: Constants.NAME + ".clearCloseEmptyGroups",
 };
@@ -5400,9 +5870,13 @@ public static DB_FILE_EXTENSION: string = "db";
 public static JS_FILE_EXTENSION: string = "leojs";
 
 public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
+public static LEO_WRAP_SUFFIX: string = ".wrap"; // all lowercase.
+
 public static URI_LEO_SCHEME: string = "leo";
 public static URI_FILE_SCHEME: string = "file";
 public static URI_SCHEME_HEADER: string = "leo:/";
+public static URI_UNTITLED_SCHEME: string = 'untitled';
+public static OUTPUT_CHANNEL_LANGUAGE = 'Log';
 public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
 public static UNTITLED_FILE_NAME: string = "untitled";
 public static RECENT_FILES_KEY: string = "leoRecentFiles";
@@ -5577,8 +6051,8 @@ public static USER_MESSAGES = {
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
     MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.5 is recommended.",
-    UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
-    LANGUAGE_NOT_SUPPORTED: " language not yet supported.", // with leading space
+    UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language coloring not yet supported.",
+    LANGUAGE_NOT_SUPPORTED: " language coloring not yet supported.", // with leading space
     MINIBUFFER_BUTTON_START: "@button-",
     MINIBUFFER_RCLICK_START: "@rclick-",
     MINIBUFFER_SCRIPT_BUTTON: "script-button",
@@ -5591,7 +6065,17 @@ public static USER_MESSAGES = {
     MINIBUFFER_COMMAND: "$(zap) @command",
     MINIBUFFER_BAD_COMMAND: "$(error) Not Available",
     MINIBUFFER_HISTORY_LABEL: "Minibuffer History",
-    MINIBUFFER_HISTORY_DESC: "Choose from last run commands..."
+    MINIBUFFER_HISTORY_DESC: "Choose from last run commands...",
+
+    ZOOM_LEVEL_RANGE_LIMIT: "Value for zoom level should be between -12 and 12",
+    FONT_SIZE_RANGE_LIMIT: "Value for font size should be between 6 and 30",
+    BODY_WRAP_RECOMMEND: "'leojsbody' wordWrap settings are recommended (some currently missing)",
+    BODY_WRAP_SET: "'leojsbody' wordWrap settings were set",
+    FIX_IT: "Fix it",
+    ENABLE_PREVIEW_SET: "'Enable Preview' setting was set",
+    ENABLE_PREVIEW_RECOMMEND: "'Enable Preview' setting is recommended (currently disabled)",
+    CLOSE_EMPTY_CLEARED: "'Close Empty Groups' setting was cleared",
+    CLOSE_EMPTY_RECOMMEND: "'Close Empty Groups' setting is NOT recommended!",
 };
 
 </t>
@@ -5671,6 +6155,7 @@ public static CONFIG_NAMES = {
 public static CONTEXT_FLAGS = {
     // Main flags for connection and opened file
     STARTUP_FINISHED: "leoStartupFinished", // Initial extension finished auto-server-start-connect
+    LEO_OPENING_FILE: "leoOpeningFile",
     STARTING_SERVER: "leoStartingServer",
     CONNECTING: "leoConnecting", // Initial extension finished auto-server-start-connect
     BRIDGE_READY: "leoBridgeReady", // Connected to leoBridge
@@ -6276,6 +6761,7 @@ export function activate(p_context: vscode.ExtensionContext) {
                 // and not to try to see if they're set too soon
                 w_leo.config.checkEnablePreview();
                 w_leo.config.checkCloseEmptyGroups();
+                w_leo.config.checkBodyWrap();
             }, 1500);
 
             // Start server and/or connect to it, as per user settings
@@ -6332,8 +6818,11 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
         if (p_previousVersion !== p_version) {
             vscode.window.showInformationMessage(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
             // Force-Set/Clear leointeg's required configuration settings but show info messages
+
             p_leoInteg.config.checkEnablePreview(true);
             p_leoInteg.config.checkCloseEmptyGroups(true);
+            p_leoInteg.config.checkBodyWrap(true);
+
         }
         const [w_major, w_minor] = p_version.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
         const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
@@ -6959,21 +7448,9 @@ export class LeoButtonNode extends vscode.TreeItem {
         private _leoIntegration: LeoIntegration
     ) {
         super(button.name);
-        // Cleanup button name of any directives starting with '@'
-        // super(
-        //     button.name.split(" ")
-        //         .filter(item =&gt; item[0] !== "@")
-        //         .join(" ")
-        //         .trim()
-        // );
 
         this._id = utils.getUniqueId();
-        // Setup this instance (just differentiate 'script-button' for now)
-        this.command = {
-            command: Constants.COMMANDS.CLICK_BUTTON,
-            title: '',
-            arguments: [this]
-        };
+
         this._isAdd = (this.button.index.startsWith(Constants.BUTTON_STRINGS.NULL_WIDGET) &amp;&amp;
             this.button.name === Constants.BUTTON_STRINGS.SCRIPT_BUTTON);
         this.rclicks = button.rclicks ? button.rclicks : [];
@@ -8891,6 +9368,7 @@ import { LeoFindPanelProvider } from './leoFindPanelWebview';
 import { LeoSettingsProvider } from './leoSettingsWebview';
 import { LeoGotoProvider, LeoGotoNode } from './leoGoto';
 import { LeoUndosProvider, LeoUndoNode } from './leoUndos';
+import { UnlProvider } from "./unlProvider";
 
 @others
 @language typescript
@@ -9111,6 +9589,9 @@ export class LeoIntegration {
 
     // * State flags
     public leoStates: LeoStates;
+
+    // * UNL link provider
+    public linkProvider: UnlProvider;
 
     // * General integration usage variables
     private _clipboardContent: string = "";
@@ -9497,6 +9978,7 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
     setTimeout(() =&gt; {
         this.config.checkEnablePreview();
         this.config.checkCloseEmptyGroups();
+        this.config.checkBodyWrap();
     }, 150);
 }
 
@@ -9645,6 +10127,20 @@ private _onActiveEditorChanged(
 
     // * Setup frontend command stack
     this._commandStack = new CommandStack(_context, this);
+
+    // * UNL and URL link handler provider
+    this.linkProvider = new UnlProvider();
+    this._context.subscriptions.push(
+        vscode.languages.registerDocumentLinkProvider(
+            [
+                { scheme: Constants.URI_FILE_SCHEME },
+                { scheme: Constants.URI_UNTITLED_SCHEME },
+                { scheme: Constants.URI_LEO_SCHEME },
+                { language: Constants.OUTPUT_CHANNEL_LANGUAGE }
+            ],
+            this.linkProvider
+        )
+    );
 
     // * Create a single data provider for both outline trees, Leo view and Explorer view
     this._leoTreeProvider = new LeoApOutlineProvider(this.nodeIcons, !!this.config.invertNodeContrast, this);
@@ -9925,7 +10421,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
             // TODO : uncomment and test this to fix replace / replace-then-find!!
             if (
                 this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &amp;&amp;
-                p_textDocumentChange.document.getText() === this._leoFileSystem.lastBodyData
+                p_textDocumentChange.document.getText().replace(/\r\n/g, "\n") === this._leoFileSystem.lastBodyData
             ) {
                 // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
                 // Set proper cursor insertion point and selection range.
@@ -10075,7 +10571,7 @@ private async _bodySaveDocument(
 
         const w_param = {
             gnx: utils.leoUriToStr(p_document.uri),
-            body: p_document.getText(),
+            body: p_document.getText().replace(/\r\n/g, "\n"),
         };
         // Don't wait for promise!
         this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
@@ -10430,13 +10926,10 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean, p_preven
 
             let w_gnx: string | undefined = p_bodyStates.selection?.gnx; // ? To verify if better than w_openedDocumentGnx ?
 
-            // TODO : Apply tabwidth
-            // console.log('TABWIDTH: ', w_tabWidth);
-            // TODO : Apply Wrap
-            // console.log('WRAP: ', w_wrap);
-
             // Replace language string if in 'exceptions' array
-            w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
+            w_language = Constants.LEO_LANGUAGE_PREFIX +
+                (Constants.LANGUAGE_CODES[w_language] || w_language) +
+                (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
 
             let w_debugMessage = "";
             let w_needRefreshFlag = false;
@@ -11277,6 +11770,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
  */
 public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
     await this._isBusyTriggerSave(true, true);
+    await utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, true);
     const w_openFileResult = await this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, { filename: "" });
     if (w_openFileResult.total) {
         this.serverHasOpenedFile = true;
@@ -11300,12 +11794,18 @@ public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
             }
         );
         this.launchRefresh();
+        setTimeout(() =&gt; {
+            void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+        }, 60);
         return w_openFileResult;
     } else {
         this.serverHasOpenedFile = false;
         this.serverOpenedFileName = "";
         this.serverOpenedNode = undefined;
         this.launchRefresh();
+        setTimeout(() =&gt; {
+            void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+        }, 60);
         return Promise.reject('New Leo File Error');
     }
 }
@@ -11326,6 +11826,7 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
             let q_openedFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
             if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath &amp;&amp; p_leoFileUri.fsPath.trim()) {
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
+                void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, true);
                 q_openedFile = this.sendAction(
                     Constants.LEOBRIDGE.OPEN_FILE,
                     { filename: w_fixedFilePath }
@@ -11334,6 +11835,7 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
                 q_openedFile = this._leoFilesBrowser.getLeoFileUrl().then(
                     (p_chosenLeoFile) =&gt; {
                         if (p_chosenLeoFile.trim()) {
+                            void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, true);
                             return this.sendAction(
                                 Constants.LEOBRIDGE.OPEN_FILE,
                                 { filename: p_chosenLeoFile }
@@ -11380,15 +11882,21 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
                         this.serverOpenedNode = undefined;
                     }
                     this.launchRefresh();
-
+                    setTimeout(() =&gt; {
+                        void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+                    }, 60);
                     return p_openFileResult;
                 } else {
+                    setTimeout(() =&gt; {
+                        void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
+                    }, 60);
                     return Promise.resolve(undefined); // User cancelled chooser.
                 }
             },
             (p_errorOpen) =&gt; {
                 // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
                 console.log('in .then not opened or already opened');
+                void utils.setContext(Constants.CONTEXT_FLAGS.LEO_OPENING_FILE, false);
                 return Promise.reject(p_errorOpen);
             }
         );
@@ -11475,6 +11983,7 @@ public startServer(): void {
  * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
  */
 public connect(): void {
+    this.showLogPane();
 
     if (this.leoStates.leoBridgeReady || this.leoStates.leoConnecting) {
         vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
@@ -12360,6 +12869,11 @@ public static VSCODE_COMMANDS = {
     "command": "leointeg.gotoNextClone",
     "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNodeCloned/",
     "group": "leoNodeContext3@3"
+  },
+  {
+    "command": "leointeg.clickButton",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /^leoButtonNode|^leoButtonAdd/",
+    "group": "inline@1"
   },
   {
     "command": "leointeg.removeButton",
@@ -13778,9 +14292,10 @@ public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                         {
                             tree: true,
                             body: true,
-                            documents: true,
-                            // buttons: false,
+                            goto: true,
                             states: true,
+                            documents: true,
+                            buttons: true
                         }
                     );
                     return this.launchRefresh();
@@ -14406,7 +14921,7 @@ public setFontConfig(p_settings: FontSettings): void {
                 .update("zoomLevel", p_settings.zoomLevel, true);
         } else {
             vscode.window.showInformationMessage(
-                "Value for zoom level should be between -12 and 12"
+                Constants.USER_MESSAGES.ZOOM_LEVEL_RANGE_LIMIT
             );
         }
     }
@@ -14416,7 +14931,7 @@ public setFontConfig(p_settings: FontSettings): void {
                 .update("fontSize", p_settings.fontSize, true);
         } else {
             vscode.window.showInformationMessage(
-                "Value for font size should be between 6 and 30"
+                Constants.USER_MESSAGES.FONT_SIZE_RANGE_LIMIT
             );
         }
     }
@@ -14514,7 +15029,7 @@ private _bodySaveDeactivate(
 ): Promise&lt;LeoBridgePackage&gt; {
     const w_param = {
         gnx: utils.leoUriToStr(p_document.uri),
-        body: p_document.getText(),
+        body: p_document.getText().replace(/\r\n/g, "\n"),
     };
     return this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
 }
@@ -14565,15 +15080,16 @@ public checkEnablePreview(p_forced?: boolean): void {
     if (w_result === false) {
         if (p_forced) {
             this.setEnablePreview();
-            vscode.window.showInformationMessage("'Enable Preview' setting was set");
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.ENABLE_PREVIEW_SET);
         } else {
             if (!this._leoIntegration.leoStates.leoStartupFinished) {
                 return;
             }
-            vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
+            vscode.window.showWarningMessage(Constants.USER_MESSAGES.ENABLE_PREVIEW_RECOMMEND, Constants.USER_MESSAGES.FIX_IT)
                 .then(p_chosenButton =&gt; {
-                    if (p_chosenButton === "Fix it") {
+                    if (p_chosenButton === Constants.USER_MESSAGES.FIX_IT) {
                         vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
+                        vscode.window.showInformationMessage(Constants.USER_MESSAGES.ENABLE_PREVIEW_SET);
                     }
                 });
         }
@@ -14610,15 +15126,16 @@ public checkCloseEmptyGroups(p_forced?: boolean): void {
     if (w_result === true) {
         if (p_forced) {
             this.clearCloseEmptyGroups();
-            vscode.window.showInformationMessage("'Close Empty Groups' setting was cleared");
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLOSE_EMPTY_CLEARED);
         } else {
             if (!this._leoIntegration.leoStates.leoStartupFinished) {
                 return;
             }
-            vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
+            vscode.window.showWarningMessage(Constants.USER_MESSAGES.CLOSE_EMPTY_RECOMMEND, Constants.USER_MESSAGES.FIX_IT)
                 .then(p_chosenButton =&gt; {
-                    if (p_chosenButton === "Fix it") {
+                    if (p_chosenButton === Constants.USER_MESSAGES.FIX_IT) {
                         vscode.commands.executeCommand(Constants.COMMANDS.CLEAR_CLOSE_EMPTY_GROUPS);
+                        vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLOSE_EMPTY_CLEARED);
                     }
                 });
         }
@@ -14866,7 +15383,10 @@ public async gotoScript(p_node: LeoButtonNode): Promise&lt;any&gt; {
         {
             tree: true,
             body: true,
+            goto: true,
             states: true,
+            documents: true,
+            buttons: true
         },
         w_package.node
     );
@@ -14911,7 +15431,9 @@ public refreshBodyStates(): void {
         // console.log('WRAP: ', w_wrap);
 
         // Replace language string if in 'exceptions' array
-        w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
+        w_language = Constants.LEO_LANGUAGE_PREFIX +
+            (Constants.LANGUAGE_CODES[w_language] || w_language) +
+            (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
 
         // Apply language if the selected node is still the same after all those events
         if (this._bodyTextDocument &amp;&amp;
@@ -14920,9 +15442,6 @@ public refreshBodyStates(): void {
             w_language !== this._bodyTextDocument.languageId &amp;&amp;
             utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
         ) {
-            console.log('refreshBodyStates language was : ', this._bodyTextDocument.languageId);
-            console.log('setting language: ', w_language);
-
             this._setBodyLanguage(this._bodyTextDocument, w_language);
         }
     });
@@ -15560,7 +16079,7 @@ public getTextFromClipboard(): string {
             if (w_input) {
                 // @ts-expect-error
                 w_input.placeholder = "&lt;tag pattern here&gt;";
-                w_input.title = "Enter a tag name to list tagged nodes in the Goto pane&amp;#013;Clear this field to list all tags used in this file";
+                w_input.title = "Enter a tag name to list tagged nodes in the Goto pane\nClear this field to list all tags used in this file";
             }
 
             // @ts-expect-error
@@ -15579,7 +16098,7 @@ public getTextFromClipboard(): string {
             if (w_input) {
                 // @ts-expect-error
                 w_input.placeholder = "&lt;nav pattern here&gt;";
-                w_input.title = "Typing searches headlines interactively&amp;#013;Enter freezes input and searches body text";
+                w_input.title = "Typing searches headlines interactively\nEnter freezes input and searches body text";
             }
             // @ts-expect-error
             w_showParent.disabled = false;
@@ -15973,7 +16492,7 @@ public findQuickSelected(): Thenable&lt;unknown&gt; {
         const editor = vscode.window.activeTextEditor;
         const selection = editor.selection;
         if (!selection.isEmpty) {
-            const text = editor.document.getText(selection);
+            const text = editor.document.getText(selection).replace(/\r\n/g, "\n");
             return this.findQuick(text);
         }
     }
@@ -17872,9 +18391,10 @@ public removeSentinels(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                         {
                             tree: true,
                             body: true,
-                            documents: true,
-                            // buttons: false,
+                            goto: true,
                             states: true,
+                            documents: true,
+                            buttons: true
                         }
                     );
                     return this.launchRefresh();
@@ -18053,9 +18573,10 @@ public readFileIntoNode(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
                         {
                             tree: true,
                             body: true,
-                            documents: true,
-                            // buttons: false,
+                            goto: true,
                             states: true,
+                            documents: true,
+                            buttons: true
                         }
                     );
                     return this.launchRefresh();
@@ -18812,7 +19333,7 @@ private _refreshDesc(): void {
 public static MIN_SERVER_VERSION_NUMBER = {
     major: 1,
     minor: 0,
-    patch: 8
+    patch: 9,
 };
 
 </t>
@@ -19163,6 +19684,17 @@ If you check the **Tag** option, the **Nav** field and **Goto Pane** are then us
             Edward K. Ream
         &lt;/td&gt;
         &lt;td align="center"&gt;
+            &lt;a href="https://github.com/tbpassin"&gt;
+                &lt;img src="https://avatars.githubusercontent.com/u/36974235?v=4"
+                     alt="Thomas Passin"
+                     width="48"
+                     height="48"
+                &gt;
+            &lt;/a&gt;
+            &lt;br&gt;
+            Thomas Passin
+        &lt;/td&gt;        
+        &lt;td align="center"&gt;
             &lt;a href="https://github.com/kghenderson"&gt;
                 &lt;img src="https://avatars.githubusercontent.com/u/3522168?v=4"
                      alt="Kevin Henderson"
@@ -19505,6 +20037,206 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 - Fixed body pane tab label identifier.
 - Fixed goto-next-clone and goto-next-marked commands refresh cycles.
 - Added 'Show Recent Files' button to panel if no files are opened.
+
+</t>
+<t tx="felix.20231216214036.1">## 1.0.19
+
+- Fixed tooltips in find panel.
+- Added UNL support: Requires Leo 6.7.7.
+- Fixed 'goto-script' refresh cycle.
+- @button panel entries now run with 'play' icon press instead of by selecting the entry.
+- Leo panel now shows a 'Opening...' message when opening a Leo file if no file were already opened.
+- Added support for the 'wrap' state of the body pane. (Along with @wrap and @nowrap directives)
+
+</t>
+<t tx="felix.20240107202609.1">public async handleUnl(p_arg: { unl: string, scheme: string }): Promise&lt;void&gt; {
+
+    if (!this.leoStates.leoBridgeReady || !this.leoStates.fileOpenedReady) {
+        this.addLogPaneEntry('Handle UNL: No Commander started');
+        return;
+    }
+
+    const leoJsExtension = vscode.extensions.getExtension('boltex.leojs');
+    if (leoJsExtension !== undefined &amp;&amp; leoJsExtension.isActive) {
+        // If leojs is active only honor UNLS clicked in LeoInteg Panels only.
+        if (p_arg.scheme !== Constants.URI_LEO_SCHEME) {
+            console.log('LeoJS active: UNL ignored by LeoInteg');
+            return;
+        }
+    }
+    await this.triggerBodySave(true);
+    try {
+
+        if (p_arg.unl) {
+
+            return this.sendAction(
+                Constants.LEOBRIDGE.HANDLE_UNL,
+                { unl: p_arg.unl }
+            ).then((p_result: LeoBridgePackage) =&gt; {
+                this.setupRefresh(
+                    Focus.NoChange,
+                    {
+                        tree: true,
+                        body: true,
+                        goto: true,
+                        states: true,
+                        documents: true,
+                        buttons: true
+                    }
+                );
+                this.launchRefresh();
+                this.loadSearchSettings();
+
+            });
+
+        } else {
+            console.log('NO ARGUMENT FOR HANDLE URL! ', p_arg);
+        }
+    }
+    catch (e) {
+        console.log('FAILED HANDLE URL! ', p_arg);
+    }
+}
+
+</t>
+<t tx="felix.20240107210250.1">import * as vscode from 'vscode';
+import { Constants } from "./constants";
+
+export class UnlProvider implements vscode.DocumentLinkProvider {
+
+    /*
+        * GNX-based UNL Samples
+        unl:gnx://leoPy.leo#ekr.20230626064652.1
+        unl:gnx://myProject.leo#node12345678.1
+        unl:gnx://codeRepo.leo#function.20231231.1
+    
+        * Headline-based UNL Samples
+        unl://C:/leo.repo/leo-editor/leo/doc/LeoDocs.leo#Getting Started--&gt;Introduction
+        unl://D:/work/notes.leo#Meeting Notes--&gt;2023--&gt;March--&gt;Project X Discussion
+        unl://myDocuments/notes.leo#Ideas--&gt;New Concepts--&gt;brainstorming-session
+        unl://relativePath/myFile.leo#Chapter 1--&gt;Section 2--&gt;Paragraph 3
+        unl://C:/projects/leoProject.leo#Code Review--&gt;Module 1--&gt;Function XYZ--&gt;Improvements
+    
+        * Mixed Characters and Edge Cases
+        unl://path/to/file.leo#Headline-with-Dashes--&gt;Sub-section--&gt;Item 1
+        unl://anotherPath/docs.leo#Special Characters!--&gt;@$%^&amp;*
+        unl://leoFile.leo#Testing--&gt;Edge--&gt;Cases--&gt;with--&gt;Multiple Separators
+
+        REFERENCE IN leoGlobals.py
+         2. New in Leo 6.7.4: UNLs based on gnx's (global node indices):
+        
+            Links of the form `unl:gnx:` + `//{outline}#{gnx}` open the given
+            outline and select the first outline node with the given gnx. These UNLs
+            will work as long as the node exists anywhere in the outline.
+        
+            For example, the link: `unl:gnx://#ekr.20031218072017.2406` refers to this
+            outline's "Code" node. Try it. The link works in this outline.
+
+    */
+
+    // private gnxUnlRegex = /\bunl:gnx:[^\r\n#]*#\S*/g; // This allows spaces and content after the UNL.
+    // private headlineUnlRegex = /\bunl:(?!gnx:)[^\r\n#]*#[^\r\n]*\S/g; // This goes on until end of line.
+
+    // *It seems that the double slash is required for valid UNLs (as per this comment in p.get_UNL and related methods in leoNodes.py)
+
+    // All unls must contain a file part: f"//{file-name}#"
+    // The file-name may be empty.
+
+    private gnxUnlRegex = /\bunl:gnx:\/\/[^\r\n#]*#\S*/g; // This allows spaces and content after the UNL.
+    private headlineUnlRegex = /\bunl:\/\/[^\r\n#]*#[^\r\n]*\S/g; // This goes on until end of line.
+
+    public provideDocumentLinks(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult&lt;vscode.DocumentLink[]&gt; {
+        const text = document.getText();
+        const links: vscode.DocumentLink[] = [];
+        const scheme = document.uri.scheme;
+        let match;
+
+        // GNX-based UNLs
+        while ((match = this.gnxUnlRegex.exec(text)) !== null) {
+            const range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
+            const args = encodeURIComponent(JSON.stringify({ unl: match[0], scheme: scheme }));
+            links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:${Constants.COMMANDS.HANDLE_UNL}?${args}`)));
+        }
+
+        //  Headline - based UNLs
+        while ((match = this.headlineUnlRegex.exec(text)) !== null) {
+            const range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
+            const args = encodeURIComponent(JSON.stringify({ unl: match[0], scheme: scheme }));
+            links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:${Constants.COMMANDS.HANDLE_UNL}?${args}`)));
+        }
+
+        return links;
+    }
+}
+</t>
+<t tx="felix.20240121194014.1">/**
+ * Supported Languages
+ */
+public static LANGUAGES = [
+    "plain",
+    "python",
+    "javascript",
+    "typescript",
+    "c",
+    "cpp",
+    "css",
+    "fortran",
+    "fortran90",
+    "html",
+    "java",
+    "json",
+    "markdown",
+    "php",
+    "restructuredtext",
+    "rust",
+];
+
+</t>
+<t tx="felix.20240121200443.1">/**
+ * * Sets all 'bodywrap' vscode settings
+ */
+public setBodyWrap(): Thenable&lt;void&gt; {
+    let w_totalConfigName = "";
+    for (const w_lang of Constants.LANGUAGES) {
+        let langWrap = '[' + Constants.LEO_LANGUAGE_PREFIX + w_lang + Constants.LEO_WRAP_SUFFIX + ']';
+        w_totalConfigName += langWrap;
+    }
+    return vscode.workspace.getConfiguration().update(w_totalConfigName, { 'editor.wordWrap': 'on' }, vscode.ConfigurationTarget.Global);
+}
+
+</t>
+<t tx="felix.20240121200637.1">public checkBodyWrap(p_forced?: boolean): void {
+    let w_missing = false;
+
+    let w_languageSettings: Record&lt;string, boolean&gt; | undefined;
+    let w_totalConfigName = "";
+
+    for (const w_lang of Constants.LANGUAGES) {
+        let langWrap = '[' + Constants.LEO_LANGUAGE_PREFIX + w_lang + Constants.LEO_WRAP_SUFFIX + ']';
+        w_totalConfigName += langWrap;
+        // w_languageSettings = vscode.workspace.getConfiguration(langWrap);
+    }
+    w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName);
+
+    if (!w_languageSettings || !w_languageSettings['editor.wordWrap']) {
+        w_missing = true;
+    }
+
+    if (w_missing &amp;&amp; p_forced) {
+        void this.setBodyWrap();
+        // ! NOT warning the user for this forced setting at startup because its internal to LeoJS only !
+    } else if (w_missing &amp;&amp; !p_forced) {
+        void vscode.window.showWarningMessage(
+            Constants.USER_MESSAGES.BODY_WRAP_RECOMMEND,
+            Constants.USER_MESSAGES.FIX_IT
+        ).then(p_chosenButton =&gt; {
+            if (p_chosenButton === Constants.USER_MESSAGES.FIX_IT) {
+                void vscode.commands.executeCommand(Constants.COMMANDS.SET_BODY_WRAP_SETTINGS);
+                void vscode.window.showInformationMessage(Constants.USER_MESSAGES.BODY_WRAP_SET);
+            }
+        });
+    }
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
@@ -20731,7 +21463,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.18&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.19&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"
@@ -20741,7 +21473,7 @@ div.col-nav {
           &lt;/a&gt;
           &lt;a class="button button--flat" title="LeoInteg's Features"
             href="https://github.com/boltex/leointeg#features-"&gt;
-            See What's New in LeoInteg 1.0.18
+            See What's New in LeoInteg 1.0.19
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;

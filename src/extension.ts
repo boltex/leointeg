@@ -588,6 +588,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.STOP_SERVER, () => w_leo.killServer()],
         [CMD.CHOOSE_LEO_FOLDER, () => w_leo.chooseLeoFolder()],
         [CMD.SET_LEOID, () => w_leo.setLeoID()],
+        [CMD.HANDLE_UNL, (p_arg: { unl: string, scheme: string }) => w_leo.handleUnl(p_arg)],
 
         // Called by nodes in tree when selected either by mouse, or with enter
         [CMD.SELECT_NODE, (p_node: LeoApOutlineNode) => w_leo.selectTreeNode(p_node.position, false, false)],
@@ -721,6 +722,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.TOGGLE_FIND_SEARCH_BODY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_BODY)],
         [CMD.TOGGLE_FIND_SEARCH_HEADLINE_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_HEADLINE)],
 
+        [CMD.SET_BODY_WRAP_SETTINGS, () => w_leo.config.setBodyWrap()],
         [CMD.SET_ENABLE_PREVIEW, () => w_leo.config.setEnablePreview()],
         [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () => w_leo.config.clearCloseEmptyGroups()],
     ];
@@ -741,6 +743,7 @@ export function activate(p_context: vscode.ExtensionContext) {
                 // and not to try to see if they're set too soon
                 w_leo.config.checkEnablePreview();
                 w_leo.config.checkCloseEmptyGroups();
+                w_leo.config.checkBodyWrap();
             }, 1500);
 
             // Start server and/or connect to it, as per user settings
@@ -835,8 +838,11 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
         if (p_previousVersion !== p_version) {
             vscode.window.showInformationMessage(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
             // Force-Set/Clear leointeg's required configuration settings but show info messages
+
             p_leoInteg.config.checkEnablePreview(true);
             p_leoInteg.config.checkCloseEmptyGroups(true);
+            p_leoInteg.config.checkBodyWrap(true);
+
         }
         const [w_major, w_minor] = p_version.split('.').map(p_stringVal => parseInt(p_stringVal, 10));
         const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal => parseInt(p_stringVal, 10));

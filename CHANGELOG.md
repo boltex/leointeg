@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.0.19
+
+- Fixed tooltips in find panel.
+- Added UNL support: Requires Leo 6.7.7.
+- Fixed 'goto-script' refresh cycle.
+- @button panel entries now run with 'play' icon press instead of by selecting the entry.
+- Leo panel now shows a 'Opening...' message when opening a Leo file if no file were already opened.
+- Added support for the 'wrap' state of the body pane. (Along with @wrap and @nowrap directives)
+
 ## 1.0.18
 
 - Fixed body pane tab label identifier.

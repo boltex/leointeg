@@ -339,7 +339,7 @@
             if (w_input) {
                 // @ts-expect-error
                 w_input.placeholder = "<tag pattern here>";
-                w_input.title = "Enter a tag name to list tagged nodes in the Goto pane&#013;Clear this field to list all tags used in this file";
+                w_input.title = "Enter a tag name to list tagged nodes in the Goto pane\nClear this field to list all tags used in this file";
             }
 
             // @ts-expect-error
@@ -358,7 +358,7 @@
             if (w_input) {
                 // @ts-expect-error
                 w_input.placeholder = "<nav pattern here>";
-                w_input.title = "Typing searches headlines interactively&#013;Enter freezes input and searches body text";
+                w_input.title = "Typing searches headlines interactively\nEnter freezes input and searches body text";
             }
             // @ts-expect-error
             w_showParent.disabled = false;

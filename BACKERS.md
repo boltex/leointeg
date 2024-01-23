@@ -18,6 +18,17 @@
             Edward K. Ream
         </td>
         <td align="center">
+            <a href="https://github.com/tbpassin">
+                <img src="https://avatars.githubusercontent.com/u/36974235?v=4"
+                     alt="Thomas Passin"
+                     width="48"
+                     height="48"
+                >
+            </a>
+            <br>
+            Thomas Passin
+        </td>        
+        <td align="center">
             <a href="https://github.com/kghenderson">
                 <img src="https://avatars.githubusercontent.com/u/3522168?v=4"
                      alt="Kevin Henderson"
