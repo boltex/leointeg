@@ -284,10 +284,10 @@
         if (keyCode === 'Tab') {
             var actEl = document.activeElement;
             var lastEl = document.getElementById(lastTabElId);
+            var firstEl = document.getElementById(firstTabElId);
 
             if (p_event.shiftKey) {
                 // shift + tab so if first got last
-                var firstEl = document.getElementById(firstTabElId);
                 if (lastEl && actEl === firstEl) {
                     p_event.preventDefault();
                     p_event.stopPropagation();
@@ -297,11 +297,11 @@
                 }
             } else {
                 // tab, so if last goto first
-                if (actEl === lastEl) {
+                if (firstEl && actEl === lastEl) {
                     p_event.preventDefault();
                     p_event.stopPropagation();
                     p_event.stopImmediatePropagation();
-                    focusOnField(firstTabElId);
+                    firstEl.focus();
                     return;
                 }
             }
