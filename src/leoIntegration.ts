@@ -287,6 +287,9 @@ export class LeoIntegration {
     // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
     public getStates: (() => void);
 
+    // * Debounced method used to get set status bar with the current UNL
+    public getUNL: (() => void);
+
     // * Debounced method used to get opened Leo Files for the documents pane
     public refreshDocumentsPane: (() => void);
 
@@ -571,6 +574,10 @@ export class LeoIntegration {
         this.getStates = debounce(
             this._triggerGetStates,
             Constants.STATES_DEBOUNCE_DELAY
+        );
+        this.getUNL = debounce(
+            this._getUNL,
+            Constants.UNL_DEBOUNCE_DELAY
         );
         this.refreshDocumentsPane = debounce(
             this._refreshDocumentsPane,
@@ -1356,7 +1363,22 @@ export class LeoIntegration {
                     }
                 });
             this.refreshUndoPane();
+            this.getUNL();
         }
+    }
+
+    /**
+     * 'getUnl' action for use in status bar
+     */
+    private _getUNL(): void {
+        // TODO ! 
+        // IF SERVER VERSION >= 10 get unl action !
+        this.sendAction(Constants.LEOBRIDGE.GET_STATES)
+            .then((p_package: LeoBridgePackage) => {
+                if (p_package.unl) {
+                    //
+                }
+            });
     }
 
     /**

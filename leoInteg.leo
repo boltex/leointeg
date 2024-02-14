@@ -356,6 +356,7 @@
 </v>
 <v t="felix.20200719031802.1"><vh>Document States</vh>
 <v t="felix.20200719025231.19"><vh>_triggerGetStates</vh></v>
+<v t="felix.20240214000508.1"><vh>_getUNL</vh></v>
 <v t="felix.20200719025231.20"><vh>_isBusy</vh></v>
 <v t="felix.20201107224112.1"><vh>_isBusyTriggerSave</vh></v>
 <v t="felix.20200719025231.21"><vh>_isCurrentFileNamed</vh></v>
@@ -5902,6 +5903,7 @@ public static UNDOS_DEBOUNCE_DELAY: number = 180;
 public static UNDOS_REVEAL_DEBOUNCE_DELAY: number = 50;
 public static REFRESH_DEBOUNCE_DELAY: number = 50;
 public static STATES_DEBOUNCE_DELAY: number = 100;
+public static UNL_DEBOUNCE_DELAY: number = 150;
 public static BODY_STATES_DEBOUNCE_DELAY: number = 120;
 public static OUTLINE_DESC_DEBOUNCE_DELAY: number = 250;
 public static GOTO_DEBOUNCE_DELAY: number = 50;
@@ -8512,6 +8514,7 @@ export interface LeoBridgePackage {
     patch?: number;
     bead?: number;
     undos?: string[];
+    unl?: string;
 }
 
 </t>
@@ -9574,6 +9577,7 @@ private _triggerGetStates(): void {
                 }
             });
         this.refreshUndoPane();
+        this.getUNL();
     }
 }
 
@@ -9823,6 +9827,9 @@ export class LeoIntegration {
 
     // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
     public getStates: (() =&gt; void);
+
+    // * Debounced method used to get set status bar with the current UNL
+    public getUNL: (() =&gt; void);
 
     // * Debounced method used to get opened Leo Files for the documents pane
     public refreshDocumentsPane: (() =&gt; void);
@@ -10363,6 +10370,10 @@ private _onActiveEditorChanged(
     this.getStates = debounce(
         this._triggerGetStates,
         Constants.STATES_DEBOUNCE_DELAY
+    );
+    this.getUNL = debounce(
+        this._getUNL,
+        Constants.UNL_DEBOUNCE_DELAY
     );
     this.refreshDocumentsPane = debounce(
         this._refreshDocumentsPane,
@@ -16025,10 +16036,10 @@ public getTextFromClipboard(): string {
         if (keyCode === 'Tab') {
             var actEl = document.activeElement;
             var lastEl = document.getElementById(lastTabElId);
+            var firstEl = document.getElementById(firstTabElId);
 
             if (p_event.shiftKey) {
                 // shift + tab so if first got last
-                var firstEl = document.getElementById(firstTabElId);
                 if (lastEl &amp;&amp; actEl === firstEl) {
                     p_event.preventDefault();
                     p_event.stopPropagation();
@@ -16038,11 +16049,11 @@ public getTextFromClipboard(): string {
                 }
             } else {
                 // tab, so if last goto first
-                if (actEl === lastEl) {
+                if (firstEl &amp;&amp; actEl === lastEl) {
                     p_event.preventDefault();
                     p_event.stopPropagation();
                     p_event.stopImmediatePropagation();
-                    focusOnField(firstTabElId);
+                    firstEl.focus();
                     return;
                 }
             }
@@ -20245,6 +20256,21 @@ public setBodyWrap(): Thenable&lt;void&gt; {
 - ...
 
 </t>
+<t tx="felix.20240214000508.1">/**
+ * 'getUnl' action for use in status bar
+ */
+private _getUNL(): void {
+    // TODO ! 
+    // IF SERVER VERSION &gt;= 10 get unl action !
+    this.sendAction(Constants.LEOBRIDGE.GET_STATES)
+        .then((p_package: LeoBridgePackage) =&gt; {
+            if (p_package.unl) {
+                //
+            }
+        });
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -20604,11 +20630,13 @@ html {
   box-sizing: border-box;
   font-size: 13px;
   overflow: hidden;
+  --input-padding-vertical: 6px;
+  --input-padding-horizontal: 4px;
+  --input-margin-vertical: 4px;
+  --input-margin-horizontal: 0;
+  height: 100%;
 }
 
-html:hover {
-  overflow: overlay;
-}
 
 *,
 *:before,
@@ -20636,31 +20664,41 @@ img {
   height: auto;
 }
 
-:root {
-  --input-padding-vertical: 6px;
-  --input-padding-horizontal: 4px;
-  --input-margin-vertical: 4px;
-  --input-margin-horizontal: 0;
-  height: 100%;
-  padding-right: 14px;
-}
-
-html:focus {
+html:focus:after {
+  content:'';
+  position: fixed;
+  top:0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   outline: 1px solid;
   outline-width: 1px;
   outline-style: solid;
   outline-offset: -1px;
   outline-color: var(--vscode-focusBorder);
+  pointer-events: none;
 }
 
 body {
+  height: 100%;
   margin-left: 20px;
   background-color: transparent;
   padding: 0 var(--container-padding);
+  scrollbar-gutter: stable;
+  overflow:hidden;
+  padding-right: 4px;
   color: var(--vscode-foreground);
   font-size: var(--vscode-font-size);
   font-weight: var(--vscode-font-weight);
   font-family: var(--vscode-font-family);
+}
+
+body:hover {
+  overflow-y: auto;
+} 
+
+.row .col:nth-child(2) {
+  padding-right: 4px;
 }
 
 ol,
@@ -20877,7 +20915,8 @@ div.col-nav {
 .label-fix {
   vertical-align: top;
   line-height: 18px;
-}</t>
+}
+</t>
 <t tx="fil.20210603223013.4">@others
 @language javascript
 @tabwidth -4

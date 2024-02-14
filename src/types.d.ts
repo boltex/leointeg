@@ -246,6 +246,7 @@ export interface LeoBridgePackage {
     patch?: number;
     bead?: number;
     undos?: string[];
+    unl?: string;
 }
 
 /**

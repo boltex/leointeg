@@ -67,6 +67,7 @@ export class Constants {
     public static UNDOS_REVEAL_DEBOUNCE_DELAY: number = 50;
     public static REFRESH_DEBOUNCE_DELAY: number = 50;
     public static STATES_DEBOUNCE_DELAY: number = 100;
+    public static UNL_DEBOUNCE_DELAY: number = 150;
     public static BODY_STATES_DEBOUNCE_DELAY: number = 120;
     public static OUTLINE_DESC_DEBOUNCE_DELAY: number = 250;
     public static GOTO_DEBOUNCE_DELAY: number = 50;
