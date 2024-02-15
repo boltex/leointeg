@@ -9,17 +9,8 @@ import { LeoIntegration } from "./leoIntegration";
 export class LeoStatusBar {
 
     private _leoStatusBarItem: vscode.StatusBarItem;
-    private _statusbarNormalColor = new vscode.ThemeColor(Constants.GUI.THEME_STATUSBAR);  // "statusBar.foreground"
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
-
-    // * Represents having focus on a leo tree, body or document panel to enable leo keybindings
-    private _statusBarFlag: boolean = false;
-    set statusBarFlag(p_value: boolean) {
-        this._statusBarFlag = p_value;
-    }
-    get statusBarFlag(): boolean {
-        return this._statusBarFlag;
-    }
+    public unlString: string = ""; // Use this string with indicator, using this will replace the default from config
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -28,9 +19,9 @@ export class LeoStatusBar {
         this._leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
         // this._leoStatusBarItem.color = this._leoIntegration.config.statusBarColor;
 
-        // this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
+        this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR;
-        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
+        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_UNL;
         this._context.subscriptions.push(this._leoStatusBarItem);
         this._leoStatusBarItem.hide();
     }
@@ -50,21 +41,22 @@ export class LeoStatusBar {
     }
 
     /**
-     * * Updates the status bar visual indicator visual indicator with optional debouncing delay
-     * @param p_state True/False flag for On or Off status
+     * * Sets string to replace default from config & refresh it
+     * @p_string string to be displayed on Leo's status bar space.
      * @param p_debounceDelay Optional, in milliseconds
+     * 
      */
-    public update(p_state: boolean, p_debounceDelay?: number, p_forced?: boolean): void {
-        if (p_forced || (p_state !== this.statusBarFlag)) {
-            this.statusBarFlag = p_state;
-            if (p_debounceDelay) {
-                this._updateLeoObjectIndicatorDebounced(p_debounceDelay);
-            } else {
-                this._updateLeoObjectIndicator();
-            }
+    public setString(p_string: string, p_debounceDelay?: number): void {
+        if (this.unlString === p_string) {
+            return; // cancel
+        }
+        this.unlString = p_string;
+        if (p_debounceDelay) {
+            this._updateLeoObjectIndicatorDebounced(p_debounceDelay);
+        } else {
+            this._updateLeoObjectIndicator();
         }
     }
-
     /**
      * * Updates the status bar visual indicator flag in a debounced manner
      * @param p_delay number of milliseconds
@@ -86,18 +78,7 @@ export class LeoStatusBar {
         if (this._updateStatusBarTimeout) {
             clearTimeout(this._updateStatusBarTimeout);
         }
-
-        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
-            (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
-
-        // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
-        if (this.statusBarFlag && this._leoIntegration.leoStates.fileOpenedReady) {
-            // this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
-            this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
-        } else {
-            this._leoStatusBarItem.color = this._statusbarNormalColor;
-            this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_OFF;
-        }
+        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this.unlString;
     }
 
 }

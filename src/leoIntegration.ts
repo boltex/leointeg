@@ -30,7 +30,7 @@ import { LeoApOutlineProvider } from './leoApOutline';
 import { LeoBodyProvider } from './leoBody';
 import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
-// import { LeoStatusBar } from './leoStatusBar';  // removed until proper API for knowing focus placement
+import { LeoStatusBar } from './leoStatusBar';
 import { CommandStack } from './commandStack';
 import { LeoDocumentsProvider, LeoDocumentNode } from './leoDocuments';
 import { LeoStates } from './leoStates';
@@ -266,7 +266,7 @@ export class LeoIntegration {
     private _leoLogPane: undefined | vscode.OutputChannel;
 
     // * Status Bar
-    // private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
+    private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
 
     // * Edit/Insert Headline Input Box System made with 'createInputBox'.
     private _hib: undefined | vscode.InputBox;
@@ -495,7 +495,8 @@ export class LeoIntegration {
         this._bodyMainSelectionColumn = 1;
 
         // * Create Status bar Entry
-        // this._leoStatusBar = new LeoStatusBar(_context, this); // removed until proper API for knowing focus placement
+        this._leoStatusBar = new LeoStatusBar(_context, this);
+
         // * Automatic server start service
         this._serverService = new ServerService(_context, this);
 
@@ -906,7 +907,7 @@ export class LeoIntegration {
         this.leoStates.fileOpenedReady = false;
         this.leoStates.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
-        // this._leoStatusBar.update(false); // removed until proper API for knowing focus placement
+        this._leoStatusBar.hide();
         this._refreshOutline(false, RevealType.NoReveal);
     }
 
@@ -1371,14 +1372,18 @@ export class LeoIntegration {
      * 'getUnl' action for use in status bar
      */
     private _getUNL(): void {
-        // TODO ! 
+
+        if (!utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
+            return;
+        }
         // IF SERVER VERSION >= 10 get unl action !
-        this.sendAction(Constants.LEOBRIDGE.GET_STATES)
+        this.sendAction(Constants.LEOBRIDGE.GET_UNL)
             .then((p_package: LeoBridgePackage) => {
                 if (p_package.unl) {
-                    //
+                    this._leoStatusBar.setString(p_package.unl);
                 }
             });
+
     }
 
     /**
@@ -1429,7 +1434,7 @@ export class LeoIntegration {
         this.refreshDocumentsPane();
         this.refreshButtonsPane();
         this.refreshUndoPane();
-        // this._leoStatusBar.hide(); // removed until proper API for knowing focus placement
+        this._leoStatusBar.hide();
         this.closeBody();
     }
 
@@ -1471,8 +1476,9 @@ export class LeoIntegration {
             this._bodyFileSystemStarted = true;
         }
 
-        // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
-        // this._leoStatusBar.show();
+        if (utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
+            this._leoStatusBar.show();
+        }
         this.sendConfigToServer(this.config.getConfig());
         this.loadSearchSettings();
 
@@ -6886,8 +6892,13 @@ export class LeoIntegration {
      */
     public statusBarOnClick(): Thenable<unknown> {
 
-        this.showLogPane();
-        return Promise.resolve(true);
+        if (this._leoStatusBar) {
+            return this.replaceClipboardWith(this._leoStatusBar.unlString);
+        }
+        return Promise.resolve(undefined);
+
+        // this.showLogPane();
+        // return Promise.resolve(true);
 
         /*
         if (this.leoStates.fileOpenedReady) {

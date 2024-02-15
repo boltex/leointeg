@@ -102,7 +102,7 @@ export class Constants {
     public static MIN_SERVER_VERSION_NUMBER = {
         major: 1,
         minor: 0,
-        patch: 9,
+        patch: 10,
     };
 
     /**
@@ -162,7 +162,7 @@ export class Constants {
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
-        STATUSBAR_INDICATOR: "$(keyboard) ",
+        STATUSBAR_INDICATOR: "$(link) ", // With trailing space
         QUICK_OPEN_LEO_COMMANDS: ">leo: ",
         EXPLORER_TREEVIEW_PREFIX: "LEO ",
         TREEVIEW_TITLE: "OUTLINE",
@@ -198,6 +198,7 @@ export class Constants {
         FILE_ALREADY_OPENED: "Leo file already opened",
         CHOOSE_OPENED_FILE: "Select an opened Leo File",
         FILE_NOT_OPENED: "No files opened.",
+        STATUSBAR_TOOLTIP_UNL: "Click to copy UNL to clipboard",
         STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
         STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
         PROMPT_EDIT_HEADLINE: "Edit Headline",
@@ -265,7 +266,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.5 is recommended.",
+        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.8 is recommended.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language coloring not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language coloring not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
@@ -597,6 +598,7 @@ export class Constants {
         GET_VERSION: "!get_version",
         GET_LEOID: "!get_leoid",
         SET_LEOID: "!set_leoid",
+        GET_UNL: "!get_unl",
         HANDLE_UNL: "!handle_unl",
         // * Server Commands
         GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
@@ -764,7 +766,7 @@ export class Constants {
         // * Access to the Settings/Welcome Webview
         SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
         SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
-        // STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
+        STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
         // * LeoBridge
         CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
         START_SERVER: Constants.NAME + ".startServer",

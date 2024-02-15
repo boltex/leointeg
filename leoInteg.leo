@@ -575,7 +575,7 @@
 <v t="felix.20200718185403.2"><vh>class LeoStatusBar</vh>
 <v t="felix.20200718185403.3"><vh>show</vh></v>
 <v t="felix.20200718185403.4"><vh>hide</vh></v>
-<v t="felix.20200718185403.6"><vh>update</vh></v>
+<v t="felix.20200718185403.6"><vh>setString</vh></v>
 <v t="felix.20200718185403.7"><vh>_updateLeoObjectIndicatorDebounced</vh></v>
 <v t="felix.20200718185403.8"><vh>_updateLeoObjectIndicator</vh></v>
 </v>
@@ -5441,6 +5441,7 @@ public static LEOBRIDGE = {
     GET_VERSION: "!get_version",
     GET_LEOID: "!get_leoid",
     SET_LEOID: "!set_leoid",
+    GET_UNL: "!get_unl",
     HANDLE_UNL: "!handle_unl",
     // * Server Commands
     GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
@@ -7816,17 +7817,8 @@ import { LeoIntegration } from "./leoIntegration";
 export class LeoStatusBar {
 
     private _leoStatusBarItem: vscode.StatusBarItem;
-    private _statusbarNormalColor = new vscode.ThemeColor(Constants.GUI.THEME_STATUSBAR);  // "statusBar.foreground"
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
-
-    // * Represents having focus on a leo tree, body or document panel to enable leo keybindings
-    private _statusBarFlag: boolean = false;
-    set statusBarFlag(p_value: boolean) {
-        this._statusBarFlag = p_value;
-    }
-    get statusBarFlag(): boolean {
-        return this._statusBarFlag;
-    }
+    private _string: string = ""; // Use this string with indicator, using this will replace the default from config
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -7862,22 +7854,22 @@ public hide(): void {
 
 </t>
 <t tx="felix.20200718185403.6">/**
- * * Updates the status bar visual indicator visual indicator with optional debouncing delay
- * @param p_state True/False flag for On or Off status
+ * * Sets string to replace default from config &amp; refresh it
+ * @p_string string to be displayed on Leo's status bar space.
  * @param p_debounceDelay Optional, in milliseconds
+ * 
  */
-public update(p_state: boolean, p_debounceDelay?: number, p_forced?: boolean): void {
-    if (p_forced || (p_state !== this.statusBarFlag)) {
-        this.statusBarFlag = p_state;
-        if (p_debounceDelay) {
-            this._updateLeoObjectIndicatorDebounced(p_debounceDelay);
-        } else {
-            this._updateLeoObjectIndicator();
-        }
+public setString(p_string: string, p_debounceDelay?: number): void {
+    if (this._string === p_string) {
+        return; // cancel
     }
-}
-
-</t>
+    this._string = p_string;
+    if (p_debounceDelay) {
+        this._updateLeoObjectIndicatorDebounced(p_debounceDelay);
+    } else {
+        this._updateLeoObjectIndicator();
+    }
+}</t>
 <t tx="felix.20200718185403.7">/**
  * * Updates the status bar visual indicator flag in a debounced manner
  * @param p_delay number of milliseconds
@@ -7900,18 +7892,7 @@ private _updateLeoObjectIndicator(): void {
     if (this._updateStatusBarTimeout) {
         clearTimeout(this._updateStatusBarTimeout);
     }
-
-    this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
-        (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
-
-    // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
-    if (this.statusBarFlag &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) {
-        // this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
-        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
-    } else {
-        this._leoStatusBarItem.color = this._statusbarNormalColor;
-        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_OFF;
-    }
+    this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this._string;
 }
 
 </t>
@@ -9363,7 +9344,7 @@ import { LeoApOutlineProvider } from './leoApOutline';
 import { LeoBodyProvider } from './leoBody';
 import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
-// import { LeoStatusBar } from './leoStatusBar';  // removed until proper API for knowing focus placement
+import { LeoStatusBar } from './leoStatusBar';
 import { CommandStack } from './commandStack';
 import { LeoDocumentsProvider, LeoDocumentNode } from './leoDocuments';
 import { LeoStates } from './leoStates';
@@ -9807,7 +9788,7 @@ export class LeoIntegration {
     private _leoLogPane: undefined | vscode.OutputChannel;
 
     // * Status Bar
-    // private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
+    private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
 
     // * Edit/Insert Headline Input Box System made with 'createInputBox'.
     private _hib: undefined | vscode.InputBox;
@@ -9890,7 +9871,7 @@ private _setupNoOpenedLeoDocument(): void {
     this.refreshDocumentsPane();
     this.refreshButtonsPane();
     this.refreshUndoPane();
-    // this._leoStatusBar.hide(); // removed until proper API for knowing focus placement
+    this._leoStatusBar.hide();
     this.closeBody();
 }
 
@@ -9933,8 +9914,9 @@ private _setupOpenedLeoDocument(): void {
         this._bodyFileSystemStarted = true;
     }
 
-    // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
-    // this._leoStatusBar.show();
+    if (utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
+        this._leoStatusBar.show();
+    }
     this.sendConfigToServer(this.config.getConfig());
     this.loadSearchSettings();
 
@@ -10291,7 +10273,8 @@ private _onActiveEditorChanged(
     this._bodyMainSelectionColumn = 1;
 
     // * Create Status bar Entry
-    // this._leoStatusBar = new LeoStatusBar(_context, this); // removed until proper API for knowing focus placement
+    this._leoStatusBar = new LeoStatusBar(_context, this);
+
     // * Automatic server start service
     this._serverService = new ServerService(_context, this);
 
@@ -12093,7 +12076,7 @@ public cancelConnect(p_message?: string): void {
     this.leoStates.fileOpenedReady = false;
     this.leoStates.leoBridgeReady = false;
     this._leoBridgeReadyPromise = undefined;
-    // this._leoStatusBar.update(false); // removed until proper API for knowing focus placement
+    this._leoStatusBar.hide();
     this._refreshOutline(false, RevealType.NoReveal);
 }
 
@@ -20262,12 +20245,13 @@ public setBodyWrap(): Thenable&lt;void&gt; {
 private _getUNL(): void {
     // TODO ! 
     // IF SERVER VERSION &gt;= 10 get unl action !
-    this.sendAction(Constants.LEOBRIDGE.GET_STATES)
+    this.sendAction(Constants.LEOBRIDGE.GET_UNL)
         .then((p_package: LeoBridgePackage) =&gt; {
             if (p_package.unl) {
-                //
+                console.log("GOT status bar UNL    ", p_package.unl);
             }
         });
+
 }
 
 </t>
