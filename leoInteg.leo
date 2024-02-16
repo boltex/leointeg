@@ -193,9 +193,7 @@
 <v t="felix.20200718030926.1"><vh>@clean src/config.ts</vh>
 <v t="felix.20200718030926.2"><vh>class Config</vh>
 <v t="felix.20200718030926.3"><vh>getConfig</vh></v>
-<v t="felix.20210727224122.1"><vh>getFontConfig</vh></v>
 <v t="felix.20200718030926.4"><vh>setLeoIntegSettings</vh></v>
-<v t="felix.20210727224135.1"><vh>setFontConfig</vh></v>
 <v t="felix.20210818223534.1"><vh>setEnablePreview</vh></v>
 <v t="felix.20210821203119.1"><vh>clearCloseEmptyGroups</vh></v>
 <v t="felix.20240121200443.1"><vh>setBodyWrap</vh></v>
@@ -596,7 +594,6 @@
 <v t="felix.20210727225050.1"><vh>IVsCodeApi</vh></v>
 <v t="felix.20200718194857.2"><vh>ConfigMembers</vh></v>
 <v t="felix.20201017224340.1"><vh>ConfigSetting</vh></v>
-<v t="felix.20210727224655.1"><vh>FontSettings</vh></v>
 <v t="felix.20231102005402.1"><vh>Version</vh></v>
 <v t="felix.20220901003642.1"><vh>Focus</vh></v>
 <v t="felix.20200718194857.3"><vh>RevealType</vh></v>
@@ -912,6 +909,7 @@ public static CONFIG_DEFAULTS = {
     ACTIVITY_VIEW_SHORTCUT: true,
     GO_ANYWHERE_SHORTCUT: true,
 
+    SHOW_UNL_ON_STATUSBAR: true,
     // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
     // STATUSBAR_COLOR: "fb7c47",
     TREE_IN_EXPLORER: true,
@@ -1567,7 +1565,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 </t>
 <t tx="ekr.20200815113156.1">// * Define entries for all commands
 [CMD.MINIBUFFER, () =&gt; w_leo.minibuffer()], // Is referenced in package.json
-// [CMD.STATUS_BAR, () =&gt; w_leo.statusBarOnClick()],
+[CMD.STATUS_BAR, () =&gt; w_leo.statusBarOnClick()],
 [CMD.EXECUTE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.EXECUTE_SCRIPT,
     node: U,
@@ -4396,7 +4394,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "type": "boolean",
   "description": "Inverts the contrast of the dirty/clean border aspect of tree nodes"
 },
-</t>
+"leoIntegration.showUnlOnStatusBar": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Displays an UNL indicator on the status bar"
+},</t>
 <t tx="ekr.20200815123601.60">{
   "command": "leointeg.saveLeoFileFromOutline",
   "when": "false"
@@ -5610,7 +5613,7 @@ public static COMMANDS = {
     // * Access to the Settings/Welcome Webview
     SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
     SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
-    // STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
+    STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
     // * LeoBridge
     CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
     START_SERVER: Constants.NAME + ".startServer",
@@ -5950,7 +5953,7 @@ public static GUI = {
     ICON_LIGHT_PATH: "resources/light/box",
     ICON_DARK_PATH: "resources/dark/box",
     ICON_FILE_EXT: ".svg",
-    STATUSBAR_INDICATOR: "$(keyboard) ",
+    STATUSBAR_INDICATOR: "$(link) ", // With trailing space
     QUICK_OPEN_LEO_COMMANDS: "&gt;leo: ",
     EXPLORER_TREEVIEW_PREFIX: "LEO ",
     TREEVIEW_TITLE: "OUTLINE",
@@ -5987,6 +5990,7 @@ public static USER_MESSAGES = {
     FILE_ALREADY_OPENED: "Leo file already opened",
     CHOOSE_OPENED_FILE: "Select an opened Leo File",
     FILE_NOT_OPENED: "No files opened.",
+    STATUSBAR_TOOLTIP_UNL: "Click to copy UNL to clipboard",
     STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
     STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
     PROMPT_EDIT_HEADLINE: "Edit Headline",
@@ -6054,7 +6058,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.5 is recommended.",
+    MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.8 is recommended.",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language coloring not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language coloring not yet supported.", // with leading space
     MINIBUFFER_BUTTON_START: "@button-",
@@ -6071,8 +6075,6 @@ public static USER_MESSAGES = {
     MINIBUFFER_HISTORY_LABEL: "Minibuffer History",
     MINIBUFFER_HISTORY_DESC: "Choose from last run commands...",
 
-    ZOOM_LEVEL_RANGE_LIMIT: "Value for zoom level should be between -12 and 12",
-    FONT_SIZE_RANGE_LIMIT: "Value for font size should be between 6 and 30",
     BODY_WRAP_RECOMMEND: "'leojsbody' wordWrap settings are recommended (some currently missing)",
     BODY_WRAP_SET: "'leojsbody' wordWrap settings were set",
     FIX_IT: "Fix it",
@@ -6129,6 +6131,7 @@ public static CONFIG_NAMES = {
     SHOW_COPY: "showCopyOnNodes",
     SHOW_BRANCH_OUTLINE: "showBranchInOutlineTitle",
 
+    SHOW_UNL_ON_STATUSBAR: "showUnlOnStatusBar",
     // SHOW_EDITION_BODY: "showEditionOnBody",
     // SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
     // SHOW_PROMOTE_BODY: "showPromoteOnBody",
@@ -6421,8 +6424,7 @@ private _resolveResult(p_package: LeoBridgePackage): void {
 
 </t>
 <t tx="felix.20200718030926.1">import * as vscode from "vscode";
-import * as utils from "./utils";
-import { ConfigMembers, ConfigSetting, FontSettings } from "./types";
+import { ConfigMembers, ConfigSetting } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -6447,6 +6449,7 @@ export class Config implements ConfigMembers {
     public activityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
     public goAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
+    public showUnlOnStatusBar: boolean = Constants.CONFIG_DEFAULTS.SHOW_UNL_ON_STATUSBAR;
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
     // public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
@@ -6512,6 +6515,7 @@ public getConfig(): ConfigMembers {
         activityViewShortcut: this.activityViewShortcut,
         goAnywhereShortcut: this.goAnywhereShortcut,
 
+        showUnlOnStatusBar: this.showUnlOnStatusBar,
         // statusBarString: this.statusBarString,
         // statusBarColor: this.statusBarColor,
         treeInExplorer: this.treeInExplorer,
@@ -6603,6 +6607,7 @@ public buildFromSavedSettings(): boolean {
         this.activityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
         this.goAnywhereShortcut = GET(NAME).get(NAMES.GO_ANYWHERE_SHORTCUT, DEFAULTS.GO_ANYWHERE_SHORTCUT);
 
+        this.showUnlOnStatusBar = GET(NAME).get(NAMES.SHOW_UNL_ON_STATUSBAR, DEFAULTS.SHOW_UNL_ON_STATUSBAR);
         // this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
         // if (this.statusBarString.length &gt; 8) {
         //     this.statusBarString = DEFAULTS.STATUSBAR_STRING;
@@ -7818,7 +7823,7 @@ export class LeoStatusBar {
 
     private _leoStatusBarItem: vscode.StatusBarItem;
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
-    private _string: string = ""; // Use this string with indicator, using this will replace the default from config
+    public unlString: string = ""; // Use this string with indicator, using this will replace the default from config
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -7827,9 +7832,9 @@ export class LeoStatusBar {
         this._leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
         // this._leoStatusBarItem.color = this._leoIntegration.config.statusBarColor;
 
-        // this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
+        this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR;
-        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
+        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_UNL;
         this._context.subscriptions.push(this._leoStatusBarItem);
         this._leoStatusBarItem.hide();
     }
@@ -7860,16 +7865,17 @@ public hide(): void {
  * 
  */
 public setString(p_string: string, p_debounceDelay?: number): void {
-    if (this._string === p_string) {
+    if (this.unlString === p_string) {
         return; // cancel
     }
-    this._string = p_string;
+    this.unlString = p_string;
     if (p_debounceDelay) {
         this._updateLeoObjectIndicatorDebounced(p_debounceDelay);
     } else {
         this._updateLeoObjectIndicator();
     }
-}</t>
+}
+</t>
 <t tx="felix.20200718185403.7">/**
  * * Updates the status bar visual indicator flag in a debounced manner
  * @param p_delay number of milliseconds
@@ -7892,7 +7898,7 @@ private _updateLeoObjectIndicator(): void {
     if (this._updateStatusBarTimeout) {
         clearTimeout(this._updateStatusBarTimeout);
     }
-    this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this._string;
+    this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this.unlString;
 }
 
 </t>
@@ -8601,6 +8607,7 @@ export interface ConfigMembers {
     activityViewShortcut: boolean;
     goAnywhereShortcut: boolean;
 
+    showUnlOnStatusBar: boolean,
     // statusBarString: string;
     // statusBarColor: string;
 
@@ -9914,7 +9921,7 @@ private _setupOpenedLeoDocument(): void {
         this._bodyFileSystemStarted = true;
     }
 
-    if (utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
+    if (this.config.showUnlOnStatusBar &amp;&amp; utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
         this._leoStatusBar.show();
     }
     this.sendConfigToServer(this.config.getConfig());
@@ -9930,9 +9937,10 @@ private _setupOpenedLeoDocument(): void {
 private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
 
     if (
-        p_event.affectsConfiguration(Constants.CONFIG_NAME) ||
-        p_event.affectsConfiguration('editor.fontSize') ||
-        p_event.affectsConfiguration('window.zoomLevel')
+        p_event.affectsConfiguration(Constants.CONFIG_NAME)
+        // ||
+        // p_event.affectsConfiguration('editor.fontSize') ||
+        // p_event.affectsConfiguration('window.zoomLevel')
     ) {
         this.config.setLeoIntegSettingsPromise.then(
             () =&gt; {
@@ -9952,6 +9960,13 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
                     p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
                 ) {
                     this.configTreeRefresh();
+                }
+
+                if (this.config.showUnlOnStatusBar &amp;&amp; this.leoStates.fileOpenedReady &amp;&amp; this._leoStatusBar) {
+                    this._leoStatusBar.show();
+                }
+                if (!this.config.showUnlOnStatusBar &amp;&amp; this._leoStatusBar) {
+                    this._leoStatusBar.hide();
                 }
             }
         );
@@ -11904,8 +11919,13 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | und
  */
 public statusBarOnClick(): Thenable&lt;unknown&gt; {
 
-    this.showLogPane();
-    return Promise.resolve(true);
+    if (this._leoStatusBar) {
+        return this.replaceClipboardWith(this._leoStatusBar.unlString);
+    }
+    return Promise.resolve(undefined);
+
+    // this.showLogPane();
+    // return Promise.resolve(true);
 
     /*
     if (this.leoStates.fileOpenedReady) {
@@ -14884,62 +14904,6 @@ public cleanupBody(): Thenable&lt;any&gt; {
 <t tx="felix.20210725153617.1">## 0.1.16
 
 - Added procedures to cleanup when closing a vscode window. (closes server and body panes)
-
-</t>
-<t tx="felix.20210727224122.1">/**
- * * Get config from vscode for the UI font sizes
- * @returns the font settings object (zoom level and editor font size)
- */
-public getFontConfig(): FontSettings {
-    let w_zoomLevel = vscode.workspace.getConfiguration(
-        "window"
-    ).get("zoomLevel");
-    let w_fontSize = vscode.workspace.getConfiguration(
-        "editor"
-    ).get("fontSize");
-
-    const w_config: FontSettings = {
-        zoomLevel: Number(w_zoomLevel),
-        fontSize: Number(w_fontSize)
-    };
-    return w_config;
-}
-
-</t>
-<t tx="felix.20210727224135.1">/**
- * * Apply changes in font size settings and save them in user settings.
- */
-public setFontConfig(p_settings: FontSettings): void {
-    if (p_settings.zoomLevel || p_settings.zoomLevel === 0) {
-        if (!isNaN(p_settings.zoomLevel) &amp;&amp; p_settings.zoomLevel &lt;= 12 &amp;&amp; p_settings.zoomLevel &gt;= -12) {
-            vscode.workspace.getConfiguration("window")
-                .update("zoomLevel", p_settings.zoomLevel, true);
-        } else {
-            vscode.window.showInformationMessage(
-                Constants.USER_MESSAGES.ZOOM_LEVEL_RANGE_LIMIT
-            );
-        }
-    }
-    if (p_settings.fontSize) {
-        if (!isNaN(p_settings.fontSize) &amp;&amp; p_settings.fontSize &lt;= 30 &amp;&amp; p_settings.fontSize &gt;= 6) {
-            vscode.workspace.getConfiguration("editor")
-                .update("fontSize", p_settings.fontSize, true);
-        } else {
-            vscode.window.showInformationMessage(
-                Constants.USER_MESSAGES.FONT_SIZE_RANGE_LIMIT
-            );
-        }
-    }
-}
-
-</t>
-<t tx="felix.20210727224655.1">/**
- * * Structure for user settings, used when changing vscode's UI zoom and font size
- */
-export interface FontSettings {
-    zoomLevel: number;
-    fontSize: number;
-}
 
 </t>
 <t tx="felix.20210727225050.1">/**
@@ -19328,7 +19292,7 @@ private _refreshDesc(): void {
 public static MIN_SERVER_VERSION_NUMBER = {
     major: 1,
     minor: 0,
-    patch: 9,
+    patch: 10,
 };
 
 </t>
@@ -20243,12 +20207,15 @@ public setBodyWrap(): Thenable&lt;void&gt; {
  * 'getUnl' action for use in status bar
  */
 private _getUNL(): void {
-    // TODO ! 
+
+    if (!utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
+        return;
+    }
     // IF SERVER VERSION &gt;= 10 get unl action !
     this.sendAction(Constants.LEOBRIDGE.GET_UNL)
         .then((p_package: LeoBridgePackage) =&gt; {
             if (p_package.unl) {
-                console.log("GOT status bar UNL    ", p_package.unl);
+                this._leoStatusBar.setString(p_package.unl);
             }
         });
 
@@ -20285,7 +20252,6 @@ import * as utils from "./utils";
 <t tx="fil.20210603195319.2">public async changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): Promise&lt;void&gt; {
     if (this._panel &amp;&amp; !this._waitingForUpdate) {
         await this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
-        await this._panel.webview.postMessage({ command: 'newFontConfig', config: this._leoIntegration.config.getFontConfig() });
     }
 }
 
@@ -20346,8 +20312,6 @@ import * as utils from "./utils";
                         /#{endOfBody}/g,
                         `&lt;script type="text/javascript" nonce="${w_nonce}"&gt;window.leoConfig = ${JSON.stringify(
                             this._leoIntegration.config.getConfig()
-                        )};window.fontConfig = ${JSON.stringify(
-                            this._leoIntegration.config.getFontConfig()
                         )};window.platform = ${JSON.stringify(
                             os.platform()
                         )};&lt;/script&gt;
@@ -20395,19 +20359,6 @@ import * as utils from "./utils";
                                     );
                                     this._waitingForUpdate = false;
                                 });
-                                break;
-                            case 'getNewFontConfig':
-                                if (this._panel &amp;&amp; !this._waitingForUpdate) {
-                                    void this._panel.webview.postMessage(
-                                        {
-                                            command: 'newFontConfig',
-                                            config: this._leoIntegration.config.getFontConfig()
-                                        }
-                                    );
-                                }
-                                break;
-                            case 'fontConfig':
-                                this._leoIntegration.config.setFontConfig(message.changes);
                                 break;
                         }
                     },
@@ -20942,15 +20893,10 @@ div.col-nav {
     // Global variable config
     let frontConfig = {};
     let vscodeConfig = {};
-    let vscodeFontConfig = {};
-    let frontFontConfig = {};
 
     // @ts-expect-error
     vscodeConfig = window.leoConfig; // PRE SET BY leoSettingsWebview
     frontConfig = JSON.parse(JSON.stringify(vscodeConfig));
-    // @ts-expect-error
-    vscodeFontConfig = window.fontConfig; // PRE SET BY leoSettingsWebview
-    frontFontConfig = JSON.parse(JSON.stringify(vscodeFontConfig));
 
     // @ts-expect-error
     let vscodePlatform = window.platform; // PRE SET BY leoSettingsWebview
@@ -20978,14 +20924,6 @@ div.col-nav {
                         toast.className = toast.className.replace("show", "");
                     }, 1500);
                     vscodeConfig = message.config; // next changes will be confronted to those settings
-                    break;
-                case "newFontConfig":
-                    vscodeFontConfig = message.config;
-                    frontFontConfig = JSON.parse(JSON.stringify(message.config));
-                    setFontControls();
-                    break;
-                case "vscodeFontConfig":
-                    vscodeFontConfig = message.config; // next changes will be confronted to those settings
                     break;
                 case "newEditorPath":
                     const w_element = document.getElementById("leoEditorPath");
@@ -21169,11 +21107,6 @@ div.col-nav {
         listenAll('select[data-setting]', 'change', function (p_this) {
             return onDropdownChanged(p_this.target);
         });
-        listenAll('input[type=number][data-vscode]', 'input', function (
-            p_this
-        ) {
-            return onVscodeInputChanged(p_this.target);
-        });
     }
     function showDirtyAndApplyChange() {
         if (dirty) {
@@ -21219,33 +21152,6 @@ div.col-nav {
         }
         if (element.type === 'text' || element.type === 'number') {
             applyResultingCommand();
-        }
-    }
-
-    function onVscodeInputChanged(element) {
-        if (element.id === "zoomLevel") {
-            frontFontConfig.zoomLevel = element.valueAsNumber;
-        }
-        if (element.id === "editorFontSize") {
-            frontFontConfig.fontSize = element.valueAsNumber;
-        }
-        applyFontChanges();
-    }
-
-    function setFontControls() {
-        if (frontFontConfig.zoomLevel || frontFontConfig.zoomLevel === 0) {
-            const w_element = document.getElementById("zoomLevel");
-            // @ts-expect-error
-            w_element.valueAsNumber = Number(frontFontConfig.zoomLevel);
-        } else {
-            console.log('Error : vscode font setting "zoomLevel" is missing');
-        }
-        if (frontFontConfig.fontSize) {
-            const w_element = document.getElementById("editorFontSize");
-            // @ts-expect-error
-            w_element.valueAsNumber = Number(frontFontConfig.fontSize);
-        } else {
-            console.log('Error : vscode font setting "fontSize" is missing');
         }
     }
 
@@ -21428,23 +21334,12 @@ div.col-nav {
         1500
     );
 
-    var applyFontChanges = debounce(
-        function () {
-            vscode.postMessage({
-                command: "fontConfig",
-                changes: frontFontConfig
-            });
-        },
-        800
-    );
-
     // START
     const w_button = document.getElementById('chooseLeoEditorPath');
     if (w_button) {
         w_button.onclick = chooseLeoEditorPath;
     }
     setControls();
-    setFontControls();
     setVisibility(frontConfig);
     onBind();
     setTimeout(applyResultingCommand, 100);
@@ -21874,47 +21769,29 @@ div.col-nav {
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/section&gt;
-      &lt;section id="font-sizes" class="section--settings"&gt;
+      &lt;section id="status-bar" class="section--settings"&gt;
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
-            &lt;h2&gt;Outline and Body Font Sizes&lt;/h2&gt;
+            &lt;h2&gt;Status Bar Indicator&lt;/h2&gt;
             &lt;p class="section__header-hint"&gt;
-              &lt;em&gt;Start by adjusting the Outline pane&lt;/em&gt;, by changing the global &lt;em&gt;Zoom Level&lt;/em&gt;.&lt;br&gt;
-              Then, resize the the &lt;em&gt;Body Pane font size&lt;/em&gt; by changing the &lt;em&gt;Editor Font Size&lt;/em&gt;.
+              UNL is shown at the bottom in the status bar
             &lt;/p&gt;
           &lt;/div&gt;
 
           &lt;div class="settings"&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;label for="zoomLevel"&gt;Zoom Level&lt;/label&gt;
-                &lt;input id="zoomLevel" name="zoomLevel" type="number" min="-12" max="12" maxlength="2"
-                  placeholder="Number" data-vscode /&gt;
+                &lt;input id="showUnlOnStatusBar" name="showUnlOnStatusBar" type="checkbox" data-setting /&gt;
+                &lt;label for="showUnlOnStatusBar"&gt;Enable UNL in status bar&lt;/label&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;
-                Adjust the zoom level&lt;br&gt;
-                of the window.&lt;br&gt;
-                (Original size is 0 and each&lt;br&gt;
-                increment above 1 or below -1&lt;br&gt;
-                represents zooming 20%.&lt;br&gt;
-                You can also use decimals.)
-              &lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="editorFontSize"&gt;Editor Font Size&lt;/label&gt;
-                &lt;input id="editorFontSize" name="editorFontSize" type="number" min="6" max="30" maxlength="2"
-                  placeholder="Number" data-vscode /&gt;
-              &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;
-                Controls the Text-Editor&lt;br&gt;
-                pane font size in pixels.&lt;br&gt;
-                Set this after having set the&lt;br&gt;
-                Zoom Level for the outline, as&lt;br&gt;
-                it's affected by the Zoom Level.
-              &lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Click the indicator to copy the UNL to the clipboard&lt;/span&gt;
             &lt;/div&gt;
           &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="section__preview"&gt;
+          &lt;img class="image__preview" src="#{root}/resources/unl-off.png" /&gt;
+          &lt;img class="image__preview--overlay hidden" src="#{root}/resources/unl-on.png"
+            data-visibility="showUnlOnStatusBar" /&gt;
         &lt;/div&gt;
       &lt;/section&gt;
     &lt;/div&gt;
@@ -21957,7 +21834,7 @@ div.col-nav {
             &lt;a href="#node-commands" title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#font-sizes" title="Font size settings"&gt;Font Sizes&lt;/a&gt;
+            &lt;a href="#status-bar" title="Status bar indicator"&gt;Status Bar Indicator&lt;/a&gt;
           &lt;/li&gt;
         &lt;/ul&gt;
       &lt;/div&gt;
@@ -22749,7 +22626,7 @@ section h2 {
 }
 
 .section__content {
-  flex: 1 1 auto;
+  flex: 1 1 100%;
   display: flex;
   flex-flow: column wrap
 }

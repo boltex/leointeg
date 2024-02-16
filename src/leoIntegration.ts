@@ -1476,7 +1476,7 @@ export class LeoIntegration {
             this._bodyFileSystemStarted = true;
         }
 
-        if (utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
+        if (this.config.showUnlOnStatusBar && utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
             this._leoStatusBar.show();
         }
         this.sendConfigToServer(this.config.getConfig());
@@ -1491,9 +1491,10 @@ export class LeoIntegration {
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
 
         if (
-            p_event.affectsConfiguration(Constants.CONFIG_NAME) ||
-            p_event.affectsConfiguration('editor.fontSize') ||
-            p_event.affectsConfiguration('window.zoomLevel')
+            p_event.affectsConfiguration(Constants.CONFIG_NAME)
+            // ||
+            // p_event.affectsConfiguration('editor.fontSize') ||
+            // p_event.affectsConfiguration('window.zoomLevel')
         ) {
             this.config.setLeoIntegSettingsPromise.then(
                 () => {
@@ -1513,6 +1514,13 @@ export class LeoIntegration {
                         p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
                     ) {
                         this.configTreeRefresh();
+                    }
+
+                    if (this.config.showUnlOnStatusBar && this.leoStates.fileOpenedReady && this._leoStatusBar) {
+                        this._leoStatusBar.show();
+                    }
+                    if (!this.config.showUnlOnStatusBar && this._leoStatusBar) {
+                        this._leoStatusBar.hide();
                     }
                 }
             );

@@ -755,7 +755,7 @@ section h2 {
 }
 
 .section__content {
-  flex: 1 1 auto;
+  flex: 1 1 100%;
   display: flex;
   flex-flow: column wrap
 }

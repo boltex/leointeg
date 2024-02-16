@@ -21,7 +21,6 @@ export class LeoSettingsProvider {
     public async changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): Promise<void> {
         if (this._panel && !this._waitingForUpdate) {
             await this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
-            await this._panel.webview.postMessage({ command: 'newFontConfig', config: this._leoIntegration.config.getFontConfig() });
         }
     }
 
@@ -81,8 +80,6 @@ export class LeoSettingsProvider {
                             /#{endOfBody}/g,
                             `<script type="text/javascript" nonce="${w_nonce}">window.leoConfig = ${JSON.stringify(
                                 this._leoIntegration.config.getConfig()
-                            )};window.fontConfig = ${JSON.stringify(
-                                this._leoIntegration.config.getFontConfig()
                             )};window.platform = ${JSON.stringify(
                                 os.platform()
                             )};</script>
@@ -130,19 +127,6 @@ export class LeoSettingsProvider {
                                         );
                                         this._waitingForUpdate = false;
                                     });
-                                    break;
-                                case 'getNewFontConfig':
-                                    if (this._panel && !this._waitingForUpdate) {
-                                        void this._panel.webview.postMessage(
-                                            {
-                                                command: 'newFontConfig',
-                                                config: this._leoIntegration.config.getFontConfig()
-                                            }
-                                        );
-                                    }
-                                    break;
-                                case 'fontConfig':
-                                    this._leoIntegration.config.setFontConfig(message.changes);
                                     break;
                             }
                         },

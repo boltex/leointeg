@@ -168,6 +168,12 @@
           "type": "boolean",
           "description": "Inverts the contrast of the dirty/clean border aspect of tree nodes"
         },
+        "leoIntegration.showUnlOnStatusBar": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Displays an UNL indicator on the status bar"
+        },
         "leoIntegration.leoEditorPath": {
           "scope": "application",
           "default": "",

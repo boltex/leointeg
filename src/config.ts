@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
-import * as utils from "./utils";
-import { ConfigMembers, ConfigSetting, FontSettings } from "./types";
+import { ConfigMembers, ConfigSetting } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -21,6 +20,7 @@ export class Config implements ConfigMembers {
     public activityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
     public goAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
+    public showUnlOnStatusBar: boolean = Constants.CONFIG_DEFAULTS.SHOW_UNL_ON_STATUSBAR;
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
     // public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
@@ -83,6 +83,7 @@ export class Config implements ConfigMembers {
             activityViewShortcut: this.activityViewShortcut,
             goAnywhereShortcut: this.goAnywhereShortcut,
 
+            showUnlOnStatusBar: this.showUnlOnStatusBar,
             // statusBarString: this.statusBarString,
             // statusBarColor: this.statusBarColor,
             treeInExplorer: this.treeInExplorer,
@@ -122,25 +123,6 @@ export class Config implements ConfigMembers {
     }
 
     /**
-     * * Get config from vscode for the UI font sizes
-     * @returns the font settings object (zoom level and editor font size)
-     */
-    public getFontConfig(): FontSettings {
-        let w_zoomLevel = vscode.workspace.getConfiguration(
-            "window"
-        ).get("zoomLevel");
-        let w_fontSize = vscode.workspace.getConfiguration(
-            "editor"
-        ).get("fontSize");
-
-        const w_config: FontSettings = {
-            zoomLevel: Number(w_zoomLevel),
-            fontSize: Number(w_fontSize)
-        };
-        return w_config;
-    }
-
-    /**
      * * Apply changes to the expansion config settings and save them in user settings.
      * @param p_changes is an array of codes and values to be changed
      * @returns a promise that resolves upon completion
@@ -164,32 +146,6 @@ export class Config implements ConfigMembers {
             this.buildFromSavedSettings();
             return Promise.resolve();
         });
-    }
-
-    /**
-     * * Apply changes in font size settings and save them in user settings.
-     */
-    public setFontConfig(p_settings: FontSettings): void {
-        if (p_settings.zoomLevel || p_settings.zoomLevel === 0) {
-            if (!isNaN(p_settings.zoomLevel) && p_settings.zoomLevel <= 12 && p_settings.zoomLevel >= -12) {
-                vscode.workspace.getConfiguration("window")
-                    .update("zoomLevel", p_settings.zoomLevel, true);
-            } else {
-                vscode.window.showInformationMessage(
-                    Constants.USER_MESSAGES.ZOOM_LEVEL_RANGE_LIMIT
-                );
-            }
-        }
-        if (p_settings.fontSize) {
-            if (!isNaN(p_settings.fontSize) && p_settings.fontSize <= 30 && p_settings.fontSize >= 6) {
-                vscode.workspace.getConfiguration("editor")
-                    .update("fontSize", p_settings.fontSize, true);
-            } else {
-                vscode.window.showInformationMessage(
-                    Constants.USER_MESSAGES.FONT_SIZE_RANGE_LIMIT
-                );
-            }
-        }
     }
 
     /**
@@ -340,6 +296,7 @@ export class Config implements ConfigMembers {
             this.activityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
             this.goAnywhereShortcut = GET(NAME).get(NAMES.GO_ANYWHERE_SHORTCUT, DEFAULTS.GO_ANYWHERE_SHORTCUT);
 
+            this.showUnlOnStatusBar = GET(NAME).get(NAMES.SHOW_UNL_ON_STATUSBAR, DEFAULTS.SHOW_UNL_ON_STATUSBAR);
             // this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
             // if (this.statusBarString.length > 8) {
             //     this.statusBarString = DEFAULTS.STATUSBAR_STRING;

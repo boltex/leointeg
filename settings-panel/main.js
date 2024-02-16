@@ -33,15 +33,10 @@
     // Global variable config
     let frontConfig = {};
     let vscodeConfig = {};
-    let vscodeFontConfig = {};
-    let frontFontConfig = {};
 
     // @ts-expect-error
     vscodeConfig = window.leoConfig; // PRE SET BY leoSettingsWebview
     frontConfig = JSON.parse(JSON.stringify(vscodeConfig));
-    // @ts-expect-error
-    vscodeFontConfig = window.fontConfig; // PRE SET BY leoSettingsWebview
-    frontFontConfig = JSON.parse(JSON.stringify(vscodeFontConfig));
 
     // @ts-expect-error
     let vscodePlatform = window.platform; // PRE SET BY leoSettingsWebview
@@ -69,14 +64,6 @@
                         toast.className = toast.className.replace("show", "");
                     }, 1500);
                     vscodeConfig = message.config; // next changes will be confronted to those settings
-                    break;
-                case "newFontConfig":
-                    vscodeFontConfig = message.config;
-                    frontFontConfig = JSON.parse(JSON.stringify(message.config));
-                    setFontControls();
-                    break;
-                case "vscodeFontConfig":
-                    vscodeFontConfig = message.config; // next changes will be confronted to those settings
                     break;
                 case "newEditorPath":
                     const w_element = document.getElementById("leoEditorPath");
@@ -260,11 +247,6 @@
         listenAll('select[data-setting]', 'change', function (p_this) {
             return onDropdownChanged(p_this.target);
         });
-        listenAll('input[type=number][data-vscode]', 'input', function (
-            p_this
-        ) {
-            return onVscodeInputChanged(p_this.target);
-        });
     }
     function showDirtyAndApplyChange() {
         if (dirty) {
@@ -310,33 +292,6 @@
         }
         if (element.type === 'text' || element.type === 'number') {
             applyResultingCommand();
-        }
-    }
-
-    function onVscodeInputChanged(element) {
-        if (element.id === "zoomLevel") {
-            frontFontConfig.zoomLevel = element.valueAsNumber;
-        }
-        if (element.id === "editorFontSize") {
-            frontFontConfig.fontSize = element.valueAsNumber;
-        }
-        applyFontChanges();
-    }
-
-    function setFontControls() {
-        if (frontFontConfig.zoomLevel || frontFontConfig.zoomLevel === 0) {
-            const w_element = document.getElementById("zoomLevel");
-            // @ts-expect-error
-            w_element.valueAsNumber = Number(frontFontConfig.zoomLevel);
-        } else {
-            console.log('Error : vscode font setting "zoomLevel" is missing');
-        }
-        if (frontFontConfig.fontSize) {
-            const w_element = document.getElementById("editorFontSize");
-            // @ts-expect-error
-            w_element.valueAsNumber = Number(frontFontConfig.fontSize);
-        } else {
-            console.log('Error : vscode font setting "fontSize" is missing');
         }
     }
 
@@ -519,23 +474,12 @@
         1500
     );
 
-    var applyFontChanges = debounce(
-        function () {
-            vscode.postMessage({
-                command: "fontConfig",
-                changes: frontFontConfig
-            });
-        },
-        800
-    );
-
     // START
     const w_button = document.getElementById('chooseLeoEditorPath');
     if (w_button) {
         w_button.onclick = chooseLeoEditorPath;
     }
     setControls();
-    setFontControls();
     setVisibility(frontConfig);
     onBind();
     setTimeout(applyResultingCommand, 100);
