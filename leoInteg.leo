@@ -20319,51 +20319,52 @@ import * as utils from "./utils";
                         `
                     );
 
-
-                this._panel.webview.onDidReceiveMessage(
-                    message =&gt; {
-                        switch (message.command) {
-                            case 'alert':
-                                void vscode.window.showErrorMessage(message.text);
-                                break;
-                            case 'chooseLeoEditorPath':
-                                utils.chooseLeoFolderDialog().then(p_chosenPath =&gt; {
-                                    if (this._panel &amp;&amp; p_chosenPath &amp;&amp; p_chosenPath.length) {
-                                        this._panel.webview.postMessage(
+                this._context.subscriptions.push(
+                    this._panel.webview.onDidReceiveMessage(
+                        message =&gt; {
+                            switch (message.command) {
+                                case 'alert':
+                                    void vscode.window.showErrorMessage(message.text);
+                                    break;
+                                case 'chooseLeoEditorPath':
+                                    utils.chooseLeoFolderDialog().then(p_chosenPath =&gt; {
+                                        if (this._panel &amp;&amp; p_chosenPath &amp;&amp; p_chosenPath.length) {
+                                            this._panel.webview.postMessage(
+                                                {
+                                                    command: 'newEditorPath',
+                                                    editorPath: p_chosenPath[0].fsPath
+                                                }
+                                            );
+                                        }
+                                    });
+                                    break;
+                                case 'getNewConfig':
+                                    if (this._panel &amp;&amp; !this._waitingForUpdate) {
+                                        void this._panel.webview.postMessage(
                                             {
-                                                command: 'newEditorPath',
-                                                editorPath: p_chosenPath[0].fsPath
+                                                command: 'newConfig',
+                                                config: this._leoIntegration.config.getConfig()
                                             }
                                         );
                                     }
-                                });
-                                break;
-                            case 'getNewConfig':
-                                if (this._panel &amp;&amp; !this._waitingForUpdate) {
-                                    void this._panel.webview.postMessage(
-                                        {
-                                            command: 'newConfig',
-                                            config: this._leoIntegration.config.getConfig()
-                                        }
-                                    );
-                                }
-                                break;
-                            case 'config':
-                                this._waitingForUpdate = true;
-                                void this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() =&gt; {
-                                    void this._panel!.webview.postMessage(
-                                        {
-                                            command: 'vscodeConfig',
-                                            config: this._leoIntegration.config.getConfig()
-                                        }
-                                    );
-                                    this._waitingForUpdate = false;
-                                });
-                                break;
-                        }
-                    },
-                    null,
-                    this._context.subscriptions
+                                    break;
+                                case 'config':
+                                    this._waitingForUpdate = true;
+                                    void this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() =&gt; {
+                                        void this._panel!.webview.postMessage(
+                                            {
+                                                command: 'vscodeConfig',
+                                                config: this._leoIntegration.config.getConfig()
+                                            }
+                                        );
+                                        this._waitingForUpdate = false;
+                                    });
+                                    break;
+                            }
+                        },
+                        null,
+                        this._context.subscriptions
+                    )
                 );
                 this._panel.onDidDispose(
                     () =&gt; { this._panel = undefined; },
