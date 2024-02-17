@@ -29,8 +29,6 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
             localResourceRoots: [this._extensionUri],
         };
 
-        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-
         this._context.subscriptions.push(
             webviewView.webview.onDidReceiveMessage((data) => {
                 switch (data.type) {
@@ -88,6 +86,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                 }
             })
         );
+        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
         this._leoIntegration.setFindPanel(this._view);
     }
 

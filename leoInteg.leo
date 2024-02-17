@@ -20292,33 +20292,6 @@ import * as utils from "./utils";
 
                 const w_nonce = utils.getNonce();
 
-                this._panel.webview.html = p_baseHtml
-                    .replace(
-                        /#{nonce}/g,
-                        w_nonce
-                    )
-                    .replace(
-                        /#{style}/g,
-                        `${style}`
-                    )
-                    .replace(
-                        /#{webview.cspSource}/g,
-                        this._panel.webview.cspSource
-                    )
-                    .replace(
-                        /#{root}/g,
-                        `${w_baseUri}`
-                    ).replace(
-                        /#{endOfBody}/g,
-                        `&lt;script type="text/javascript" nonce="${w_nonce}"&gt;window.leoConfig = ${JSON.stringify(
-                            this._leoIntegration.config.getConfig()
-                        )};window.platform = ${JSON.stringify(
-                            os.platform()
-                        )};&lt;/script&gt;
-                        &lt;script nonce="${w_nonce}" src="${scriptUri}"&gt;&lt;/script&gt;
-                        `
-                    );
-
                 this._context.subscriptions.push(
                     this._panel.webview.onDidReceiveMessage(
                         message =&gt; {
@@ -20366,6 +20339,34 @@ import * as utils from "./utils";
                         this._context.subscriptions
                     )
                 );
+
+                this._panel.webview.html = p_baseHtml
+                    .replace(
+                        /#{nonce}/g,
+                        w_nonce
+                    )
+                    .replace(
+                        /#{style}/g,
+                        `${style}`
+                    )
+                    .replace(
+                        /#{webview.cspSource}/g,
+                        this._panel.webview.cspSource
+                    )
+                    .replace(
+                        /#{root}/g,
+                        `${w_baseUri}`
+                    ).replace(
+                        /#{endOfBody}/g,
+                        `&lt;script type="text/javascript" nonce="${w_nonce}"&gt;window.leoConfig = ${JSON.stringify(
+                            this._leoIntegration.config.getConfig()
+                        )};window.platform = ${JSON.stringify(
+                            os.platform()
+                        )};&lt;/script&gt;
+                    &lt;script nonce="${w_nonce}" src="${scriptUri}"&gt;&lt;/script&gt;
+                    `
+                    );
+
                 this._panel.onDidDispose(
                     () =&gt; { this._panel = undefined; },
                     null,
@@ -20402,8 +20403,6 @@ import * as utils from "./utils";
 
         localResourceRoots: [this._extensionUri],
     };
-
-    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
     this._context.subscriptions.push(
         webviewView.webview.onDidReceiveMessage((data) =&gt; {
@@ -20462,6 +20461,7 @@ import * as utils from "./utils";
             }
         })
     );
+    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
     this._leoIntegration.setFindPanel(this._view);
 }
 

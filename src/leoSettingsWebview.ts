@@ -60,33 +60,6 @@ export class LeoSettingsProvider {
 
                     const w_nonce = utils.getNonce();
 
-                    this._panel.webview.html = p_baseHtml
-                        .replace(
-                            /#{nonce}/g,
-                            w_nonce
-                        )
-                        .replace(
-                            /#{style}/g,
-                            `${style}`
-                        )
-                        .replace(
-                            /#{webview.cspSource}/g,
-                            this._panel.webview.cspSource
-                        )
-                        .replace(
-                            /#{root}/g,
-                            `${w_baseUri}`
-                        ).replace(
-                            /#{endOfBody}/g,
-                            `<script type="text/javascript" nonce="${w_nonce}">window.leoConfig = ${JSON.stringify(
-                                this._leoIntegration.config.getConfig()
-                            )};window.platform = ${JSON.stringify(
-                                os.platform()
-                            )};</script>
-                            <script nonce="${w_nonce}" src="${scriptUri}"></script>
-                            `
-                        );
-
                     this._context.subscriptions.push(
                         this._panel.webview.onDidReceiveMessage(
                             message => {
@@ -134,6 +107,34 @@ export class LeoSettingsProvider {
                             this._context.subscriptions
                         )
                     );
+
+                    this._panel.webview.html = p_baseHtml
+                        .replace(
+                            /#{nonce}/g,
+                            w_nonce
+                        )
+                        .replace(
+                            /#{style}/g,
+                            `${style}`
+                        )
+                        .replace(
+                            /#{webview.cspSource}/g,
+                            this._panel.webview.cspSource
+                        )
+                        .replace(
+                            /#{root}/g,
+                            `${w_baseUri}`
+                        ).replace(
+                            /#{endOfBody}/g,
+                            `<script type="text/javascript" nonce="${w_nonce}">window.leoConfig = ${JSON.stringify(
+                                this._leoIntegration.config.getConfig()
+                            )};window.platform = ${JSON.stringify(
+                                os.platform()
+                            )};</script>
+                        <script nonce="${w_nonce}" src="${scriptUri}"></script>
+                        `
+                        );
+
                     this._panel.onDidDispose(
                         () => { this._panel = undefined; },
                         null,
