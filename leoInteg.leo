@@ -20706,6 +20706,10 @@ select {
   border-radius: 2px;
 }
 
+select:focus {
+  outline-color: var(--vscode-input-border);
+}
+
 select:disabled {
   opacity: 0.5;
   cursor: default;
