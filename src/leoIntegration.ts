@@ -3400,6 +3400,12 @@ export class LeoIntegration {
                 }
                 if (w_langName && !this._languageFlagged.includes(w_langName)) {
                     this._languageFlagged.push(w_langName);
+                    if (w_langName.endsWith(Constants.LEO_WRAP_SUFFIX)) {
+                        w_langName = w_langName.slice(0, -Constants.LEO_WRAP_SUFFIX.length);
+                    }
+                    if (w_langName.startsWith(Constants.LEO_LANGUAGE_PREFIX)) {
+                        w_langName = w_langName.slice(Constants.LEO_LANGUAGE_PREFIX.length);
+                    }
                     vscode.window.showInformationMessage(
                         w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED
                     );

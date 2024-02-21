@@ -94,6 +94,7 @@ export class Constants {
         "php",
         "restructuredtext",
         "rust",
+        "xml",
     ];
 
     /**

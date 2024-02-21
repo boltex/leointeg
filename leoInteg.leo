@@ -2803,6 +2803,36 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "dark": "resources/dark/body-pane.svg"
     },
     "configuration": "./language-configurations/leobody.rust.language-configuration.json"
+  },
+  {
+    "id": "leobody.xml",
+    "aliases": [
+      "Leo Body XML",
+      "leobody.xml"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.xml.language-configuration.json"
+  },
+  {
+    "id": "leobody.xml.wrap",
+    "aliases": [
+      "Leo Body XML",
+      "leobody.xml"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.xml.language-configuration.json"
   }
 ],
 </t>
@@ -2968,6 +2998,16 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./syntaxes/leobody.rust.tmLanguage.json"
   },
   {
+    "language": "leobody.xml",
+    "scopeName": "source.leobody.xml",
+    "path": "./syntaxes/leobody.xml.tmLanguage.json"
+  },
+  {
+    "language": "leobody.xml.wrap",
+    "scopeName": "source.leobody.xml",
+    "path": "./syntaxes/leobody.xml.tmLanguage.json"
+  },
+  {
     "injectTo": [
       "source.leobody.c",
       "source.leobody.cpp",
@@ -2985,6 +3025,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "source.leobody.restructuredtext",
       "source.leobody.rust",
       "source.leobody.typescript",
+      "source.leobody.xml",
       "source.leobody.c.wrap",
       "source.leobody.cpp.wrap",
       "source.leobody.css.wrap",
@@ -3000,7 +3041,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "source.leobody.python.wrap",
       "source.leobody.restructuredtext.wrap",
       "source.leobody.rust.wrap",
-      "source.leobody.typescript.wrap"
+      "source.leobody.typescript.wrap",
+      "source.leobody.xml.wrap"
     ],
     "path": "./syntaxes/leobody.tmLanguage.json",
     "scopeName": "leo.injection"
@@ -20148,6 +20190,7 @@ public static LANGUAGES = [
     "php",
     "restructuredtext",
     "rust",
+    "xml",
 ];
 
 </t>
