@@ -197,6 +197,7 @@
 <v t="felix.20210818223534.1"><vh>setEnablePreview</vh></v>
 <v t="felix.20210821203119.1"><vh>clearCloseEmptyGroups</vh></v>
 <v t="felix.20240121200443.1"><vh>setBodyWrap</vh></v>
+<v t="felix.20240221215337.1"><vh>removeOldBodyWrap</vh></v>
 <v t="felix.20210818225820.1"><vh>checkEnablePreview</vh></v>
 <v t="felix.20210821202347.1"><vh>checkCloseEmptyGroups</vh></v>
 <v t="felix.20240121200637.1"><vh>checkBodyWrap</vh></v>
@@ -15513,6 +15514,12 @@ private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): T
             }
             if (w_langName &amp;&amp; !this._languageFlagged.includes(w_langName)) {
                 this._languageFlagged.push(w_langName);
+                if (w_langName.endsWith(Constants.LEO_WRAP_SUFFIX)) {
+                    w_langName = w_langName.slice(0, -Constants.LEO_WRAP_SUFFIX.length);
+                }
+                if (w_langName.startsWith(Constants.LEO_LANGUAGE_PREFIX)) {
+                    w_langName = w_langName.slice(Constants.LEO_LANGUAGE_PREFIX.length);
+                }
                 vscode.window.showInformationMessage(
                     w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED
                 );
@@ -20261,6 +20268,28 @@ private _getUNL(): void {
                 this._leoStatusBar.setString(p_package.unl);
             }
         });
+
+}
+
+</t>
+<t tx="felix.20240221215337.1">/**
+ * Remove body wrap setting from older LeoJS versions
+ * that suported less languages
+ */
+public removeOldBodyWrap(): void {
+    // Last version did not have XML
+    let w_totalOldVersionConfigName = "";
+
+    // Looping from the first element up to the second-to-last element
+    for (let i = 0; i &lt; Constants.LANGUAGES.length - 1; i++) {
+        const w_lang = Constants.LANGUAGES[i];
+        const langWrap = '[' + Constants.LEO_LANGUAGE_PREFIX + w_lang + Constants.LEO_WRAP_SUFFIX + ']';
+        w_totalOldVersionConfigName += langWrap;
+    }
+
+    if (vscode.workspace.getConfiguration().has(w_totalOldVersionConfigName)) {
+        void vscode.workspace.getConfiguration().update(w_totalOldVersionConfigName, undefined, vscode.ConfigurationTarget.Global);
+    }
 
 }
 

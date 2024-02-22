@@ -743,6 +743,7 @@ export function activate(p_context: vscode.ExtensionContext) {
                 // and not to try to see if they're set too soon
                 w_leo.config.checkEnablePreview();
                 w_leo.config.checkCloseEmptyGroups();
+                w_leo.config.removeOldBodyWrap();
                 w_leo.config.checkBodyWrap();
             }, 1500);
 
@@ -841,6 +842,7 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
 
             p_leoInteg.config.checkEnablePreview(true);
             p_leoInteg.config.checkCloseEmptyGroups(true);
+            p_leoInteg.config.removeOldBodyWrap();
             p_leoInteg.config.checkBodyWrap(true);
 
         }
