@@ -1343,6 +1343,7 @@ export class LeoIntegration {
      * * 'getStates' action for use in debounced method call
      */
     private _triggerGetStates(): void {
+
         if (this._refreshType.documents) {
             this._refreshType.documents = false;
             this.refreshDocumentsPane();
@@ -1366,6 +1367,8 @@ export class LeoIntegration {
             this.refreshUndoPane();
             this.getUNL();
         }
+        this.refreshBodyStates(); // Set language and wrap states, if different.
+
     }
 
     /**
@@ -3447,9 +3450,6 @@ export class LeoIntegration {
         q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
             let w_language: string = p_bodyStates.language!;
             let w_wrap: boolean = !!p_bodyStates.wrap;
-
-            // TODO : Apply Wrap. see https://github.com/microsoft/vscode/issues/136927
-            // console.log('WRAP: ', w_wrap);
 
             // Replace language string if in 'exceptions' array
             w_language = Constants.LEO_LANGUAGE_PREFIX +
