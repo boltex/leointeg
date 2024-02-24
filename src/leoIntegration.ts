@@ -22,7 +22,8 @@ import {
     ChooseRClickItem,
     RClick,
     LeoGotoNavKey,
-    ChosePositionItem
+    ChosePositionItem,
+    UnlType
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -4359,6 +4360,27 @@ export class LeoIntegration {
      */
     public getTextFromClipboard(): string {
         return this._clipboardContent;
+    }
+
+    /**
+     * Put UNL of current node on the clipboard. 
+     * @para optional unlType to specify type.
+     */
+    public unlToClipboard(unlType?: UnlType): Thenable<void> {
+
+        if (!utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
+            return Promise.resolve();
+        }
+        // "shortGnx" | "fullGnx" | "shortLegacy" | "fullLegacy"
+        let short = unlType && unlType.includes('short');
+        let legacy = unlType && unlType.includes('Legacy');
+        // IF SERVER VERSION >= 10 get unl action !
+        return this.sendAction(Constants.LEOBRIDGE.GET_UNL, { short: short, legacy: legacy })
+            .then((p_package: LeoBridgePackage) => {
+                if (p_package.unl) {
+                    return this.replaceClipboardWith(p_package.unl);
+                }
+            });
     }
 
     /**

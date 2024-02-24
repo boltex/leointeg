@@ -284,8 +284,8 @@ export class Constants {
         MINIBUFFER_HISTORY_LABEL: "Minibuffer History",
         MINIBUFFER_HISTORY_DESC: "Choose from last run commands...",
 
-        BODY_WRAP_RECOMMEND: "'leojsbody' wordWrap settings are recommended (some currently missing)",
-        BODY_WRAP_SET: "'leojsbody' wordWrap settings were set",
+        BODY_WRAP_RECOMMEND: "'leobody' wordWrap settings are recommended (some currently missing)",
+        BODY_WRAP_SET: "'leobody' wordWrap settings were set",
         FIX_IT: "Fix it",
         ENABLE_PREVIEW_SET: "'Enable Preview' setting was set",
         ENABLE_PREVIEW_RECOMMEND: "'Enable Preview' setting is recommended (currently disabled)",
@@ -775,6 +775,10 @@ export class Constants {
         CONNECT: Constants.NAME + ".connectToServer",
         SET_LEOID: Constants.NAME + ".setLeoID",
         HANDLE_UNL: Constants.NAME + ".handleUnl",
+        SHORT_GNX_UNL_TO_CLIPBOARD: Constants.NAME + ".shortGnxUnlToClipboard",
+        FULL_GNX_UNL_TO_CLIPBOARD: Constants.NAME + ".fullGnxUnlToClipboard",
+        SHORT_LEGACY_UNL_TO_CLIPBOARD: Constants.NAME + "shortLegacyUnlToClipboard",
+        FULL_LEGACY_UNL_TO_CLIPBOARD: Constants.NAME + "fullLegacyUnlToClipboard",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
         OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
         CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",

@@ -446,6 +446,7 @@
 <v t="felix.20220222014050.2"><vh>replaceClipboardWith</vh></v>
 <v t="felix.20220222014050.3"><vh>asyncGetTextFromClipboard</vh></v>
 <v t="felix.20220222014050.4"><vh>getTextFromClipboard</vh></v>
+<v t="felix.20240223230449.1"><vh>unlToClipboard</vh></v>
 </v>
 <v t="felix.20220308213523.1"><vh>Nav</vh>
 <v t="felix.20221202003550.1"><vh>gotoAnywhere</vh></v>
@@ -626,6 +627,7 @@
 <v t="felix.20200718194857.20"><vh>ChooseDocumentItem</vh></v>
 <v t="felix.20220220191549.1"><vh>ChooseRClickItem</vh></v>
 <v t="felix.20220221001803.1"><vh>RClick</vh></v>
+<v t="felix.20240223230656.1"><vh>UnlType</vh></v>
 </v>
 <v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
 <v t="felix.20210706233101.1"><vh>uniqueId</vh></v>
@@ -1573,6 +1575,11 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.NoChange
 })],
+
+[CMD.SHORT_GNX_UNL_TO_CLIPBOARD, () =&gt; w_leo.unlToClipboard("shortGnx")], // Not referenced in package.json
+[CMD.FULL_GNX_UNL_TO_CLIPBOARD, () =&gt; w_leo.unlToClipboard("fullGnx")], // Not referenced in package.json
+[CMD.SHORT_LEGACY_UNL_TO_CLIPBOARD, () =&gt; w_leo.unlToClipboard("shortLegacy")], // Not referenced in package.json
+[CMD.FULL_LEGACY_UNL_TO_CLIPBOARD, () =&gt; w_leo.unlToClipboard("fullLegacy")], // Not referenced in package.json
 
 [CMD.IMPORT_ANY_FILE, () =&gt; w_leo.importAnyFile()], // No URL passed from the command definition.
 [CMD.READ_FILE_INTO_NODE, () =&gt; w_leo.readFileIntoNode()],
@@ -5664,6 +5671,10 @@ public static COMMANDS = {
     CONNECT: Constants.NAME + ".connectToServer",
     SET_LEOID: Constants.NAME + ".setLeoID",
     HANDLE_UNL: Constants.NAME + ".handleUnl",
+    SHORT_GNX_UNL_TO_CLIPBOARD: Constants.NAME + ".shortGnxUnlToClipboard",
+    FULL_GNX_UNL_TO_CLIPBOARD: Constants.NAME + ".fullGnxUnlToClipboard",
+    SHORT_LEGACY_UNL_TO_CLIPBOARD: Constants.NAME + "shortLegacyUnlToClipboard",
+    FULL_LEGACY_UNL_TO_CLIPBOARD: Constants.NAME + "fullLegacyUnlToClipboard",
     SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
     OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
     CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",
@@ -6813,6 +6824,7 @@ export function activate(p_context: vscode.ExtensionContext) {
                 // and not to try to see if they're set too soon
                 w_leo.config.checkEnablePreview();
                 w_leo.config.checkCloseEmptyGroups();
+                w_leo.config.removeOldBodyWrap();
                 w_leo.config.checkBodyWrap();
             }, 1500);
 
@@ -6873,6 +6885,7 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
 
             p_leoInteg.config.checkEnablePreview(true);
             p_leoInteg.config.checkCloseEmptyGroups(true);
+            p_leoInteg.config.removeOldBodyWrap();
             p_leoInteg.config.checkBodyWrap(true);
 
         }
@@ -9386,7 +9399,8 @@ import {
     ChooseRClickItem,
     RClick,
     LeoGotoNavKey,
-    ChosePositionItem
+    ChosePositionItem,
+    UnlType
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -9587,6 +9601,7 @@ public async showRecentLeoFiles(): Promise&lt;LeoBridgePackage | undefined&gt; {
  * * 'getStates' action for use in debounced method call
  */
 private _triggerGetStates(): void {
+
     if (this._refreshType.documents) {
         this._refreshType.documents = false;
         this.refreshDocumentsPane();
@@ -9610,6 +9625,8 @@ private _triggerGetStates(): void {
         this.refreshUndoPane();
         this.getUNL();
     }
+    this.refreshBodyStates(); // Set language and wrap states, if different.
+
 }
 
 </t>
@@ -15429,9 +15446,6 @@ public refreshBodyStates(): void {
         let w_language: string = p_bodyStates.language!;
         let w_wrap: boolean = !!p_bodyStates.wrap;
 
-        // TODO : Apply Wrap. see https://github.com/microsoft/vscode/issues/136927
-        // console.log('WRAP: ', w_wrap);
-
         // Replace language string if in 'exceptions' array
         w_language = Constants.LEO_LANGUAGE_PREFIX +
             (Constants.LANGUAGE_CODES[w_language] || w_language) +
@@ -20217,7 +20231,7 @@ public setBodyWrap(): Thenable&lt;void&gt; {
 <t tx="felix.20240121200637.1">public checkBodyWrap(p_forced?: boolean): void {
     let w_missing = false;
 
-    let w_languageSettings: Record&lt;string, boolean&gt; | undefined;
+    let w_languageSettings: Record&lt;string, string&gt; | undefined;
     let w_totalConfigName = "";
 
     for (const w_lang of Constants.LANGUAGES) {
@@ -20227,7 +20241,7 @@ public setBodyWrap(): Thenable&lt;void&gt; {
     }
     w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName);
 
-    if (!w_languageSettings || !w_languageSettings['editor.wordWrap']) {
+    if (!w_languageSettings || !w_languageSettings['editor.wordWrap'] || w_languageSettings['editor.wordWrap'] !== 'on') {
         w_missing = true;
     }
 
@@ -20292,6 +20306,46 @@ public removeOldBodyWrap(): void {
     }
 
 }
+
+</t>
+<t tx="felix.20240223230449.1">/**
+ * Put UNL of current node on the clipboard. 
+ * @para optional unlType to specify type.
+ */
+public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
+    let unl = "";
+    /*
+    const c = g.app.windowList[this.frameIndex].c;
+    const p = c.p;
+    if (!p.v) {
+        return Promise.resolve('');
+    }
+    if (unlType) {
+        switch (unlType) {
+            case 'shortGnx':
+                unl = p.get_short_gnx_UNL();
+                break;
+            case 'fullGnx':
+                unl = p.get_full_gnx_UNL();
+                break;
+            case 'shortLegacy':
+                unl = p.get_short_legacy_UNL();
+                break;
+            case 'fullLegacy':
+                unl = p.get_full_legacy_UNL();
+                break;
+        }
+    } else {
+        const kind: string = c.config.getString('unl-status-kind') || '';
+        const method: () =&gt; string = kind.toLowerCase() === 'legacy' ? c.p.get_legacy_UNL.bind(c.p) : c.p.get_UNL.bind(c.p);
+        unl = method();
+    }
+    */
+    return this.replaceClipboardWith(unl);
+}
+
+</t>
+<t tx="felix.20240223230656.1">export type UnlType = 'shortGnx' | 'fullGnx' | 'shortLegacy' | 'fullLegacy';
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

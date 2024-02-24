@@ -177,7 +177,7 @@ export class Config implements ConfigMembers {
     }
 
     /**
-     * Remove body wrap setting from older LeoJS versions
+     * Remove body wrap setting from older LeoInteg versions
      * that suported less languages
      */
     public removeOldBodyWrap(): void {
@@ -278,7 +278,7 @@ export class Config implements ConfigMembers {
 
         if (w_missing && p_forced) {
             void this.setBodyWrap();
-            // ! NOT warning the user for this forced setting at startup because its internal to LeoJS only !
+            // ! NOT warning the user for this forced setting at startup because its internal to LeoInteg only !
         } else if (w_missing && !p_forced) {
             void vscode.window.showWarningMessage(
                 Constants.USER_MESSAGES.BODY_WRAP_RECOMMEND,

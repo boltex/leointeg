@@ -64,6 +64,11 @@ export function activate(p_context: vscode.ExtensionContext) {
             finalFocus: Focus.NoChange
         })],
 
+        [CMD.SHORT_GNX_UNL_TO_CLIPBOARD, () => w_leo.unlToClipboard("shortGnx")], // Not referenced in package.json
+        [CMD.FULL_GNX_UNL_TO_CLIPBOARD, () => w_leo.unlToClipboard("fullGnx")], // Not referenced in package.json
+        [CMD.SHORT_LEGACY_UNL_TO_CLIPBOARD, () => w_leo.unlToClipboard("shortLegacy")], // Not referenced in package.json
+        [CMD.FULL_LEGACY_UNL_TO_CLIPBOARD, () => w_leo.unlToClipboard("fullLegacy")], // Not referenced in package.json
+
         [CMD.IMPORT_ANY_FILE, () => w_leo.importAnyFile()], // No URL passed from the command definition.
         [CMD.READ_FILE_INTO_NODE, () => w_leo.readFileIntoNode()],
 

@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -18,10 +17,29 @@ export class LeoStatusBar {
     ) {
         this._leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
         // this._leoStatusBarItem.color = this._leoIntegration.config.statusBarColor;
+        const w_mdToolTip = new vscode.MarkdownString();
+        w_mdToolTip.isTrusted = true;
+        w_mdToolTip.supportThemeIcons = true;
+        w_mdToolTip.value = `\
+
+        #### [Click to copy UNL to clipboard](command:${Constants.COMMANDS.STATUS_BAR})
+
+        ---
+
+        _Or choose a specific UNL type:_
+
+        **[short gnx](command:${Constants.COMMANDS.SHORT_GNX_UNL_TO_CLIPBOARD})** —
+        **[full gnx](command:${Constants.COMMANDS.FULL_GNX_UNL_TO_CLIPBOARD})**
+
+        **[short legacy](command:${Constants.COMMANDS.SHORT_LEGACY_UNL_TO_CLIPBOARD})** —
+        **[full legacy](command:${Constants.COMMANDS.FULL_LEGACY_UNL_TO_CLIPBOARD})**
+
+        `.replace(/\n {8}/g, '\n');
+
 
         this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR;
-        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_UNL;
+        this._leoStatusBarItem.tooltip = w_mdToolTip;
         this._context.subscriptions.push(this._leoStatusBarItem);
         this._leoStatusBarItem.hide();
     }

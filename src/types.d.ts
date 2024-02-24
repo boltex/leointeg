@@ -447,3 +447,5 @@ export interface RClick {
     children: RClick[];
 }
 
+export type UnlType = 'shortGnx' | 'fullGnx' | 'shortLegacy' | 'fullLegacy';
+
