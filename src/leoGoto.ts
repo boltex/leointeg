@@ -17,6 +17,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
     private _lastGotoView: vscode.TreeView<LeoGotoNode> | undefined;
 
     private _nodeList: LeoGotoNode[] = []; // Node list kept here.
+    private _viewSwitch: boolean = false;
 
     private _selectedNodeIndex: number = 0;
 
@@ -24,6 +25,14 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
 
     public setLastGotoView(p_view: vscode.TreeView<LeoGotoNode>): void {
         this._lastGotoView = p_view;
+        if (this._nodeList && this._nodeList.length) {
+            this._viewSwitch = true;
+            this._onDidChangeTreeData.fire(undefined);
+        }
+    }
+
+    public getLastGotoView(): vscode.TreeView<LeoGotoNode> | undefined {
+        return this._lastGotoView;
     }
 
     public resetSelectedNode(p_node?: LeoGotoNode): void {
@@ -32,6 +41,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
             const w_found = this._nodeList.indexOf(p_node);
             if (w_found >= 0) {
                 this._selectedNodeIndex = w_found;
+                return;
             }
         }
     }
@@ -62,8 +72,9 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
                 break;
 
         }
-        this._lastGotoView?.reveal(this._nodeList[this._selectedNodeIndex], { select: true, focus: true });
-        this._leoIntegration.gotoNavEntry(this._nodeList[this._selectedNodeIndex]);
+        const node = this._nodeList[this._selectedNodeIndex];
+        this._lastGotoView?.reveal(node, { select: true, focus: true });
+        this._leoIntegration.gotoNavEntry(node);
     }
 
     /**
@@ -75,14 +86,30 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
         this._onDidChangeTreeData.fire(undefined);
     }
 
-    public getTreeItem(element: LeoGotoNode): Thenable<LeoGotoNode> | LeoGotoNode {
+    public getTreeItem(element: LeoGotoNode): LeoGotoNode {
         return element;
     }
 
-    public getChildren(element?: LeoGotoNode): Thenable<LeoGotoNode[]> {
+    public getChildren(element?: LeoGotoNode): Thenable<LeoGotoNode[]> | LeoGotoNode[] {
 
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady && !element) {
+
+            // WAS JUST A VIEW SWITCH:
+            if (this._viewSwitch) {
+                this._viewSwitch = false;
+                setTimeout(() => {
+                    if (this._nodeList.length && (this._selectedNodeIndex + 1) <= this._nodeList.length) {
+                        void this._lastGotoView?.reveal(this._nodeList[this._selectedNodeIndex], {
+                            select: true,
+                            focus: false
+                        }).then(() => { }, () => {
+                            console.log('Reveal failed for goto panel switching detected.');
+                        });
+                    }
+                }, 0);
+                return this._nodeList; // Make sure the nodes are valid (give back)
+            }
 
             // call action to get get list, and convert to LeoButtonNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package => {
@@ -104,7 +131,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
 
 
         } else {
-            return Promise.resolve([]); // Defaults to an empty list of children
+            return []; // Defaults to an empty list of children
         }
     }
 

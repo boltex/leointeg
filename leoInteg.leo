@@ -6129,8 +6129,8 @@ public static USER_MESSAGES = {
     MINIBUFFER_HISTORY_LABEL: "Minibuffer History",
     MINIBUFFER_HISTORY_DESC: "Choose from last run commands...",
 
-    BODY_WRAP_RECOMMEND: "'leojsbody' wordWrap settings are recommended (some currently missing)",
-    BODY_WRAP_SET: "'leojsbody' wordWrap settings were set",
+    BODY_WRAP_RECOMMEND: "'leobody' wordWrap settings are recommended (some currently missing)",
+    BODY_WRAP_SET: "'leobody' wordWrap settings were set",
     FIX_IT: "Fix it",
     ENABLE_PREVIEW_SET: "'Enable Preview' setting was set",
     ENABLE_PREVIEW_RECOMMEND: "'Enable Preview' setting is recommended (currently disabled)",
@@ -7864,7 +7864,6 @@ public getLeoFileUrl(p_saveAsFlag?: boolean, p_customTitle?: string): Promise&lt
 
 </t>
 <t tx="felix.20200718185403.1">import * as vscode from "vscode";
-import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -7887,10 +7886,29 @@ export class LeoStatusBar {
     ) {
         this._leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
         // this._leoStatusBarItem.color = this._leoIntegration.config.statusBarColor;
+        const w_mdToolTip = new vscode.MarkdownString();
+        w_mdToolTip.isTrusted = true;
+        w_mdToolTip.supportThemeIcons = true;
+        w_mdToolTip.value = `\
+
+        #### [Click to copy UNL to clipboard](command:${Constants.COMMANDS.STATUS_BAR})
+
+        ---
+
+        _Or choose a specific UNL type:_
+
+        **[short gnx](command:${Constants.COMMANDS.SHORT_GNX_UNL_TO_CLIPBOARD})** —
+        **[full gnx](command:${Constants.COMMANDS.FULL_GNX_UNL_TO_CLIPBOARD})**
+
+        **[short legacy](command:${Constants.COMMANDS.SHORT_LEGACY_UNL_TO_CLIPBOARD})** —
+        **[full legacy](command:${Constants.COMMANDS.FULL_LEGACY_UNL_TO_CLIPBOARD})**
+
+        `.replace(/\n {8}/g, '\n');
+
 
         this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR;
-        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_UNL;
+        this._leoStatusBarItem.tooltip = w_mdToolTip;
         this._context.subscriptions.push(this._leoStatusBarItem);
         this._leoStatusBarItem.hide();
     }
@@ -9772,6 +9790,10 @@ export class LeoIntegration {
     private _gotSelectedNodeRevealTimer: undefined | NodeJS.Timeout;
     private _showBodySwitchBodyTimer: undefined | NodeJS.Timeout;
     private _leoDocumentsRevealTimer: undefined | NodeJS.Timeout;
+
+    // * Reveal Promises
+    private _documentPaneReveal: Thenable&lt;void&gt; | undefined;
+    private _undoPaneReveal: Thenable&lt;void&gt; | undefined;
 
     // * Documents Pane
     private _leoDocumentsProvider: LeoDocumentsProvider;
@@ -17348,9 +17370,11 @@ private _onUndosTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChan
  * * highlights the current undo state without disturbing focus
  */
 private _setUndoSelection(p_node: LeoUndoNode): void {
-    if (this._lastLeoUndos &amp;&amp; this._lastLeoUndos.visible) {
-        this._lastLeoUndos.reveal(p_node, { select: true, focus: false }).then(
-            () =&gt; { }, // Ok - do nothing
+    if (this._lastLeoUndos &amp;&amp; this._lastLeoUndos.visible &amp;&amp; !this._undoPaneReveal) {
+        this._undoPaneReveal = this._lastLeoUndos.reveal(p_node, { select: true, focus: false }).then(
+            () =&gt; {
+                this._undoPaneReveal = undefined;
+            },
             (p_error) =&gt; {
                 console.log('setUndoSelection could not reveal');
             }
@@ -17881,11 +17905,12 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
         } else {
             w_trigger = true;
         }
-        if (w_trigger) {
-            w_docView.reveal(p_documentNode, { select: true, focus: false })
+        if (w_trigger &amp;&amp; !this._documentPaneReveal) {
+            this._documentPaneReveal = w_docView.reveal(p_documentNode, { select: true, focus: false })
                 .then(
                     (p_result) =&gt; {
                         // Shown document node
+                        this._documentPaneReveal = undefined;
                     },
                     (p_reason) =&gt; {
                         console.log('shown doc error on reveal: ', p_reason);
@@ -20247,7 +20272,7 @@ public setBodyWrap(): Thenable&lt;void&gt; {
 
     if (w_missing &amp;&amp; p_forced) {
         void this.setBodyWrap();
-        // ! NOT warning the user for this forced setting at startup because its internal to LeoJS only !
+        // ! NOT warning the user for this forced setting at startup because its internal to LeoInteg only !
     } else if (w_missing &amp;&amp; !p_forced) {
         void vscode.window.showWarningMessage(
             Constants.USER_MESSAGES.BODY_WRAP_RECOMMEND,
@@ -20287,7 +20312,7 @@ private _getUNL(): void {
 
 </t>
 <t tx="felix.20240221215337.1">/**
- * Remove body wrap setting from older LeoJS versions
+ * Remove body wrap setting from older LeoInteg versions
  * that suported less languages
  */
 public removeOldBodyWrap(): void {
@@ -20313,35 +20338,20 @@ public removeOldBodyWrap(): void {
  * @para optional unlType to specify type.
  */
 public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
-    let unl = "";
-    /*
-    const c = g.app.windowList[this.frameIndex].c;
-    const p = c.p;
-    if (!p.v) {
-        return Promise.resolve('');
+
+    if (!utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
+        return Promise.resolve();
     }
-    if (unlType) {
-        switch (unlType) {
-            case 'shortGnx':
-                unl = p.get_short_gnx_UNL();
-                break;
-            case 'fullGnx':
-                unl = p.get_full_gnx_UNL();
-                break;
-            case 'shortLegacy':
-                unl = p.get_short_legacy_UNL();
-                break;
-            case 'fullLegacy':
-                unl = p.get_full_legacy_UNL();
-                break;
-        }
-    } else {
-        const kind: string = c.config.getString('unl-status-kind') || '';
-        const method: () =&gt; string = kind.toLowerCase() === 'legacy' ? c.p.get_legacy_UNL.bind(c.p) : c.p.get_UNL.bind(c.p);
-        unl = method();
-    }
-    */
-    return this.replaceClipboardWith(unl);
+    // "shortGnx" | "fullGnx" | "shortLegacy" | "fullLegacy"
+    let short = unlType &amp;&amp; unlType.includes('short');
+    let legacy = unlType &amp;&amp; unlType.includes('Legacy');
+    // IF SERVER VERSION &gt;= 10 get unl action !
+    return this.sendAction(Constants.LEOBRIDGE.GET_UNL, { short: short, legacy: legacy })
+        .then((p_package: LeoBridgePackage) =&gt; {
+            if (p_package.unl) {
+                return this.replaceClipboardWith(p_package.unl);
+            }
+        });
 }
 
 </t>

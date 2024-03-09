@@ -185,6 +185,10 @@ export class LeoIntegration {
     private _showBodySwitchBodyTimer: undefined | NodeJS.Timeout;
     private _leoDocumentsRevealTimer: undefined | NodeJS.Timeout;
 
+    // * Reveal Promises
+    private _documentPaneReveal: Thenable<void> | undefined;
+    private _undoPaneReveal: Thenable<void> | undefined;
+
     // * Documents Pane
     private _leoDocumentsProvider: LeoDocumentsProvider;
     private _leoDocuments: vscode.TreeView<LeoDocumentNode>;
@@ -2620,6 +2624,18 @@ export class LeoIntegration {
             this._lastTreeView.visible
 
         ) {
+            void this._lastTreeView.reveal(p_element, {
+                select: true,
+                focus: false
+            }).then(
+                () => {
+                    //ok
+                },
+                () => {
+                    // 
+                    console.log('gotSelectedNode scroll mode reveal error catched');
+                }
+            );
             // ! MINIMAL TIMEOUT REQUIRED ! WHY ?? (works so leave)
             if (this._gotSelectedNodeBodyTimer) {
                 clearTimeout(this._gotSelectedNodeBodyTimer);
@@ -5638,11 +5654,12 @@ export class LeoIntegration {
             } else {
                 w_trigger = true;
             }
-            if (w_trigger) {
-                w_docView.reveal(p_documentNode, { select: true, focus: false })
+            if (w_trigger && !this._documentPaneReveal) {
+                this._documentPaneReveal = w_docView.reveal(p_documentNode, { select: true, focus: false })
                     .then(
                         (p_result) => {
                             // Shown document node
+                            this._documentPaneReveal = undefined;
                         },
                         (p_reason) => {
                             console.log('shown doc error on reveal: ', p_reason);
@@ -6912,9 +6929,11 @@ export class LeoIntegration {
      * * highlights the current undo state without disturbing focus
      */
     private _setUndoSelection(p_node: LeoUndoNode): void {
-        if (this._lastLeoUndos && this._lastLeoUndos.visible) {
-            this._lastLeoUndos.reveal(p_node, { select: true, focus: false }).then(
-                () => { }, // Ok - do nothing
+        if (this._lastLeoUndos && this._lastLeoUndos.visible && !this._undoPaneReveal) {
+            this._undoPaneReveal = this._lastLeoUndos.reveal(p_node, { select: true, focus: false }).then(
+                () => {
+                    this._undoPaneReveal = undefined;
+                },
                 (p_error) => {
                     console.log('setUndoSelection could not reveal');
                 }
