@@ -22,7 +22,8 @@ import {
     ChooseRClickItem,
     RClick,
     LeoGotoNavKey,
-    ChosePositionItem
+    ChosePositionItem,
+    UnlType
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -30,7 +31,7 @@ import { LeoApOutlineProvider } from './leoApOutline';
 import { LeoBodyProvider } from './leoBody';
 import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
-// import { LeoStatusBar } from './leoStatusBar';  // removed until proper API for knowing focus placement
+import { LeoStatusBar } from './leoStatusBar';
 import { CommandStack } from './commandStack';
 import { LeoDocumentsProvider, LeoDocumentNode } from './leoDocuments';
 import { LeoStates } from './leoStates';
@@ -184,6 +185,10 @@ export class LeoIntegration {
     private _showBodySwitchBodyTimer: undefined | NodeJS.Timeout;
     private _leoDocumentsRevealTimer: undefined | NodeJS.Timeout;
 
+    // * Reveal Promises
+    private _documentPaneReveal: Thenable<void> | undefined;
+    private _undoPaneReveal: Thenable<void> | undefined;
+
     // * Documents Pane
     private _leoDocumentsProvider: LeoDocumentsProvider;
     private _leoDocuments: vscode.TreeView<LeoDocumentNode>;
@@ -266,7 +271,7 @@ export class LeoIntegration {
     private _leoLogPane: undefined | vscode.OutputChannel;
 
     // * Status Bar
-    // private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
+    private _leoStatusBar: LeoStatusBar; // removed until proper API for knowing focus placement
 
     // * Edit/Insert Headline Input Box System made with 'createInputBox'.
     private _hib: undefined | vscode.InputBox;
@@ -286,6 +291,9 @@ export class LeoIntegration {
 
     // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
     public getStates: (() => void);
+
+    // * Debounced method used to get set status bar with the current UNL
+    public getUNL: (() => void);
 
     // * Debounced method used to get opened Leo Files for the documents pane
     public refreshDocumentsPane: (() => void);
@@ -492,7 +500,8 @@ export class LeoIntegration {
         this._bodyMainSelectionColumn = 1;
 
         // * Create Status bar Entry
-        // this._leoStatusBar = new LeoStatusBar(_context, this); // removed until proper API for knowing focus placement
+        this._leoStatusBar = new LeoStatusBar(_context, this);
+
         // * Automatic server start service
         this._serverService = new ServerService(_context, this);
 
@@ -571,6 +580,10 @@ export class LeoIntegration {
         this.getStates = debounce(
             this._triggerGetStates,
             Constants.STATES_DEBOUNCE_DELAY
+        );
+        this.getUNL = debounce(
+            this._getUNL,
+            Constants.UNL_DEBOUNCE_DELAY
         );
         this.refreshDocumentsPane = debounce(
             this._refreshDocumentsPane,
@@ -899,7 +912,7 @@ export class LeoIntegration {
         this.leoStates.fileOpenedReady = false;
         this.leoStates.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
-        // this._leoStatusBar.update(false); // removed until proper API for knowing focus placement
+        this._leoStatusBar.hide();
         this._refreshOutline(false, RevealType.NoReveal);
     }
 
@@ -1335,6 +1348,7 @@ export class LeoIntegration {
      * * 'getStates' action for use in debounced method call
      */
     private _triggerGetStates(): void {
+
         if (this._refreshType.documents) {
             this._refreshType.documents = false;
             this.refreshDocumentsPane();
@@ -1356,7 +1370,28 @@ export class LeoIntegration {
                     }
                 });
             this.refreshUndoPane();
+            this.getUNL();
         }
+        this.refreshBodyStates(); // Set language and wrap states, if different.
+
+    }
+
+    /**
+     * 'getUnl' action for use in status bar
+     */
+    private _getUNL(): void {
+
+        if (!utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
+            return;
+        }
+        // IF SERVER VERSION >= 10 get unl action !
+        this.sendAction(Constants.LEOBRIDGE.GET_UNL)
+            .then((p_package: LeoBridgePackage) => {
+                if (p_package.unl) {
+                    this._leoStatusBar.setString(p_package.unl);
+                }
+            });
+
     }
 
     /**
@@ -1407,7 +1442,7 @@ export class LeoIntegration {
         this.refreshDocumentsPane();
         this.refreshButtonsPane();
         this.refreshUndoPane();
-        // this._leoStatusBar.hide(); // removed until proper API for knowing focus placement
+        this._leoStatusBar.hide();
         this.closeBody();
     }
 
@@ -1449,8 +1484,9 @@ export class LeoIntegration {
             this._bodyFileSystemStarted = true;
         }
 
-        // this._leoStatusBar.update(true, 0, true); // removed until proper API for knowing focus placement
-        // this._leoStatusBar.show();
+        if (this.config.showUnlOnStatusBar && utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
+            this._leoStatusBar.show();
+        }
         this.sendConfigToServer(this.config.getConfig());
         this.loadSearchSettings();
 
@@ -1463,9 +1499,10 @@ export class LeoIntegration {
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
 
         if (
-            p_event.affectsConfiguration(Constants.CONFIG_NAME) ||
-            p_event.affectsConfiguration('editor.fontSize') ||
-            p_event.affectsConfiguration('window.zoomLevel')
+            p_event.affectsConfiguration(Constants.CONFIG_NAME)
+            // ||
+            // p_event.affectsConfiguration('editor.fontSize') ||
+            // p_event.affectsConfiguration('window.zoomLevel')
         ) {
             this.config.setLeoIntegSettingsPromise.then(
                 () => {
@@ -1485,6 +1522,13 @@ export class LeoIntegration {
                         p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.SHOW_COPY)
                     ) {
                         this.configTreeRefresh();
+                    }
+
+                    if (this.config.showUnlOnStatusBar && this.leoStates.fileOpenedReady && this._leoStatusBar) {
+                        this._leoStatusBar.show();
+                    }
+                    if (!this.config.showUnlOnStatusBar && this._leoStatusBar) {
+                        this._leoStatusBar.hide();
                     }
                 }
             );
@@ -2580,6 +2624,18 @@ export class LeoIntegration {
             this._lastTreeView.visible
 
         ) {
+            void this._lastTreeView.reveal(p_element, {
+                select: true,
+                focus: false
+            }).then(
+                () => {
+                    //ok
+                },
+                () => {
+                    // 
+                    console.log('gotSelectedNode scroll mode reveal error catched');
+                }
+            );
             // ! MINIMAL TIMEOUT REQUIRED ! WHY ?? (works so leave)
             if (this._gotSelectedNodeBodyTimer) {
                 clearTimeout(this._gotSelectedNodeBodyTimer);
@@ -3364,6 +3420,12 @@ export class LeoIntegration {
                 }
                 if (w_langName && !this._languageFlagged.includes(w_langName)) {
                     this._languageFlagged.push(w_langName);
+                    if (w_langName.endsWith(Constants.LEO_WRAP_SUFFIX)) {
+                        w_langName = w_langName.slice(0, -Constants.LEO_WRAP_SUFFIX.length);
+                    }
+                    if (w_langName.startsWith(Constants.LEO_LANGUAGE_PREFIX)) {
+                        w_langName = w_langName.slice(Constants.LEO_LANGUAGE_PREFIX.length);
+                    }
                     vscode.window.showInformationMessage(
                         w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED
                     );
@@ -3405,9 +3467,6 @@ export class LeoIntegration {
         q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
             let w_language: string = p_bodyStates.language!;
             let w_wrap: boolean = !!p_bodyStates.wrap;
-
-            // TODO : Apply Wrap. see https://github.com/microsoft/vscode/issues/136927
-            // console.log('WRAP: ', w_wrap);
 
             // Replace language string if in 'exceptions' array
             w_language = Constants.LEO_LANGUAGE_PREFIX +
@@ -4317,6 +4376,27 @@ export class LeoIntegration {
      */
     public getTextFromClipboard(): string {
         return this._clipboardContent;
+    }
+
+    /**
+     * Put UNL of current node on the clipboard. 
+     * @para optional unlType to specify type.
+     */
+    public unlToClipboard(unlType?: UnlType): Thenable<void> {
+
+        if (!utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
+            return Promise.resolve();
+        }
+        // "shortGnx" | "fullGnx" | "shortLegacy" | "fullLegacy"
+        let short = unlType && unlType.includes('short');
+        let legacy = unlType && unlType.includes('Legacy');
+        // IF SERVER VERSION >= 10 get unl action !
+        return this.sendAction(Constants.LEOBRIDGE.GET_UNL, { short: short, legacy: legacy })
+            .then((p_package: LeoBridgePackage) => {
+                if (p_package.unl) {
+                    return this.replaceClipboardWith(p_package.unl);
+                }
+            });
     }
 
     /**
@@ -5574,11 +5654,12 @@ export class LeoIntegration {
             } else {
                 w_trigger = true;
             }
-            if (w_trigger) {
-                w_docView.reveal(p_documentNode, { select: true, focus: false })
+            if (w_trigger && !this._documentPaneReveal) {
+                this._documentPaneReveal = w_docView.reveal(p_documentNode, { select: true, focus: false })
                     .then(
                         (p_result) => {
                             // Shown document node
+                            this._documentPaneReveal = undefined;
                         },
                         (p_reason) => {
                             console.log('shown doc error on reveal: ', p_reason);
@@ -6848,9 +6929,11 @@ export class LeoIntegration {
      * * highlights the current undo state without disturbing focus
      */
     private _setUndoSelection(p_node: LeoUndoNode): void {
-        if (this._lastLeoUndos && this._lastLeoUndos.visible) {
-            this._lastLeoUndos.reveal(p_node, { select: true, focus: false }).then(
-                () => { }, // Ok - do nothing
+        if (this._lastLeoUndos && this._lastLeoUndos.visible && !this._undoPaneReveal) {
+            this._undoPaneReveal = this._lastLeoUndos.reveal(p_node, { select: true, focus: false }).then(
+                () => {
+                    this._undoPaneReveal = undefined;
+                },
                 (p_error) => {
                     console.log('setUndoSelection could not reveal');
                 }
@@ -6864,8 +6947,13 @@ export class LeoIntegration {
      */
     public statusBarOnClick(): Thenable<unknown> {
 
-        this.showLogPane();
-        return Promise.resolve(true);
+        if (this._leoStatusBar) {
+            return this.replaceClipboardWith(this._leoStatusBar.unlString);
+        }
+        return Promise.resolve(undefined);
+
+        // this.showLogPane();
+        // return Promise.resolve(true);
 
         /*
         if (this.leoStates.fileOpenedReady) {

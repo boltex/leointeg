@@ -21,7 +21,6 @@ export class LeoSettingsProvider {
     public async changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): Promise<void> {
         if (this._panel && !this._waitingForUpdate) {
             await this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
-            await this._panel.webview.postMessage({ command: 'newFontConfig', config: this._leoIntegration.config.getFontConfig() });
         }
     }
 
@@ -61,6 +60,54 @@ export class LeoSettingsProvider {
 
                     const w_nonce = utils.getNonce();
 
+                    this._context.subscriptions.push(
+                        this._panel.webview.onDidReceiveMessage(
+                            message => {
+                                switch (message.command) {
+                                    case 'alert':
+                                        void vscode.window.showErrorMessage(message.text);
+                                        break;
+                                    case 'chooseLeoEditorPath':
+                                        utils.chooseLeoFolderDialog().then(p_chosenPath => {
+                                            if (this._panel && p_chosenPath && p_chosenPath.length) {
+                                                this._panel.webview.postMessage(
+                                                    {
+                                                        command: 'newEditorPath',
+                                                        editorPath: p_chosenPath[0].fsPath
+                                                    }
+                                                );
+                                            }
+                                        });
+                                        break;
+                                    case 'getNewConfig':
+                                        if (this._panel && !this._waitingForUpdate) {
+                                            void this._panel.webview.postMessage(
+                                                {
+                                                    command: 'newConfig',
+                                                    config: this._leoIntegration.config.getConfig()
+                                                }
+                                            );
+                                        }
+                                        break;
+                                    case 'config':
+                                        this._waitingForUpdate = true;
+                                        void this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() => {
+                                            void this._panel!.webview.postMessage(
+                                                {
+                                                    command: 'vscodeConfig',
+                                                    config: this._leoIntegration.config.getConfig()
+                                                }
+                                            );
+                                            this._waitingForUpdate = false;
+                                        });
+                                        break;
+                                }
+                            },
+                            null,
+                            this._context.subscriptions
+                        )
+                    );
+
                     this._panel.webview.html = p_baseHtml
                         .replace(
                             /#{nonce}/g,
@@ -81,74 +128,13 @@ export class LeoSettingsProvider {
                             /#{endOfBody}/g,
                             `<script type="text/javascript" nonce="${w_nonce}">window.leoConfig = ${JSON.stringify(
                                 this._leoIntegration.config.getConfig()
-                            )};window.fontConfig = ${JSON.stringify(
-                                this._leoIntegration.config.getFontConfig()
                             )};window.platform = ${JSON.stringify(
                                 os.platform()
                             )};</script>
-                            <script nonce="${w_nonce}" src="${scriptUri}"></script>
-                            `
+                        <script nonce="${w_nonce}" src="${scriptUri}"></script>
+                        `
                         );
 
-
-                    this._panel.webview.onDidReceiveMessage(
-                        message => {
-                            switch (message.command) {
-                                case 'alert':
-                                    void vscode.window.showErrorMessage(message.text);
-                                    break;
-                                case 'chooseLeoEditorPath':
-                                    utils.chooseLeoFolderDialog().then(p_chosenPath => {
-                                        if (this._panel && p_chosenPath && p_chosenPath.length) {
-                                            this._panel.webview.postMessage(
-                                                {
-                                                    command: 'newEditorPath',
-                                                    editorPath: p_chosenPath[0].fsPath
-                                                }
-                                            );
-                                        }
-                                    });
-                                    break;
-                                case 'getNewConfig':
-                                    if (this._panel && !this._waitingForUpdate) {
-                                        void this._panel.webview.postMessage(
-                                            {
-                                                command: 'newConfig',
-                                                config: this._leoIntegration.config.getConfig()
-                                            }
-                                        );
-                                    }
-                                    break;
-                                case 'config':
-                                    this._waitingForUpdate = true;
-                                    void this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() => {
-                                        void this._panel!.webview.postMessage(
-                                            {
-                                                command: 'vscodeConfig',
-                                                config: this._leoIntegration.config.getConfig()
-                                            }
-                                        );
-                                        this._waitingForUpdate = false;
-                                    });
-                                    break;
-                                case 'getNewFontConfig':
-                                    if (this._panel && !this._waitingForUpdate) {
-                                        void this._panel.webview.postMessage(
-                                            {
-                                                command: 'newFontConfig',
-                                                config: this._leoIntegration.config.getFontConfig()
-                                            }
-                                        );
-                                    }
-                                    break;
-                                case 'fontConfig':
-                                    this._leoIntegration.config.setFontConfig(message.changes);
-                                    break;
-                            }
-                        },
-                        null,
-                        this._context.subscriptions
-                    );
                     this._panel.onDidDispose(
                         () => { this._panel = undefined; },
                         null,

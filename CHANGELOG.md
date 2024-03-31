@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.20
+
+- Fixed 'Goto' panel's navigation's stability issues after switching panels.
+- Added support for XML language colorization.
+- Added hover menu to the UNL status bar item to choose from any UNL formats to be copied to the clipboard.
+- Removed 'font-size & zoom' related config settings following VSCode's new ZOOM settings API.
+- Fixed Find-Panel's behavior and styling.
+
 ## 1.0.19
 
 - Fixed tooltips in find panel.

@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
-import * as utils from "./utils";
-import { ConfigMembers, ConfigSetting, FontSettings } from "./types";
+import { ConfigMembers, ConfigSetting } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -21,6 +20,7 @@ export class Config implements ConfigMembers {
     public activityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
     public goAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
+    public showUnlOnStatusBar: boolean = Constants.CONFIG_DEFAULTS.SHOW_UNL_ON_STATUSBAR;
     // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
     // public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
@@ -83,6 +83,7 @@ export class Config implements ConfigMembers {
             activityViewShortcut: this.activityViewShortcut,
             goAnywhereShortcut: this.goAnywhereShortcut,
 
+            showUnlOnStatusBar: this.showUnlOnStatusBar,
             // statusBarString: this.statusBarString,
             // statusBarColor: this.statusBarColor,
             treeInExplorer: this.treeInExplorer,
@@ -122,25 +123,6 @@ export class Config implements ConfigMembers {
     }
 
     /**
-     * * Get config from vscode for the UI font sizes
-     * @returns the font settings object (zoom level and editor font size)
-     */
-    public getFontConfig(): FontSettings {
-        let w_zoomLevel = vscode.workspace.getConfiguration(
-            "window"
-        ).get("zoomLevel");
-        let w_fontSize = vscode.workspace.getConfiguration(
-            "editor"
-        ).get("fontSize");
-
-        const w_config: FontSettings = {
-            zoomLevel: Number(w_zoomLevel),
-            fontSize: Number(w_fontSize)
-        };
-        return w_config;
-    }
-
-    /**
      * * Apply changes to the expansion config settings and save them in user settings.
      * @param p_changes is an array of codes and values to be changed
      * @returns a promise that resolves upon completion
@@ -164,32 +146,6 @@ export class Config implements ConfigMembers {
             this.buildFromSavedSettings();
             return Promise.resolve();
         });
-    }
-
-    /**
-     * * Apply changes in font size settings and save them in user settings.
-     */
-    public setFontConfig(p_settings: FontSettings): void {
-        if (p_settings.zoomLevel || p_settings.zoomLevel === 0) {
-            if (!isNaN(p_settings.zoomLevel) && p_settings.zoomLevel <= 12 && p_settings.zoomLevel >= -12) {
-                vscode.workspace.getConfiguration("window")
-                    .update("zoomLevel", p_settings.zoomLevel, true);
-            } else {
-                vscode.window.showInformationMessage(
-                    Constants.USER_MESSAGES.ZOOM_LEVEL_RANGE_LIMIT
-                );
-            }
-        }
-        if (p_settings.fontSize) {
-            if (!isNaN(p_settings.fontSize) && p_settings.fontSize <= 30 && p_settings.fontSize >= 6) {
-                vscode.workspace.getConfiguration("editor")
-                    .update("fontSize", p_settings.fontSize, true);
-            } else {
-                vscode.window.showInformationMessage(
-                    Constants.USER_MESSAGES.FONT_SIZE_RANGE_LIMIT
-                );
-            }
-        }
     }
 
     /**
@@ -218,6 +174,27 @@ export class Config implements ConfigMembers {
             w_totalConfigName += langWrap;
         }
         return vscode.workspace.getConfiguration().update(w_totalConfigName, { 'editor.wordWrap': 'on' }, vscode.ConfigurationTarget.Global);
+    }
+
+    /**
+     * Remove body wrap setting from older LeoInteg versions
+     * that suported less languages
+     */
+    public removeOldBodyWrap(): void {
+        // Last version did not have XML
+        let w_totalOldVersionConfigName = "";
+
+        // Looping from the first element up to the second-to-last element
+        for (let i = 0; i < Constants.LANGUAGES.length - 1; i++) {
+            const w_lang = Constants.LANGUAGES[i];
+            const langWrap = '[' + Constants.LEO_LANGUAGE_PREFIX + w_lang + Constants.LEO_WRAP_SUFFIX + ']';
+            w_totalOldVersionConfigName += langWrap;
+        }
+
+        if (vscode.workspace.getConfiguration().has(w_totalOldVersionConfigName)) {
+            void vscode.workspace.getConfiguration().update(w_totalOldVersionConfigName, undefined, vscode.ConfigurationTarget.Global);
+        }
+
     }
 
     /**
@@ -285,7 +262,7 @@ export class Config implements ConfigMembers {
     public checkBodyWrap(p_forced?: boolean): void {
         let w_missing = false;
 
-        let w_languageSettings: Record<string, boolean> | undefined;
+        let w_languageSettings: Record<string, string> | undefined;
         let w_totalConfigName = "";
 
         for (const w_lang of Constants.LANGUAGES) {
@@ -295,13 +272,13 @@ export class Config implements ConfigMembers {
         }
         w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName);
 
-        if (!w_languageSettings || !w_languageSettings['editor.wordWrap']) {
+        if (!w_languageSettings || !w_languageSettings['editor.wordWrap'] || w_languageSettings['editor.wordWrap'] !== 'on') {
             w_missing = true;
         }
 
         if (w_missing && p_forced) {
             void this.setBodyWrap();
-            // ! NOT warning the user for this forced setting at startup because its internal to LeoJS only !
+            // ! NOT warning the user for this forced setting at startup because its internal to LeoInteg only !
         } else if (w_missing && !p_forced) {
             void vscode.window.showWarningMessage(
                 Constants.USER_MESSAGES.BODY_WRAP_RECOMMEND,
@@ -340,6 +317,7 @@ export class Config implements ConfigMembers {
             this.activityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
             this.goAnywhereShortcut = GET(NAME).get(NAMES.GO_ANYWHERE_SHORTCUT, DEFAULTS.GO_ANYWHERE_SHORTCUT);
 
+            this.showUnlOnStatusBar = GET(NAME).get(NAMES.SHOW_UNL_ON_STATUSBAR, DEFAULTS.SHOW_UNL_ON_STATUSBAR);
             // this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
             // if (this.statusBarString.length > 8) {
             //     this.statusBarString = DEFAULTS.STATUSBAR_STRING;

@@ -67,6 +67,7 @@ export class Constants {
     public static UNDOS_REVEAL_DEBOUNCE_DELAY: number = 50;
     public static REFRESH_DEBOUNCE_DELAY: number = 50;
     public static STATES_DEBOUNCE_DELAY: number = 100;
+    public static UNL_DEBOUNCE_DELAY: number = 150;
     public static BODY_STATES_DEBOUNCE_DELAY: number = 120;
     public static OUTLINE_DESC_DEBOUNCE_DELAY: number = 250;
     public static GOTO_DEBOUNCE_DELAY: number = 50;
@@ -93,6 +94,7 @@ export class Constants {
         "php",
         "restructuredtext",
         "rust",
+        "xml",
     ];
 
     /**
@@ -101,7 +103,7 @@ export class Constants {
     public static MIN_SERVER_VERSION_NUMBER = {
         major: 1,
         minor: 0,
-        patch: 9,
+        patch: 10,
     };
 
     /**
@@ -161,7 +163,7 @@ export class Constants {
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
-        STATUSBAR_INDICATOR: "$(keyboard) ",
+        STATUSBAR_INDICATOR: "$(link) ", // With trailing space
         QUICK_OPEN_LEO_COMMANDS: ">leo: ",
         EXPLORER_TREEVIEW_PREFIX: "LEO ",
         TREEVIEW_TITLE: "OUTLINE",
@@ -197,6 +199,7 @@ export class Constants {
         FILE_ALREADY_OPENED: "Leo file already opened",
         CHOOSE_OPENED_FILE: "Select an opened Leo File",
         FILE_NOT_OPENED: "No files opened.",
+        STATUSBAR_TOOLTIP_UNL: "Click to copy UNL to clipboard",
         STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
         STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
         PROMPT_EDIT_HEADLINE: "Edit Headline",
@@ -264,7 +267,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.5 is recommended.",
+        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.8 is recommended.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language coloring not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language coloring not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
@@ -281,10 +284,8 @@ export class Constants {
         MINIBUFFER_HISTORY_LABEL: "Minibuffer History",
         MINIBUFFER_HISTORY_DESC: "Choose from last run commands...",
 
-        ZOOM_LEVEL_RANGE_LIMIT: "Value for zoom level should be between -12 and 12",
-        FONT_SIZE_RANGE_LIMIT: "Value for font size should be between 6 and 30",
-        BODY_WRAP_RECOMMEND: "'leojsbody' wordWrap settings are recommended (some currently missing)",
-        BODY_WRAP_SET: "'leojsbody' wordWrap settings were set",
+        BODY_WRAP_RECOMMEND: "'leobody' wordWrap settings are recommended (some currently missing)",
+        BODY_WRAP_SET: "'leobody' wordWrap settings were set",
         FIX_IT: "Fix it",
         ENABLE_PREVIEW_SET: "'Enable Preview' setting was set",
         ENABLE_PREVIEW_RECOMMEND: "'Enable Preview' setting is recommended (currently disabled)",
@@ -364,6 +365,7 @@ export class Constants {
         SHOW_COPY: "showCopyOnNodes",
         SHOW_BRANCH_OUTLINE: "showBranchInOutlineTitle",
 
+        SHOW_UNL_ON_STATUSBAR: "showUnlOnStatusBar",
         // SHOW_EDITION_BODY: "showEditionOnBody",
         // SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
         // SHOW_PROMOTE_BODY: "showPromoteOnBody",
@@ -402,6 +404,7 @@ export class Constants {
         ACTIVITY_VIEW_SHORTCUT: true,
         GO_ANYWHERE_SHORTCUT: true,
 
+        SHOW_UNL_ON_STATUSBAR: true,
         // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
         // STATUSBAR_COLOR: "fb7c47",
         TREE_IN_EXPLORER: true,
@@ -596,6 +599,7 @@ export class Constants {
         GET_VERSION: "!get_version",
         GET_LEOID: "!get_leoid",
         SET_LEOID: "!set_leoid",
+        GET_UNL: "!get_unl",
         HANDLE_UNL: "!handle_unl",
         // * Server Commands
         GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
@@ -763,7 +767,7 @@ export class Constants {
         // * Access to the Settings/Welcome Webview
         SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
         SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
-        // STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
+        STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
         // * LeoBridge
         CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
         START_SERVER: Constants.NAME + ".startServer",
@@ -771,6 +775,10 @@ export class Constants {
         CONNECT: Constants.NAME + ".connectToServer",
         SET_LEOID: Constants.NAME + ".setLeoID",
         HANDLE_UNL: Constants.NAME + ".handleUnl",
+        SHORT_GNX_UNL_TO_CLIPBOARD: Constants.NAME + ".shortGnxUnlToClipboard",
+        FULL_GNX_UNL_TO_CLIPBOARD: Constants.NAME + ".fullGnxUnlToClipboard",
+        SHORT_LEGACY_UNL_TO_CLIPBOARD: Constants.NAME + "shortLegacyUnlToClipboard",
+        FULL_LEGACY_UNL_TO_CLIPBOARD: Constants.NAME + "fullLegacyUnlToClipboard",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
         OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
         CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",

@@ -23,6 +23,7 @@ export interface ConfigMembers {
     activityViewShortcut: boolean;
     goAnywhereShortcut: boolean;
 
+    showUnlOnStatusBar: boolean,
     // statusBarString: string;
     // statusBarColor: string;
 
@@ -56,14 +57,6 @@ export interface ConfigMembers {
 export interface ConfigSetting {
     code: string;
     value: any;
-}
-
-/**
- * * Structure for user settings, used when changing vscode's UI zoom and font size
- */
-export interface FontSettings {
-    zoomLevel: number;
-    fontSize: number;
 }
 
 export interface Version {
@@ -246,6 +239,7 @@ export interface LeoBridgePackage {
     patch?: number;
     bead?: number;
     undos?: string[];
+    unl?: string;
 }
 
 /**
@@ -452,4 +446,6 @@ export interface RClick {
     name: string;
     children: RClick[];
 }
+
+export type UnlType = 'shortGnx' | 'fullGnx' | 'shortLegacy' | 'fullLegacy';
 

@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -167,6 +167,12 @@
           "default": false,
           "type": "boolean",
           "description": "Inverts the contrast of the dirty/clean border aspect of tree nodes"
+        },
+        "leoIntegration.showUnlOnStatusBar": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Displays an UNL indicator on the status bar"
         },
         "leoIntegration.leoEditorPath": {
           "scope": "application",
@@ -804,6 +810,36 @@
           "dark": "resources/dark/body-pane.svg"
         },
         "configuration": "./language-configurations/leobody.rust.language-configuration.json"
+      },
+      {
+        "id": "leobody.xml",
+        "aliases": [
+          "Leo Body XML",
+          "leobody.xml"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.xml.language-configuration.json"
+      },
+      {
+        "id": "leobody.xml.wrap",
+        "aliases": [
+          "Leo Body XML",
+          "leobody.xml"
+        ],
+        "extensions": [
+          ""
+        ],
+        "icon": {
+          "light": "resources/light/body-pane.svg",
+          "dark": "resources/dark/body-pane.svg"
+        },
+        "configuration": "./language-configurations/leobody.xml.language-configuration.json"
       }
     ],
     "grammars": [
@@ -968,6 +1004,16 @@
         "path": "./syntaxes/leobody.rust.tmLanguage.json"
       },
       {
+        "language": "leobody.xml",
+        "scopeName": "source.leobody.xml",
+        "path": "./syntaxes/leobody.xml.tmLanguage.json"
+      },
+      {
+        "language": "leobody.xml.wrap",
+        "scopeName": "source.leobody.xml",
+        "path": "./syntaxes/leobody.xml.tmLanguage.json"
+      },
+      {
         "injectTo": [
           "source.leobody.c",
           "source.leobody.cpp",
@@ -985,6 +1031,7 @@
           "source.leobody.restructuredtext",
           "source.leobody.rust",
           "source.leobody.typescript",
+          "source.leobody.xml",
           "source.leobody.c.wrap",
           "source.leobody.cpp.wrap",
           "source.leobody.css.wrap",
@@ -1000,7 +1047,8 @@
           "source.leobody.python.wrap",
           "source.leobody.restructuredtext.wrap",
           "source.leobody.rust.wrap",
-          "source.leobody.typescript.wrap"
+          "source.leobody.typescript.wrap",
+          "source.leobody.xml.wrap"
         ],
         "path": "./syntaxes/leobody.tmLanguage.json",
         "scopeName": "leo.injection"
