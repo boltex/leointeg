@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.21
+
+- ...
+
 ## 1.0.20
 
 - Fixed 'Goto' panel's navigation's stability issues after switching panels.
