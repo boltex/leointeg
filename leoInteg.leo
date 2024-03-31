@@ -17819,6 +17819,18 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
         this._lastTreeView.visible
 
     ) {
+        void this._lastTreeView.reveal(p_element, {
+            select: true,
+            focus: false
+        }).then(
+            () =&gt; {
+                //ok
+            },
+            () =&gt; {
+                // 
+                console.log('gotSelectedNode scroll mode reveal error catched');
+            }
+        );
         // ! MINIMAL TIMEOUT REQUIRED ! WHY ?? (works so leave)
         if (this._gotSelectedNodeBodyTimer) {
             clearTimeout(this._gotSelectedNodeBodyTimer);
@@ -18947,6 +18959,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
     private _lastGotoView: vscode.TreeView&lt;LeoGotoNode&gt; | undefined;
 
     private _nodeList: LeoGotoNode[] = []; // Node list kept here.
+    private _viewSwitch: boolean = false;
 
     private _selectedNodeIndex: number = 0;
 
@@ -18954,6 +18967,14 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 
     public setLastGotoView(p_view: vscode.TreeView&lt;LeoGotoNode&gt;): void {
         this._lastGotoView = p_view;
+        if (this._nodeList &amp;&amp; this._nodeList.length) {
+            this._viewSwitch = true;
+            this._onDidChangeTreeData.fire(undefined);
+        }
+    }
+
+    public getLastGotoView(): vscode.TreeView&lt;LeoGotoNode&gt; | undefined {
+        return this._lastGotoView;
     }
 
     public resetSelectedNode(p_node?: LeoGotoNode): void {
@@ -18962,6 +18983,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
             const w_found = this._nodeList.indexOf(p_node);
             if (w_found &gt;= 0) {
                 this._selectedNodeIndex = w_found;
+                return;
             }
         }
     }
@@ -18992,8 +19014,9 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
                 break;
 
         }
-        this._lastGotoView?.reveal(this._nodeList[this._selectedNodeIndex], { select: true, focus: true });
-        this._leoIntegration.gotoNavEntry(this._nodeList[this._selectedNodeIndex]);
+        const node = this._nodeList[this._selectedNodeIndex];
+        this._lastGotoView?.reveal(node, { select: true, focus: true });
+        this._leoIntegration.gotoNavEntry(node);
     }
 
     /**
@@ -19005,14 +19028,30 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
         this._onDidChangeTreeData.fire(undefined);
     }
 
-    public getTreeItem(element: LeoGotoNode): Thenable&lt;LeoGotoNode&gt; | LeoGotoNode {
+    public getTreeItem(element: LeoGotoNode): LeoGotoNode {
         return element;
     }
 
-    public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; {
+    public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; | LeoGotoNode[] {
 
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
+
+            // WAS JUST A VIEW SWITCH:
+            if (this._viewSwitch) {
+                this._viewSwitch = false;
+                setTimeout(() =&gt; {
+                    if (this._nodeList.length &amp;&amp; (this._selectedNodeIndex + 1) &lt;= this._nodeList.length) {
+                        void this._lastGotoView?.reveal(this._nodeList[this._selectedNodeIndex], {
+                            select: true,
+                            focus: false
+                        }).then(() =&gt; { }, () =&gt; {
+                            console.log('Reveal failed for goto panel switching detected.');
+                        });
+                    }
+                }, 0);
+                return this._nodeList; // Make sure the nodes are valid (give back)
+            }
 
             // call action to get get list, and convert to LeoButtonNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package =&gt; {
@@ -19034,7 +19073,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 
 
         } else {
-            return Promise.resolve([]); // Defaults to an empty list of children
+            return []; // Defaults to an empty list of children
         }
     }
 
@@ -20289,7 +20328,11 @@ public setBodyWrap(): Thenable&lt;void&gt; {
 </t>
 <t tx="felix.20240122213243.1">## 1.0.20
 
-- ...
+- Fixed 'Goto' panel's navigation's stability issues after switching panels.
+- Added support for XML language colorization.
+- Added hover menu to the UNL status bar item to choose from any UNL formats to be copied to the clipboard.
+- Removed 'font-size &amp; zoom' related config settings following VSCode's new ZOOM settings API.
+- Fixed Find-Panel's behavior and styling.
 
 </t>
 <t tx="felix.20240214000508.1">/**
