@@ -117,6 +117,7 @@
 <v t="felix.20220706220128.1"><vh>Ready: No Undos</vh></v>
 </v>
 </v>
+<v t="felix.20240430200658.1"><vh>icons</vh></v>
 <v t="ekr.20200815123601.13"><vh>commands</vh>
 <v t="ekr.20200815123601.15"><vh>Show Webviews</vh></v>
 <v t="ekr.20200815123601.16"><vh>Server</vh></v>
@@ -3191,10 +3192,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "category": "Leo",
   "title": "Connect to a Leo Server",
   "enablement": "!leoBridgeReady &amp;&amp; !leoTreeOpened",
-  "icon": {
-    "light": "resources/light/connect.svg",
-    "dark": "resources/dark/connect.svg"
-  }
+  "icon": "$(plug)"
 },
 {
   "command": "leointeg.setLeoID",
@@ -20407,6 +20405,492 @@ public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
 
 - ...
 
+</t>
+<t tx="felix.20240430200658.1">"icons": {
+  "leo-arrow-down": {
+    "description": "Arrow Down",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f101"
+    }
+  },
+  "leo-arrow-left": {
+    "description": "Arrow Left",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f102"
+    }
+  },
+  "leo-arrow-right": {
+    "description": "Arrow Right",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f103"
+    }
+  },
+  "leo-arrow-small-down": {
+    "description": "Small Arrow Down",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f104"
+    }
+  },
+  "leo-arrow-small-left": {
+    "description": "Small Arrow Left",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f105"
+    }
+  },
+  "leo-arrow-small-right": {
+    "description": "Small Arrow Right",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f106"
+    }
+  },
+  "leo-arrow-small-up": {
+    "description": "Small Arrow Up",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f107"
+    }
+  },
+  "leo-arrow-up": {
+    "description": "Arrow Up",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f108"
+    }
+  },
+  "leo-chapter-back": {
+    "description": "Chapter Back",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f109"
+    }
+  },
+  "leo-chapter-main": {
+    "description": "Chapter Main",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f10a"
+    }
+  },
+  "leo-chapter-next": {
+    "description": "Chapter Next",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f10b"
+    }
+  },
+  "leo-chapter-select": {
+    "description": "Chapter Select",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f10c"
+    }
+  },
+  "leo-clear-files": {
+    "description": "Clear Files",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f10d"
+    }
+  },
+  "leo-clipboard": {
+    "description": "Clipboard",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f10e"
+    }
+  },
+  "leo-close": {
+    "description": "Close",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f10f"
+    }
+  },
+  "leo-close-server": {
+    "description": "Close Server",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f110"
+    }
+  },
+  "leo-collapse": {
+    "description": "Collapse",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f111"
+    }
+  },
+  "leo-connect": {
+    "description": "Connect",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f112"
+    }
+  },
+  "leo-cut": {
+    "description": "Cut",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f113"
+    }
+  },
+  "leo-dehoist": {
+    "description": "Dehoist",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f114"
+    }
+  },
+  "leo-delete": {
+    "description": "Delete",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f115"
+    }
+  },
+  "leo-demote": {
+    "description": "Demote",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f116"
+    }
+  },
+  "leo-edit": {
+    "description": "Edit",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f117"
+    }
+  },
+  "leo-extract": {
+    "description": "Extract",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f118"
+    }
+  },
+  "leo-extract-name": {
+    "description": "Extract Name",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f119"
+    }
+  },
+  "leo-find-next": {
+    "description": "Find Next",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f11a"
+    }
+  },
+  "leo-find-previous": {
+    "description": "Find Previous",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f11b"
+    }
+  },
+  "leo-find-quick": {
+    "description": "Find Quick",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f11c"
+    }
+  },
+  "leo-find-quick-changed": {
+    "description": "Find Quick Changed",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f11d"
+    }
+  },
+  "leo-find-quick-history": {
+    "description": "Find Quick History",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f11e"
+    }
+  },
+  "leo-find-quick-marked": {
+    "description": "Find Quick Marked",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f11f"
+    }
+  },
+  "leo-find-quick-selected": {
+    "description": "Find Quick Selected",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f120"
+    }
+  },
+  "leo-find-quick-timeline": {
+    "description": "Find Quick Timeline",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f121"
+    }
+  },
+  "leo-folder": {
+    "description": "Folder",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f122"
+    }
+  },
+  "leo-gear": {
+    "description": "Gear",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f123"
+    }
+  },
+  "leo-hoist": {
+    "description": "Hoist",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f124"
+    }
+  },
+  "leo-icon-leo-fill": {
+    "description": "Leo icon filled",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f125"
+    }
+  },
+  "leo-icon-leo-outline": {
+    "description": "Leo icon outlined",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f126"
+    }
+  },
+  "leo-import": {
+    "description": "Import",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f127"
+    }
+  },
+  "leo-insert": {
+    "description": "Insert",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f128"
+    }
+  },
+  "leo-insert-child": {
+    "description": "Insert Child",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f129"
+    }
+  },
+  "leo-link": {
+    "description": "Link",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f12a"
+    }
+  },
+  "leo-mark": {
+    "description": "Mark",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f12b"
+    }
+  },
+  "leo-new-file": {
+    "description": "New File",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f12c"
+    }
+  },
+  "leo-next": {
+    "description": "Next",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f12d"
+    }
+  },
+  "leo-node": {
+    "description": "Node",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f12e"
+    }
+  },
+  "leo-open-recent": {
+    "description": "Open Recent",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f12f"
+    }
+  },
+  "leo-parent": {
+    "description": "Parent",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f130"
+    }
+  },
+  "leo-paste": {
+    "description": "Paste",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f131"
+    }
+  },
+  "leo-paste-clone": {
+    "description": "Paste Clone",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f132"
+    }
+  },
+  "leo-plus": {
+    "description": "Plus",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f133"
+    }
+  },
+  "leo-plus-small": {
+    "description": "Small Plus",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f134"
+    }
+  },
+  "leo-prev": {
+    "description": "Prev",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f135"
+    }
+  },
+  "leo-promote": {
+    "description": "Promote",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f136"
+    }
+  },
+  "leo-redo": {
+    "description": "Redo",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f137"
+    }
+  },
+  "leo-refresh": {
+    "description": "Refresh",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f138"
+    }
+  },
+  "leo-save": {
+    "description": "Save",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f139"
+    }
+  },
+  "leo-save-as": {
+    "description": "Save As",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f13a"
+    }
+  },
+  "leo-save-as-leo": {
+    "description": "Save As .leo",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f13b"
+    }
+  },
+  "leo-show-log": {
+    "description": "Show Log",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f13c"
+    }
+  },
+  "leo-sort-children": {
+    "description": "Sort Children",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f13d"
+    }
+  },
+  "leo-sort-siblings": {
+    "description": "Sort Siblings",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f13e"
+    }
+  },
+  "leo-start-server": {
+    "description": "Start Server",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f13f"
+    }
+  },
+  "leo-switch": {
+    "description": "Switch",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f140"
+    }
+  },
+  "leo-tag": {
+    "description": "Tag",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f141"
+    }
+  },
+  "leo-undo": {
+    "description": "Undo",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f142"
+    }
+  },
+  "leo-unmark": {
+    "description": "Unmark",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f143"
+    }
+  },
+  "leo-write-at-file-nodes": {
+    "description": "Write at-file Nodes",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f144"
+    }
+  },
+  "leo-write-dirty-at-file-nodes": {
+    "description": "Write Dirty at-file Nodes",
+    "default": {
+      "fontPath": "resources/leoicons.woff2",
+      "fontCharacter": "\\f145"
+    }
+  }
+},
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
