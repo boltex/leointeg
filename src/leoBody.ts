@@ -12,7 +12,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     // * Flag normally false
     public preventSaveToLeo: boolean = false;
-    private _errorRefreshFlag: boolean = false;
 
     // * Last file read data with the readFile method
     public lastGnx: string = ""; // gnx of last file read
@@ -20,10 +19,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     private _lastBodyLength: number = 0; // length of last file read
 
     // * List of currently opened body panes gnx (from 'watch' & 'dispose' methods)
-    private _watchedBodiesGnx: string[] = [];
+    public watchedBodiesGnx: string[] = [];
 
-    // * List of gnx that should be available (from more.selectNode and fs.delete)
-    private _openedBodiesGnx: string[] = [];
+    // * List of gnx open in tab(s) (from tryApplyNodeToBody / switchBody and fs.delete)
     private _openedBodiesInfo: { [key: string]: BodyTimeInfo } = {};
 
     // * List of all possible vNodes gnx in the currently opened leo file (since last refresh/tree operation)
@@ -51,65 +49,72 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     /**
-     * * Adds entries in _openedBodiesGnx and _openedBodiesInfo if needed
+     * * Adds entries in openedBodiesGnx and _openedBodiesInfo if needed
      * * and sets the modified time of an opened body.
      */
     private _setOpenedBodyTime(p_gnx: string): void {
         const w_now = new Date().getTime();
         let w_created = w_now;
-        if (!this._openedBodiesGnx.includes(p_gnx)) {
-            this._openedBodiesGnx.push(p_gnx);
-        } else {
+        if (this._openedBodiesInfo[p_gnx]) {
             w_created = this._openedBodiesInfo[p_gnx].ctime; // Already created?
         }
         this._openedBodiesInfo[p_gnx] = {
-            ctime: w_created, // w_now, // maybe kept.
+            ctime: w_created,
             mtime: w_now // new 'modified' time for sure.
         };
     }
 
+    public cleanupBodies(): void {
+        const w_foundGnx: string[] = [];
+        vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+            p_tabGroup.tabs.forEach((p_tab) => {
+                if (p_tab.input &&
+                    (p_tab.input as vscode.TabInputText).uri &&
+                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
+                ) {
+                    w_foundGnx.push(utils.leoUriToStr((p_tab.input as vscode.TabInputText).uri));
+                }
+            });
+        });
+        if (!w_foundGnx.length) {
+            return;
+        }
+        for (const openBody of Object.keys(this._openedBodiesInfo)) {
+            if (!w_foundGnx.includes(openBody)) {
+                // Not an opened tab! remove it!
+
+                delete this._openedBodiesInfo[openBody];
+            }
+        }
+    }
     /**
      * * Refresh the body pane for a particular gnx by telling vscode that the file from the Leo file provider has changed
      * @param p_gnx Gnx of body associated with this virtual file, mostly Leo's selected node
      */
     public fireRefreshFile(p_gnx: string): void {
-        if (!this._openedBodiesGnx.includes(p_gnx)) {
-            console.log("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", p_gnx);
-            this._openedBodiesGnx.push(p_gnx);
-        }
+
 
         this._setOpenedBodyTime(p_gnx);
 
+        if (!this.watchedBodiesGnx.includes(p_gnx)) {
+            return; // Document is not being watched (closed tab or non-visible non-dirty tab)
+        }
         this._onDidChangeFileEmitter.fire([{
             type: vscode.FileChangeType.Changed,
             uri: utils.strToLeoUri(p_gnx)
         } as vscode.FileChangeEvent]);
     }
 
-    /**
-     * Maybe deprecated
-     * * Refreshes the '_possibleGnxList' list of all unique gnx from Leo
-     * @returns a promise that resolves to the fresh gnx string array
-     */
-    public async refreshPossibleGnxList(): Promise<string[]> {
-        // * Get updated list of possible gnx
-        const p_result = await this._leoIntegration.sendAction(
-            Constants.LEOBRIDGE.GET_ALL_GNX
-        );
-        this._possibleGnxList = p_result.gnx || [];
-        return await Promise.resolve(this._possibleGnxList);
-    }
-
     public watch(p_resource: vscode.Uri): vscode.Disposable {
         const w_gnx = utils.leoUriToStr(p_resource);
-        if (!this._watchedBodiesGnx.includes(w_gnx)) {
-            this._watchedBodiesGnx.push(w_gnx); // add gnx
+        if (!this.watchedBodiesGnx.includes(w_gnx)) {
+            this.watchedBodiesGnx.push(w_gnx); // add gnx
         } else {
         }
         return new vscode.Disposable(() => {
-            const w_position = this._watchedBodiesGnx.indexOf(w_gnx); // find and remove it
+            const w_position = this.watchedBodiesGnx.indexOf(w_gnx); // find and remove it
             if (w_position > -1) {
-                this._watchedBodiesGnx.splice(w_position, 1);
+                this.watchedBodiesGnx.splice(w_position, 1);
             }
         });
     }
@@ -119,14 +124,14 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             const w_gnx = utils.leoUriToStr(p_uri);
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            } else if (w_gnx === this.lastGnx && this._openedBodiesGnx.includes(this.lastGnx)) {
+            } else if (w_gnx === this.lastGnx && this._openedBodiesInfo[this.lastGnx]) {
                 return {
                     type: vscode.FileType.File,
                     ctime: this._openedBodiesInfo[this.lastGnx].ctime,
                     mtime: this._openedBodiesInfo[this.lastGnx].mtime,
                     size: this._lastBodyLength
                 };
-            } else if (this._openedBodiesGnx.includes(w_gnx)) {
+            } else if (this._openedBodiesInfo[w_gnx]) {
                 return this._leoIntegration.sendAction(
                     Constants.LEOBRIDGE.GET_BODY_LENGTH,
                     { "gnx": w_gnx }
@@ -154,22 +159,20 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             } else {
                 const w_gnx = utils.leoUriToStr(p_uri);
 
-                if (!this._openedBodiesGnx.includes(w_gnx)) {
-                    console.log(
-                        " _openedBodiesGnx length: ", this._openedBodiesGnx.length,
-                        '\n *** readFile: ERROR File not in _openedBodiesGnx! readFile missing refreshes? gnx: ', w_gnx
-                    );
+                if (!this._openedBodiesInfo[w_gnx]) {
+                    console.warn('readFile: ERROR File not in _openedBodiesInfo! gnx: ', w_gnx);
                 }
 
+                // * GET FROM SERVER
                 const p_result = await this._leoIntegration.sendAction(
                     Constants.LEOBRIDGE.GET_BODY,
                     { "gnx": w_gnx }
                 );
+
                 let w_buffer: Uint8Array;
                 if (p_result.body) {
                     // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
 
-                    this._errorRefreshFlag = false; // got body so reset possible flag!
                     if (this.lastGnx === w_gnx && this.lastBodyData === p_result.body) {
                         // If EXACT SAME body has refreshed, clear prevent preventIconChange
                         // (because _onDocumentChanged will not be triggered)
@@ -190,12 +193,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     this.lastBodyData = "";
                     w_buffer = Buffer.from("");
                 } else {
-                    if (!this._errorRefreshFlag) {
-                        this._leoIntegration.fullRefresh();
-                    }
+                    this._leoIntegration.fullRefresh();
                     if (this.lastGnx === w_gnx) {
                         // was last gnx of closed file about to be switched to new document selected
-                        console.log('Passed in not found: ' + w_gnx);
                         w_buffer = Buffer.from(this.lastBodyData);
                     } else {
                         console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
@@ -234,15 +234,13 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             this.preventSaveToLeo = false;
         }
         const w_gnx = utils.leoUriToStr(p_uri);
-        if (!this._openedBodiesGnx.includes(w_gnx)) {
+        if (!this._openedBodiesInfo[w_gnx]) {
             console.error("Leointeg: Tried to save body other than selected node's body", w_gnx);
-            this._openedBodiesGnx.push(w_gnx);
         }
-        const w_now = new Date().getTime();
-        this._openedBodiesInfo[w_gnx] = {
-            ctime: w_now,
-            mtime: w_now
-        };
+        this._setOpenedBodyTime(w_gnx);
+        if (w_gnx === this.lastGnx) {
+            this._lastBodyLength = p_content.byteLength;
+        }
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri: p_uri });
     }
 
@@ -257,8 +255,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public delete(p_uri: vscode.Uri): void {
 
         const w_gnx = utils.leoUriToStr(p_uri);
-        if (this._openedBodiesGnx.includes(w_gnx)) {
-            this._openedBodiesGnx.splice(this._openedBodiesGnx.indexOf(w_gnx), 1);
+        if (this._openedBodiesInfo[w_gnx]) {
             delete this._openedBodiesInfo[w_gnx];
         } else {
             // console.log("not deleted");

@@ -28,7 +28,6 @@ export interface ConfigMembers {
     // statusBarColor: string;
 
     treeInExplorer: boolean;
-    showOpenAside: boolean;
     showEditOnNodes: boolean;
     // showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
@@ -158,6 +157,7 @@ export interface ArchivedPosition {
 
     // * ALPHA FEATURE
     _isRoot?: boolean; // Added front side by leoInteg, for internal usage
+    _lastBodyData?: string;
 
     // * unknown attributes
     u?: number;             // User-attributes displayed qty
@@ -170,6 +170,7 @@ export interface ArchivedPosition {
  */
 export interface LeoPackageStates {
 
+    commanderId: string; // Commander's python 'id'.
     changed: boolean; // Leo document has changed (is dirty)
 
     canUndo: boolean; // Leo document can undo the last operation done
@@ -213,6 +214,7 @@ export interface LeoBridgePackage {
     commander?: {
         changed: boolean,
         fileName: string;
+        id: string;
     }
     "position-data-list"?: ArchivedPosition[];
     "position-data-dict"?: { [key: string]: ArchivedPosition };
@@ -246,6 +248,7 @@ export interface LeoBridgePackage {
  * * Leo document structure used in the 'Opened Leo Documents' tree view provider sent back by the server
  */
 export interface LeoDocument {
+    id: string; // Commander's id
     name: string;
     index: number;
     changed: boolean;
@@ -363,6 +366,7 @@ export interface BodyPosition {
  * * LeoBody cursor active position and text selection state, along with gnx
  */
 export interface BodySelectionInfo {
+    commanderId?: string,
     gnx: string;
     // scroll is stored as-is as the 'scrollBarSpot' in Leo
     // ! TEST scroll as single number only (for Leo vertical scroll value)

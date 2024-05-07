@@ -39,10 +39,12 @@ export class Constants {
     public static LEO_WRAP_SUFFIX: string = ".wrap"; // all lowercase.
 
     public static URI_LEO_SCHEME: string = "leo";
+    public static URI_LEO_DETACHED_SCHEME: string = "leoDetached";
     public static URI_FILE_SCHEME: string = "file";
-    public static URI_SCHEME_HEADER: string = "leo:/";
     public static URI_UNTITLED_SCHEME: string = 'untitled';
-    public static OUTPUT_CHANNEL_LANGUAGE = 'Log';
+    public static OUTPUT_CHANNEL_LANGUAGE: string = 'Log';
+    public static URI_SCHEME_HEADER: string = "leo:/";
+    public static URI_SCHEME_DETACHED_HEADER: string = "leoDetached:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
     public static UNTITLED_FILE_NAME: string = "untitled";
     public static RECENT_FILES_KEY: string = "leoRecentFiles";
@@ -60,7 +62,8 @@ export class Constants {
 
     public static ERROR_PACKAGE_ID: number = 0;
     public static STARTING_PACKAGE_ID: number = 1;
-    // public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
+    public static CLEANUP_DEBOUNCE_DELAY: number = 40;
+    public static DETACHED_LANGUAGE_DELAY: number = 350;
     public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
     public static BUTTONS_DEBOUNCE_DELAY: number = 80;
     public static UNDOS_DEBOUNCE_DELAY: number = 180;
@@ -71,6 +74,7 @@ export class Constants {
     public static BODY_STATES_DEBOUNCE_DELAY: number = 120;
     public static OUTLINE_DESC_DEBOUNCE_DELAY: number = 250;
     public static GOTO_DEBOUNCE_DELAY: number = 50;
+    public static DETACHED_REGEX: RegExp = /^\/(\d+)\//;
 
     public static LOG_ALERT_COLOR: string = 'red';
 
@@ -352,13 +356,8 @@ export class Constants {
         ACTIVITY_VIEW_SHORTCUT: "activityViewShortcut",
         GO_ANYWHERE_SHORTCUT: "goAnywhereShortcut",
 
-        // STATUSBAR_STRING: "statusBarString",
-        // STATUSBAR_COLOR: "statusBarColor",
-
         TREE_IN_EXPLORER: "treeInExplorer",
-        SHOW_OPEN_ASIDE: "showOpenAside",
         SHOW_EDIT: "showEditOnNodes",
-        // SHOW_ARROWS: "showArrowsOnNodes",
         SHOW_ADD: "showAddOnNodes",
         SHOW_MARK: "showMarkOnNodes",
         SHOW_CLONE: "showCloneOnNodes",
@@ -405,10 +404,7 @@ export class Constants {
         GO_ANYWHERE_SHORTCUT: true,
 
         SHOW_UNL_ON_STATUSBAR: true,
-        // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
-        // STATUSBAR_COLOR: "fb7c47",
         TREE_IN_EXPLORER: true,
-        SHOW_OPEN_ASIDE: true,
         SHOW_EDIT: true,
         SHOW_ARROWS: false,
         SHOW_ADD: false,
@@ -799,7 +795,7 @@ export class Constants {
         TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
-        OPEN_ASIDE: Constants.NAME + ".openAside",
+        OPEN_ASIDE: Constants.NAME + ".openAside", // Opens aside a body pane locked to this gnx & commander.
         // * Goto operations that always finish with focus in outline
         PAGE_UP: Constants.NAME + ".pageUp",
         PAGE_DOWN: Constants.NAME + ".pageDown",

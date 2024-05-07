@@ -596,8 +596,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.HANDLE_UNL, (p_arg: { unl: string, scheme: string }) => w_leo.handleUnl(p_arg)],
 
         // Called by nodes in tree when selected either by mouse, or with enter
-        [CMD.SELECT_NODE, (p_node: LeoApOutlineNode) => w_leo.selectTreeNode(p_node.position, false, false)],
-        [CMD.OPEN_ASIDE, (p_ap: ArchivedPosition) => w_leo.selectTreeNode(p_ap, false, true)],
+        [CMD.SELECT_NODE, (p_outlineNode: LeoApOutlineNode) => w_leo.selectTreeNode(p_outlineNode.position, false)], // Select is NOT a Position!
+        [CMD.OPEN_ASIDE, (p_position?: ArchivedPosition) => w_leo.openAside(p_position)],
 
         [CMD.SHOW_OUTLINE, () => w_leo.showOutline(true)], // Also focuses on outline
 
@@ -737,7 +737,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     });
 
     // * Close remaining Leo Bodies restored by vscode from last session.
-    closeLeoTextEditors();
+    utils.closeLeoTextEditors();
 
     // * Show a welcome screen on version updates, then start the actual extension.
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo)
@@ -767,7 +767,7 @@ export function activate(p_context: vscode.ExtensionContext) {
  * * Called when extension is deactivated
  */
 export function deactivate(): Thenable<unknown> {
-    const q_closeLeoTabs = closeLeoTextEditors();
+    const q_closeLeoTabs = utils.closeLeoTextEditors();
     if (LeoInteg) {
         LeoInteg.activated = false;
         LeoInteg.cleanupBody().then(() => {
@@ -785,46 +785,6 @@ export function deactivate(): Thenable<unknown> {
     } else {
         return q_closeLeoTabs;
     }
-}
-
-/**
- * * Closes all visible text editors that have Leo filesystem scheme
- */
-function closeLeoTextEditors(): Thenable<unknown> {
-    const w_foundTabs: vscode.Tab[] = [];
-
-    vscode.window.tabGroups.all.forEach((p_tabGroup) => {
-        p_tabGroup.tabs.forEach((p_tab) => {
-            if (p_tab.input &&
-                (p_tab.input as vscode.TabInputText).uri &&
-                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
-                !p_tab.isDirty
-            ) {
-                w_foundTabs.push(p_tab);
-            }
-        });
-    });
-
-    let q_closedTabs;
-    if (w_foundTabs.length) {
-        q_closedTabs = vscode.window.tabGroups.close(w_foundTabs, true);
-        w_foundTabs.forEach((p_tab) => {
-            if (p_tab.input) {
-                vscode.commands.executeCommand(
-                    'vscode.removeFromRecentlyOpened',
-                    (p_tab.input as vscode.TabInputText).uri
-                );
-                // Delete to close all other body tabs.
-                // (w_oldUri will be deleted last below)
-                const w_edit = new vscode.WorkspaceEdit();
-                w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
-                vscode.workspace.applyEdit(w_edit);
-            }
-        });
-    } else {
-        q_closedTabs = Promise.resolve(true);
-    }
-    return q_closedTabs;
 }
 
 /**

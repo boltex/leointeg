@@ -18,6 +18,47 @@ export function getUniqueId(): string {
 }
 
 /**
+ * * Closes all visible text editors that have Leo filesystem scheme (that are not dirty)
+ */
+export async function closeLeoTextEditors(): Promise<unknown> {
+
+    const w_foundTabs: vscode.Tab[] = [];
+
+    vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+        p_tabGroup.tabs.forEach((p_tab) => {
+            if (p_tab.input &&
+                (p_tab.input as vscode.TabInputText).uri &&
+                ((p_tab.input as vscode.TabInputText).uri.scheme).startsWith(Constants.URI_LEO_SCHEME) &&
+                !p_tab.isDirty
+            ) {
+                w_foundTabs.push(p_tab);
+            }
+        });
+    });
+
+    let q_closedTabs;
+    if (w_foundTabs.length) {
+        q_closedTabs = vscode.window.tabGroups.close(w_foundTabs, true);
+        w_foundTabs.forEach((p_tab) => {
+            if (p_tab.input) {
+                vscode.commands.executeCommand(
+                    'vscode.removeFromRecentlyOpened',
+                    (p_tab.input as vscode.TabInputText).uri
+                );
+                // Delete to close all other body tabs.
+                // (w_oldUri will be deleted last below)
+                const w_edit = new vscode.WorkspaceEdit();
+                w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
+                vscode.workspace.applyEdit(w_edit);
+            }
+        });
+    } else {
+        q_closedTabs = Promise.resolve(true);
+    }
+    return q_closedTabs;
+}
+
+/**
  * * Compares major, minor and patch members of versions
  * @param p_version given version 
  * @param p_min minimal version
@@ -391,14 +432,22 @@ export function strToLeoUri(p_str: string): vscode.Uri {
 }
 
 /**
+* Builds a 'Leo Detached Scheme' vscode.Uri from a gnx 
+* @param p_str leo node gnx strings are used to build Uri
+* @returns A vscode 'Uri' object
+*/
+export function strToLeoDetachedUri(p_str: string): vscode.Uri {
+    return vscode.Uri.parse(Constants.URI_SCHEME_DETACHED_HEADER + p_str);
+}
+
+/**
  * * Gets the gnx, (or another string like 'LEO BODY' or other), from a vscode.Uri object
  * @param p_uri Source uri to extract from
  * @returns The string source that was used to build this Uri
  */
 export function leoUriToStr(p_uri: vscode.Uri): string {
-    // TODO : Use length of a constant or something other than 'fsPath'
-    // For now, just remove the '/' (or backslash on Windows) before the path string
-    return p_uri.fsPath.substr(1);
+    // For now, just remove the '/' before the path string
+    return p_uri.path.substring(1);
 }
 
 /**

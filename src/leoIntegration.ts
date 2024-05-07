@@ -29,6 +29,7 @@ import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
 import { LeoApOutlineProvider } from './leoApOutline';
 import { LeoBodyProvider } from './leoBody';
+import { LeoBodyDetachedProvider } from "./leoBodyDetached";
 import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
 import { LeoStatusBar } from './leoStatusBar';
@@ -231,10 +232,15 @@ export class LeoIntegration {
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
 
     // * Body Pane
+    private _changedBodyWithMirrorDetached = false;
+    private _changedDetachedWithMirrorBody = false;
     private _bodyFileSystemStarted: boolean = false;
+    private _detachedFileSystemStarted: boolean = false;
     private _bodyEnablePreview: boolean = true;
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
+    private _leoDetachedFileSystem!: LeoBodyDetachedProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
     private _bodyTextDocument: vscode.TextDocument | undefined; // Set when selected in tree by user, or opening a Leo file in showBody. and by _locateOpenedBody.
+    public bodyDetachedTextDocument: vscode.TextDocument | undefined; // Last active detached body.
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
 
     private _languageFlagged: string[] = [];
@@ -285,6 +291,12 @@ export class LeoIntegration {
     private _needLastSelectedRefresh = false; // USED IN showBody
     private _bodyLastChangedDocument: vscode.TextDocument | undefined; // Only set in _onDocumentChanged
     private _bodyLastChangedDocumentSaved: boolean = true; // don't use 'isDirty' of the document!
+
+    // * Debounced method used to check for closed detached/body tabs
+    public checkClosedTabs: (() => void);
+
+    // * Debounced method used to refresh language of the active commander's detached bodies 
+    public refreshCommanderDetachedLanguage: (() => void);
 
     // * Debounced method used to refresh the outline-tree title desc
     public refreshDesc: (() => void);
@@ -353,6 +365,7 @@ export class LeoIntegration {
                     { scheme: Constants.URI_FILE_SCHEME },
                     { scheme: Constants.URI_UNTITLED_SCHEME },
                     { scheme: Constants.URI_LEO_SCHEME },
+                    { scheme: Constants.URI_LEO_DETACHED_SCHEME },
                     { language: Constants.OUTPUT_CHANNEL_LANGUAGE }
                 ],
                 this.linkProvider
@@ -497,6 +510,8 @@ export class LeoIntegration {
 
         // * Create Body Pane
         this._leoFileSystem = new LeoBodyProvider(this);
+        this._leoDetachedFileSystem = new LeoBodyDetachedProvider(this);
+
         this._bodyMainSelectionColumn = 1;
 
         // * Create Status bar Entry
@@ -529,8 +544,15 @@ export class LeoIntegration {
         // * Configuration / Welcome webview
         this.leoSettingsWebview = new LeoSettingsProvider(_context, this);
 
-        // * 'onDid' event detections all pushed as disposables in context.subscription
+        // * 'onDid' event detections. All pushed as disposables in context.subscription
         this._context.subscriptions.push(
+
+            vscode.window.tabGroups.onDidChangeTabGroups((p_tabGroupEvent) =>
+                this._onTabGroupsChanged(p_tabGroupEvent)
+            ),
+            vscode.window.tabGroups.onDidChangeTabs((p_tabEvent) =>
+                this._onTabsChanged(p_tabEvent)
+            ),
 
             // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
             vscode.window.onDidChangeActiveTextEditor((p_editor) =>
@@ -573,6 +595,14 @@ export class LeoIntegration {
             )
         );
         // * Debounced refresh flags and UI parts, other than the tree and body
+        this.checkClosedTabs = debounce(
+            this._checkClosedTabs,
+            Constants.CLEANUP_DEBOUNCE_DELAY
+        );
+        this.refreshCommanderDetachedLanguage = debounce(
+            this._refreshCommanderDetachedLanguage,
+            Constants.DETACHED_LANGUAGE_DELAY
+        );
         this.refreshDesc = debounce(
             this._refreshDesc,
             Constants.OUTLINE_DESC_DEBOUNCE_DELAY
@@ -851,9 +881,11 @@ export class LeoIntegration {
                         if (w_lastFiles.length && !this.serverHasOpenedFile) {
                             // This context flag will trigger 'Connecting...' placeholder
                             // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
-
                             setTimeout(() => {
-                                this._openLastFiles(); // Try to open last opened files, if any
+                                // Try to open last opened files, if any
+                                this._openLastFiles().catch(error => {
+                                    // No open files
+                                });
                             }, 0);
                         } else {
                             this.leoStates.leoConnecting = false;
@@ -1434,8 +1466,30 @@ export class LeoIntegration {
      * * Setup leoInteg's UI for having no opened Leo documents
      */
     private _setupNoOpenedLeoDocument(): void {
+        // Close ALL detached bodies.
+        const w_foundTabs: Set<vscode.Tab> = new Set();
+        const w_foundUri: Set<vscode.Uri> = new Set();
+        for (const p_tabGroup of vscode.window.tabGroups.all) {
+            for (const p_tab of p_tabGroup.tabs) {
+                if (p_tab.input &&
+                    (p_tab.input as vscode.TabInputText).uri &&
+                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+                ) {
+                    w_foundTabs.add(p_tab);
+                    w_foundUri.add((p_tab.input as vscode.TabInputText).uri);
+                }
+            }
+        }
+        if (w_foundTabs.size) {
+            void vscode.window.tabGroups.close([...w_foundTabs], true);
+            for (const w_uri of w_foundUri) {
+                void vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_uri);
+            }
+        }
         this.leoStates.fileOpenedReady = false;
+        this.leoStates.leoCommanderId = "";
         this._bodyTextDocument = undefined;
+        this.bodyDetachedTextDocument = undefined;
         this.lastSelectedNode = undefined;
         utils.setGlobalLastActiveFile(this._context, "");
         this._refreshOutline(false, RevealType.NoReveal);
@@ -1483,7 +1537,16 @@ export class LeoIntegration {
             );
             this._bodyFileSystemStarted = true;
         }
-
+        if (!this._detachedFileSystemStarted) {
+            this._context.subscriptions.push(
+                vscode.workspace.registerFileSystemProvider(
+                    Constants.URI_LEO_DETACHED_SCHEME,
+                    this._leoDetachedFileSystem,
+                    { isCaseSensitive: true }
+                )
+            );
+            this._detachedFileSystemStarted = true;
+        }
         if (this.config.showUnlOnStatusBar && utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
             this._leoStatusBar.show();
         }
@@ -1719,6 +1782,22 @@ export class LeoIntegration {
     }
 
     /**
+     * React to the closing of 'tabs' via
+     * events from vscode.window.tabGroups
+     */
+    public _onTabGroupsChanged(p_event: vscode.TabGroupChangeEvent): void {
+        this.checkClosedTabs(); // debounced
+    }
+
+    /**
+     * React to the closing of 'tabgroups' via
+     * events from vscode.window.tabGroups
+     */
+    public _onTabsChanged(p_event: vscode.TabChangeEvent): void {
+        this.checkClosedTabs(); // debounced
+    }
+
+    /**
      * * Handles detection of the active editor having changed from one to another, or closed
      * @param p_editor The editor itself that is now active
      * @param p_internalCall Flag used to signify the it was called voluntarily by leoInteg itself
@@ -1798,7 +1877,10 @@ export class LeoIntegration {
      * @param p_event a change event containing the active editor's selection, if any.
      */
     private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
-        if (p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+        if (
+            p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME ||
+            p_event.textEditor.document.uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+        ) {
             if (p_event.selections.length) {
                 this._selectionDirty = true;
                 this._selection = p_event.selections[0];
@@ -1812,7 +1894,10 @@ export class LeoIntegration {
      * @param p_event a change event containing the active editor's visible range, if any.
      */
     private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
-        if (p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+        if (
+            p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME ||
+            p_event.textEditor.document.uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+        ) {
             if (p_event.visibleRanges.length) {
                 this._scrollDirty = true;
                 this._scroll = p_event.visibleRanges[0];
@@ -1826,6 +1911,144 @@ export class LeoIntegration {
      * @param p_textDocumentChange Text changed event passed by vscode
      */
     private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent): void {
+
+        if (
+            p_textDocumentChange.contentChanges.length &&
+            (p_textDocumentChange.document.uri.scheme === Constants.URI_LEO_DETACHED_SCHEME)
+        ) {
+            const [unused, id, gnx] = p_textDocumentChange.document.uri.path.split("/");
+            const w_bodyText = p_textDocumentChange.document.getText().replace(/\r\n/g, "\n");
+            const w_hasBody = !!w_bodyText.length;
+
+            const w_selectedCId = this.leoStates.leoCommanderId; // g.app.windowList[this.frameIndex].c.id.toString();
+            const w_sameCommander = w_selectedCId === id;
+            let w_alreadySaved = false;
+            let w_v: ArchivedPosition | undefined;
+
+            w_v = this._leoDetachedFileSystem.openedBodiesVNodes[gnx];
+            if (this._changedBodyWithMirrorDetached || (w_v && (w_bodyText === w_v._lastBodyData))) {
+                // WAS NOT A USER MODIFICATION?
+                this._changedBodyWithMirrorDetached = false;
+                return;
+            }
+
+            this.bodyDetachedTextDocument = p_textDocumentChange.document;
+
+            // * If body changed a line with and '@' directive refresh body states
+            let w_needsRefresh = false;
+            for (const p_change of p_textDocumentChange.contentChanges) {
+                if (p_change.text.includes('@')) {
+                    // There may have been an @
+                    w_needsRefresh = true;
+                    break;
+                }
+            }
+
+            const w_textEditor = vscode.window.activeTextEditor;
+            if (
+                w_textEditor && w_textEditor.selections && w_textEditor.selections.length &&
+                !w_needsRefresh && p_textDocumentChange.document.uri.fsPath === w_textEditor.document.uri.fsPath
+            ) {
+                for (const p_selection of w_textEditor.selections) {
+                    if (p_selection.active.line < w_textEditor.document.lineCount) {
+                        // TRY TO DETECT IF LANGUAGE RESET NEEDED!
+                        let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
+                        if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
+                            w_needsRefresh = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // If same commander, and node icon changed (or whole document was unchanged)
+            if (w_sameCommander) {
+                const w_uriKey = utils.leoUriToStr(this.bodyDetachedTextDocument.uri);
+                const w_node = this._leoDetachedFileSystem.openedBodiesVNodes[w_uriKey];
+                const w_detachedIconChanged = !w_node.dirty || (!!w_node.hasBody === !w_hasBody);
+                if (!this.leoStates.leoChanged || w_detachedIconChanged) {
+                    if (!w_alreadySaved) {
+                        void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                        w_alreadySaved = true;
+                    }
+                    if (w_detachedIconChanged) {
+                        this.findFocusTree = false;
+                        // NOT incrementing this.treeID to keep ids intact
+                        // NoReveal since we're keeping the same id.
+                        this._refreshOutline(false, RevealType.NoReveal);
+                    }
+                }
+            }
+
+            if (w_needsRefresh) {
+                if (!w_alreadySaved) {
+                    void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                    w_alreadySaved = true;
+                }
+                // REFRESH LANGUAGE OF THIS DETACHED BODY
+                const w_foundVnode = this._leoDetachedFileSystem.openedBodiesVNodes[utils.leoUriToStr(p_textDocumentChange.document.uri)];
+                if (w_foundVnode) {
+                    if (!w_alreadySaved) {
+                        void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                        w_alreadySaved = true;
+                    }
+
+                    this._getBodyLanguage(w_v, id).then((p_language) => {
+                        if (this.bodyDetachedTextDocument && p_language !== this.bodyDetachedTextDocument.languageId) {
+                            void this._setBodyLanguage(this.bodyDetachedTextDocument, p_language);
+                        }
+                    });
+
+                } else {
+                    console.log('DETACHED VNODE not found when resetting language');
+                }
+                // REFRESH LANGUAGE OF OTHER DETACHED BODIES WITH DELAY
+                this.refreshCommanderDetachedLanguage();
+            }
+
+            let w_sameBodyTabOpened = false;
+            // CHECK FOR BODY THAT MATCHES! 
+            for (const p_tabGroup of vscode.window.tabGroups.all) {
+                for (const p_tab of p_tabGroup.tabs) {
+                    if (p_tab.input &&
+                        (p_tab.input as vscode.TabInputText).uri &&
+                        ((p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME)
+                    ) {
+                        if (gnx === utils.leoUriToStr((p_tab.input as vscode.TabInputText).uri)) {
+                            w_sameBodyTabOpened = true;
+                            break;
+                        }
+                    }
+                }
+                if (w_sameBodyTabOpened) {
+                    break;
+                }
+            }
+
+            // Check if exact same commander as currently selected body
+            if (w_sameCommander) {
+                if (this.lastSelectedNode && gnx === this.lastSelectedNode.gnx) {
+                    // Same commander AND same gnx  !  
+                    if (!w_alreadySaved) {
+                        void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                        w_alreadySaved = true;
+                    }
+                    if (w_sameBodyTabOpened) {
+                        if (this._leoFileSystem.watchedBodiesGnx.includes(gnx)) {
+                            this._changedDetachedWithMirrorBody = true; // PREVENT DOUBLE REFRESH
+                        }
+                        this._leoFileSystem.fireRefreshFile(this.lastSelectedNode.gnx);
+
+                    }
+                }
+                if (w_needsRefresh) {
+                    this.debouncedRefreshBodyStates(50); // And maybe changed in other node of same commander!
+                }
+
+            }
+
+        }
+
         // ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
         if (
             this.lastSelectedNode &&
@@ -1838,31 +2061,56 @@ export class LeoIntegration {
             this._bodyLastChangedDocumentSaved = false;
             this._editorTouched = true; // To make sure to transfer content to Leo even if all undone
             this._bodyPreviewMode = false;
+            let w_hasSameDetachedTab = false;
+            const c_id = this.leoStates.leoCommanderId;
+            const w_lastSelNodeGnx = this.lastSelectedNode.gnx;
+
+
+            // CHECK FOR DETACHED THAT MATCHES! 
+            for (const p_tabGroup of vscode.window.tabGroups.all) {
+                for (const p_tab of p_tabGroup.tabs) {
+                    if (p_tab.input &&
+                        (p_tab.input as vscode.TabInputText).uri &&
+                        (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+                    ) {
+                        const [unused, id, gnx] = (p_tab.input as vscode.TabInputText).uri.path.split("/");
+                        if (id === c_id && gnx === w_lastSelNodeGnx) {
+                            w_hasSameDetachedTab = true;
+                            break;
+                        }
+                    }
+                }
+                if (w_hasSameDetachedTab) {
+                    break;
+                }
+            }
 
             // * If icon should change then do it now (if there's no document edit pending)
             if (
                 utils.leoUriToStr(p_textDocumentChange.document.uri) === this.lastSelectedNode.gnx
             ) {
-                const w_hasBody = !!p_textDocumentChange.document.getText().length;
+                const w_bodyText = p_textDocumentChange.document.getText().replace(/\r\n/g, "\n");
+                const w_hasBody = !!w_bodyText.length;
                 const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
 
                 let w_skipSave = false;
 
-                // TODO : uncomment and test this to fix replace / replace-then-find!!
                 if (
-                    this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
-                    p_textDocumentChange.document.getText().replace(/\r\n/g, "\n") === this._leoFileSystem.lastBodyData
+                    this._changedDetachedWithMirrorBody ||
+                    (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
+                        w_bodyText === this._leoFileSystem.lastBodyData)
                 ) {
                     // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
                     // Set proper cursor insertion point and selection range.
 
+                    this._changedDetachedWithMirrorBody = false;
                     // ALSO check if the icon would change!
                     this.showBody(false, true, true);
                     // w_skipSave = true;
-                    // return; // ! TEST WITH \ WITHOUT RETURN !
+                    return; // ! TEST WITH / WITHOUT RETURN !
                 }
 
-                if (!this.leoStates.leoChanged || w_iconChanged) {
+                if (!this.leoStates.leoChanged || w_iconChanged || w_hasSameDetachedTab) {
                     // console.log('need to change icon');
 
                     if (this.preventIconChange && !w_skipSave) {
@@ -1884,6 +2132,12 @@ export class LeoIntegration {
                             q_save = this._bodySaveDocument(p_textDocumentChange.document);
                         }
                         q_save.then(() => {
+                            if (w_hasSameDetachedTab && this.lastSelectedNode) {
+                                if (this._leoDetachedFileSystem.watchedBodiesGnx.includes(`${c_id}/${w_lastSelNodeGnx}`)) {
+                                    this._changedBodyWithMirrorDetached = true; // PREVENT DOUBLE REFRESH
+                                }
+                                this._leoDetachedFileSystem.fireRefreshFile(`${c_id}/${w_lastSelNodeGnx}`);
+                            }
                             if (w_iconChanged) {
                                 // NOT incrementing this.treeID to keep ids intact
                                 // NoReveal since we're keeping the same id.
@@ -1902,27 +2156,32 @@ export class LeoIntegration {
 
             // * If body changed a line with and '@' directive refresh body states
             let w_needsRefresh = false;
-            p_textDocumentChange.contentChanges.forEach(p_contentChange => {
-                if (p_contentChange.text.includes('@')) {
+            for (const p_change of p_textDocumentChange.contentChanges) {
+                if (p_change.text.includes('@')) {
                     // There may have been an @
                     w_needsRefresh = true;
+                    break;
                 }
-            });
+            }
 
             const w_textEditor = vscode.window.activeTextEditor;
 
             // TODO : Make this check more intelligent by keeping all lines for an interval, and check all them after delay.
             if (w_textEditor && p_textDocumentChange.document.uri.fsPath === w_textEditor.document.uri.fsPath) {
-                w_textEditor.selections.forEach(p_selection => {
-                    // if line starts with @
-                    let w_line = w_textEditor.document.lineAt(p_selection.active.line).text.toLowerCase();
-                    if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
-                        w_needsRefresh = true;
+                for (const p_selection of w_textEditor.selections) {
+                    // TRY TO DETECT IF LANGUAGE RESET NEEDED!
+                    if (p_selection.active.line < w_textEditor.document.lineCount) {
+                        let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
+                        if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
+                            w_needsRefresh = true;
+                            break;
+                        }
                     }
-                });
+                }
             }
             if (w_needsRefresh) {
                 this.debouncedRefreshBodyStates(Constants.BODY_STATES_DEBOUNCE_DELAY);
+                this.refreshCommanderDetachedLanguage();
             }
 
         }
@@ -2019,6 +2278,13 @@ export class LeoIntegration {
             return w_resolveAfterEditHeadline;
         }
 
+        // * Save any 'detached' dirty panels to leo
+        for (const doc of vscode.workspace.textDocuments) {
+            if (!doc.isClosed && doc.isDirty && doc.uri.scheme === Constants.URI_LEO_DETACHED_SCHEME) {
+                void this._bodySaveDocument(doc, p_forcedVsCodeSave);
+            }
+        }
+
         // * Save body to Leo if a change has been made to the body 'document' so far
         let q_savePromise: Promise<boolean>;
         if (
@@ -2056,6 +2322,7 @@ export class LeoIntegration {
 
     /**
      * * Saves the cursor position along with the text selection range and scroll position
+     * of the last body, or detached body pane, that had its cursor info set in this._selection, etc.
      * @returns Promise that resolves when the "setSelection" action returns from Leo's side
      */
     private async _bodySaveSelection(): Promise<boolean> {
@@ -2069,8 +2336,20 @@ export class LeoIntegration {
                 w_scroll = 0;
             }
 
+            let gnx: string | undefined;
+            let id: string = "";
+
+            if (!this._selectionGnx.includes('/')) {
+                // leo body
+                gnx = this._selectionGnx;
+            } else {
+                // DETACHED
+                [id, gnx] = this._selectionGnx.split('/');
+
+            }
+
             const w_param: BodySelectionInfo = {
-                gnx: this._selectionGnx,
+                gnx: gnx,
                 scroll: w_scroll,
                 insert: {
                     line: this._selection.active.line || 0,
@@ -2086,6 +2365,10 @@ export class LeoIntegration {
                 },
             };
 
+            if (id) {
+                w_param["commanderId"] = id;
+            }
+
             this._scrollDirty = false;
             this._selectionDirty = false; // don't wait for return of this call
 
@@ -2098,7 +2381,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Sets new body text on leo's side, and may optionally save vsCode's body editor (which will trim spaces)
+     * * Sets new body text (or detached body) on leo's side, and may optionally save vsCode's body editor (which will trim spaces)
      * @param p_document Vscode's text document which content will be used to be the new node's body text in Leo
      * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
      * @returns a promise that resolves when the complete saving process is finished
@@ -2107,20 +2390,42 @@ export class LeoIntegration {
         p_document: vscode.TextDocument,
         p_forcedVsCodeSave?: boolean
     ): Promise<boolean> {
+
         if (p_document) {
 
-            const w_param = {
-                gnx: utils.leoUriToStr(p_document.uri),
+            let id: string = ""; // STARTS FALSY
+            let w_gnx: string;
+
+            if (p_document.uri.scheme === Constants.URI_LEO_DETACHED_SCHEME) {
+                // detached body
+                id = p_document.uri.path.split("/")[1];
+                // find commander
+                w_gnx = p_document.uri.path.split("/")[2];
+
+            } else {
+                // regular body
+                w_gnx = utils.leoUriToStr(p_document.uri);
+            }
+
+            const w_param: Record<string, string> = {
+                gnx: w_gnx,
                 body: p_document.getText().replace(/\r\n/g, "\n"),
             };
+            if (id) {
+                w_param["commanderId"] = id;
+            }
             // Don't wait for promise!
             this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
 
             // await for bodySaveSelection that is placed on the stack right after saving body
             await this._bodySaveSelection();
 
-            this._refreshType.states = true;
-            this.getStates();
+            if (!id) {
+                // if NOT detached
+                this._refreshType.states = true;
+                this.getStates();
+            }
+
             if (p_forcedVsCodeSave) {
                 return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
             }
@@ -2240,6 +2545,8 @@ export class LeoIntegration {
      * * Launches refresh for UI components: treeviews, body, and context states
      */
     private async _launchRefresh(): Promise<unknown> {
+
+        this._refreshDetachedBodies();
 
         if (this._lastCommandFindEndOutline) {
             this._lastCommandFindEndOutline--; // decrement from 2 to 1 the first time, keeping the flag for 1 refresh.
@@ -2382,6 +2689,91 @@ export class LeoIntegration {
         }
 
         return q_result;
+    }
+
+    private _refreshDetachedBodies() {
+        //  Refresh detached bodies as needed IF SAME COMMANDER, AND CLOSE : 
+        if (!this.leoStates.fileOpenedReady) {
+            return;
+        }
+
+        const c_id = this.leoStates.leoCommanderId;
+        const q_foundResults: Array<Promise<LeoBridgePackage>> = [];
+        const w_sentFoundTabs: Array<vscode.Tab> = [];
+        const w_sentFoundUri: Array<vscode.Uri> = [];
+
+        for (const p_tabGroup of vscode.window.tabGroups.all) {
+            for (const p_tab of p_tabGroup.tabs) {
+                if (p_tab.input &&
+                    (p_tab.input as vscode.TabInputText).uri &&
+                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+                ) {
+                    const w_uri = (p_tab.input as vscode.TabInputText).uri;
+                    const [unused, id, gnx] = w_uri.path.split("/");
+
+                    // Refresh detached bodies if same commander  // ! ALSO FIRE REFRESH !
+                    if (this._refreshType.body && id === c_id) {
+                        this._leoDetachedFileSystem.fireRefreshFile(`${id}/${gnx}`);
+                    }
+
+                    // if refresh tree is true, validate that opened detached of same commander still valid and close as needed.
+                    if (this._refreshType.tree && id === c_id && !this._refreshType.documents) {
+                        const w_foundVnode = this._leoDetachedFileSystem.openedBodiesVNodes[utils.leoUriToStr(w_uri)];
+                        if (w_foundVnode) {
+                            w_sentFoundTabs.push(p_tab);
+                            w_sentFoundUri.push(w_uri);
+                            q_foundResults.push(
+                                this.sendAction(
+                                    Constants.LEOBRIDGE.GET_BODY_STATES,
+                                    utils.buildNodeCommand(w_foundVnode) // No need to specify commander
+                                )
+                            );
+                        }
+                    } else if (this._refreshType.documents) {
+                        const w_foundVnode = this._leoDetachedFileSystem.openedBodiesVNodes[utils.leoUriToStr(w_uri)];
+                        if (w_foundVnode) {
+                            const param = utils.buildNodeCommand(w_foundVnode);
+                            param["commanderId"] = id;
+                            w_sentFoundTabs.push(p_tab);
+                            w_sentFoundUri.push(w_uri);
+                            q_foundResults.push(
+                                this.sendAction(
+                                    Constants.LEOBRIDGE.GET_BODY_STATES,
+                                    param
+                                )
+                            );
+                        }
+
+                    }
+
+                }
+
+            }
+        }
+
+        if (q_foundResults.length) {
+            return Promise.all(q_foundResults).then((p_results) => {
+                const w_foundTabs: Set<vscode.Tab> = new Set();
+                const w_foundUri: Set<vscode.Uri> = new Set();
+
+                let w_resultIndex = 0;
+                for (const w_res of p_results) {
+                    if (!w_res.language) {
+                        w_foundTabs.add(w_sentFoundTabs[w_resultIndex]);
+                        w_foundUri.add(w_sentFoundUri[w_resultIndex]);
+                    }
+                    w_resultIndex = w_resultIndex + 1;
+                }
+
+                if (w_foundTabs.size) {
+                    void vscode.window.tabGroups.close([...w_foundTabs], true);
+                    for (const w_uri of w_foundUri) {
+                        void vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_uri);
+                    }
+                }
+            });
+        }
+
     }
 
     /**
@@ -2972,6 +3364,11 @@ export class LeoIntegration {
         }
     }
 
+    private _checkClosedTabs(): void {
+        this._leoFileSystem.cleanupBodies();
+        this._leoDetachedFileSystem.cleanupDetachedBodies();
+    }
+
     /**
      * * Checks if outline is visible
      * @returns true if either outline is visible
@@ -3328,7 +3725,7 @@ export class LeoIntegration {
         // else q_bodyStates will exist.
         if (q_bodyStates && !this._needLastSelectedRefresh) {
             Promise.all([q_bodyStates, q_showTextDocument]).then(
-                (p_values: [LeoBridgePackage, vscode.TextEditor]) => {
+                (p_values: [LeoBridgePackage, vscode.TextEditor | void]) => {
 
                     // * Set text selection range
                     const w_resultBodyStates = p_values[0];
@@ -3404,6 +3801,37 @@ export class LeoIntegration {
     }
 
     /**
+     * * Looks for given position's coloring language, taking account of '@killcolor', etc.
+     */
+    private async _getBodyLanguage(p: ArchivedPosition, c_id?: string): Promise<string> {
+        if (!p) {
+            p = this.lastSelectedNode!;
+        }
+        const param = utils.buildNodeCommand(p);
+        if (c_id) {
+            param["commanderId"] = c_id;
+        }
+        return this.sendAction(
+            Constants.LEOBRIDGE.GET_BODY_STATES,
+            param
+        ).then((p_bodyStates: LeoBridgePackage) => {
+            let w_language = p_bodyStates.language;
+            let w_wrap: boolean = !!p_bodyStates.wrap;
+
+            if (w_language) {
+                // Replace language string if in 'exceptions' array
+                w_language = Constants.LEO_LANGUAGE_PREFIX +
+                    (Constants.LANGUAGE_CODES[w_language] || w_language) +
+                    (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
+
+                return w_language;
+            } else {
+                return "";
+            }
+        });
+    }
+
+    /**
      * * Sets vscode's body-pane editor's language
      */
     private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): Thenable<vscode.TextDocument> {
@@ -3459,28 +3887,15 @@ export class LeoIntegration {
         }
 
         // * Set document language along with the proper cursor position, selection range and scrolling position
-        let q_bodyStates: Promise<LeoBridgePackage> | undefined;
-        q_bodyStates = this.sendAction(
-            Constants.LEOBRIDGE.GET_BODY_STATES,
-            utils.buildNodeCommand(this.lastSelectedNode!)
-        );
-        q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
-            let w_language: string = p_bodyStates.language!;
-            let w_wrap: boolean = !!p_bodyStates.wrap;
-
-            // Replace language string if in 'exceptions' array
-            w_language = Constants.LEO_LANGUAGE_PREFIX +
-                (Constants.LANGUAGE_CODES[w_language] || w_language) +
-                (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
-
+        this._getBodyLanguage(this.lastSelectedNode!).then((p_language) => {
             // Apply language if the selected node is still the same after all those events
             if (this._bodyTextDocument &&
                 !this._bodyTextDocument.isClosed &&
                 this.lastSelectedNode &&
-                w_language !== this._bodyTextDocument.languageId &&
+                p_language !== this._bodyTextDocument.languageId &&
                 utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
             ) {
-                this._setBodyLanguage(this._bodyTextDocument, w_language);
+                this._setBodyLanguage(this._bodyTextDocument, p_language);
             }
         });
     }
@@ -3509,6 +3924,72 @@ export class LeoIntegration {
                     this.refreshBodyStates();
                 }
             }, p_delay);
+        }
+
+    }
+
+    /**
+     * Debounced refresh language for all detached bodies of active commander
+     */
+    private _refreshCommanderDetachedLanguage(): void {
+
+        const c_id = this.leoStates.leoCommanderId;
+        const w_documents: vscode.TextDocument[] = [];
+        const w_uris: string[] = [];
+
+        for (const p_tabGroup of vscode.window.tabGroups.all) {
+            for (const p_tab of p_tabGroup.tabs) {
+                if (p_tab.input &&
+                    (p_tab.input as vscode.TabInputText).uri &&
+                    ((p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_DETACHED_SCHEME)
+                ) {
+                    const [unused, id, gnx] = (p_tab.input as vscode.TabInputText).uri.path.split("/");
+                    if (id === c_id) {
+                        // From same commander
+                        if (!w_uris.includes((p_tab.input as vscode.TabInputText).uri.toString())) {
+                            w_uris.push((p_tab.input as vscode.TabInputText).uri.toString());
+                        }
+
+                    }
+                }
+            }
+        }
+
+        for (const w_doc of vscode.workspace.textDocuments) {
+            if (!w_doc.isClosed && w_uris.includes(w_doc.uri.toString())) {
+                w_documents.push(w_doc);
+            }
+        }
+
+        console.log('Qty of detached to recolorize by resetting language : ', w_documents.length);
+
+        for (const w_doc of w_documents) {
+            const w_foundVnode = this._leoDetachedFileSystem.openedBodiesVNodes[utils.leoUriToStr(w_doc.uri)];
+            if (w_foundVnode) {
+                void this.sendAction(
+                    Constants.LEOBRIDGE.GET_BODY_STATES,
+                    utils.buildNodeCommand(w_foundVnode!)
+                ).then((p_bodyStates: LeoBridgePackage) => {
+                    let w_language: string = p_bodyStates.language!;
+                    let w_wrap: boolean = !!p_bodyStates.wrap;
+                    let w_tabWidth: number | boolean = p_bodyStates.tabWidth || !!p_bodyStates.tabWidth;
+
+                    // Replace language string if in 'exceptions' array
+                    w_language = Constants.LEO_LANGUAGE_PREFIX +
+                        (Constants.LANGUAGE_CODES[w_language] || w_language) +
+                        (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
+
+                    // Apply language if the selected node is still the same after all those events
+                    if (!w_doc.isClosed) {
+                        // w_doc still OPEN
+                        this._setBodyLanguage(w_doc, w_language);
+
+                    }
+
+                });
+            } else {
+                console.log('DETACHED VNODE not found when resetting language');
+            }
         }
 
     }
@@ -3849,30 +4330,30 @@ export class LeoIntegration {
     public async selectTreeNode(
         p_node: ArchivedPosition,
         p_internalCall?: boolean,
-        p_aside?: boolean
+        //p_aside?: boolean
     ): Promise<void | LeoBridgePackage | vscode.TextEditor> {
 
         await this.triggerBodySave(true);
 
         // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
-        if (p_aside && p_node !== this.lastSelectedNode) {
-            this._revealNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
-        }
+        // if (p_aside && p_node !== this.lastSelectedNode) {
+        //     this._revealNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
+        // }
 
         this.leoStates.setSelectedNodeFlags(p_node);
 
         // removed until proper API for knowing focus placement
         // this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
 
-        const w_showBodyKeepFocus = p_aside
-            ? this.config.treeKeepFocusWhenAside
-            : this.config.treeKeepFocus;
+        // const w_showBodyKeepFocus = p_aside
+        //     ? this.config.treeKeepFocusWhenAside
+        //     : this.config.treeKeepFocus;
 
         // * Check if having already this exact node position selected : Just show the body and exit
         // (other tree nodes with same gnx may have different syntax language coloring because of parents lineage)
         if (p_node === this.lastSelectedNode) {
             this._locateOpenedBody(p_node.gnx); // LOCATE NEW GNX
-            return this.showBody(!!p_aside, w_showBodyKeepFocus).catch((p_error) => {
+            return this.showBody(false, this.config.treeKeepFocus).catch((p_error) => {
                 return Promise.resolve(); // intercept cancellation as success: next one is going to replace anyways.
             });
             // Voluntary exit
@@ -3911,8 +4392,207 @@ export class LeoIntegration {
 
         // * Apply the node to the body text without waiting for the selection promise to resolve
         this.showBodyIfClosed = true;
-        this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus);
+        this._tryApplyNodeToBody(p_node, false, this.config.treeKeepFocus);
         return q_setSelectedNode;
+    }
+
+    /**
+     * * Opens a detached body aside, and set focus in a body pane locked to its commander/gnx. 
+     * - Does not select the node in the outline.
+     * - If already opened aside in the same targeted column, just reveal.
+     * @param p is the position node to be opened aside
+     */
+    public async openAside(p?: ArchivedPosition): Promise<unknown> {
+        // Those 'body panes' opened aside, (other than the main body pane), 
+        // stay opened until the node's gnx becomes invalid/deleted, or it's commander is closed.
+        await this.triggerBodySave(true);
+
+        let c_id = this.leoStates.leoCommanderId;
+        if (!p) {
+            p = this.lastSelectedNode!;
+        }
+        const detachedUri = utils.strToLeoDetachedUri(`${c_id}/${p.gnx}`);
+
+        // * Step 1 : Open the document
+        this._leoDetachedFileSystem.setNewBodyUriTime(detachedUri, p);
+        const w_openedDocument = await vscode.workspace.openTextDocument(detachedUri);
+        this.bodyDetachedTextDocument = w_openedDocument;
+
+        // TODO : FIX THIS !
+        let w_bodySel: BodySelectionInfo | undefined;
+        let q_bodyStates = this.sendAction(
+            Constants.LEOBRIDGE.GET_BODY_STATES,
+            utils.buildNodeCommand(p!)
+        );
+
+        // const w_language = this._getBodyLanguage(p);
+        // const insert = p.v.insertSpot;
+        // const start = p.v.selectionStart;
+        // const end = p.v.selectionStart + p.v.selectionLength;
+        // const scroll = p.v.scrollBarSpot;
+
+        // w_bodySel = {
+        //     "gnx": p.v.gnx,
+        //     "scroll": scroll,
+        //     "insert": this._row_col_pv_dict(insert, p.v.b),
+        //     "start": this._row_col_pv_dict(start, p.v.b),
+        //     "end": this._row_col_pv_dict(end, p.v.b)
+        // };
+
+        // void this._setBodyLanguage(this.bodyDetachedTextDocument, w_language);
+
+        const w_showOptions: vscode.TextDocumentShowOptions =
+        {
+            viewColumn: vscode.ViewColumn.Beside,
+            preserveFocus: this.config.treeKeepFocusWhenAside,
+            preview: false,
+        };
+        // * Actually Show the body pane document in a text editor
+        const q_showTextDocument = vscode.window.showTextDocument(
+            this.bodyDetachedTextDocument,
+            w_showOptions
+        );
+
+        q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
+            let w_language: string = p_bodyStates.language!;
+            let w_wrap: boolean = !!p_bodyStates.wrap;
+            let w_tabWidth: number | boolean = p_bodyStates.tabWidth || !!p_bodyStates.tabWidth;
+            let w_gnx: string | undefined = p_bodyStates.selection?.gnx; // ? To verify if better than w_openedDocumentGnx ?
+
+            // Replace language string if in 'exceptions' array
+            w_language = Constants.LEO_LANGUAGE_PREFIX +
+                (Constants.LANGUAGE_CODES[w_language] || w_language) +
+                (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
+
+            // Apply language if the selected node is still the same after all those events
+            if (!w_openedDocument.isClosed) {
+                // w_openedDocument still OPEN
+                this._setBodyLanguage(w_openedDocument, w_language);
+
+            }
+            return p_bodyStates;
+        });
+
+
+        Promise.all([q_bodyStates, q_showTextDocument]).then(
+            (p_values: [LeoBridgePackage, vscode.TextEditor]) => {
+
+                // * Set text selection range
+                const w_resultBodyStates = p_values[0];
+                const w_bodyTextEditor = p_values[1];
+                if (!w_resultBodyStates.selection) {
+                    console.log("no selection in returned package from get_body_states");
+                }
+
+                const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
+
+                // Cursor position and selection range
+                const w_activeRow: number = w_leoBodySel.insert.line;
+                const w_activeCol: number = w_leoBodySel.insert.col;
+                let w_anchorLine: number = w_leoBodySel.start.line;
+                let w_anchorCharacter: number = w_leoBodySel.start.col;
+
+                if (w_activeRow === w_anchorLine && w_activeCol === w_anchorCharacter) {
+                    // Active insertion same as start selection, so use the other ones
+                    w_anchorLine = w_leoBodySel.end.line;
+                    w_anchorCharacter = w_leoBodySel.end.col;
+                }
+
+                const w_selection = new vscode.Selection(
+                    w_anchorLine,
+                    w_anchorCharacter,
+                    w_activeRow,
+                    w_activeCol
+                );
+
+                let w_scrollRange: vscode.Range | undefined;
+
+                // Build scroll position from selection range.
+                w_scrollRange = new vscode.Range(
+                    w_activeRow,
+                    w_activeCol,
+                    w_activeRow,
+                    w_activeCol
+                );
+
+                if (w_bodyTextEditor) {
+                    // this._revealType = RevealType.NoReveal; // ! IN CASE THIS WAS STILL UP FROM SHOW_OUTLINE
+
+                    w_bodyTextEditor.selection = w_selection; // set cursor insertion point & selection range
+                    if (!w_scrollRange) {
+                        w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
+                    }
+
+                    if (this._refreshType.scroll) {
+                        this._refreshType.scroll = false;
+                        // Set scroll approximation
+                        w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+                    }
+
+                } else {
+                    console.log("no selection in returned package from showTextDocument");
+                }
+
+            }
+        );
+
+        // .then(
+        //     (p_textEditor: vscode.TextEditor) => {
+
+        //         // * Set text selection range
+        //         const w_bodyTextEditor = p_textEditor;
+        //         if (!w_bodySel) {
+        //             console.log("no selection in returned package from get_body_states");
+        //         }
+
+        //         const w_leoBodySel: BodySelectionInfo = w_bodySel!;
+
+        //         // Cursor position and selection range
+        //         const w_activeRow: number = w_leoBodySel.insert.line;
+        //         const w_activeCol: number = w_leoBodySel.insert.col;
+        //         let w_anchorLine: number = w_leoBodySel.start.line;
+        //         let w_anchorCharacter: number = w_leoBodySel.start.col;
+
+        //         if (w_activeRow === w_anchorLine && w_activeCol === w_anchorCharacter) {
+        //             // Active insertion same as start selection, so use the other ones
+        //             w_anchorLine = w_leoBodySel.end.line;
+        //             w_anchorCharacter = w_leoBodySel.end.col;
+        //         }
+
+        //         const w_selection = new vscode.Selection(
+        //             w_anchorLine,
+        //             w_anchorCharacter,
+        //             w_activeRow,
+        //             w_activeCol
+        //         );
+
+        //         let w_scrollRange: vscode.Range | undefined;
+
+        //         // Build scroll position from selection range.
+        //         w_scrollRange = new vscode.Range(
+        //             w_activeRow,
+        //             w_activeCol,
+        //             w_activeRow,
+        //             w_activeCol
+        //         );
+
+        //         if (w_bodyTextEditor) {
+
+        //             w_bodyTextEditor.selection = w_selection; // set cursor insertion point & selection range
+        //             if (!w_scrollRange) {
+        //                 w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
+        //             }
+
+        //             w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+
+        //         } else {
+        //             console.log("no selection in returned package from showTextDocument");
+        //         }
+
+        //     }
+        // );
+
+        return q_showTextDocument;
     }
 
     /**
