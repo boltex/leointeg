@@ -38,13 +38,13 @@ export class Constants {
     public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
     public static LEO_WRAP_SUFFIX: string = ".wrap"; // all lowercase.
 
-    public static URI_LEO_SCHEME: string = "leo";
-    public static URI_LEO_DETACHED_SCHEME: string = "leoDetached";
+    public static URI_LEO_SCHEME: string = "leointeg";
+    public static URI_LEO_DETACHED_SCHEME: string = "leointegDetached";
     public static URI_FILE_SCHEME: string = "file";
     public static URI_UNTITLED_SCHEME: string = 'untitled';
     public static OUTPUT_CHANNEL_LANGUAGE: string = 'Log';
-    public static URI_SCHEME_HEADER: string = "leo:/";
-    public static URI_SCHEME_DETACHED_HEADER: string = "leoDetached:/";
+    public static URI_SCHEME_HEADER: string = "leointeg:/";
+    public static URI_SCHEME_DETACHED_HEADER: string = "leointegDetached:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
     public static UNTITLED_FILE_NAME: string = "untitled";
     public static RECENT_FILES_KEY: string = "leoRecentFiles";

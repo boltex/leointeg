@@ -423,7 +423,7 @@ export function fixSlashesDriveLetter(p_path: string): string {
 
 /**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
- * with a scheme header like "leo:/" or 'more:/'
+ * with a scheme header like "leointeg:/" or 'more:/'
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */

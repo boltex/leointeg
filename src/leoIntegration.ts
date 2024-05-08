@@ -1929,7 +1929,10 @@ export class LeoIntegration {
             if (this._changedBodyWithMirrorDetached || (w_v && (w_bodyText === w_v._lastBodyData))) {
                 // WAS NOT A USER MODIFICATION?
                 this._changedBodyWithMirrorDetached = false;
+                console.log('document changed DETACHED not user modification ', this._changedBodyWithMirrorDetached, (w_v && (w_bodyText === w_v._lastBodyData)));
                 return;
+            } else {
+                console.log('document changed DETACHED !');
             }
 
             this.bodyDetachedTextDocument = p_textDocumentChange.document;
@@ -2107,7 +2110,12 @@ export class LeoIntegration {
                     // ALSO check if the icon would change!
                     this.showBody(false, true, true);
                     // w_skipSave = true;
+                    console.log('document changed BODY not user modification ', this._changedDetachedWithMirrorBody, (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
+                        w_bodyText === this._leoFileSystem.lastBodyData));
                     return; // ! TEST WITH / WITHOUT RETURN !
+
+                } else {
+                    console.log('document changed BODY !');
                 }
 
                 if (!this.leoStates.leoChanged || w_iconChanged || w_hasSameDetachedTab) {

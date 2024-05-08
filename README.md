@@ -26,6 +26,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 ## Features
 
 - UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector** along with a **Log Window** [output channel](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- **Detached Body Panes**, independent of the selected node can be opened with the 'Open Aside' command.
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
@@ -239,7 +240,7 @@ for more information.
 ### Keybindings Conflicts Resolution
 
 If you have a keybinding conflict for a command that you would like **not** to be resolved by Leo when the focus is on the body pane,
-add **`&& resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
+add **`&& resourceScheme != 'leointeg'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Move Outline Keyboard Commands
 

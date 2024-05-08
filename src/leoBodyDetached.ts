@@ -6,7 +6,7 @@ import { LeoIntegration } from "./leoIntegration";
 import { ArchivedPosition, BodyTimeInfo } from "./types";
 
 /**
- * * Body panes implementation as a file system using "leojs" as a scheme identifier
+ * * Body panes implementation as a file system using "leointegDetached" as a scheme identifier
  */
 export class LeoBodyDetachedProvider implements vscode.FileSystemProvider {
 
