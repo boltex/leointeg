@@ -232,8 +232,8 @@ export class LeoIntegration {
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
 
     // * Body Pane
-    private _changedBodyWithMirrorDetached = false;
-    private _changedDetachedWithMirrorBody = false;
+    public changedBodyWithMirrorDetached: string | undefined = undefined; // "id/gnx" string as true
+    public changedDetachedWithMirrorBody: string | undefined = undefined; // "id/gnx" string as true
     private _bodyFileSystemStarted: boolean = false;
     private _detachedFileSystemStarted: boolean = false;
     private _bodyEnablePreview: boolean = true;
@@ -1926,10 +1926,10 @@ export class LeoIntegration {
             let w_v: ArchivedPosition | undefined;
 
             w_v = this._leoDetachedFileSystem.openedBodiesVNodes[gnx];
-            if (this._changedBodyWithMirrorDetached || (w_v && (w_bodyText === w_v._lastBodyData))) {
+            if (this.changedBodyWithMirrorDetached || (w_v && (w_bodyText === w_v._lastBodyData))) {
                 // WAS NOT A USER MODIFICATION?
-                this._changedBodyWithMirrorDetached = false;
-                console.log('document changed DETACHED not user modification ', this._changedBodyWithMirrorDetached, (w_v && (w_bodyText === w_v._lastBodyData)));
+                this.changedBodyWithMirrorDetached = undefined;
+                console.log('document changed DETACHED not user modification ', this.changedBodyWithMirrorDetached, (w_v && (w_bodyText === w_v._lastBodyData)));
                 return;
             } else {
                 console.log('document changed DETACHED !');
@@ -2038,7 +2038,7 @@ export class LeoIntegration {
                     }
                     if (w_sameBodyTabOpened) {
                         if (this._leoFileSystem.watchedBodiesGnx.includes(gnx)) {
-                            this._changedDetachedWithMirrorBody = true; // PREVENT DOUBLE REFRESH
+                            this.changedDetachedWithMirrorBody = `${id}/${gnx}`; // PREVENT DOUBLE REFRESH
                         }
                         this._leoFileSystem.fireRefreshFile(this.lastSelectedNode.gnx);
 
@@ -2099,19 +2099,23 @@ export class LeoIntegration {
                 let w_skipSave = false;
 
                 if (
-                    this._changedDetachedWithMirrorBody ||
+                    this.changedDetachedWithMirrorBody ||
                     (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
                         w_bodyText === this._leoFileSystem.lastBodyData)
                 ) {
                     // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
                     // Set proper cursor insertion point and selection range.
 
-                    this._changedDetachedWithMirrorBody = false;
+                    this.changedDetachedWithMirrorBody = undefined;
                     // ALSO check if the icon would change!
                     this.showBody(false, true, true);
                     // w_skipSave = true;
-                    console.log('document changed BODY not user modification ', this._changedDetachedWithMirrorBody, (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
-                        w_bodyText === this._leoFileSystem.lastBodyData));
+                    console.log(
+                        'document changed BODY not user modification ',
+                        this.changedDetachedWithMirrorBody,
+                        (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
+                            w_bodyText === this._leoFileSystem.lastBodyData)
+                    );
                     return; // ! TEST WITH / WITHOUT RETURN !
 
                 } else {
@@ -2141,10 +2145,11 @@ export class LeoIntegration {
                         }
                         q_save.then(() => {
                             if (w_hasSameDetachedTab && this.lastSelectedNode) {
-                                if (this._leoDetachedFileSystem.watchedBodiesGnx.includes(`${c_id}/${w_lastSelNodeGnx}`)) {
-                                    this._changedBodyWithMirrorDetached = true; // PREVENT DOUBLE REFRESH
+                                const gnxString = `${c_id}/${w_lastSelNodeGnx}`;
+                                if (this._leoDetachedFileSystem.watchedBodiesGnx.includes(gnxString)) {
+                                    this.changedBodyWithMirrorDetached = gnxString; // PREVENT DOUBLE REFRESH
                                 }
-                                this._leoDetachedFileSystem.fireRefreshFile(`${c_id}/${w_lastSelNodeGnx}`);
+                                this._leoDetachedFileSystem.fireRefreshFile(gnxString);
                             }
                             if (w_iconChanged) {
                                 // NOT incrementing this.treeID to keep ids intact

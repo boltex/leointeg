@@ -4624,24 +4624,24 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.executeScript",
   "key": "ctrl+b",
   "mac": "cmd+b",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.minibuffer",
   "key": "alt+x",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
 <t tx="ekr.20200815123601.78">{
   "command": "leointeg.showOutline",
   "key": "alt+t",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo || leoFindFocus || focusedView =~ /^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || focusedView =~ /^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.showOutline",
   "key": "ctrl+t",
   "mac": "cmd+t",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 {
   "command": "leointeg.showBody",
@@ -4674,7 +4674,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.tabCycleNext",
   "key": "ctrl+tab",
   "mac": "cmd+tab",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 </t>
 <t tx="ekr.20200815123601.79">{
@@ -4687,25 +4687,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.saveLeoFile",
   "key": "ctrl+s",
   "mac": "cmd+s",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 {
   "command": "leointeg.newLeoFile",
   "key": "ctrl+n",
   "mac": "cmd+n",
-  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme == leo || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.openLeoFile",
   "key": "ctrl+o",
   "mac": "cmd+o",
-  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme == leo || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.writeAtFileNodes",
   "key": "ctrl+shift+w",
   "mac": "cmd+shift+w",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 {
   "command": "leointeg.writeAtFileNodesFromOutline",
@@ -4717,7 +4717,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.writeDirtyAtFileNodes",
   "key": "ctrl+shift+q",
   "mac": "cmd+shift+q",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 {
   "command": "leointeg.writeDirtyAtFileNodesFromOutline",
@@ -4739,7 +4739,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 <t tx="ekr.20200815123601.80">{
   "command": "leointeg.contractAll",
   "key": "alt+-",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 {
   "command": "leointeg.contractAllFromOutline",
@@ -4751,7 +4751,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.editSelectedHeadline",
   "key": "ctrl+h",
   "mac": "cmd+h",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.editSelectedHeadlineFromOutline",
@@ -4763,7 +4763,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.markSelection",
   "key": "ctrl+m",
   "mac": "cmd+m",
-  "when": "leoTreeOpened &amp;&amp; !leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.markSelectionFromOutline",
@@ -4775,7 +4775,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.unmarkSelection",
   "key": "ctrl+m",
   "mac": "cmd+m",
-  "when": "leoTreeOpened &amp;&amp; leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.unmarkSelectionFromOutline",
@@ -4789,13 +4789,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineDownSelection",
   "key": "ctrl+d",
   "mac": "cmd+d",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineDownSelection",
   "key": "shift+alt+down",
   "mac": "shift+alt+down",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineDownSelectionFromOutline",
@@ -4819,13 +4819,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineLeftSelection",
   "key": "ctrl+l",
   "mac": "cmd+l",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineLeftSelection",
   "key": "shift+alt+left",
   "mac": "shift+alt+left",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineLeftSelectionFromOutline",
@@ -4849,13 +4849,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineRightSelection",
   "key": "ctrl+r",
   "mac": "cmd+r",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineRightSelection",
   "key": "shift+alt+right",
   "mac": "shift+alt+right",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineRightSelectionFromOutline",
@@ -4879,13 +4879,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineUpSelection",
   "key": "ctrl+u",
   "mac": "cmd+u",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineUpSelection",
   "key": "shift+alt+up",
   "mac": "shift+alt+up",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineUpSelectionFromOutline",
@@ -4908,7 +4908,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 <t tx="ekr.20200815123601.87">{
   "command": "leointeg.sortSiblingsSelection",
   "key": "alt+a",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.sortSiblingsSelectionFromOutline",
@@ -4921,7 +4921,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "win": "ctrl+oem_4",
   "linux": "ctrl+[",
   "mac": "cmd+[BracketLeft]",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.promoteSelectionFromOutline",
@@ -4937,7 +4937,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "win": "ctrl+oem_6",
   "linux": "ctrl+]",
   "mac": "cmd+[BracketRight]",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.demoteSelectionFromOutline",
@@ -4951,7 +4951,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.insertNodeSelection",
   "key": "ctrl+i",
   "mac": "cmd+i",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.insertNodeSelectionFromOutline",
@@ -4963,7 +4963,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.insertNodeSelection",
   "key": "shift+insert",
   "mac": "shift+insert",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.insertNodeSelectionFromOutline",
@@ -4981,7 +4981,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.insertChildNodeSelection",
   "key": "ctrl+insert",
   "mac": "cmd+insert",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.insertChildNodeSelectionFromOutline",
@@ -4995,7 +4995,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "win": "ctrl+oem_3",
   "linux": "ctrl+`",
   "mac": "cmd+`",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.cloneNodeSelectionFromOutline",
@@ -5009,7 +5009,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.cutNodeSelection",
   "key": "ctrl+shift+x",
   "mac": "cmd+shift+x",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.cutNodeSelectionFromOutline",
@@ -5021,13 +5021,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.copyNodeSelection",
   "key": "ctrl+shift+c",
   "mac": "cmd+shift+c",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.pasteNodeAtSelection",
   "key": "ctrl+shift+v",
   "mac": "cmd+shift+v",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.pasteNodeAtSelectionFromOutline",
@@ -5039,7 +5039,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.deleteSelection",
   "key": "ctrl+shift+backspace",
   "mac": "cmd+shift+backspace",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.deleteSelectionFromOutline",
@@ -5056,12 +5056,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 <t tx="ekr.20200815123601.88">{
   "command": "leointeg.scrollTop",
   "key": "alt+home",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.scrollBottom",
   "key": "alt+end",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.scrollTop",
@@ -5111,7 +5111,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.gotoNextCloneSelection",
   "key": "alt+n",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.gotoNextVisible",
@@ -5126,7 +5126,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.gotoNextVisible",
   "key": "alt+down",
-  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.gotoPrevVisible",
@@ -5141,7 +5141,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.gotoPrevVisible",
   "key": "alt+up",
-  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.contractOrGoLeft",
@@ -5151,7 +5151,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.contractOrGoLeft",
   "key": "alt+left",
-  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.expandAndGoRight",
@@ -5161,12 +5161,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.expandAndGoRight",
   "key": "alt+right",
-  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
 <t tx="ekr.20200815123601.89">"resourceLabelFormatters": [
   {
-    "scheme": "leo",
+    "scheme": "leointeg",
     "formatting": {
       "label": "Leo: Body",
       "separator": "/",
@@ -5175,7 +5175,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     }
   },
   {
-    "scheme": "leoDetached",
+    "scheme": "leointegDetached",
     "formatting": {
       "label": "Leo: Detached",
       "separator": "/",
@@ -5770,13 +5770,13 @@ public static JS_FILE_EXTENSION: string = "leojs";
 public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
 public static LEO_WRAP_SUFFIX: string = ".wrap"; // all lowercase.
 
-public static URI_LEO_SCHEME: string = "leo";
-public static URI_LEO_DETACHED_SCHEME: string = "leoDetached";
+public static URI_LEO_SCHEME: string = "leointeg";
+public static URI_LEO_DETACHED_SCHEME: string = "leointegDetached";
 public static URI_FILE_SCHEME: string = "file";
 public static URI_UNTITLED_SCHEME: string = 'untitled';
 public static OUTPUT_CHANNEL_LANGUAGE: string = 'Log';
-public static URI_SCHEME_HEADER: string = "leo:/";
-public static URI_SCHEME_DETACHED_HEADER: string = "leoDetached:/";
+public static URI_SCHEME_HEADER: string = "leointeg:/";
+public static URI_SCHEME_DETACHED_HEADER: string = "leointegDetached:/";
 public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
 public static UNTITLED_FILE_NAME: string = "untitled";
 public static RECENT_FILES_KEY: string = "leoRecentFiles";
@@ -8634,7 +8634,7 @@ var portfinder = require('portfinder');
 </t>
 <t tx="felix.20200718195558.10">/**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
- * with a scheme header like "leo:/" or 'more:/'
+ * with a scheme header like "leointeg:/" or 'more:/'
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */
@@ -8797,6 +8797,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 <t tx="felix.20200718222035.1">## Features
 
 - UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector** along with a **Log Window** [output channel](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- **Detached Body Panes**, independent of the selected node can be opened with the 'Open Aside' command.
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
@@ -8933,7 +8934,7 @@ for more information.
 ### Keybindings Conflicts Resolution
 
 If you have a keybinding conflict for a command that you would like **not** to be resolved by Leo when the focus is on the body pane,
-add **`&amp;&amp; resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
+add **`&amp;&amp; resourceScheme != 'leointeg'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Move Outline Keyboard Commands
 
@@ -9645,8 +9646,8 @@ export class LeoIntegration {
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
 
     // * Body Pane
-    private _changedBodyWithMirrorDetached = false;
-    private _changedDetachedWithMirrorBody = false;
+    public changedBodyWithMirrorDetached: string | undefined = undefined; // "id/gnx" string as true
+    public changedDetachedWithMirrorBody: string | undefined = undefined; // "id/gnx" string as true
     private _bodyFileSystemStarted: boolean = false;
     private _detachedFileSystemStarted: boolean = false;
     private _bodyEnablePreview: boolean = true;
@@ -10371,10 +10372,13 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
         let w_v: ArchivedPosition | undefined;
 
         w_v = this._leoDetachedFileSystem.openedBodiesVNodes[gnx];
-        if (this._changedBodyWithMirrorDetached || (w_v &amp;&amp; (w_bodyText === w_v._lastBodyData))) {
+        if (this.changedBodyWithMirrorDetached || (w_v &amp;&amp; (w_bodyText === w_v._lastBodyData))) {
             // WAS NOT A USER MODIFICATION?
-            this._changedBodyWithMirrorDetached = false;
+            this.changedBodyWithMirrorDetached = undefined;
+            console.log('document changed DETACHED not user modification ', this.changedBodyWithMirrorDetached, (w_v &amp;&amp; (w_bodyText === w_v._lastBodyData)));
             return;
+        } else {
+            console.log('document changed DETACHED !');
         }
 
         this.bodyDetachedTextDocument = p_textDocumentChange.document;
@@ -10480,7 +10484,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                 }
                 if (w_sameBodyTabOpened) {
                     if (this._leoFileSystem.watchedBodiesGnx.includes(gnx)) {
-                        this._changedDetachedWithMirrorBody = true; // PREVENT DOUBLE REFRESH
+                        this.changedDetachedWithMirrorBody = `${id}/${gnx}`; // PREVENT DOUBLE REFRESH
                     }
                     this._leoFileSystem.fireRefreshFile(this.lastSelectedNode.gnx);
 
@@ -10541,18 +10545,27 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
             let w_skipSave = false;
 
             if (
-                this._changedDetachedWithMirrorBody ||
+                this.changedDetachedWithMirrorBody ||
                 (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &amp;&amp;
                     w_bodyText === this._leoFileSystem.lastBodyData)
             ) {
                 // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
                 // Set proper cursor insertion point and selection range.
 
-                this._changedDetachedWithMirrorBody = false;
+                this.changedDetachedWithMirrorBody = undefined;
                 // ALSO check if the icon would change!
                 this.showBody(false, true, true);
                 // w_skipSave = true;
+                console.log(
+                    'document changed BODY not user modification ',
+                    this.changedDetachedWithMirrorBody,
+                    (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &amp;&amp;
+                        w_bodyText === this._leoFileSystem.lastBodyData)
+                );
                 return; // ! TEST WITH / WITHOUT RETURN !
+
+            } else {
+                console.log('document changed BODY !');
             }
 
             if (!this.leoStates.leoChanged || w_iconChanged || w_hasSameDetachedTab) {
@@ -10578,10 +10591,11 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                     }
                     q_save.then(() =&gt; {
                         if (w_hasSameDetachedTab &amp;&amp; this.lastSelectedNode) {
-                            if (this._leoDetachedFileSystem.watchedBodiesGnx.includes(`${c_id}/${w_lastSelNodeGnx}`)) {
-                                this._changedBodyWithMirrorDetached = true; // PREVENT DOUBLE REFRESH
+                            const gnxString = `${c_id}/${w_lastSelNodeGnx}`;
+                            if (this._leoDetachedFileSystem.watchedBodiesGnx.includes(gnxString)) {
+                                this.changedBodyWithMirrorDetached = gnxString; // PREVENT DOUBLE REFRESH
                             }
-                            this._leoDetachedFileSystem.fireRefreshFile(`${c_id}/${w_lastSelNodeGnx}`);
+                            this._leoDetachedFileSystem.fireRefreshFile(gnxString);
                         }
                         if (w_iconChanged) {
                             // NOT incrementing this.treeID to keep ids intact
@@ -12430,13 +12444,13 @@ public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
   "command": "leointeg.extract",
   "key": "ctrl+shift+d",
   "mac": "cmd+shift+d",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.extractNames",
   "key": "ctrl+shift+n",
   "mac": "cmd+shift+n",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leointeg"
 },
 </t>
 <t tx="felix.20201105010614.1">{
@@ -13637,13 +13651,13 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.goAnywhere",
   "key": "ctrl+p",
   "mac": "cmd+p",
-  "when": "config.leoIntegration.goAnywhereShortcut &amp;&amp; leoEditHeadline || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "config.leoIntegration.goAnywhereShortcut &amp;&amp; leoEditHeadline || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.startSearch",
   "key": "ctrl+f",
   "mac": "cmd+f",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.findNextFromOutline",
@@ -13653,7 +13667,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
 {
   "command": "leointeg.findNext",
   "key": "f3",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.findPreviousFromOutline",
@@ -13663,13 +13677,13 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
 {
   "command": "leointeg.findPrevious",
   "key": "f2",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.replace",
   "key": "ctrl+=",
   "mac": "cmd+=",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.replaceFromOutline",
@@ -13681,7 +13695,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.replaceThenFind",
   "key": "ctrl+-",
   "mac": "cmd+-",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.replaceThenFindFromOutline",
@@ -13692,73 +13706,73 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
 {
   "command": "leointeg.gotoGlobalLine",
   "key": "alt+g",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindEverywhereOption",
   "key": "ctrl+alt+e",
   "mac": "cmd+alt+e",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindNodeOnlyOption",
   "key": "ctrl+alt+n",
   "mac": "cmd+alt+n",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindFileOnlyOption",
   "key": "ctrl+alt+l",
   "mac": "cmd+alt+l",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindSuboutlineOnlyOption",
   "key": "ctrl+alt+s",
   "mac": "cmd+alt+s",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindIgnoreCaseOption",
   "key": "ctrl+alt+i",
   "mac": "cmd+alt+i",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindMarkChangesOption",
   "key": "ctrl+alt+c",
   "mac": "cmd+alt+c",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindMarkFindsOption",
   "key": "ctrl+alt+f",
   "mac": "cmd+alt+f",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindRegexpOption",
   "key": "ctrl+alt+x",
   "mac": "cmd+alt+x",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindWordOption",
   "key": "ctrl+alt+w",
   "mac": "cmd+alt+w",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindSearchBodyOption",
   "key": "ctrl+alt+b",
   "mac": "cmd+alt+b",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindSearchHeadlineOption",
   "key": "ctrl+alt+h",
   "mac": "cmd+alt+h",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
 <t tx="felix.20210522001751.1">import * as vscode from 'vscode';
@@ -14540,172 +14554,172 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
 <t tx="felix.20210610022645.1">"editor/title": [
   {
     "command": "leointeg.prev",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.next",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@2"
   },
   {
     "command": "leointeg.executeScript",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@3"
   },
   {
     "command": "leointeg.extract",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@4"
   },
   {
     "command": "leointeg.extractNames",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@5"
   },
   {
     "command": "leointeg.importAnyFile",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@6"
   },
   {
     "command": "leointeg.chapterSelect",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@7"
   },
   {
     "command": "leointeg.writeDirtyAtFileNodes",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@8"
   },
   {
     "command": "leointeg.refreshFromDiskSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@9"
   },
   {
     "command": "leointeg.showSettingsPage",
-    "when": "resourceScheme == leo",
+    "when": "resourceScheme == leointeg",
     "group": "1_leoInteg@1"
   },
   {
     "command": "leointeg.showLogPane",
-    "when": "resourceScheme == leo &amp;&amp; leoBridgeReady",
+    "when": "resourceScheme == leointeg &amp;&amp; leoBridgeReady",
     "group": "1_leoInteg@2"
   },
   {
     "command": "leointeg.newLeoFile",
-    "when": "resourceScheme == leo &amp;&amp; leoBridgeReady",
+    "when": "resourceScheme == leointeg &amp;&amp; leoBridgeReady",
     "group": "1_leoInteg1@1"
   },
   {
     "command": "leointeg.openLeoFile",
-    "when": "resourceScheme == leo &amp;&amp; leoBridgeReady",
+    "when": "resourceScheme == leointeg &amp;&amp; leoBridgeReady",
     "group": "1_leoInteg1@2"
   },
   {
     "command": "leointeg.saveLeoFile",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg1@3"
   },
   {
     "command": "leointeg.saveAsLeoFile",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg1@4"
   },
   {
     "command": "leointeg.sortChildrenSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg2@1"
   },
   {
     "command": "leointeg.sortSiblingsSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg2@2"
   },
   {
     "command": "leointeg.promoteSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg2@3"
   },
   {
     "command": "leointeg.demoteSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg2@4"
   },
   {
     "command": "leointeg.cloneNodeSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg3@1"
   },
   {
     "command": "leointeg.cutNodeSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg3@2"
   },
   {
     "command": "leointeg.copyNodeSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg3@3"
   },
   {
     "command": "leointeg.pasteNodeAtSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg3@4"
   },
   {
     "command": "leointeg.pasteNodeAsCloneAtSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg3@5"
   },
   {
     "command": "leointeg.readFileIntoNode",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg4@2"
   },
   {
     "command": "leointeg.writeFileFromNode",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg4@3"
   },
   {
     "command": "leointeg.writeAtFileNodes",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg4@4"
   },
   {
     "command": "leointeg.writeDirtyAtFileNodes",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg4@5"
   },
   {
     "command": "leointeg.cloneFindAll",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@1"
   },
   {
     "command": "leointeg.cloneFindAllFlattened",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@2"
   },
   {
     "command": "leointeg.cloneFindMarked",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@3"
   },
   {
     "command": "leointeg.cloneFindFlattenedMarked",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@4"
   },
   {
     "command": "leointeg.cloneFindParents",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@5"
   },
   {
     "command": "leointeg.cloneFindTag",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@6"
   }
 ],
@@ -14938,22 +14952,22 @@ public async findSymbol(p_def: boolean): Promise&lt;any&gt; {
 <t tx="felix.20210713005825.1">"editor/context": [
   {
     "command": "leointeg.findVar",
-    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.findDef",
-    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.extract",
-    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.extractNames",
-    "when": "editorHasSelection &amp;&amp; !editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "editorHasSelection &amp;&amp; !editorHasMultipleSelections &amp;&amp; resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   }
 ],
@@ -20396,7 +20410,8 @@ public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
 </t>
 <t tx="felix.20240330232425.1">## 1.0.21
 
-- ...
+- Fixed icons disabled appearance by changing the graphic format from SVG to a weoff2 font.
+- Changed behavior of the 'Open Aside' command: it now  opens 'detached' body panes, which allows text editing for a fixed gnx.
 
 </t>
 <t tx="felix.20240430200658.1">"icons": {
@@ -21039,7 +21054,7 @@ import { ArchivedPosition, BodyTimeInfo } from "./types";
 
 </t>
 <t tx="felix.20240502002356.2">/**
- * * Body panes implementation as a file system using "leojs" as a scheme identifier
+ * * Body panes implementation as a file system using "leointegDetached" as a scheme identifier
  */
 export class LeoBodyDetachedProvider implements vscode.FileSystemProvider {
 
