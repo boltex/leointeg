@@ -254,6 +254,7 @@
 <v t="felix.20200718040540.1"><vh>@clean src/leoBody.ts</vh>
 <v t="felix.20200718040540.2"><vh>class LeoBodyProvider</vh>
 <v t="felix.20230130154800.1"><vh>setNewBodyUriTime</vh></v>
+<v t="felix.20240508231456.1"><vh>setFromDetached</vh></v>
 <v t="felix.20230130154806.1"><vh>_setOpenedBodyTime</vh></v>
 <v t="felix.20240501232955.1"><vh>cleanupBodies</vh></v>
 <v t="felix.20200718040540.5"><vh>fireRefreshFile</vh></v>
@@ -272,6 +273,7 @@
 <v t="felix.20240502002356.1"><vh>@clean src/leoBodyDetached.ts</vh>
 <v t="felix.20240502002356.2"><vh>class LeoBodyDetachedProvider</vh>
 <v t="felix.20240502002356.3"><vh>setNewBodyUriTime</vh></v>
+<v t="felix.20240508231547.1"><vh>setFromBody</vh></v>
 <v t="felix.20240502002356.4"><vh>_setOpenedBodyTime</vh></v>
 <v t="felix.20240502002356.5"><vh>cleanupDetachedBodies</vh></v>
 <v t="felix.20240502002356.6"><vh>fireRefreshFile</vh></v>
@@ -6773,7 +6775,7 @@ import { BodyTimeInfo } from "./types";
                 type: vscode.FileType.File,
                 ctime: this._openedBodiesInfo[this.lastGnx].ctime,
                 mtime: this._openedBodiesInfo[this.lastGnx].mtime,
-                size: this._lastBodyLength
+                size: this.lastBodyLength
             };
         } else if (this._openedBodiesInfo[w_gnx]) {
             return this._leoIntegration.sendAction(
@@ -6807,6 +6809,16 @@ import { BodyTimeInfo } from "./types";
             if (!this._openedBodiesInfo[w_gnx]) {
                 console.warn('readFile: ERROR File not in _openedBodiesInfo! gnx: ', w_gnx);
             }
+            let w_buffer: Uint8Array;
+
+
+            if (this._leoIntegration.changedDetachedWithMirrorBody &amp;&amp; this.lastBodyData &amp;&amp; w_gnx === this.lastGnx) {
+                console.log("test", this._leoIntegration.changedDetachedWithMirrorBody, " and ", w_gnx);
+
+                w_buffer = Buffer.from(this.lastBodyData);
+
+            }
+
 
             // * GET FROM SERVER
             const p_result = await this._leoIntegration.sendAction(
@@ -6814,7 +6826,6 @@ import { BodyTimeInfo } from "./types";
                 { "gnx": w_gnx }
             );
 
-            let w_buffer: Uint8Array;
             if (p_result.body) {
                 // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
 
@@ -6828,13 +6839,13 @@ import { BodyTimeInfo } from "./types";
                 this.lastGnx = w_gnx;
                 this.lastBodyData = p_result.body;
                 w_buffer = Buffer.from(p_result.body);
-                this._lastBodyLength = w_buffer.byteLength;
+                this.lastBodyLength = w_buffer.byteLength;
 
             } else if (p_result.body === "") {
                 // console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
 
                 this.lastGnx = w_gnx;
-                this._lastBodyLength = 0;
+                this.lastBodyLength = 0;
                 this.lastBodyData = "";
                 w_buffer = Buffer.from("");
             } else {
@@ -6887,7 +6898,7 @@ import { BodyTimeInfo } from "./types";
     }
     this._setOpenedBodyTime(w_gnx);
     if (w_gnx === this.lastGnx) {
-        this._lastBodyLength = p_content.byteLength;
+        this.lastBodyLength = p_content.byteLength;
     }
     this._fireSoon({ type: vscode.FileChangeType.Changed, uri: p_uri });
 }
@@ -6950,7 +6961,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Last file read data with the readFile method
     public lastGnx: string = ""; // gnx of last file read
     public lastBodyData: string = ""; // body content of last file read
-    private _lastBodyLength: number = 0; // length of last file read
+    public lastBodyLength: number = 0; // length of last file read
 
     // * List of currently opened body panes gnx (from 'watch' &amp; 'dispose' methods)
     public watchedBodiesGnx: string[] = [];
@@ -21283,6 +21294,14 @@ public fireRefreshFile(p_gnx: string): void {
             const bodyGnx = p_uri.path.split("/")[2];
 
             console.log('detached read id: ', id, ' bodyGNX', bodyGnx);
+            let w_buffer: Uint8Array;
+
+            if (this._leoIntegration.changedBodyWithMirrorDetached &amp;&amp; this.openedBodiesVNodes[w_gnx] &amp;&amp; this.openedBodiesVNodes[w_gnx]._lastBodyData) {
+                console.log("test", this._leoIntegration.changedBodyWithMirrorDetached, " and ", w_gnx);
+                const w_lastBodyData: string = this.openedBodiesVNodes[w_gnx]._lastBodyData!;
+                w_buffer = Buffer.from(w_lastBodyData);
+
+            }
 
             // * GET FROM SERVER
             const p_result = await this._leoIntegration.sendAction(
@@ -21290,7 +21309,6 @@ public fireRefreshFile(p_gnx: string): void {
                 { "gnx": bodyGnx, "commanderId": id }
             );
 
-            let w_buffer: Uint8Array;
             if (p_result.body) {
                 // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
 
@@ -21828,6 +21846,22 @@ private async _getBodyLanguage(p: ArchivedPosition, c_id?: string): Promise&lt;s
             return "";
         }
     });
+}
+
+</t>
+<t tx="felix.20240508231456.1">/**
+ * Set data from detached body with same commander &amp; gnx
+ */
+public setFromDetached(p_data: string): void {
+
+}
+
+</t>
+<t tx="felix.20240508231547.1">/**
+ * Set from the selected node body with matching commander and gnx
+ */
+public setFromBody(p_data: string, p_gnx: string): void {
+    //
 }
 
 </t>

@@ -45,6 +45,18 @@ export class LeoBodyDetachedProvider implements vscode.FileSystemProvider {
     }
 
     /**
+     * Set from the selected node body with matching commander and gnx
+     */
+    public setFromBody(p_data: string, p_gnx: string): void {
+        this._setOpenedBodyTime(p_gnx);
+        this._lastGnx = p_gnx;
+        this._lastBodyData = p_data;
+        this.openedBodiesVNodes[p_gnx]._lastBodyData = p_data;
+        const w_buffer = Buffer.from(p_data);
+        this._lastBodyLength = w_buffer.byteLength;
+    }
+
+    /**
      * * Adds entries in _openedBodiesGnx and _openedBodiesInfo if needed
      * * and sets the modified time of an opened body.
      */
@@ -226,6 +238,12 @@ export class LeoBodyDetachedProvider implements vscode.FileSystemProvider {
                 const bodyGnx = p_uri.path.split("/")[2];
 
                 console.log('detached read id: ', id, ' bodyGNX', bodyGnx);
+                let w_buffer: Uint8Array;
+
+                if (this._leoIntegration.changedBodyWithMirrorDetached && this.openedBodiesVNodes[w_gnx]) {
+                    console.log("test", this._leoIntegration.changedBodyWithMirrorDetached, " and ", w_gnx);
+                    return Buffer.from(this.openedBodiesVNodes[w_gnx]._lastBodyData || "");
+                }
 
                 // * GET FROM SERVER
                 const p_result = await this._leoIntegration.sendAction(
@@ -233,7 +251,6 @@ export class LeoBodyDetachedProvider implements vscode.FileSystemProvider {
                     { "gnx": bodyGnx, "commanderId": id }
                 );
 
-                let w_buffer: Uint8Array;
                 if (p_result.body) {
                     // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
 

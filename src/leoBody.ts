@@ -16,7 +16,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Last file read data with the readFile method
     public lastGnx: string = ""; // gnx of last file read
     public lastBodyData: string = ""; // body content of last file read
-    private _lastBodyLength: number = 0; // length of last file read
+    public lastBodyLength: number = 0; // length of last file read
 
     // * List of currently opened body panes gnx (from 'watch' & 'dispose' methods)
     public watchedBodiesGnx: string[] = [];
@@ -46,6 +46,18 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         const w_gnx = utils.leoUriToStr(p_uri);
         this._lastBodyTimeGnx = w_gnx;
         this._setOpenedBodyTime(w_gnx);
+    }
+
+    /**
+     * Set data from detached body with same commander & gnx
+     */
+    public setFromDetached(p_data: string, p_gnx: string): void {
+        this._lastBodyTimeGnx = p_gnx;
+        this._setOpenedBodyTime(p_gnx);
+        this.lastGnx = p_gnx;
+        this.lastBodyData = p_data;
+        const w_buffer = Buffer.from(p_data);
+        this.lastBodyLength = w_buffer.byteLength;
     }
 
     /**
@@ -129,7 +141,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     type: vscode.FileType.File,
                     ctime: this._openedBodiesInfo[this.lastGnx].ctime,
                     mtime: this._openedBodiesInfo[this.lastGnx].mtime,
-                    size: this._lastBodyLength
+                    size: this.lastBodyLength
                 };
             } else if (this._openedBodiesInfo[w_gnx]) {
                 return this._leoIntegration.sendAction(
@@ -162,6 +174,16 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 if (!this._openedBodiesInfo[w_gnx]) {
                     console.warn('readFile: ERROR File not in _openedBodiesInfo! gnx: ', w_gnx);
                 }
+                let w_buffer: Uint8Array;
+
+
+                if (this._leoIntegration.changedDetachedWithMirrorBody && this.lastBodyData && w_gnx === this.lastGnx) {
+                    console.log("test", this._leoIntegration.changedDetachedWithMirrorBody, " and ", w_gnx);
+
+                    w_buffer = Buffer.from(this.lastBodyData);
+
+                }
+
 
                 // * GET FROM SERVER
                 const p_result = await this._leoIntegration.sendAction(
@@ -169,7 +191,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     { "gnx": w_gnx }
                 );
 
-                let w_buffer: Uint8Array;
                 if (p_result.body) {
                     // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
 
@@ -183,13 +204,13 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     this.lastGnx = w_gnx;
                     this.lastBodyData = p_result.body;
                     w_buffer = Buffer.from(p_result.body);
-                    this._lastBodyLength = w_buffer.byteLength;
+                    this.lastBodyLength = w_buffer.byteLength;
 
                 } else if (p_result.body === "") {
                     // console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
 
                     this.lastGnx = w_gnx;
-                    this._lastBodyLength = 0;
+                    this.lastBodyLength = 0;
                     this.lastBodyData = "";
                     w_buffer = Buffer.from("");
                 } else {
@@ -239,7 +260,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         }
         this._setOpenedBodyTime(w_gnx);
         if (w_gnx === this.lastGnx) {
-            this._lastBodyLength = p_content.byteLength;
+            this.lastBodyLength = p_content.byteLength;
         }
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri: p_uri });
     }
