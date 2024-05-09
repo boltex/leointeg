@@ -177,6 +177,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 let w_buffer: Uint8Array;
 
 
+                // * GET FROM MIRRORED DETACHED
                 if (this._leoIntegration.changedDetachedWithMirrorBody && this.lastBodyData && w_gnx === this.lastGnx) {
                     console.log("test", this._leoIntegration.changedDetachedWithMirrorBody, " and ", w_gnx);
 

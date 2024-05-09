@@ -240,6 +240,7 @@ export class LeoBodyDetachedProvider implements vscode.FileSystemProvider {
                 console.log('detached read id: ', id, ' bodyGNX', bodyGnx);
                 let w_buffer: Uint8Array;
 
+                // * GET FROM MIRRORED BODY
                 if (this._leoIntegration.changedBodyWithMirrorDetached && this.openedBodiesVNodes[w_gnx]) {
                     console.log("test", this._leoIntegration.changedBodyWithMirrorDetached, " and ", w_gnx);
                     return Buffer.from(this.openedBodiesVNodes[w_gnx]._lastBodyData || "");

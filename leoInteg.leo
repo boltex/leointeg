@@ -6812,6 +6812,7 @@ import { BodyTimeInfo } from "./types";
             let w_buffer: Uint8Array;
 
 
+            // * GET FROM MIRRORED DETACHED
             if (this._leoIntegration.changedDetachedWithMirrorBody &amp;&amp; this.lastBodyData &amp;&amp; w_gnx === this.lastGnx) {
                 console.log("test", this._leoIntegration.changedDetachedWithMirrorBody, " and ", w_gnx);
 
@@ -8762,7 +8763,7 @@ export function isHexColor(p_hexString: string): boolean {
 @tabwidth -4
 # ![Leo Editor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
 
-_If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it. Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review") or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub")_
+_If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it. Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review") or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub"). (For a JavaScript implementation of the Leo Editor that runs in both VSCode and VSCode for the web, see the [**LeoJS**](https://github.com/boltex/leojs) extension)_
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
@@ -8796,7 +8797,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.7.8 or later\
+- Leo Editor 6.7.9 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
@@ -8844,24 +8845,28 @@ Listed here are the most useful commands and their keyboard shortcuts.
 | Move Outline Left  | `Ctrl + L` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Shift [+ Alt] + Left`  |
 | Move Outline Right | `Ctrl + R` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Shift [+ Alt] + Right` |
 
-_Move-Outline commands need the 'Alt' key modifier only when focus is on body pane._
+_Move-Outline commands need the `Alt` key modifier only when focus is on body pane._
 
-| Common Operations   |                                                                                                                           |
-| :------------------ | :------------------------------------------------------------------------------------------------------------------------ |
-| Toggle Outline/Body | `Ctrl + T`                                                                                                                |
-| Focus on Body       | `Tab` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Enter` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Alt + D` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Ctrl + G` |
-| Focus on Outline    | `Alt + T`                                                                                                                 |
-| Contract All        | `Alt + -`                                                                                                                 |
-| Sort Siblings       | `Alt + A`                                                                                                                 |
-| Start Search        | `Ctrl + F`                                                                                                                |
-| Find Next           | `F3`                                                                                                                      |
-| Find Previous       | `F2`                                                                                                                      |
-| Replace             | `Ctrl + =`                                                                                                                |
-| Replace then Find   | `Ctrl + -`                                                                                                                |
-| Extract             | `Ctrl + Shift + D`                                                                                                        |
-| Extract Names       | `Ctrl + Shift + N`                                                                                                        |
-| Execute Script      | `Ctrl + B`                                                                                                                |
-| Minibuffer Palette  | `Alt + X`                                                                                                                 |
+| Changing Focus                  |                                                   |
+| :------------------------------ | :------------------------------------------------ |
+| Toggle Outline/Body             | `Ctrl + T`                                        |
+| Focus on Outline                | `Alt + T`                                         |
+| Focus on Body (in any pane)     | `Alt + D` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Ctrl + G` |
+| Focus on Body (in Outline pane) | `Tab` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Enter`        |
+
+| Common Operations  |                    |
+| :----------------- | :----------------- |
+| Contract All       | `Alt + -`          |
+| Sort Siblings      | `Alt + A`          |
+| Start Search       | `Ctrl + F`         |
+| Find Next          | `F3`               |
+| Find Previous      | `F2`               |
+| Replace            | `Ctrl + =`         |
+| Replace then Find  | `Ctrl + -`         |
+| Extract            | `Ctrl + Shift + D` |
+| Extract Names      | `Ctrl + Shift + N` |
+| Execute Script     | `Ctrl + B`         |
+| Minibuffer Palette | `Alt + X`          |
 
 | Tree Navigation          |                                                              |
 | :----------------------- | :----------------------------------------------------------- |
@@ -8874,7 +8879,7 @@ _Move-Outline commands need the 'Alt' key modifier only when focus is on body pa
 | Browse Tree              | `Arrow Keys` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Alt + Arrow Keys` |
 | Go To Global Line        | `Alt + G`                                                    |
 
-_With the **'Leo Tree Browsing'** setting enabled by default, the arrows, home, end, pageUp/Down keys will change the outline's selection directly._
+_With the **'Leo Tree Browsing'** setting enabled by default, the arrows, home, end, pageUp/Down keys will change the outline's selection directly. Using tree navigation shortcuts from the body pane (with the `Alt` key modifier) will place focus in the outline._
 
 | File Commands       |                    |
 | :------------------ | :----------------- |
@@ -21296,11 +21301,10 @@ public fireRefreshFile(p_gnx: string): void {
             console.log('detached read id: ', id, ' bodyGNX', bodyGnx);
             let w_buffer: Uint8Array;
 
-            if (this._leoIntegration.changedBodyWithMirrorDetached &amp;&amp; this.openedBodiesVNodes[w_gnx] &amp;&amp; this.openedBodiesVNodes[w_gnx]._lastBodyData) {
+            // * GET FROM MIRRORED BODY
+            if (this._leoIntegration.changedBodyWithMirrorDetached &amp;&amp; this.openedBodiesVNodes[w_gnx]) {
                 console.log("test", this._leoIntegration.changedBodyWithMirrorDetached, " and ", w_gnx);
-                const w_lastBodyData: string = this.openedBodiesVNodes[w_gnx]._lastBodyData!;
-                w_buffer = Buffer.from(w_lastBodyData);
-
+                return Buffer.from(this.openedBodiesVNodes[w_gnx]._lastBodyData || "");
             }
 
             // * GET FROM SERVER
@@ -21852,8 +21856,13 @@ private async _getBodyLanguage(p: ArchivedPosition, c_id?: string): Promise&lt;s
 <t tx="felix.20240508231456.1">/**
  * Set data from detached body with same commander &amp; gnx
  */
-public setFromDetached(p_data: string): void {
-
+public setFromDetached(p_data: string, p_gnx: string): void {
+    this._lastBodyTimeGnx = p_gnx;
+    this._setOpenedBodyTime(p_gnx);
+    this.lastGnx = p_gnx;
+    this.lastBodyData = p_data;
+    const w_buffer = Buffer.from(p_data);
+    this.lastBodyLength = w_buffer.byteLength;
 }
 
 </t>
@@ -21861,7 +21870,12 @@ public setFromDetached(p_data: string): void {
  * Set from the selected node body with matching commander and gnx
  */
 public setFromBody(p_data: string, p_gnx: string): void {
-    //
+    this._setOpenedBodyTime(p_gnx);
+    this._lastGnx = p_gnx;
+    this._lastBodyData = p_data;
+    this.openedBodiesVNodes[p_gnx]._lastBodyData = p_data;
+    const w_buffer = Buffer.from(p_data);
+    this._lastBodyLength = w_buffer.byteLength;
 }
 
 </t>
