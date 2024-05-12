@@ -168,14 +168,15 @@ export class LeoBodyDetachedProvider implements vscode.FileSystemProvider {
 
             if (id && !gnx) {
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            } else if (w_gnx === this._lastGnx && this._openedBodiesInfo[this._lastGnx]) {
 
-                return {
-                    type: vscode.FileType.File,
-                    ctime: this._openedBodiesInfo[this._lastGnx].ctime,
-                    mtime: this._openedBodiesInfo[this._lastGnx].mtime,
-                    size: this._lastBodyLength
-                };
+                // } else if (w_gnx === this._lastGnx && this._openedBodiesInfo[this._lastGnx]) {
+                //     return {
+                //         type: vscode.FileType.File,
+                //         ctime: this._openedBodiesInfo[this._lastGnx].ctime,
+                //         mtime: this._openedBodiesInfo[this._lastGnx].mtime,
+                //         size: this._lastBodyLength
+                //     };
+
             } else if (this._openedBodiesInfo[w_gnx]) {
                 const id = p_uri.path.split("/")[1];
                 const bodyGnx = p_uri.path.split("/")[2];
@@ -240,11 +241,11 @@ export class LeoBodyDetachedProvider implements vscode.FileSystemProvider {
                 console.log('detached read id: ', id, ' bodyGNX', bodyGnx);
                 let w_buffer: Uint8Array;
 
-                // * GET FROM MIRRORED BODY
-                if (this._leoIntegration.changedBodyWithMirrorDetached && this.openedBodiesVNodes[w_gnx]) {
-                    console.log("test", this._leoIntegration.changedBodyWithMirrorDetached, " and ", w_gnx);
-                    return Buffer.from(this.openedBodiesVNodes[w_gnx]._lastBodyData || "");
-                }
+                // // * GET FROM MIRRORED BODY
+                // if (this._leoIntegration.changedBodyWithMirrorDetached && this.openedBodiesVNodes[w_gnx]) {
+                //     console.log("HAD changedBodyWithMirrorDetached for", this._leoIntegration.changedBodyWithMirrorDetached, " and gnx is ", w_gnx);
+                //     return Buffer.from(this.openedBodiesVNodes[w_gnx]._lastBodyData || "");
+                // }
 
                 // * GET FROM SERVER
                 const p_result = await this._leoIntegration.sendAction(

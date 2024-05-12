@@ -24,9 +24,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * List of gnx open in tab(s) (from tryApplyNodeToBody / switchBody and fs.delete)
     private _openedBodiesInfo: { [key: string]: BodyTimeInfo } = {};
 
-    // * List of all possible vNodes gnx in the currently opened leo file (since last refresh/tree operation)
-    private _possibleGnxList: string[] = []; // Maybe deprecated
-
     private _lastBodyTimeGnx: string = "";
 
     // * An event to signal that a resource has been changed
@@ -124,6 +121,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         } else {
         }
         return new vscode.Disposable(() => {
+            console.log('DISPOSE watch body  ' + utils.leoUriToStr(p_resource));
+
             const w_position = this.watchedBodiesGnx.indexOf(w_gnx); // find and remove it
             if (w_position > -1) {
                 this.watchedBodiesGnx.splice(w_position, 1);
@@ -134,16 +133,21 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
         if (this._leoIntegration.leoStates.fileOpenedReady) {
             const w_gnx = utils.leoUriToStr(p_uri);
+            console.log('Calling stats for ' + w_gnx);
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            } else if (w_gnx === this.lastGnx && this._openedBodiesInfo[this.lastGnx]) {
-                return {
-                    type: vscode.FileType.File,
-                    ctime: this._openedBodiesInfo[this.lastGnx].ctime,
-                    mtime: this._openedBodiesInfo[this.lastGnx].mtime,
-                    size: this.lastBodyLength
-                };
+
+                // } else if (w_gnx === this.lastGnx && this._openedBodiesInfo[this.lastGnx]) {
+                //     return {
+                //         type: vscode.FileType.File,
+                //         ctime: this._openedBodiesInfo[this.lastGnx].ctime,
+                //         mtime: this._openedBodiesInfo[this.lastGnx].mtime,
+                //         size: this.lastBodyLength
+                //     };
+
             } else if (this._openedBodiesInfo[w_gnx]) {
+                // * GETS IT WITH len(w_v.b.encode('utf-8')) 
+                // So length should be equivalent
                 return this._leoIntegration.sendAction(
                     Constants.LEOBRIDGE.GET_BODY_LENGTH,
                     { "gnx": w_gnx }
@@ -174,16 +178,15 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 if (!this._openedBodiesInfo[w_gnx]) {
                     console.warn('readFile: ERROR File not in _openedBodiesInfo! gnx: ', w_gnx);
                 }
+
+                console.log('body read bodyGNX', w_gnx);
                 let w_buffer: Uint8Array;
 
-
-                // * GET FROM MIRRORED DETACHED
-                if (this._leoIntegration.changedDetachedWithMirrorBody && this.lastBodyData && w_gnx === this.lastGnx) {
-                    console.log("test", this._leoIntegration.changedDetachedWithMirrorBody, " and ", w_gnx);
-
-                    w_buffer = Buffer.from(this.lastBodyData);
-
-                }
+                // // * GET FROM MIRRORED DETACHED
+                // if (this._leoIntegration.changedDetachedWithMirrorBody && this.lastBodyData && w_gnx === this.lastGnx) {
+                //     console.log("HAD changedDetachedWithMirrorBody :", this._leoIntegration.changedDetachedWithMirrorBody, " and gnx is ", w_gnx);
+                //     return Buffer.from(this.lastBodyData);
+                // }
 
 
                 // * GET FROM SERVER
