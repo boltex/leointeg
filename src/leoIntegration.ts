@@ -232,8 +232,8 @@ export class LeoIntegration {
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
 
     // * Body Pane
-    public changedBodyWithMirrorDetached: string | undefined = undefined; // "id/gnx" string as true
-    public changedDetachedWithMirrorBody: string | undefined = undefined; // "id/gnx" string as true
+    private _changedBodyWithMirrorDetached: string | undefined = undefined; // "id/gnx" string as true
+    private _changedDetachedWithMirrorBody: string | undefined = undefined; // "id/gnx" string as true
     private _bodyFileSystemStarted: boolean = false;
     private _detachedFileSystemStarted: boolean = false;
     private _bodyEnablePreview: boolean = true;
@@ -1927,13 +1927,13 @@ export class LeoIntegration {
             let w_v: ArchivedPosition | undefined;
 
             w_v = this._leoDetachedFileSystem.openedBodiesVNodes[w_detachedGnx];
-            if (this.changedBodyWithMirrorDetached || (w_v && (w_bodyText === w_v._lastBodyData))) {
-                console.log('document changed DETACHED not user modification ' + (this.changedBodyWithMirrorDetached ? " Cleared changedBodyWithMirrorDetached" : ""), (w_v && (w_bodyText === w_v._lastBodyData)));
+            if (this._changedBodyWithMirrorDetached || (w_v && (w_bodyText === w_v._lastBodyData))) {
+                // console.log('document changed DETACHED not user modification ' + (this.changedBodyWithMirrorDetached ? " Cleared changedBodyWithMirrorDetached" : ""), (w_v && (w_bodyText === w_v._lastBodyData)));
                 // WAS NOT A USER MODIFICATION?
-                this.changedBodyWithMirrorDetached = undefined;
+                this._changedBodyWithMirrorDetached = undefined;
                 return;
             } else {
-                console.log('document changed DETACHED !');
+                // console.log('document changed DETACHED !');
             }
 
             this.bodyDetachedTextDocument = p_textDocumentChange.document;
@@ -1974,12 +1974,12 @@ export class LeoIntegration {
             if (w_sameCommander) {
                 if (!this.leoStates.leoChanged || w_detachedIconChanged) {
                     if (!w_alreadySaved) {
-                        console.log(
-                            'bodySAVE DETACHED because icon changed:\n' +
-                            ' this.leoStates.leoChanged: ' + this.leoStates.leoChanged +
-                            '\n w_node.dirty' + w_node.dirty +
-                            "\n!!w_node.hasBody === !w_hasBody" + (!!w_node.hasBody === !w_hasBody)
-                        );
+                        // console.log(
+                        //     'bodySAVE DETACHED because icon changed:\n' +
+                        //     ' this.leoStates.leoChanged: ' + this.leoStates.leoChanged +
+                        //     '\n w_node.dirty' + w_node.dirty +
+                        //     "\n!!w_node.hasBody === !w_hasBody" + (!!w_node.hasBody === !w_hasBody)
+                        // );
 
                         void this._bodySaveDocument(this.bodyDetachedTextDocument);
                         w_alreadySaved = true;
@@ -2006,7 +2006,7 @@ export class LeoIntegration {
                 const w_foundVnode = this._leoDetachedFileSystem.openedBodiesVNodes[utils.leoUriToStr(p_textDocumentChange.document.uri)];
                 if (w_foundVnode) {
                     if (!w_alreadySaved) {
-                        console.log('bodySAVE DETACHED because w_needsRefresh');
+                        // console.log('bodySAVE DETACHED because w_needsRefresh');
 
                         void this._bodySaveDocument(this.bodyDetachedTextDocument);
                         w_alreadySaved = true;
@@ -2040,7 +2040,7 @@ export class LeoIntegration {
                     }
                 }
                 if (w_sameBodyTabOpened) {
-                    console.log('found same body that MATCHES!');
+                    // console.log('found same body that MATCHES!');
                     break;
                 }
             }
@@ -2050,20 +2050,19 @@ export class LeoIntegration {
                 if (w_sameBodyTabOpened && this.lastSelectedNode && gnx === this.lastSelectedNode.gnx) {
                     // Same commander AND same gnx  !  
                     if (!w_alreadySaved) {
-                        console.log('bodySAVE DETACHED because same tab opened');
+                        // console.log('bodySAVE DETACHED because same tab opened');
                         void this._bodySaveDocument(this.bodyDetachedTextDocument);
                         w_alreadySaved = true;
                     }
                     if (this._leoFileSystem.watchedBodiesGnx.includes(gnx)) {
-                        console.log("setting changedDetachedWithMirrorBody");
+                        // console.log("setting changedDetachedWithMirrorBody");
 
-                        this.changedDetachedWithMirrorBody = `${id}/${gnx}`; // PREVENT DOUBLE REFRESH
-                        // this._leoFileSystem.setFromDetached(this.bodyDetachedTextDocument.getText().replace(/\r\n/g, "\n"), `${id}/${gnx}`);
+                        this._changedDetachedWithMirrorBody = `${id}/${gnx}`; // PREVENT DOUBLE REFRESH
                     }
-                    console.log('fire refresh of body');
+                    // console.log('fire refresh of body');
                     this._leoFileSystem.fireRefreshFile(this.lastSelectedNode.gnx);
-
                 }
+
                 if (w_needsRefresh) {
                     this.debouncedRefreshBodyStates(50); // And maybe changed in other node of same commander!
                 }
@@ -2110,7 +2109,7 @@ export class LeoIntegration {
                     }
                 }
                 if (w_hasSameDetachedTab) {
-                    console.log('found same DETACHED that MATCHES!');
+                    // console.log('found same DETACHED that MATCHES!');
                     break;
                 }
             }
@@ -2126,26 +2125,26 @@ export class LeoIntegration {
                 let w_skipSave = false;
 
                 if (
-                    this.changedDetachedWithMirrorBody ||
+                    this._changedDetachedWithMirrorBody ||
                     (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
                         w_bodyText === this._leoFileSystem.lastBodyData)
                 ) {
                     // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
-                    console.log(
-                        '--------- document changed BODY not user modification ' +
-                        (this.changedDetachedWithMirrorBody ? " Cleared changedDetachedWithMirrorBody ! " : ""),
-                        (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
-                            w_bodyText === this._leoFileSystem.lastBodyData)
-                    );
+                    // console.log(
+                    //     '--------- document changed BODY not user modification ' +
+                    //     (this.changedDetachedWithMirrorBody ? " Cleared changedDetachedWithMirrorBody ! " : ""),
+                    //     (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &&
+                    //         w_bodyText === this._leoFileSystem.lastBodyData)
+                    // );
                     // Set proper cursor insertion point and selection range.
-                    this.changedDetachedWithMirrorBody = undefined;
+                    this._changedDetachedWithMirrorBody = undefined;
                     // ALSO check if the icon would change!
                     this.showBody(false, true, true);
                     // w_skipSave = true;
                     return; // ! TEST WITH / WITHOUT RETURN !
 
                 } else {
-                    console.log('document changed BODY !');
+                    // console.log('document changed BODY !');
                 }
 
                 if (!this.leoStates.leoChanged || w_iconChanged || w_hasSameDetachedTab) {
@@ -2173,11 +2172,10 @@ export class LeoIntegration {
                             if (w_hasSameDetachedTab && this.lastSelectedNode) {
                                 const gnxString = `${c_id}/${w_lastSelNodeGnx}`;
                                 if (this._leoDetachedFileSystem.watchedBodiesGnx.includes(gnxString)) {
-                                    console.log("setting changedBodyWithMirrorDetached");
-                                    this.changedBodyWithMirrorDetached = gnxString; // PREVENT DOUBLE REFRESH
-                                    // this._leoDetachedFileSystem.setFromBody(p_textDocumentChange.document.getText().replace(/\r\n/g, "\n"), `${c_id}/${w_lastSelNodeGnx}`);
+                                    // console.log("setting changedBodyWithMirrorDetached");
+                                    this._changedBodyWithMirrorDetached = gnxString; // PREVENT DOUBLE REFRESH
                                 }
-                                console.log('fire refresh of DETACHED');
+                                // console.log('fire refresh of DETACHED');
 
                                 this._leoDetachedFileSystem.fireRefreshFile(gnxString);
                             }
@@ -2192,6 +2190,7 @@ export class LeoIntegration {
 
                     if (!this.leoStates.leoChanged) {
                         // also refresh document panel (icon may be dirty now)
+                        this.leoStates.leoChanged = true;
                         this.refreshDocumentsPane();
                     }
                 }
@@ -2209,7 +2208,6 @@ export class LeoIntegration {
 
             const w_textEditor = vscode.window.activeTextEditor;
 
-            // TODO : Make this check more intelligent by keeping all lines for an interval, and check all them after delay.
             if (w_textEditor && p_textDocumentChange.document.uri.fsPath === w_textEditor.document.uri.fsPath) {
                 for (const p_selection of w_textEditor.selections) {
                     // TRY TO DETECT IF LANGUAGE RESET NEEDED!
@@ -2737,6 +2735,7 @@ export class LeoIntegration {
     private _refreshDetachedBodies() {
         //  Refresh detached bodies as needed IF SAME COMMANDER, AND CLOSE : 
         if (!this.leoStates.fileOpenedReady) {
+            this._refreshType.excludeDetached = false;
             return;
         }
 
@@ -2756,10 +2755,9 @@ export class LeoIntegration {
 
                     // Refresh detached bodies if same commander  // ! ALSO FIRE REFRESH !
                     if (!this._refreshType.excludeDetached && this._refreshType.body && id === c_id) {
-                        console.log('fire refresh DETACHED in _refreshDetachedBodies');
+                        // console.log('fire refresh DETACHED in _refreshDetachedBodies');
                         this._leoDetachedFileSystem.fireRefreshFile(`${id}/${gnx}`);
                     }
-                    this._refreshType.excludeDetached = false;
 
                     // if refresh tree is true, validate that opened detached of same commander still valid and close as needed.
                     if (this._refreshType.tree && id === c_id && !this._refreshType.documents) {
@@ -2795,6 +2793,7 @@ export class LeoIntegration {
 
             }
         }
+        this._refreshType.excludeDetached = false;
 
         if (q_foundResults.length) {
             return Promise.all(q_foundResults).then((p_results) => {
@@ -3599,7 +3598,7 @@ export class LeoIntegration {
             if (q_saved) {
                 await q_saved;
                 this.preventIconChange = true;
-                console.log('fire refresh body in showBody1');
+                // console.log('fire refresh body in showBody1');
                 this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
             }
 
@@ -3726,7 +3725,7 @@ export class LeoIntegration {
         if (w_foundDocOpened && !q_saved) {
             // Was the same and was asked to show body (and did not already had to fake-save and refresh)
             // this.preventIconChange = true; // ? NEEDED ?
-            console.log('fire refresh body in showBody2');
+            // console.log('fire refresh body in showBody2');
 
             this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
         }
@@ -4664,11 +4663,10 @@ export class LeoIntegration {
             // If alt+arrow is used to navigate: SHOW and leave focus on outline.
             this.showOutlineIfClosed = true;
 
-            if (!this._commandStack.size() && p_userCommand.refreshType.body) {
-                // If nothing on stack and this is a navigation command, dont refresh DETACHED
+            if (p_userCommand.refreshType.body) {
+                // If this is a navigation command, dont refresh DETACHED
                 p_userCommand.refreshType.excludeDetached = true;
             }
-
         }
 
         const q_result = this._commandStack.add(p_userCommand);

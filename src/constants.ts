@@ -74,7 +74,6 @@ export class Constants {
     public static BODY_STATES_DEBOUNCE_DELAY: number = 120;
     public static OUTLINE_DESC_DEBOUNCE_DELAY: number = 250;
     public static GOTO_DEBOUNCE_DELAY: number = 50;
-    public static DETACHED_REGEX: RegExp = /^\/(\d+)\//;
 
     public static LOG_ALERT_COLOR: string = 'red';
 

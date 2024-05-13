@@ -16,7 +16,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Last file read data with the readFile method
     public lastGnx: string = ""; // gnx of last file read
     public lastBodyData: string = ""; // body content of last file read
-    public lastBodyLength: number = 0; // length of last file read
 
     // * List of currently opened body panes gnx (from 'watch' & 'dispose' methods)
     public watchedBodiesGnx: string[] = [];
@@ -43,18 +42,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         const w_gnx = utils.leoUriToStr(p_uri);
         this._lastBodyTimeGnx = w_gnx;
         this._setOpenedBodyTime(w_gnx);
-    }
-
-    /**
-     * Set data from detached body with same commander & gnx
-     */
-    public setFromDetached(p_data: string, p_gnx: string): void {
-        this._lastBodyTimeGnx = p_gnx;
-        this._setOpenedBodyTime(p_gnx);
-        this.lastGnx = p_gnx;
-        this.lastBodyData = p_data;
-        const w_buffer = Buffer.from(p_data);
-        this.lastBodyLength = w_buffer.byteLength;
     }
 
     /**
@@ -121,7 +108,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         } else {
         }
         return new vscode.Disposable(() => {
-            console.log('DISPOSE watch body  ' + utils.leoUriToStr(p_resource));
+            // console.log('DISPOSE watch body  ' + utils.leoUriToStr(p_resource));
 
             const w_position = this.watchedBodiesGnx.indexOf(w_gnx); // find and remove it
             if (w_position > -1) {
@@ -133,7 +120,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
         if (this._leoIntegration.leoStates.fileOpenedReady) {
             const w_gnx = utils.leoUriToStr(p_uri);
-            console.log('Calling stats for ' + w_gnx);
+            // console.log('Calling stats for ' + w_gnx);
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
 
@@ -179,15 +166,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     console.warn('readFile: ERROR File not in _openedBodiesInfo! gnx: ', w_gnx);
                 }
 
-                console.log('body read bodyGNX', w_gnx);
+                // console.log('body read bodyGNX', w_gnx);
                 let w_buffer: Uint8Array;
-
-                // // * GET FROM MIRRORED DETACHED
-                // if (this._leoIntegration.changedDetachedWithMirrorBody && this.lastBodyData && w_gnx === this.lastGnx) {
-                //     console.log("HAD changedDetachedWithMirrorBody :", this._leoIntegration.changedDetachedWithMirrorBody, " and gnx is ", w_gnx);
-                //     return Buffer.from(this.lastBodyData);
-                // }
-
 
                 // * GET FROM SERVER
                 const p_result = await this._leoIntegration.sendAction(
@@ -208,13 +188,11 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     this.lastGnx = w_gnx;
                     this.lastBodyData = p_result.body;
                     w_buffer = Buffer.from(p_result.body);
-                    this.lastBodyLength = w_buffer.byteLength;
 
                 } else if (p_result.body === "") {
                     // console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
 
                     this.lastGnx = w_gnx;
-                    this.lastBodyLength = 0;
                     this.lastBodyData = "";
                     w_buffer = Buffer.from("");
                 } else {
@@ -253,19 +231,16 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
-        if (!this.preventSaveToLeo) {
-            this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
-        } else {
+        if (this.preventSaveToLeo) {
             this.preventSaveToLeo = false;
+        } else {
+            this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
         }
         const w_gnx = utils.leoUriToStr(p_uri);
         if (!this._openedBodiesInfo[w_gnx]) {
             console.error("Leointeg: Tried to save body other than selected node's body", w_gnx);
         }
         this._setOpenedBodyTime(w_gnx);
-        if (w_gnx === this.lastGnx) {
-            this.lastBodyLength = p_content.byteLength;
-        }
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri: p_uri });
     }
 

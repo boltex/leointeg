@@ -16,6 +16,7 @@ export class CommandStack {
 
     // Refresh type, for use after the last command has done resolving (From highest so far)
     public finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
+    private _allowDetachedExclusion = true;
 
     // Flag used to set focus on outline instead of body when done resolving (From last pushed)
     private _finalFocus: Focus = Focus.NoChange;
@@ -116,7 +117,10 @@ export class CommandStack {
 
         // TODO : Maybe implement this in a better way: excludeDetached IS A NEGATIVE FLAG 
         // * Check if we added a body refresh that did not exclude detached. If so make it also refresh detached.
-        if (this.finalRefreshType.excludeDetached && w_command.refreshType.body && !w_command.refreshType.excludeDetached) {
+        if (w_command.refreshType.body && !w_command.refreshType.excludeDetached) {
+            this._allowDetachedExclusion = false;
+        }
+        if (!this._allowDetachedExclusion && this.finalRefreshType.excludeDetached) {
             delete this.finalRefreshType.excludeDetached;
         }
 
@@ -161,6 +165,7 @@ export class CommandStack {
             }
             // Reset refresh type nonetheless
             this.finalRefreshType = {};
+            this._allowDetachedExclusion = true;
         } else {
             // Size > 0, so call _runStackCommand again, keep _busy set to true
             this._runStackCommand().then((p_package: LeoBridgePackage) => {
