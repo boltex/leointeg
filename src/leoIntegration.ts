@@ -2743,6 +2743,7 @@ export class LeoIntegration {
         const q_foundResults: Array<Promise<LeoBridgePackage>> = [];
         const w_sentFoundTabs: Array<vscode.Tab> = [];
         const w_sentFoundUri: Array<vscode.Uri> = [];
+        let w_hasDetached = false;
 
         for (const p_tabGroup of vscode.window.tabGroups.all) {
             for (const p_tab of p_tabGroup.tabs) {
@@ -2757,6 +2758,7 @@ export class LeoIntegration {
                     if (!this._refreshType.excludeDetached && this._refreshType.body && id === c_id) {
                         // console.log('fire refresh DETACHED in _refreshDetachedBodies');
                         this._leoDetachedFileSystem.fireRefreshFile(`${id}/${gnx}`);
+                        w_hasDetached = true;
                     }
 
                     // if refresh tree is true, validate that opened detached of same commander still valid and close as needed.
@@ -2792,6 +2794,9 @@ export class LeoIntegration {
                 }
 
             }
+        }
+        if (w_hasDetached && this._refreshType.tree) {
+            this.refreshCommanderDetachedLanguage(); // May have moved outside of language specific outline
         }
         this._refreshType.excludeDetached = false;
 

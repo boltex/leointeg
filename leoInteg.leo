@@ -5801,7 +5801,7 @@ public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
 public static ERROR_PACKAGE_ID: number = 0;
 public static STARTING_PACKAGE_ID: number = 1;
 public static CLEANUP_DEBOUNCE_DELAY: number = 40;
-public static DETACHED_LANGUAGE_DELAY: number = 350;
+public static DETACHED_LANGUAGE_DELAY: number = 300;
 public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
 public static BUTTONS_DEBOUNCE_DELAY: number = 80;
 public static UNDOS_DEBOUNCE_DELAY: number = 180;
@@ -21698,6 +21698,7 @@ public _onTabsChanged(p_event: vscode.TabChangeEvent): void {
     const q_foundResults: Array&lt;Promise&lt;LeoBridgePackage&gt;&gt; = [];
     const w_sentFoundTabs: Array&lt;vscode.Tab&gt; = [];
     const w_sentFoundUri: Array&lt;vscode.Uri&gt; = [];
+    let w_hasDetached = false;
 
     for (const p_tabGroup of vscode.window.tabGroups.all) {
         for (const p_tab of p_tabGroup.tabs) {
@@ -21712,6 +21713,7 @@ public _onTabsChanged(p_event: vscode.TabChangeEvent): void {
                 if (!this._refreshType.excludeDetached &amp;&amp; this._refreshType.body &amp;&amp; id === c_id) {
                     // console.log('fire refresh DETACHED in _refreshDetachedBodies');
                     this._leoDetachedFileSystem.fireRefreshFile(`${id}/${gnx}`);
+                    w_hasDetached = true;
                 }
 
                 // if refresh tree is true, validate that opened detached of same commander still valid and close as needed.
@@ -21747,6 +21749,9 @@ public _onTabsChanged(p_event: vscode.TabChangeEvent): void {
             }
 
         }
+    }
+    if (w_hasDetached &amp;&amp; this._refreshType.tree) {
+        this.refreshCommanderDetachedLanguage(); // May have moved outside of language specific outline
     }
     this._refreshType.excludeDetached = false;
 

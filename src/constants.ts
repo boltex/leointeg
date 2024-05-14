@@ -63,7 +63,7 @@ export class Constants {
     public static ERROR_PACKAGE_ID: number = 0;
     public static STARTING_PACKAGE_ID: number = 1;
     public static CLEANUP_DEBOUNCE_DELAY: number = 40;
-    public static DETACHED_LANGUAGE_DELAY: number = 350;
+    public static DETACHED_LANGUAGE_DELAY: number = 300;
     public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
     public static BUTTONS_DEBOUNCE_DELAY: number = 80;
     public static UNDOS_DEBOUNCE_DELAY: number = 180;
