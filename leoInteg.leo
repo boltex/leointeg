@@ -3321,7 +3321,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.revert",
   "title": "Revert to Saved",
-  "enablement": "leoTreeOpened",
+  "enablement": "leoTreeOpened &amp;&amp; leoTreeTitled",
   "category": "Leo"
 },
 {
@@ -13011,6 +13011,11 @@ public static VSCODE_COMMANDS = {
     "command": "leointeg.closeLeoFile",
     "when": "viewItem =~ /^leoDocumentSelected/",
     "group": "inline@2"
+  },
+  {
+    "command": "leointeg.revert",
+    "when": "viewItem =~ /^leoDocumentSelected/",
+    "group": "leoDocumentContext1@1"
   },
   {
     "command": "leointeg.editHeadline",

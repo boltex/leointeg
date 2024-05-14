@@ -1923,7 +1923,7 @@
       {
         "command": "leointeg.revert",
         "title": "Revert to Saved",
-        "enablement": "leoTreeOpened",
+        "enablement": "leoTreeOpened && leoTreeTitled",
         "category": "Leo"
       },
       {
@@ -3795,6 +3795,11 @@
           "command": "leointeg.closeLeoFile",
           "when": "viewItem =~ /^leoDocumentSelected/",
           "group": "inline@2"
+        },
+        {
+          "command": "leointeg.revert",
+          "when": "viewItem =~ /^leoDocumentSelected/",
+          "group": "leoDocumentContext1@1"
         },
         {
           "command": "leointeg.editHeadline",
