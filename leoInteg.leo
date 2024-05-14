@@ -4658,13 +4658,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.showBody",
   "key": "alt+d",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointegDetached || leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.showBody",
   "key": "ctrl+g",
   "mac": "cmd+g",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointegDetached || leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.showBody",
