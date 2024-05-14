@@ -3972,13 +3972,13 @@
       {
         "command": "leointeg.showBody",
         "key": "alt+d",
-        "when": "leoEditHeadline || leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leointegDetached || leoEditHeadline || leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.showBody",
         "key": "ctrl+g",
         "mac": "cmd+g",
-        "when": "leoEditHeadline || leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leointegDetached || leoEditHeadline || leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
       },
       {
         "command": "leointeg.showBody",
