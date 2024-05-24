@@ -1806,11 +1806,8 @@ export class LeoIntegration {
         p_editor: vscode.TextEditor | undefined,
         p_internalCall?: boolean
     ): void {
-        if (p_editor && p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-            if (this.bodyUri.fsPath !== p_editor.document.uri.fsPath) {
-                this._hideDeleteBody(p_editor);
-            }
-            this._checkPreviewMode(p_editor);
+        if (p_editor) {
+            this._hideBodiesUnknownToFileSys([p_editor]);
         }
         if (!p_internalCall) {
             this.triggerBodySave(true, true); // Save in case edits were pending
@@ -1850,15 +1847,7 @@ export class LeoIntegration {
      */
     public _changedVisibleTextEditors(p_editors: readonly vscode.TextEditor[]): void {
         if (p_editors && p_editors.length) {
-            // May be no changes - so check length
-            p_editors.forEach((p_textEditor) => {
-                if (p_textEditor && p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-                    if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
-                        this._hideDeleteBody(p_textEditor);
-                    }
-                    this._checkPreviewMode(p_textEditor);
-                }
-            });
+            this._hideBodiesUnknownToFileSys(p_editors);
         }
         this.triggerBodySave(true, true);
     }
@@ -1923,6 +1912,7 @@ export class LeoIntegration {
 
             const w_selectedCId = this.leoStates.leoCommanderId; // g.app.windowList[this.frameIndex].c.id.toString();
             const w_sameCommander = w_selectedCId === id;
+            let w_needDocRefresh = false;
             let w_alreadySaved = false;
             let w_v: ArchivedPosition | undefined;
 
@@ -1991,6 +1981,15 @@ export class LeoIntegration {
                         this._refreshOutline(false, RevealType.NoReveal);
                     }
                 }
+            } else {
+                // TODO : check with document pane provider !
+                // if (c && !c.isChanged()) {
+                //     w_needDocRefresh = true;
+                //     if (!w_alreadySaved) {
+                //         void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                //         w_alreadySaved = true;
+                //     }
+                // }
             }
 
             // * SET NEW VSNODE STATES FOR FUTURE w_detachedIconChanged DETECTION!
@@ -2067,6 +2066,8 @@ export class LeoIntegration {
                     this.debouncedRefreshBodyStates(50); // And maybe changed in other node of same commander!
                 }
 
+            } else if (w_needDocRefresh) {
+                this.refreshDocumentsPane();
             }
 
             if (!this.leoStates.leoChanged) {
@@ -3430,6 +3431,39 @@ export class LeoIntegration {
     }
 
     /**
+     * Close all tabs that are not part of their filesystems
+     * * This matches cleanupDetachedBodies from leoBodyDetached !
+     */
+    private _hideBodiesUnknownToFileSys(p_editors: readonly vscode.TextEditor[]): void {
+        p_editors.forEach((p_editor) => {
+            if (p_editor) {
+                switch (p_editor.document.uri.scheme) {
+                    case Constants.URI_LEO_SCHEME:
+                        if (this.bodyUri.fsPath !== p_editor.document.uri.fsPath) {
+                            void this._hideDeleteBody(p_editor);
+                        }
+                        this._checkPreviewMode(p_editor);
+                        break;
+
+                    case Constants.URI_LEO_DETACHED_SCHEME:
+                        const w_gnx = utils.leoUriToStr(p_editor.document.uri);
+                        //if (!this._leoDetachedFileSystem.watchedBodiesGnx.includes(w_gnx)) {
+                        if (!this._leoDetachedFileSystem.openedBodiesVNodes[w_gnx]) {
+                            // unknown to the detached filesystem
+                            void this._hideDeleteBody(p_editor);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+
+            }
+
+        });
+    }
+
+    /**
      * * Closes non-existing text-editor body if it doesn't match bodyUri
      * @param p_textEditor the editor to close
      * @returns promise that resolves to true if it closed tabs, false if none were found
@@ -3441,16 +3475,13 @@ export class LeoIntegration {
             p_tabGroup.tabs.forEach((p_tab) => {
                 if (p_tab.input &&
                     (p_tab.input as vscode.TabInputText).uri &&
-                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
-                    (p_tab.input as vscode.TabInputText).uri.fsPath === w_editorFsPath &&
-                    this.bodyUri.fsPath !== w_editorFsPath // if BODY is now the same, dont hide!
+                    (p_tab.input as vscode.TabInputText).uri.scheme.startsWith(Constants.URI_LEO_SCHEME) &&
+                    (p_tab.input as vscode.TabInputText).uri.fsPath === w_editorFsPath
                 ) {
                     w_foundTabs.push(p_tab);
                 }
             });
         });
-
-        // TODO : Delete and/or REMOVE FROM DETACHED VNODES DICT!! 
 
         // * Make sure the closed/deleted body is not remembered as vscode's recent files!
         vscode.commands.executeCommand(

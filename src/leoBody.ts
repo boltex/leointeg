@@ -16,8 +16,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Last file read data with the readFile method
     public lastGnx: string = ""; // gnx of last file read
     public lastBodyData: string = ""; // body content of last file read
-
-    // * List of currently opened body panes gnx (from 'watch' & 'dispose' methods)
+    public lastBodyLength: number = 0; // length of last file read
+    // * List of currently VISIBLE opened body panes gnx (from 'watch' & 'dispose' methods)
     public watchedBodiesGnx: string[] = [];
 
     // * List of gnx open in tab(s) (from tryApplyNodeToBody / switchBody and fs.delete)
@@ -123,15 +123,15 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             // console.log('Calling stats for ' + w_gnx);
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-
-                // } else if (w_gnx === this.lastGnx && this._openedBodiesInfo[this.lastGnx]) {
-                //     return {
-                //         type: vscode.FileType.File,
-                //         ctime: this._openedBodiesInfo[this.lastGnx].ctime,
-                //         mtime: this._openedBodiesInfo[this.lastGnx].mtime,
-                //         size: this.lastBodyLength
-                //     };
-
+                // SPECIAL CASE -----------------------------------------------
+            } else if (w_gnx === this.lastGnx && this._openedBodiesInfo[this.lastGnx]) {
+                return {
+                    type: vscode.FileType.File,
+                    ctime: this._openedBodiesInfo[this.lastGnx].ctime,
+                    mtime: this._openedBodiesInfo[this.lastGnx].mtime,
+                    size: this.lastBodyLength
+                };
+                // ------------------------------------------------------------
             } else if (this._openedBodiesInfo[w_gnx]) {
                 // * GETS IT WITH len(w_v.b.encode('utf-8')) 
                 // So length should be equivalent
@@ -162,9 +162,10 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             } else {
                 const w_gnx = utils.leoUriToStr(p_uri);
 
-                if (!this._openedBodiesInfo[w_gnx]) {
-                    console.warn('readFile: ERROR File not in _openedBodiesInfo! gnx: ', w_gnx);
-                }
+                // * should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                // if (!this._openedBodiesInfo[w_gnx]) {
+                //     console.warn('readFile: ERROR File not in _openedBodiesInfo! gnx: ', w_gnx);
+                // }
 
                 // console.log('body read bodyGNX', w_gnx);
                 let w_buffer: Uint8Array;
@@ -188,6 +189,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     this.lastGnx = w_gnx;
                     this.lastBodyData = p_result.body;
                     w_buffer = Buffer.from(p_result.body);
+                    this.lastBodyLength = w_buffer.byteLength;
 
                 } else if (p_result.body === "") {
                     // console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
@@ -195,6 +197,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     this.lastGnx = w_gnx;
                     this.lastBodyData = "";
                     w_buffer = Buffer.from("");
+                    this.lastBodyLength = 0;
                 } else {
                     this._leoIntegration.fullRefresh();
                     if (this.lastGnx === w_gnx) {
@@ -241,6 +244,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             console.error("Leointeg: Tried to save body other than selected node's body", w_gnx);
         }
         this._setOpenedBodyTime(w_gnx);
+        if (w_gnx === this.lastGnx) {
+            this.lastBodyLength = p_content.byteLength;
+        }
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri: p_uri });
     }
 

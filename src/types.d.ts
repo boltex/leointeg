@@ -352,6 +352,7 @@ export interface Icon {
 export interface BodyTimeInfo {
     ctime: number;
     mtime: number;
+    lastBodyLength?: number;
 }
 
 /**
