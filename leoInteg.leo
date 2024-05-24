@@ -10425,7 +10425,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                 if (p_selection.active.line &lt; w_textEditor.document.lineCount) {
                     // TRY TO DETECT IF LANGUAGE RESET NEEDED!
                     let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
-                    if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
+                    if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('wrap') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
                         w_needsRefresh = true;
                         break;
                     }
@@ -10680,7 +10680,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                 // TRY TO DETECT IF LANGUAGE RESET NEEDED!
                 if (p_selection.active.line &lt; w_textEditor.document.lineCount) {
                     let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
-                    if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
+                    if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('wrap') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
                         w_needsRefresh = true;
                         break;
                     }
@@ -16534,7 +16534,7 @@ import * as utils from "./utils";
   "command": "leointeg.findQuickTimeline",
   "category": "Leo",
   "enablement": "leoTreeOpened",
-  "title": "List timeline of nodes in reverse gnx order",
+  "title": "List nodes in reverse gnx order",
   "icon": "$(leo-find-quick-timeline)"
 },
 {
@@ -19512,8 +19512,10 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
             Object.values(p_result["position-data-dict"]).forEach(p_position =&gt; {
                 let w_description = p_position.gnx; // Defaults as gnx.
                 const w_gnxParts = w_description.split('.');
-                if (w_gnxParts.length === 3 &amp;&amp; w_gnxParts[1].length === 14) {
-                    // legit 3 part gnx
+                const dateString = w_gnxParts[1] ? w_gnxParts[1] : "";
+
+                if (w_gnxParts.length === 3 &amp;&amp; dateString.length === 14 &amp;&amp; /^\d+$/.test(dateString)) {
+                    // legit 3 part numeric gnx, so build a string date
                     const dateString = w_gnxParts[1];
                     const w_year = +dateString.substring(0, 4); // unary + operator to convert the strings to numbers.
                     const w_month = +dateString.substring(4, 6);
@@ -20372,7 +20374,7 @@ public setBodyWrap(): Thenable&lt;void&gt; {
         w_totalConfigName += langWrap;
         // w_languageSettings = vscode.workspace.getConfiguration(langWrap);
     }
-    w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName);
+    w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName, null);
 
     if (!w_languageSettings || !w_languageSettings['editor.wordWrap'] || w_languageSettings['editor.wordWrap'] !== 'on') {
         w_missing = true;
@@ -21709,11 +21711,14 @@ public _onTabsChanged(p_event: vscode.TabChangeEvent): void {
                 const w_uri = (p_tab.input as vscode.TabInputText).uri;
                 const [unused, id, gnx] = w_uri.path.split("/");
 
+                if (id === c_id) {
+                    w_hasDetached = true;
+                }
+
                 // Refresh detached bodies if same commander  // ! ALSO FIRE REFRESH !
                 if (!this._refreshType.excludeDetached &amp;&amp; this._refreshType.body &amp;&amp; id === c_id) {
                     // console.log('fire refresh DETACHED in _refreshDetachedBodies');
                     this._leoDetachedFileSystem.fireRefreshFile(`${id}/${gnx}`);
-                    w_hasDetached = true;
                 }
 
                 // if refresh tree is true, validate that opened detached of same commander still valid and close as needed.
@@ -21827,7 +21832,7 @@ private _refreshCommanderDetachedLanguage(): void {
         if (w_foundVnode) {
             void this.sendAction(
                 Constants.LEOBRIDGE.GET_BODY_STATES,
-                utils.buildNodeCommand(w_foundVnode!)
+                { gnx: w_foundVnode.gnx }
             ).then((p_bodyStates: LeoBridgePackage) =&gt; {
                 let w_language: string = p_bodyStates.language!;
                 let w_wrap: boolean = !!p_bodyStates.wrap;

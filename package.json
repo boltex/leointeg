@@ -2978,7 +2978,7 @@
         "command": "leointeg.findQuickTimeline",
         "category": "Leo",
         "enablement": "leoTreeOpened",
-        "title": "List timeline of nodes in reverse gnx order",
+        "title": "List nodes in reverse gnx order",
         "icon": "$(leo-find-quick-timeline)"
       },
       {

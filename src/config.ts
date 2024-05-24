@@ -263,7 +263,7 @@ export class Config implements ConfigMembers {
             w_totalConfigName += langWrap;
             // w_languageSettings = vscode.workspace.getConfiguration(langWrap);
         }
-        w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName);
+        w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName, null);
 
         if (!w_languageSettings || !w_languageSettings['editor.wordWrap'] || w_languageSettings['editor.wordWrap'] !== 'on') {
             w_missing = true;

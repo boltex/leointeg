@@ -1958,7 +1958,7 @@ export class LeoIntegration {
                     if (p_selection.active.line < w_textEditor.document.lineCount) {
                         // TRY TO DETECT IF LANGUAGE RESET NEEDED!
                         let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
-                        if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
+                        if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('wrap') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
                             w_needsRefresh = true;
                             break;
                         }
@@ -2213,7 +2213,7 @@ export class LeoIntegration {
                     // TRY TO DETECT IF LANGUAGE RESET NEEDED!
                     if (p_selection.active.line < w_textEditor.document.lineCount) {
                         let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
-                        if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
+                        if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('wrap') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
                             w_needsRefresh = true;
                             break;
                         }
@@ -2754,11 +2754,14 @@ export class LeoIntegration {
                     const w_uri = (p_tab.input as vscode.TabInputText).uri;
                     const [unused, id, gnx] = w_uri.path.split("/");
 
+                    if (id === c_id) {
+                        w_hasDetached = true;
+                    }
+
                     // Refresh detached bodies if same commander  // ! ALSO FIRE REFRESH !
                     if (!this._refreshType.excludeDetached && this._refreshType.body && id === c_id) {
                         // console.log('fire refresh DETACHED in _refreshDetachedBodies');
                         this._leoDetachedFileSystem.fireRefreshFile(`${id}/${gnx}`);
-                        w_hasDetached = true;
                     }
 
                     // if refresh tree is true, validate that opened detached of same commander still valid and close as needed.
@@ -4022,7 +4025,7 @@ export class LeoIntegration {
             if (w_foundVnode) {
                 void this.sendAction(
                     Constants.LEOBRIDGE.GET_BODY_STATES,
-                    utils.buildNodeCommand(w_foundVnode!)
+                    { gnx: w_foundVnode.gnx }
                 ).then((p_bodyStates: LeoBridgePackage) => {
                     let w_language: string = p_bodyStates.language!;
                     let w_wrap: boolean = !!p_bodyStates.wrap;
@@ -5159,8 +5162,10 @@ export class LeoIntegration {
                 Object.values(p_result["position-data-dict"]).forEach(p_position => {
                     let w_description = p_position.gnx; // Defaults as gnx.
                     const w_gnxParts = w_description.split('.');
-                    if (w_gnxParts.length === 3 && w_gnxParts[1].length === 14) {
-                        // legit 3 part gnx
+                    const dateString = w_gnxParts[1] ? w_gnxParts[1] : "";
+
+                    if (w_gnxParts.length === 3 && dateString.length === 14 && /^\d+$/.test(dateString)) {
+                        // legit 3 part numeric gnx, so build a string date
                         const dateString = w_gnxParts[1];
                         const w_year = +dateString.substring(0, 4); // unary + operator to convert the strings to numbers.
                         const w_month = +dateString.substring(4, 6);
