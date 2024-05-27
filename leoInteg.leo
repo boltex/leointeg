@@ -10481,7 +10481,6 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                     if (!doc.documentEntry.changed) {
                         // not changed, so needs refresh of documents.
                         w_needDocRefresh = true;
-                        console.log('NOT current commander, has found other commander not dirty');
                         if (!w_alreadySaved) {
                             void this._bodySaveDocument(this.bodyDetachedTextDocument);
                             w_alreadySaved = true;
@@ -19528,7 +19527,7 @@ private _refreshDesc(): void {
 public static MIN_SERVER_VERSION_NUMBER = {
     major: 1,
     minor: 0,
-    patch: 10,
+    patch: 11,
 };
 
 </t>
