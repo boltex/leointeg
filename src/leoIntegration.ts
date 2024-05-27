@@ -1987,14 +1987,20 @@ export class LeoIntegration {
                     }
                 }
             } else {
-                // TODO : check with document pane provider !
-                // if (c && !c.isChanged()) {
-                //     w_needDocRefresh = true;
-                //     if (!w_alreadySaved) {
-                //         void this._bodySaveDocument(this.bodyDetachedTextDocument);
-                //         w_alreadySaved = true;
-                //     }
-                // }
+                for (const doc of this._leoDocumentsProvider.lastDocumentList) {
+                    if (doc.documentEntry.id.toString() === id) {
+                        // found it.
+                        if (!doc.documentEntry.changed) {
+                            // not changed, so needs refresh of documents.
+                            w_needDocRefresh = true;
+                            if (!w_alreadySaved) {
+                                void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                                w_alreadySaved = true;
+                            }
+                        }
+                        break;
+                    }
+                }
             }
 
             // * SET NEW VSNODE STATES FOR FUTURE w_detachedIconChanged DETECTION!
@@ -4541,28 +4547,10 @@ export class LeoIntegration {
         const w_openedDocument = await vscode.workspace.openTextDocument(detachedUri);
         this.bodyDetachedTextDocument = w_openedDocument;
 
-        // TODO : FIX THIS !
-        let w_bodySel: BodySelectionInfo | undefined;
         let q_bodyStates = this.sendAction(
             Constants.LEOBRIDGE.GET_BODY_STATES,
             utils.buildNodeCommand(p!)
         );
-
-        // const w_language = this._getBodyLanguage(p);
-        // const insert = p.v.insertSpot;
-        // const start = p.v.selectionStart;
-        // const end = p.v.selectionStart + p.v.selectionLength;
-        // const scroll = p.v.scrollBarSpot;
-
-        // w_bodySel = {
-        //     "gnx": p.v.gnx,
-        //     "scroll": scroll,
-        //     "insert": this._row_col_pv_dict(insert, p.v.b),
-        //     "start": this._row_col_pv_dict(start, p.v.b),
-        //     "end": this._row_col_pv_dict(end, p.v.b)
-        // };
-
-        // void this._setBodyLanguage(this.bodyDetachedTextDocument, w_language);
 
         const w_showOptions: vscode.TextDocumentShowOptions =
         {
@@ -4658,63 +4646,6 @@ export class LeoIntegration {
 
             }
         );
-
-        // .then(
-        //     (p_textEditor: vscode.TextEditor) => {
-
-        //         // * Set text selection range
-        //         const w_bodyTextEditor = p_textEditor;
-        //         if (!w_bodySel) {
-        //             console.log("no selection in returned package from get_body_states");
-        //         }
-
-        //         const w_leoBodySel: BodySelectionInfo = w_bodySel!;
-
-        //         // Cursor position and selection range
-        //         const w_activeRow: number = w_leoBodySel.insert.line;
-        //         const w_activeCol: number = w_leoBodySel.insert.col;
-        //         let w_anchorLine: number = w_leoBodySel.start.line;
-        //         let w_anchorCharacter: number = w_leoBodySel.start.col;
-
-        //         if (w_activeRow === w_anchorLine && w_activeCol === w_anchorCharacter) {
-        //             // Active insertion same as start selection, so use the other ones
-        //             w_anchorLine = w_leoBodySel.end.line;
-        //             w_anchorCharacter = w_leoBodySel.end.col;
-        //         }
-
-        //         const w_selection = new vscode.Selection(
-        //             w_anchorLine,
-        //             w_anchorCharacter,
-        //             w_activeRow,
-        //             w_activeCol
-        //         );
-
-        //         let w_scrollRange: vscode.Range | undefined;
-
-        //         // Build scroll position from selection range.
-        //         w_scrollRange = new vscode.Range(
-        //             w_activeRow,
-        //             w_activeCol,
-        //             w_activeRow,
-        //             w_activeCol
-        //         );
-
-        //         if (w_bodyTextEditor) {
-
-        //             w_bodyTextEditor.selection = w_selection; // set cursor insertion point & selection range
-        //             if (!w_scrollRange) {
-        //                 w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
-        //             }
-
-        //             w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
-
-        //         } else {
-        //             console.log("no selection in returned package from showTextDocument");
-        //         }
-
-        //     }
-        // );
-
         return q_showTextDocument;
     }
 

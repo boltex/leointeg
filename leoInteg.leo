@@ -7465,7 +7465,6 @@ export class LeoDocumentNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
     public contextValue: string;
-    public c_id: string;
 
     constructor(
         public documentEntry: LeoDocument,
@@ -7473,7 +7472,6 @@ export class LeoDocumentNode extends vscode.TreeItem {
     ) {
         super(documentEntry.name);
         // Setup this instance
-        this.c_id = this.documentEntry.id;
         const w_isNamed: boolean = !!this.documentEntry.name;
         this.label = w_isNamed ? utils.getFileFromPath(this.documentEntry.name) : Constants.UNTITLED_FILE_NAME;
         this.tooltip = w_isNamed ? this.documentEntry.name : Constants.UNTITLED_FILE_NAME;
@@ -7527,6 +7525,8 @@ import { LeoDocument } from "./types";
  */
 export class LeoDocumentsProvider implements vscode.TreeDataProvider&lt;LeoDocumentNode&gt; {
 
+    public lastDocumentList: LeoDocumentNode[] = [];
+
     private _onDidChangeTreeData: vscode.EventEmitter&lt;LeoDocumentNode | undefined&gt; = new vscode.EventEmitter&lt;LeoDocumentNode | undefined&gt;();
 
     readonly onDidChangeTreeData: vscode.Event&lt;LeoDocumentNode | undefined&gt; = this._onDidChangeTreeData.event;
@@ -7568,12 +7568,15 @@ public refreshTreeRoot(): void {
                         w_index++;
                     });
                 }
+                this.lastDocumentList = w_list;
                 return w_list;
             } else {
+                this.lastDocumentList = [];
                 return [];
             }
         });
     } else {
+        this.lastDocumentList = [];
         return Promise.resolve([]); // Defaults to an empty list of children
     }
 }
@@ -10472,14 +10475,20 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                 }
             }
         } else {
-            // TODO : check with document pane provider !
-            // if (c &amp;&amp; !c.isChanged()) {
-            //     w_needDocRefresh = true;
-            //     if (!w_alreadySaved) {
-            //         void this._bodySaveDocument(this.bodyDetachedTextDocument);
-            //         w_alreadySaved = true;
-            //     }
-            // }
+            for (const doc of this._leoDocumentsProvider.lastDocumentList) {
+                if (doc.documentEntry.id.toString() === id) {
+                    // found it.
+                    if (!doc.documentEntry.changed) {
+                        // not changed, so needs refresh of documents.
+                        w_needDocRefresh = true;
+                        if (!w_alreadySaved) {
+                            void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                            w_alreadySaved = true;
+                        }
+                    }
+                    break;
+                }
+            }
         }
 
         // * SET NEW VSNODE STATES FOR FUTURE w_detachedIconChanged DETECTION!
@@ -21496,28 +21505,10 @@ public async openAside(p?: ArchivedPosition): Promise&lt;unknown&gt; {
     const w_openedDocument = await vscode.workspace.openTextDocument(detachedUri);
     this.bodyDetachedTextDocument = w_openedDocument;
 
-    // TODO : FIX THIS !
-    let w_bodySel: BodySelectionInfo | undefined;
     let q_bodyStates = this.sendAction(
         Constants.LEOBRIDGE.GET_BODY_STATES,
         utils.buildNodeCommand(p!)
     );
-
-    // const w_language = this._getBodyLanguage(p);
-    // const insert = p.v.insertSpot;
-    // const start = p.v.selectionStart;
-    // const end = p.v.selectionStart + p.v.selectionLength;
-    // const scroll = p.v.scrollBarSpot;
-
-    // w_bodySel = {
-    //     "gnx": p.v.gnx,
-    //     "scroll": scroll,
-    //     "insert": this._row_col_pv_dict(insert, p.v.b),
-    //     "start": this._row_col_pv_dict(start, p.v.b),
-    //     "end": this._row_col_pv_dict(end, p.v.b)
-    // };
-
-    // void this._setBodyLanguage(this.bodyDetachedTextDocument, w_language);
 
     const w_showOptions: vscode.TextDocumentShowOptions =
     {
@@ -21613,63 +21604,6 @@ public async openAside(p?: ArchivedPosition): Promise&lt;unknown&gt; {
 
         }
     );
-
-    // .then(
-    //     (p_textEditor: vscode.TextEditor) =&gt; {
-
-    //         // * Set text selection range
-    //         const w_bodyTextEditor = p_textEditor;
-    //         if (!w_bodySel) {
-    //             console.log("no selection in returned package from get_body_states");
-    //         }
-
-    //         const w_leoBodySel: BodySelectionInfo = w_bodySel!;
-
-    //         // Cursor position and selection range
-    //         const w_activeRow: number = w_leoBodySel.insert.line;
-    //         const w_activeCol: number = w_leoBodySel.insert.col;
-    //         let w_anchorLine: number = w_leoBodySel.start.line;
-    //         let w_anchorCharacter: number = w_leoBodySel.start.col;
-
-    //         if (w_activeRow === w_anchorLine &amp;&amp; w_activeCol === w_anchorCharacter) {
-    //             // Active insertion same as start selection, so use the other ones
-    //             w_anchorLine = w_leoBodySel.end.line;
-    //             w_anchorCharacter = w_leoBodySel.end.col;
-    //         }
-
-    //         const w_selection = new vscode.Selection(
-    //             w_anchorLine,
-    //             w_anchorCharacter,
-    //             w_activeRow,
-    //             w_activeCol
-    //         );
-
-    //         let w_scrollRange: vscode.Range | undefined;
-
-    //         // Build scroll position from selection range.
-    //         w_scrollRange = new vscode.Range(
-    //             w_activeRow,
-    //             w_activeCol,
-    //             w_activeRow,
-    //             w_activeCol
-    //         );
-
-    //         if (w_bodyTextEditor) {
-
-    //             w_bodyTextEditor.selection = w_selection; // set cursor insertion point &amp; selection range
-    //             if (!w_scrollRange) {
-    //                 w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
-    //             }
-
-    //             w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
-
-    //         } else {
-    //             console.log("no selection in returned package from showTextDocument");
-    //         }
-
-    //     }
-    // );
-
     return q_showTextDocument;
 }
 
