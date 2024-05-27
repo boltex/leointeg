@@ -15,7 +15,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     // * Last file read data with the readFile method
     public lastGnx: string = ""; // gnx of last file read
-    public lastBodyData: string = ""; // body content of last file read
+    public lastBodyData?: string = ""; // body content of last file read
     public lastBodyLength: number = 0; // length of last file read
     // * List of currently VISIBLE opened body panes gnx (from 'watch' & 'dispose' methods)
     public watchedBodiesGnx: string[] = [];
@@ -202,7 +202,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     this._leoIntegration.fullRefresh();
                     if (this.lastGnx === w_gnx) {
                         // was last gnx of closed file about to be switched to new document selected
-                        w_buffer = Buffer.from(this.lastBodyData);
+                        w_buffer = Buffer.from(this.lastBodyData || "");
                     } else {
                         console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
                         //  throw vscode.FileSystemError.FileNotFound();

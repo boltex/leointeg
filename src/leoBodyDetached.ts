@@ -263,11 +263,11 @@ export class LeoBodyDetachedProvider implements vscode.FileSystemProvider {
 
                     if (this._lastGnx === w_gnx) {
                         // was last gnx of closed file about to be switched to new document selected
-                        w_buffer = Buffer.from(this._lastBodyData);
+                        w_buffer = Buffer.from(this._lastBodyData || "");
                     } else {
                         // * should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
                         //console.error("DETACHED ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
-                        
+
                         //  throw vscode.FileSystemError.FileNotFound();
                         // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
                         w_buffer = Buffer.from("");
