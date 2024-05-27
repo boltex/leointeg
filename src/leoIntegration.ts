@@ -2787,7 +2787,7 @@ export class LeoIntegration {
                             w_sentFoundUri.push(w_uri);
                             q_foundResults.push(
                                 this.sendAction(
-                                    Constants.LEOBRIDGE.IS_VALID,
+                                    Constants.LEOBRIDGE.GET_IS_VALID,
                                     utils.buildNodeCommand(w_foundVnode) // No need to specify commander
                                 )
                             );
@@ -2801,7 +2801,7 @@ export class LeoIntegration {
                             w_sentFoundUri.push(w_uri);
                             q_foundResults.push(
                                 this.sendAction(
-                                    Constants.LEOBRIDGE.IS_VALID,
+                                    Constants.LEOBRIDGE.GET_IS_VALID,
                                     param
                                 )
                             );

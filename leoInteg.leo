@@ -5346,7 +5346,7 @@ public static LEOBRIDGE = {
     APPLY_CONFIG: "!set_config", // "applyConfig",
     ASK_RESULT: "!set_ask_result", // "askResult",
     // * GUI
-    IS_VALID: "!is_valid",
+    GET_IS_VALID: "!get_is_valid",
     GET_ALL_GNX: "!get_all_gnx", // "getAllGnx",
     GET_BODY_LENGTH: "!get_body_length", // "getBodyLength",
     GET_BODY_STATES: "!get_body_states", // "getBodyStates",
@@ -10481,6 +10481,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                     if (!doc.documentEntry.changed) {
                         // not changed, so needs refresh of documents.
                         w_needDocRefresh = true;
+                        console.log('NOT current commander, has found other commander not dirty');
                         if (!w_alreadySaved) {
                             void this._bodySaveDocument(this.bodyDetachedTextDocument);
                             w_alreadySaved = true;
@@ -21708,7 +21709,7 @@ public _onTabsChanged(p_event: vscode.TabChangeEvent): void {
                         w_sentFoundUri.push(w_uri);
                         q_foundResults.push(
                             this.sendAction(
-                                Constants.LEOBRIDGE.IS_VALID,
+                                Constants.LEOBRIDGE.GET_IS_VALID,
                                 utils.buildNodeCommand(w_foundVnode) // No need to specify commander
                             )
                         );
@@ -21722,7 +21723,7 @@ public _onTabsChanged(p_event: vscode.TabChangeEvent): void {
                         w_sentFoundUri.push(w_uri);
                         q_foundResults.push(
                             this.sendAction(
-                                Constants.LEOBRIDGE.IS_VALID,
+                                Constants.LEOBRIDGE.GET_IS_VALID,
                                 param
                             )
                         );

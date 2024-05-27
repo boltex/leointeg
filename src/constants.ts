@@ -601,7 +601,7 @@ export class Constants {
         APPLY_CONFIG: "!set_config", // "applyConfig",
         ASK_RESULT: "!set_ask_result", // "askResult",
         // * GUI
-        IS_VALID: "!is_valid",
+        GET_IS_VALID: "!get_is_valid",
         GET_ALL_GNX: "!get_all_gnx", // "getAllGnx",
         GET_BODY_LENGTH: "!get_body_length", // "getBodyLength",
         GET_BODY_STATES: "!get_body_states", // "getBodyStates",
