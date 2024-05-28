@@ -731,7 +731,6 @@ export class Constants {
         FIND_ALL: "!find_all",
         FIND_NEXT: "!find_next",
         FIND_PREVIOUS: "!find_previous",
-        FIND_VAR: "!find_var",
         FIND_DEF: "!find_def",
         REPLACE: "!replace",
         REPLACE_THEN_FIND: "!replace_then_find",
@@ -954,7 +953,6 @@ export class Constants {
         FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
         FIND_PREVIOUS: Constants.NAME + ".findPrevious",
         FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
-        FIND_VAR: Constants.NAME + ".findVar",
         FIND_DEF: Constants.NAME + ".findDef",
         REPLACE: Constants.NAME + ".replace",
         REPLACE_FO: Constants.NAME + ".replaceFromOutline",
@@ -1143,7 +1141,7 @@ export class Constants {
         'word-search-forward': Constants.COMMANDS.WORD_SEARCH,
         'word-search-backward': Constants.COMMANDS.WORD_SEARCH_BACKWARD,
 
-        'find-var': Constants.COMMANDS.FIND_VAR,
+        'find-var': Constants.COMMANDS.FIND_DEF, // find-var overriden with find-def just in case.
         'find-def': Constants.COMMANDS.FIND_DEF,
         'replace': Constants.COMMANDS.REPLACE,
         'replace-all': Constants.COMMANDS.REPLACE_ALL,

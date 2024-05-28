@@ -5631,37 +5631,46 @@ export class LeoIntegration {
      * @param p_def find-def instead of find-var
      * @returns Promise that resolves when the "launch refresh" is started
      */
-    public async findSymbol(p_def: boolean): Promise<any> {
-        const w_action: string = p_def
-            ? Constants.LEOBRIDGE.FIND_DEF
-            : Constants.LEOBRIDGE.FIND_VAR;
+    public async findSymbol(): Promise<any> {
 
         await this._isBusyTriggerSave(false, true);
 
-        const p_findResult = await this.sendAction(w_action, { fromOutline: false });
+        const p_findResult = await this.sendAction(Constants.LEOBRIDGE.FIND_DEF, { fromOutline: false });
 
-        if (!p_findResult.found || !p_findResult.focus) {
-            vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
+        this._leoGotoProvider.refreshTreeRoot();
+        this.showGotoPane({ preserveFocus: true }); // show but dont change focus
+
+        if (!p_findResult.focus) {
+            return vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
         } else {
-            let w_finalFocus = Focus.Body;
+            let w_revealTarget = Focus.Body;
             const w_focus = p_findResult.focus.toLowerCase();
+
             if (w_focus.includes('tree') || w_focus.includes('head')) {
                 // tree
-                w_finalFocus = Focus.Outline;
+                w_revealTarget = Focus.Outline;
+                this.showOutlineIfClosed = true;
+            } else {
+                this.showBodyIfClosed = true;
             }
-            this.loadSearchSettings();
+
             this.setupRefresh(
-                w_finalFocus,
+                // ! KEEP FOCUS ON GOTO PANE !
+                Focus.Goto,
                 {
                     tree: true,
                     body: true,
-                    scroll: p_findResult.found && w_finalFocus === Focus.Body,
+                    scroll: w_revealTarget === Focus.Body,
                     // documents: false,
                     // buttons: false,
                     states: true,
-                });
-            this.launchRefresh();
+                },
+                p_findResult.node
+            );
+
+            return this.launchRefresh();
         }
+
     }
 
     /**

@@ -2741,12 +2741,6 @@
         "icon": "$(leo-find-previous)"
       },
       {
-        "command": "leointeg.findVar",
-        "category": "Leo",
-        "enablement": "leoTreeOpened",
-        "title": "Find the var under the cursor"
-      },
-      {
         "command": "leointeg.findDef",
         "category": "Leo",
         "enablement": "leoTreeOpened",
@@ -3572,11 +3566,6 @@
         }
       ],
       "editor/context": [
-        {
-          "command": "leointeg.findVar",
-          "when": "!editorHasMultipleSelections && resourceScheme == leointeg && leoTreeOpened",
-          "group": "navigation@1"
-        },
         {
           "command": "leointeg.findDef",
           "when": "!editorHasMultipleSelections && resourceScheme == leointeg && leoTreeOpened",
