@@ -223,15 +223,16 @@ export interface LeoBridgePackage {
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
-    found?: boolean // find_next, find_previous
-    range?: [number, number] // find_next, find_previous
+    found?: boolean; // find_next, find_previous
+    use_nav_pane: boolean;
+    range?: [number, number]; // find_next, find_previous
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     wrap?: boolean; // get_body_states
     tabWidth?: number | boolean; // get_body_states either the tabwidth or falsy
     node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
     children?: ArchivedPosition[]; // get_children
-    searchSettings?: LeoGuiFindTabManagerSettings // get_search_settings
+    searchSettings?: LeoGuiFindTabManagerSettings; // get_search_settings
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
     string?: string; // from cut / copy outline

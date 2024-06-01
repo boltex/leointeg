@@ -2236,8 +2236,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.FIND_NEXT_FO, () =&gt; w_leo.find(true, false)],
 [CMD.FIND_PREVIOUS, () =&gt; w_leo.find(false, true)],
 [CMD.FIND_PREVIOUS_FO, () =&gt; w_leo.find(true, true)],
-[CMD.FIND_VAR, () =&gt; w_leo.findSymbol(false)],
-[CMD.FIND_DEF, () =&gt; w_leo.findSymbol(true)],
+[CMD.FIND_DEF, () =&gt; w_leo.findSymbol()],
 [CMD.REPLACE, () =&gt; w_leo.replace(false, false)],
 [CMD.REPLACE_FO, () =&gt; w_leo.replace(true, false)],
 [CMD.REPLACE_THEN_FIND, () =&gt; w_leo.replace(false, true)],
@@ -5476,7 +5475,6 @@ public static LEOBRIDGE = {
     FIND_ALL: "!find_all",
     FIND_NEXT: "!find_next",
     FIND_PREVIOUS: "!find_previous",
-    FIND_VAR: "!find_var",
     FIND_DEF: "!find_def",
     REPLACE: "!replace",
     REPLACE_THEN_FIND: "!replace_then_find",
@@ -5700,7 +5698,6 @@ public static COMMANDS = {
     FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
     FIND_PREVIOUS: Constants.NAME + ".findPrevious",
     FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
-    FIND_VAR: Constants.NAME + ".findVar",
     FIND_DEF: Constants.NAME + ".findDef",
     REPLACE: Constants.NAME + ".replace",
     REPLACE_FO: Constants.NAME + ".replaceFromOutline",
@@ -8390,15 +8387,16 @@ export interface LeoBridgePackage {
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
-    found?: boolean // find_next, find_previous
-    range?: [number, number] // find_next, find_previous
+    found?: boolean; // find_next, find_previous
+    use_nav_pane: boolean;
+    range?: [number, number]; // find_next, find_previous
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     wrap?: boolean; // get_body_states
     tabWidth?: number | boolean; // get_body_states either the tabwidth or falsy
     node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
     children?: ArchivedPosition[]; // get_children
-    searchSettings?: LeoGuiFindTabManagerSettings // get_search_settings
+    searchSettings?: LeoGuiFindTabManagerSettings; // get_search_settings
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
     string?: string; // from cut / copy outline
@@ -13464,12 +13462,6 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "icon": "$(leo-find-previous)"
 },
 {
-  "command": "leointeg.findVar",
-  "category": "Leo",
-  "enablement": "leoTreeOpened",
-  "title": "Find the var under the cursor"
-},
-{
   "command": "leointeg.findDef",
   "category": "Leo",
   "enablement": "leoTreeOpened",
@@ -14500,7 +14492,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'word-search-forward': Constants.COMMANDS.WORD_SEARCH,
     'word-search-backward': Constants.COMMANDS.WORD_SEARCH_BACKWARD,
 
-    'find-var': Constants.COMMANDS.FIND_VAR,
+    'find-var': Constants.COMMANDS.FIND_DEF, // find-var overriden with find-def just in case.
     'find-def': Constants.COMMANDS.FIND_DEF,
     'replace': Constants.COMMANDS.REPLACE,
     'replace-all': Constants.COMMANDS.REPLACE_ALL,
@@ -15014,46 +15006,67 @@ export function getUniqueId(): string {
  * @param p_def find-def instead of find-var
  * @returns Promise that resolves when the "launch refresh" is started
  */
-public async findSymbol(p_def: boolean): Promise&lt;any&gt; {
-    const w_action: string = p_def
-        ? Constants.LEOBRIDGE.FIND_DEF
-        : Constants.LEOBRIDGE.FIND_VAR;
+public async findSymbol(): Promise&lt;any&gt; {
 
     await this._isBusyTriggerSave(false, true);
 
-    const p_findResult = await this.sendAction(w_action, { fromOutline: false });
+    const p_findResult = await this.sendAction(Constants.LEOBRIDGE.FIND_DEF, { fromOutline: false });
 
-    if (!p_findResult.found || !p_findResult.focus) {
-        vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
+    if (!p_findResult.found) {
+        return vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
     } else {
-        let w_finalFocus = Focus.Body;
-        const w_focus = p_findResult.focus.toLowerCase();
-        if (w_focus.includes('tree') || w_focus.includes('head')) {
-            // tree
-            w_finalFocus = Focus.Outline;
+
+        if (p_findResult.use_nav_pane) {
+            this._leoGotoProvider.refreshTreeRoot();
+            this.showGotoPane({ preserveFocus: true }); // show but dont change focus
+
+            let w_revealTarget = Focus.Body;
+            const w_focus = p_findResult.focus ? p_findResult.focus.toLowerCase() : "";
+
+            if (w_focus.includes('tree') || w_focus.includes('head')) {
+                // tree
+                w_revealTarget = Focus.Outline;
+                this.showOutlineIfClosed = true;
+            } else {
+                this.showBodyIfClosed = true;
+            }
+
+            this.setupRefresh(
+                // ! KEEP FOCUS ON GOTO PANE !
+                Focus.Goto,
+                {
+                    tree: true,
+                    body: true,
+                    scroll: w_revealTarget === Focus.Body,
+                    // documents: false,
+                    // buttons: false,
+                    states: true,
+                },
+                p_findResult.node
+            );
+        } else {
+            // clones
+            this.setupRefresh(
+                // ! KEEP FOCUS ON GOTO PANE !
+                Focus.Goto,
+                {
+                    tree: true,
+                    body: true,
+                    // documents: false,
+                    // buttons: false,
+                    states: true,
+                },
+                p_findResult.node
+            );
         }
-        this.loadSearchSettings();
-        this.setupRefresh(
-            w_finalFocus,
-            {
-                tree: true,
-                body: true,
-                scroll: p_findResult.found &amp;&amp; w_finalFocus === Focus.Body,
-                // documents: false,
-                // buttons: false,
-                states: true,
-            });
-        this.launchRefresh();
+
+        return this.launchRefresh();
     }
+
 }
 
 </t>
 <t tx="felix.20210713005825.1">"editor/context": [
-  {
-    "command": "leointeg.findVar",
-    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leointeg &amp;&amp; leoTreeOpened",
-    "group": "navigation@1"
-  },
   {
     "command": "leointeg.findDef",
     "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leointeg &amp;&amp; leoTreeOpened",

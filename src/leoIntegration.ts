@@ -5637,36 +5637,53 @@ export class LeoIntegration {
 
         const p_findResult = await this.sendAction(Constants.LEOBRIDGE.FIND_DEF, { fromOutline: false });
 
-        this._leoGotoProvider.refreshTreeRoot();
-        this.showGotoPane({ preserveFocus: true }); // show but dont change focus
-
-        if (!p_findResult.focus) {
+        if (!p_findResult.found) {
             return vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
         } else {
-            let w_revealTarget = Focus.Body;
-            const w_focus = p_findResult.focus.toLowerCase();
 
-            if (w_focus.includes('tree') || w_focus.includes('head')) {
-                // tree
-                w_revealTarget = Focus.Outline;
-                this.showOutlineIfClosed = true;
+            if (p_findResult.use_nav_pane) {
+                this._leoGotoProvider.refreshTreeRoot();
+                this.showGotoPane({ preserveFocus: true }); // show but dont change focus
+
+                let w_revealTarget = Focus.Body;
+                const w_focus = p_findResult.focus ? p_findResult.focus.toLowerCase() : "";
+
+                if (w_focus.includes('tree') || w_focus.includes('head')) {
+                    // tree
+                    w_revealTarget = Focus.Outline;
+                    this.showOutlineIfClosed = true;
+                } else {
+                    this.showBodyIfClosed = true;
+                }
+
+                this.setupRefresh(
+                    // ! KEEP FOCUS ON GOTO PANE !
+                    Focus.Goto,
+                    {
+                        tree: true,
+                        body: true,
+                        scroll: w_revealTarget === Focus.Body,
+                        // documents: false,
+                        // buttons: false,
+                        states: true,
+                    },
+                    p_findResult.node
+                );
             } else {
-                this.showBodyIfClosed = true;
+                // clones
+                this.setupRefresh(
+                    // ! KEEP FOCUS ON GOTO PANE !
+                    Focus.Goto,
+                    {
+                        tree: true,
+                        body: true,
+                        // documents: false,
+                        // buttons: false,
+                        states: true,
+                    },
+                    p_findResult.node
+                );
             }
-
-            this.setupRefresh(
-                // ! KEEP FOCUS ON GOTO PANE !
-                Focus.Goto,
-                {
-                    tree: true,
-                    body: true,
-                    scroll: w_revealTarget === Focus.Body,
-                    // documents: false,
-                    // buttons: false,
-                    states: true,
-                },
-                p_findResult.node
-            );
 
             return this.launchRefresh();
         }
