@@ -15047,8 +15047,8 @@ public async findSymbol(): Promise&lt;any&gt; {
         } else {
             // clones
             this.setupRefresh(
-                // ! KEEP FOCUS ON GOTO PANE !
-                Focus.Goto,
+
+                Focus.NoChange,
                 {
                     tree: true,
                     body: true,

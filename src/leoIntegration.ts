@@ -5672,8 +5672,8 @@ export class LeoIntegration {
             } else {
                 // clones
                 this.setupRefresh(
-                    // ! KEEP FOCUS ON GOTO PANE !
-                    Focus.Goto,
+
+                    Focus.NoChange,
                     {
                         tree: true,
                         body: true,
