@@ -224,7 +224,7 @@ export interface LeoBridgePackage {
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
     found?: boolean; // find_next, find_previous
-    use_nav_pane: boolean;
+    use_nav_pane?: boolean;
     range?: [number, number]; // find_next, find_previous
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states

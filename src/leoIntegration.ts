@@ -5655,7 +5655,7 @@ export class LeoIntegration {
                 } else {
                     this.showBodyIfClosed = true;
                 }
-
+                this.loadSearchSettings(); // The nav text should now be set.
                 this.setupRefresh(
                     // ! KEEP FOCUS ON GOTO PANE !
                     Focus.Goto,
