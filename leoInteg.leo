@@ -238,7 +238,6 @@
 <v t="ekr.20200815113156.1"><vh>&lt;&lt; Define entries for all commands &gt;&gt;</vh></v>
 </v>
 <v t="felix.20200718031424.24"><vh>deactivate</vh></v>
-<v t="felix.20210917225004.1"><vh>closeLeoTextEditors</vh></v>
 <v t="felix.20200718031424.25"><vh>showWelcomeIfNewer</vh></v>
 </v>
 <v t="felix.20200718035737.1"><vh>@clean src/leoAsync.ts</vh>
@@ -256,8 +255,8 @@
 <v t="felix.20200718040540.2"><vh>class LeoBodyProvider</vh>
 <v t="felix.20230130154800.1"><vh>setNewBodyUriTime</vh></v>
 <v t="felix.20230130154806.1"><vh>_setOpenedBodyTime</vh></v>
+<v t="felix.20240501232955.1"><vh>cleanupBodies</vh></v>
 <v t="felix.20200718040540.5"><vh>fireRefreshFile</vh></v>
-<v t="felix.20200718040540.6"><vh>refreshPossibleGnxList</vh></v>
 <v t="felix.20200718040540.8"><vh>watch</vh></v>
 <v t="felix.20200718040540.10"><vh>stat</vh></v>
 <v t="felix.20200718040540.11"><vh>readFile</vh></v>
@@ -268,6 +267,24 @@
 <v t="felix.20200718040540.16"><vh>delete</vh></v>
 <v t="felix.20200718040540.17"><vh>copy</vh></v>
 <v t="felix.20200718040540.18"><vh>_fireSoon</vh></v>
+</v>
+</v>
+<v t="felix.20240502002356.1"><vh>@clean src/leoBodyDetached.ts</vh>
+<v t="felix.20240502002356.2"><vh>class LeoBodyDetachedProvider</vh>
+<v t="felix.20240502002356.3"><vh>setNewBodyUriTime</vh></v>
+<v t="felix.20240502002356.4"><vh>_setOpenedBodyTime</vh></v>
+<v t="felix.20240502002356.5"><vh>cleanupDetachedBodies</vh></v>
+<v t="felix.20240502002356.6"><vh>fireRefreshFile</vh></v>
+<v t="felix.20240502002356.7"><vh>watch</vh></v>
+<v t="felix.20240502002356.8"><vh>stat</vh></v>
+<v t="felix.20240502002356.9"><vh>readFile</vh></v>
+<v t="felix.20240502002356.10"><vh>readDirectory</vh></v>
+<v t="felix.20240502002356.11"><vh>createDirectory</vh></v>
+<v t="felix.20240502002356.12"><vh>writeFile</vh></v>
+<v t="felix.20240502002356.13"><vh>rename</vh></v>
+<v t="felix.20240502002356.14"><vh>delete</vh></v>
+<v t="felix.20240502002356.15"><vh>copy</vh></v>
+<v t="felix.20240502002356.16"><vh>_fireSoon</vh></v>
 </v>
 </v>
 <v t="felix.20200718153505.1"><vh>@clean src/leoBridge.ts</vh>
@@ -374,6 +391,8 @@
 <v t="felix.20220310224330.1"><vh>_onGotoTreeViewVisibilityChanged</vh></v>
 <v t="felix.20220706000811.1"><vh>_onUndosTreeViewVisibilityChanged</vh></v>
 <v t="felix.20220826004334.1"><vh>_onFindViewVisibilityChanged</vh></v>
+<v t="felix.20240502230536.1"><vh>_onTabGroupsChanged</vh></v>
+<v t="felix.20240502230541.1"><vh>_onTabsChanged</vh></v>
 <v t="felix.20200719025231.29"><vh>_onActiveEditorChanged</vh></v>
 <v t="felix.20210418014039.1"><vh>_changedTextEditorViewColumn</vh></v>
 <v t="felix.20210418014040.1"><vh>_changedVisibleTextEditors</vh></v>
@@ -397,6 +416,7 @@
 <v t="felix.20220724224959.1"><vh>setupRefresh</vh></v>
 <v t="ekr.20200815085830.3"><vh>_launchRefresh</vh></v>
 <v t="felix.20220804203041.1"><vh>fullRefresh</vh></v>
+<v t="felix.20240502230658.1"><vh>_refreshDetachedBodies</vh></v>
 <v t="felix.20220824014747.1"><vh>isTsStillValid</vh></v>
 <v t="felix.20220804203829.1"><vh>isGnxStillValid</vh></v>
 <v t="felix.20220805212936.1"><vh>isGnxReselected</vh></v>
@@ -414,15 +434,19 @@
 <v t="felix.20200719025231.48"><vh>_locateOpenedBody</vh></v>
 <v t="felix.20220905181421.1"><vh>_isBodyVisible</vh></v>
 <v t="felix.20220907223335.1"><vh>_isBodyPreview</vh></v>
+<v t="felix.20240502230809.1"><vh>_checkClosedTabs</vh></v>
 <v t="felix.20220905194121.1"><vh>isOutlineVisible</vh></v>
+<v t="felix.20240523231957.1"><vh>_hideBodiesUnknownToFileSys</vh></v>
 <v t="felix.20210418013332.1"><vh>_hideDeleteBody</vh></v>
 <v t="felix.20210418220343.1"><vh>_checkPreviewMode</vh></v>
 <v t="felix.20200719025231.49"><vh>closeBody</vh></v>
 <v t="felix.20210718155134.1"><vh>cleanupBody</vh></v>
 <v t="felix.20200719025231.50"><vh>showBody</vh></v>
+<v t="felix.20240505142143.1"><vh>_getBodyLanguage</vh></v>
 <v t="felix.20220215235325.1"><vh>_setBodyLanguage</vh></v>
 <v t="felix.20211111214657.1"><vh>refreshBodyStates</vh></v>
 <v t="felix.20211111233213.1"><vh>debouncedRefreshBodyStates</vh></v>
+<v t="felix.20240502230852.1"><vh>_refreshCommanderDetachedLanguage</vh></v>
 </v>
 <v t="felix.20200719025231.51"><vh>Commands</vh>
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
@@ -431,6 +455,7 @@
 <v t="felix.20231101204323.1"><vh>_showHeadlineInputBox</vh></v>
 <v t="felix.20220806151009.1"><vh>prevNextNode</vh></v>
 <v t="felix.20200719025231.52"><vh>selectTreeNode</vh></v>
+<v t="felix.20240502214807.1"><vh>openAside</vh></v>
 <v t="ekr.20200815090400.1"><vh>nodeCommand</vh></v>
 <v t="felix.20200719025231.54"><vh>changeMark</vh></v>
 <v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
@@ -634,6 +659,7 @@
 <v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
 <v t="felix.20210706233101.1"><vh>uniqueId</vh></v>
 <v t="felix.20210706233106.1"><vh>getUniqueId</vh></v>
+<v t="felix.20240502215719.1"><vh>closeLeoTextEditors</vh></v>
 <v t="felix.20231102005126.1"><vh>compareVersions</vh></v>
 <v t="felix.20200718195558.2"><vh>padNumber2</vh></v>
 <v t="felix.20220327223745.1"><vh>cleanLeoID</vh></v>
@@ -658,6 +684,7 @@
 <v t="felix.20220327230102.1"><vh>isAlphaNum</vh></v>
 <v t="felix.20231130222754.1"><vh>fixSlashesDriveLetter</vh></v>
 <v t="felix.20200718195558.10"><vh>strToLeoUri</vh></v>
+<v t="felix.20240502210859.1"><vh>strToLeoDetachedUri</vh></v>
 <v t="felix.20200718195558.11"><vh>leoUriToStr</vh></v>
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
 <v t="felix.20210612214028.1"><vh>findNextAvailablePort</vh></v>
@@ -696,6 +723,7 @@
 <v t="felix.20220721204822.11"></v>
 <v t="ekr.20200815083608.1"></v>
 <v t="felix.20200718040540.2"></v>
+<v t="felix.20240502002356.2"></v>
 <v t="felix.20200718153505.2"></v>
 <v t="felix.20200718162303.2"></v>
 <v t="felix.20200718164130.2"></v>
@@ -915,10 +943,7 @@ public static CONFIG_DEFAULTS = {
     GO_ANYWHERE_SHORTCUT: true,
 
     SHOW_UNL_ON_STATUSBAR: true,
-    // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
-    // STATUSBAR_COLOR: "fb7c47",
     TREE_IN_EXPLORER: true,
-    SHOW_OPEN_ASIDE: true,
     SHOW_EDIT: true,
     SHOW_ARROWS: false,
     SHOW_ADD: false,
@@ -1216,6 +1241,8 @@ private _revealNode(
  */
 private async _launchRefresh(): Promise&lt;unknown&gt; {
 
+    this._refreshDetachedBodies();
+
     if (this._lastCommandFindEndOutline) {
         this._lastCommandFindEndOutline--; // decrement from 2 to 1 the first time, keeping the flag for 1 refresh.
     }
@@ -1387,6 +1414,11 @@ public async nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): 
         this.showBodyIfClosed = true;
         // If alt+arrow is used to navigate: SHOW and leave focus on outline.
         this.showOutlineIfClosed = true;
+
+        if (p_userCommand.refreshType.body) {
+            // If this is a navigation command, dont refresh DETACHED
+            p_userCommand.refreshType.excludeDetached = true;
+        }
     }
 
     const q_result = this._commandStack.add(p_userCommand);
@@ -1525,6 +1557,7 @@ private _processServerOutput(p_data: string): void {
  */
 export interface LeoPackageStates {
 
+    commanderId: string; // Commander's python 'id'.
     changed: boolean; // Leo document has changed (is dirty)
 
     canUndo: boolean; // Leo document can undo the last operation done
@@ -2110,8 +2143,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.HANDLE_UNL, (p_arg: { unl: string, scheme: string }) =&gt; w_leo.handleUnl(p_arg)],
 
 // Called by nodes in tree when selected either by mouse, or with enter
-[CMD.SELECT_NODE, (p_node: LeoApOutlineNode) =&gt; w_leo.selectTreeNode(p_node.position, false, false)],
-[CMD.OPEN_ASIDE, (p_ap: ArchivedPosition) =&gt; w_leo.selectTreeNode(p_ap, false, true)],
+[CMD.SELECT_NODE, (p_outlineNode: LeoApOutlineNode) =&gt; w_leo.selectTreeNode(p_outlineNode.position, false)], // Select is NOT a Position!
+[CMD.OPEN_ASIDE, (p_position?: ArchivedPosition) =&gt; w_leo.openAside(p_position)],
 
 [CMD.SHOW_OUTLINE, () =&gt; w_leo.showOutline(true)], // Also focuses on outline
 
@@ -2203,8 +2236,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.FIND_NEXT_FO, () =&gt; w_leo.find(true, false)],
 [CMD.FIND_PREVIOUS, () =&gt; w_leo.find(false, true)],
 [CMD.FIND_PREVIOUS_FO, () =&gt; w_leo.find(true, true)],
-[CMD.FIND_VAR, () =&gt; w_leo.findSymbol(false)],
-[CMD.FIND_DEF, () =&gt; w_leo.findSymbol(true)],
+[CMD.FIND_DEF, () =&gt; w_leo.findSymbol()],
 [CMD.REPLACE, () =&gt; w_leo.replace(false, false)],
 [CMD.REPLACE_FO, () =&gt; w_leo.replace(true, false)],
 [CMD.REPLACE_THEN_FIND, () =&gt; w_leo.replace(false, true)],
@@ -2269,7 +2301,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   },
   "homepage": "https://github.com/boltex/leointeg#readme",
   "engines": {
-    "vscode": "^1.81.0"
+    "vscode": "^1.86.0"
   },
   "keywords": [
     "leo",
@@ -2310,7 +2342,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "@types/lodash": "^4.14.177",
     "@types/mocha": "^10.0.1",
     "@types/node": "20.2.5",
-    "@types/vscode": "^1.81.0",
+    "@types/vscode": "^1.86.0",
     "@types/ws": "^7.2.6",
     "@typescript-eslint/eslint-plugin": "^5.59.8",
     "@typescript-eslint/parser": "^5.59.8",
@@ -3289,7 +3321,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.revert",
   "title": "Revert to Saved",
-  "enablement": "leoTreeOpened",
+  "enablement": "leoTreeOpened &amp;&amp; leoTreeTitled",
   "category": "Leo"
 },
 {
@@ -4598,24 +4630,24 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.executeScript",
   "key": "ctrl+b",
   "mac": "cmd+b",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.minibuffer",
   "key": "alt+x",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
 <t tx="ekr.20200815123601.78">{
   "command": "leointeg.showOutline",
   "key": "alt+t",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo || leoFindFocus || focusedView =~ /^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || focusedView =~ /^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.showOutline",
   "key": "ctrl+t",
   "mac": "cmd+t",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 {
   "command": "leointeg.showBody",
@@ -4626,13 +4658,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.showBody",
   "key": "alt+d",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointegDetached || leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.showBody",
   "key": "ctrl+g",
   "mac": "cmd+g",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointegDetached || leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.showBody",
@@ -4648,7 +4680,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.tabCycleNext",
   "key": "ctrl+tab",
   "mac": "cmd+tab",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 </t>
 <t tx="ekr.20200815123601.79">{
@@ -4661,25 +4693,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.saveLeoFile",
   "key": "ctrl+s",
   "mac": "cmd+s",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 {
   "command": "leointeg.newLeoFile",
   "key": "ctrl+n",
   "mac": "cmd+n",
-  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme == leo || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.openLeoFile",
   "key": "ctrl+o",
   "mac": "cmd+o",
-  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme == leo || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
 },
 {
   "command": "leointeg.writeAtFileNodes",
   "key": "ctrl+shift+w",
   "mac": "cmd+shift+w",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 {
   "command": "leointeg.writeAtFileNodesFromOutline",
@@ -4691,7 +4723,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.writeDirtyAtFileNodes",
   "key": "ctrl+shift+q",
   "mac": "cmd+shift+q",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 {
   "command": "leointeg.writeDirtyAtFileNodesFromOutline",
@@ -4713,7 +4745,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 <t tx="ekr.20200815123601.80">{
   "command": "leointeg.contractAll",
   "key": "alt+-",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 {
   "command": "leointeg.contractAllFromOutline",
@@ -4725,7 +4757,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.editSelectedHeadline",
   "key": "ctrl+h",
   "mac": "cmd+h",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.editSelectedHeadlineFromOutline",
@@ -4737,7 +4769,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.markSelection",
   "key": "ctrl+m",
   "mac": "cmd+m",
-  "when": "leoTreeOpened &amp;&amp; !leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.markSelectionFromOutline",
@@ -4749,7 +4781,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.unmarkSelection",
   "key": "ctrl+m",
   "mac": "cmd+m",
-  "when": "leoTreeOpened &amp;&amp; leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.unmarkSelectionFromOutline",
@@ -4763,13 +4795,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineDownSelection",
   "key": "ctrl+d",
   "mac": "cmd+d",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineDownSelection",
   "key": "shift+alt+down",
   "mac": "shift+alt+down",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineDownSelectionFromOutline",
@@ -4793,13 +4825,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineLeftSelection",
   "key": "ctrl+l",
   "mac": "cmd+l",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineLeftSelection",
   "key": "shift+alt+left",
   "mac": "shift+alt+left",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineLeftSelectionFromOutline",
@@ -4823,13 +4855,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineRightSelection",
   "key": "ctrl+r",
   "mac": "cmd+r",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineRightSelection",
   "key": "shift+alt+right",
   "mac": "shift+alt+right",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineRightSelectionFromOutline",
@@ -4853,13 +4885,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineUpSelection",
   "key": "ctrl+u",
   "mac": "cmd+u",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineUpSelection",
   "key": "shift+alt+up",
   "mac": "shift+alt+up",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.moveOutlineUpSelectionFromOutline",
@@ -4882,7 +4914,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 <t tx="ekr.20200815123601.87">{
   "command": "leointeg.sortSiblingsSelection",
   "key": "alt+a",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.sortSiblingsSelectionFromOutline",
@@ -4895,7 +4927,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "win": "ctrl+oem_4",
   "linux": "ctrl+[",
   "mac": "cmd+[BracketLeft]",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.promoteSelectionFromOutline",
@@ -4911,7 +4943,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "win": "ctrl+oem_6",
   "linux": "ctrl+]",
   "mac": "cmd+[BracketRight]",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.demoteSelectionFromOutline",
@@ -4925,7 +4957,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.insertNodeSelection",
   "key": "ctrl+i",
   "mac": "cmd+i",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.insertNodeSelectionFromOutline",
@@ -4937,7 +4969,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.insertNodeSelection",
   "key": "shift+insert",
   "mac": "shift+insert",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.insertNodeSelectionFromOutline",
@@ -4955,7 +4987,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.insertChildNodeSelection",
   "key": "ctrl+insert",
   "mac": "cmd+insert",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.insertChildNodeSelectionFromOutline",
@@ -4969,7 +5001,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "win": "ctrl+oem_3",
   "linux": "ctrl+`",
   "mac": "cmd+`",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.cloneNodeSelectionFromOutline",
@@ -4983,7 +5015,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.cutNodeSelection",
   "key": "ctrl+shift+x",
   "mac": "cmd+shift+x",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.cutNodeSelectionFromOutline",
@@ -4995,13 +5027,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.copyNodeSelection",
   "key": "ctrl+shift+c",
   "mac": "cmd+shift+c",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.pasteNodeAtSelection",
   "key": "ctrl+shift+v",
   "mac": "cmd+shift+v",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.pasteNodeAtSelectionFromOutline",
@@ -5013,7 +5045,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.deleteSelection",
   "key": "ctrl+shift+backspace",
   "mac": "cmd+shift+backspace",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.deleteSelectionFromOutline",
@@ -5030,12 +5062,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 <t tx="ekr.20200815123601.88">{
   "command": "leointeg.scrollTop",
   "key": "alt+home",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.scrollBottom",
   "key": "alt+end",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.scrollTop",
@@ -5085,7 +5117,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.gotoNextCloneSelection",
   "key": "alt+n",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.gotoNextVisible",
@@ -5100,7 +5132,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.gotoNextVisible",
   "key": "alt+down",
-  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.gotoPrevVisible",
@@ -5115,7 +5147,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.gotoPrevVisible",
   "key": "alt+up",
-  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.contractOrGoLeft",
@@ -5125,7 +5157,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.contractOrGoLeft",
   "key": "alt+left",
-  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.expandAndGoRight",
@@ -5135,17 +5167,26 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.expandAndGoRight",
   "key": "alt+right",
-  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
 <t tx="ekr.20200815123601.89">"resourceLabelFormatters": [
   {
-    "scheme": "leo",
+    "scheme": "leointeg",
     "formatting": {
       "label": "Leo: Body",
       "separator": "/",
       "workspaceSuffix": "",
       "workspaceTooltip": "Leo Body Pane"
+    }
+  },
+  {
+    "scheme": "leointegDetached",
+    "formatting": {
+      "label": "Leo: Detached",
+      "separator": "/",
+      "workspaceSuffix": "",
+      "workspaceTooltip": "Leo Detached Body Pane"
     }
   }
 ]
@@ -5304,6 +5345,7 @@ public static LEOBRIDGE = {
     APPLY_CONFIG: "!set_config", // "applyConfig",
     ASK_RESULT: "!set_ask_result", // "askResult",
     // * GUI
+    GET_IS_VALID: "!get_is_valid",
     GET_ALL_GNX: "!get_all_gnx", // "getAllGnx",
     GET_BODY_LENGTH: "!get_body_length", // "getBodyLength",
     GET_BODY_STATES: "!get_body_states", // "getBodyStates",
@@ -5433,7 +5475,6 @@ public static LEOBRIDGE = {
     FIND_ALL: "!find_all",
     FIND_NEXT: "!find_next",
     FIND_PREVIOUS: "!find_previous",
-    FIND_VAR: "!find_var",
     FIND_DEF: "!find_def",
     REPLACE: "!replace",
     REPLACE_THEN_FIND: "!replace_then_find",
@@ -5498,7 +5539,7 @@ public static COMMANDS = {
     TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
     // * Outline selection
     SELECT_NODE: Constants.NAME + ".selectTreeNode",
-    OPEN_ASIDE: Constants.NAME + ".openAside",
+    OPEN_ASIDE: Constants.NAME + ".openAside", // Opens aside a body pane locked to this gnx &amp; commander.
     // * Goto operations that always finish with focus in outline
     PAGE_UP: Constants.NAME + ".pageUp",
     PAGE_DOWN: Constants.NAME + ".pageDown",
@@ -5657,7 +5698,6 @@ public static COMMANDS = {
     FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
     FIND_PREVIOUS: Constants.NAME + ".findPrevious",
     FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
-    FIND_VAR: Constants.NAME + ".findVar",
     FIND_DEF: Constants.NAME + ".findDef",
     REPLACE: Constants.NAME + ".replace",
     REPLACE_FO: Constants.NAME + ".replaceFromOutline",
@@ -5735,11 +5775,13 @@ public static JS_FILE_EXTENSION: string = "leojs";
 public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
 public static LEO_WRAP_SUFFIX: string = ".wrap"; // all lowercase.
 
-public static URI_LEO_SCHEME: string = "leo";
+public static URI_LEO_SCHEME: string = "leointeg";
+public static URI_LEO_DETACHED_SCHEME: string = "leointegDetached";
 public static URI_FILE_SCHEME: string = "file";
-public static URI_SCHEME_HEADER: string = "leo:/";
 public static URI_UNTITLED_SCHEME: string = 'untitled';
-public static OUTPUT_CHANNEL_LANGUAGE = 'Log';
+public static OUTPUT_CHANNEL_LANGUAGE: string = 'Log';
+public static URI_SCHEME_HEADER: string = "leointeg:/";
+public static URI_SCHEME_DETACHED_HEADER: string = "leointegDetached:/";
 public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
 public static UNTITLED_FILE_NAME: string = "untitled";
 public static RECENT_FILES_KEY: string = "leoRecentFiles";
@@ -5757,7 +5799,8 @@ public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
 
 public static ERROR_PACKAGE_ID: number = 0;
 public static STARTING_PACKAGE_ID: number = 1;
-// public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
+public static CLEANUP_DEBOUNCE_DELAY: number = 40;
+public static DETACHED_LANGUAGE_DELAY: number = 300;
 public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
 public static BUTTONS_DEBOUNCE_DELAY: number = 80;
 public static UNDOS_DEBOUNCE_DELAY: number = 180;
@@ -5915,7 +5958,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.8 is recommended.",
+    MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.8-B1 is recommended.",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language coloring not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language coloring not yet supported.", // with leading space
     MINIBUFFER_BUTTON_START: "@button-",
@@ -5975,13 +6018,8 @@ public static CONFIG_NAMES = {
     ACTIVITY_VIEW_SHORTCUT: "activityViewShortcut",
     GO_ANYWHERE_SHORTCUT: "goAnywhereShortcut",
 
-    // STATUSBAR_STRING: "statusBarString",
-    // STATUSBAR_COLOR: "statusBarColor",
-
     TREE_IN_EXPLORER: "treeInExplorer",
-    SHOW_OPEN_ASIDE: "showOpenAside",
     SHOW_EDIT: "showEditOnNodes",
-    // SHOW_ARROWS: "showArrowsOnNodes",
     SHOW_ADD: "showAddOnNodes",
     SHOW_MARK: "showMarkOnNodes",
     SHOW_CLONE: "showCloneOnNodes",
@@ -6123,7 +6161,8 @@ export class CommandStack {
     private _busy: boolean = false; // Flag stating commands started resolving
 
     // Refresh type, for use after the last command has done resolving (From highest so far)
-    public _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
+    public finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
+    private _allowDetachedExclusion = true;
 
     // Flag used to set focus on outline instead of body when done resolving (From last pushed)
     private _finalFocus: Focus = Focus.NoChange;
@@ -6227,7 +6266,16 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
     const w_jsonParam = utils.buildNodeCommand(w_node!, w_command); // 'Insert Named Node' or 'Edit Headline'
 
     // Setup _finalRefreshType, if command requires higher than the one setup so far
-    Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
+    Object.assign(this.finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
+
+    // TODO : Maybe implement this in a better way: excludeDetached IS A NEGATIVE FLAG 
+    // * Check if we added a body refresh that did not exclude detached. If so make it also refresh detached.
+    if (w_command.refreshType.body &amp;&amp; !w_command.refreshType.excludeDetached) {
+        this._allowDetachedExclusion = false;
+    }
+    if (!this._allowDetachedExclusion &amp;&amp; this.finalRefreshType.excludeDetached) {
+        delete this.finalRefreshType.excludeDetached;
+    }
 
     // Submit this action to Leo and return a promise of its packaged answer
     return this._leoIntegration.sendAction(w_command.action, w_jsonParam)
@@ -6260,17 +6308,18 @@ private _resolveResult(p_package: LeoBridgePackage): void {
     if (!this.size()) {
         // If last is done then do refresh outline and focus on outline, or body, as required
         this._busy = false;
-        if (Object.keys(this._finalRefreshType).length) {
+        if (Object.keys(this.finalRefreshType).length) {
             // At least some type of refresh
             this._leoIntegration.setupRefresh(
                 this._finalFocus,
-                this._finalRefreshType,
+                this.finalRefreshType,
                 p_package.node
             );
             this._leoIntegration.launchRefresh();
         }
         // Reset refresh type nonetheless
-        this._finalRefreshType = {};
+        this.finalRefreshType = {};
+        this._allowDetachedExclusion = true;
     } else {
         // Size &gt; 0, so call _runStackCommand again, keep _busy set to true
         this._runStackCommand().then((p_package: LeoBridgePackage) =&gt; {
@@ -6307,12 +6356,9 @@ export class Config implements ConfigMembers {
     public goAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
     public showUnlOnStatusBar: boolean = Constants.CONFIG_DEFAULTS.SHOW_UNL_ON_STATUSBAR;
-    // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
-    // public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
-    public showOpenAside: boolean = Constants.CONFIG_DEFAULTS.SHOW_OPEN_ASIDE;
     public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
-    // public showArrowsOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ARROWS;
+
     public showAddOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ADD;
     public showMarkOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK;
     public showCloneOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLONE;
@@ -6373,12 +6419,8 @@ public getConfig(): ConfigMembers {
         goAnywhereShortcut: this.goAnywhereShortcut,
 
         showUnlOnStatusBar: this.showUnlOnStatusBar,
-        // statusBarString: this.statusBarString,
-        // statusBarColor: this.statusBarColor,
         treeInExplorer: this.treeInExplorer,
-        showOpenAside: this.showOpenAside,
         showEditOnNodes: this.showEditOnNodes,
-        // showArrowsOnNodes: this.showArrowsOnNodes,
         showAddOnNodes: this.showAddOnNodes,
         showMarkOnNodes: this.showMarkOnNodes,
         showCloneOnNodes: this.showCloneOnNodes,
@@ -6474,7 +6516,6 @@ public buildFromSavedSettings(): boolean {
         //     this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
         // }
         this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
-        this.showOpenAside = GET(NAME).get(NAMES.SHOW_OPEN_ASIDE, DEFAULTS.SHOW_OPEN_ASIDE);
         this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
         this.showAddOnNodes = GET(NAME).get(NAMES.SHOW_ADD, DEFAULTS.SHOW_ADD);
         this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
@@ -6616,7 +6657,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     });
 
     // * Close remaining Leo Bodies restored by vscode from last session.
-    closeLeoTextEditors();
+    utils.closeLeoTextEditors();
 
     // * Show a welcome screen on version updates, then start the actual extension.
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo)
@@ -6647,7 +6688,7 @@ export function activate(p_context: vscode.ExtensionContext) {
  * * Called when extension is deactivated
  */
 export function deactivate(): Thenable&lt;unknown&gt; {
-    const q_closeLeoTabs = closeLeoTextEditors();
+    const q_closeLeoTabs = utils.closeLeoTextEditors();
     if (LeoInteg) {
         LeoInteg.activated = false;
         LeoInteg.cleanupBody().then(() =&gt; {
@@ -6740,16 +6781,21 @@ import { BodyTimeInfo } from "./types";
 <t tx="felix.20200718040540.10">public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable&lt;vscode.FileStat&gt; {
     if (this._leoIntegration.leoStates.fileOpenedReady) {
         const w_gnx = utils.leoUriToStr(p_uri);
+        // console.log('Calling stats for ' + w_gnx);
         if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
             return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-        } else if (w_gnx === this.lastGnx &amp;&amp; this._openedBodiesGnx.includes(this.lastGnx)) {
+            // SPECIAL CASE -----------------------------------------------
+        } else if (w_gnx === this.lastGnx &amp;&amp; this._openedBodiesInfo[this.lastGnx]) {
             return {
                 type: vscode.FileType.File,
                 ctime: this._openedBodiesInfo[this.lastGnx].ctime,
                 mtime: this._openedBodiesInfo[this.lastGnx].mtime,
-                size: this._lastBodyLength
+                size: this.lastBodyLength
             };
-        } else if (this._openedBodiesGnx.includes(w_gnx)) {
+            // ------------------------------------------------------------
+        } else if (this._openedBodiesInfo[w_gnx]) {
+            // * GETS IT WITH len(w_v.b.encode('utf-8')) 
+            // So length should be equivalent
             return this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.GET_BODY_LENGTH,
                 { "gnx": w_gnx }
@@ -6778,22 +6824,23 @@ import { BodyTimeInfo } from "./types";
         } else {
             const w_gnx = utils.leoUriToStr(p_uri);
 
-            if (!this._openedBodiesGnx.includes(w_gnx)) {
-                console.log(
-                    " _openedBodiesGnx length: ", this._openedBodiesGnx.length,
-                    '\n *** readFile: ERROR File not in _openedBodiesGnx! readFile missing refreshes? gnx: ', w_gnx
-                );
-            }
+            // * should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+            // if (!this._openedBodiesInfo[w_gnx]) {
+            //     console.warn('readFile: ERROR File not in _openedBodiesInfo! gnx: ', w_gnx);
+            // }
 
+            // console.log('body read bodyGNX', w_gnx);
+            let w_buffer: Uint8Array;
+
+            // * GET FROM SERVER
             const p_result = await this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.GET_BODY,
                 { "gnx": w_gnx }
             );
-            let w_buffer: Uint8Array;
+
             if (p_result.body) {
                 // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
 
-                this._errorRefreshFlag = false; // got body so reset possible flag!
                 if (this.lastGnx === w_gnx &amp;&amp; this.lastBodyData === p_result.body) {
                     // If EXACT SAME body has refreshed, clear prevent preventIconChange
                     // (because _onDocumentChanged will not be triggered)
@@ -6804,23 +6851,20 @@ import { BodyTimeInfo } from "./types";
                 this.lastGnx = w_gnx;
                 this.lastBodyData = p_result.body;
                 w_buffer = Buffer.from(p_result.body);
-                this._lastBodyLength = w_buffer.byteLength;
+                this.lastBodyLength = w_buffer.byteLength;
 
             } else if (p_result.body === "") {
                 // console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
 
                 this.lastGnx = w_gnx;
-                this._lastBodyLength = 0;
                 this.lastBodyData = "";
                 w_buffer = Buffer.from("");
+                this.lastBodyLength = 0;
             } else {
-                if (!this._errorRefreshFlag) {
-                    this._leoIntegration.fullRefresh();
-                }
+                this._leoIntegration.fullRefresh();
                 if (this.lastGnx === w_gnx) {
                     // was last gnx of closed file about to be switched to new document selected
-                    console.log('Passed in not found: ' + w_gnx);
-                    w_buffer = Buffer.from(this.lastBodyData);
+                    w_buffer = Buffer.from(this.lastBodyData || "");
                 } else {
                     console.error("ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
                     //  throw vscode.FileSystemError.FileNotFound();
@@ -6855,21 +6899,19 @@ import { BodyTimeInfo } from "./types";
 
 </t>
 <t tx="felix.20200718040540.14">public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
-    if (!this.preventSaveToLeo) {
-        this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
-    } else {
+    if (this.preventSaveToLeo) {
         this.preventSaveToLeo = false;
+    } else {
+        this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
     }
     const w_gnx = utils.leoUriToStr(p_uri);
-    if (!this._openedBodiesGnx.includes(w_gnx)) {
+    if (!this._openedBodiesInfo[w_gnx]) {
         console.error("Leointeg: Tried to save body other than selected node's body", w_gnx);
-        this._openedBodiesGnx.push(w_gnx);
     }
-    const w_now = new Date().getTime();
-    this._openedBodiesInfo[w_gnx] = {
-        ctime: w_now,
-        mtime: w_now
-    };
+    this._setOpenedBodyTime(w_gnx);
+    if (w_gnx === this.lastGnx) {
+        this.lastBodyLength = p_content.byteLength;
+    }
     this._fireSoon({ type: vscode.FileChangeType.Changed, uri: p_uri });
 }
 
@@ -6886,8 +6928,7 @@ import { BodyTimeInfo } from "./types";
 <t tx="felix.20200718040540.16">public delete(p_uri: vscode.Uri): void {
 
     const w_gnx = utils.leoUriToStr(p_uri);
-    if (this._openedBodiesGnx.includes(w_gnx)) {
-        this._openedBodiesGnx.splice(this._openedBodiesGnx.indexOf(w_gnx), 1);
+    if (this._openedBodiesInfo[w_gnx]) {
         delete this._openedBodiesInfo[w_gnx];
     } else {
         // console.log("not deleted");
@@ -6928,22 +6969,16 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     // * Flag normally false
     public preventSaveToLeo: boolean = false;
-    private _errorRefreshFlag: boolean = false;
 
     // * Last file read data with the readFile method
     public lastGnx: string = ""; // gnx of last file read
-    public lastBodyData: string = ""; // body content of last file read
-    private _lastBodyLength: number = 0; // length of last file read
+    public lastBodyData?: string = ""; // body content of last file read
+    public lastBodyLength: number = 0; // length of last file read
+    // * List of currently VISIBLE opened body panes gnx (from 'watch' &amp; 'dispose' methods)
+    public watchedBodiesGnx: string[] = [];
 
-    // * List of currently opened body panes gnx (from 'watch' &amp; 'dispose' methods)
-    private _watchedBodiesGnx: string[] = [];
-
-    // * List of gnx that should be available (from more.selectNode and fs.delete)
-    private _openedBodiesGnx: string[] = [];
+    // * List of gnx open in tab(s) (from tryApplyNodeToBody / switchBody and fs.delete)
     private _openedBodiesInfo: { [key: string]: BodyTimeInfo } = {};
-
-    // * List of all possible vNodes gnx in the currently opened leo file (since last refresh/tree operation)
-    private _possibleGnxList: string[] = []; // Maybe deprecated
 
     private _lastBodyTimeGnx: string = "";
 
@@ -6964,13 +6999,13 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
  * @param p_gnx Gnx of body associated with this virtual file, mostly Leo's selected node
  */
 public fireRefreshFile(p_gnx: string): void {
-    if (!this._openedBodiesGnx.includes(p_gnx)) {
-        console.log("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", p_gnx);
-        this._openedBodiesGnx.push(p_gnx);
-    }
+
 
     this._setOpenedBodyTime(p_gnx);
 
+    if (!this.watchedBodiesGnx.includes(p_gnx)) {
+        return; // Document is not being watched (closed tab or non-visible non-dirty tab)
+    }
     this._onDidChangeFileEmitter.fire([{
         type: vscode.FileChangeType.Changed,
         uri: utils.strToLeoUri(p_gnx)
@@ -6978,31 +7013,18 @@ public fireRefreshFile(p_gnx: string): void {
 }
 
 </t>
-<t tx="felix.20200718040540.6">/**
- * Maybe deprecated
- * * Refreshes the '_possibleGnxList' list of all unique gnx from Leo
- * @returns a promise that resolves to the fresh gnx string array
- */
-public async refreshPossibleGnxList(): Promise&lt;string[]&gt; {
-    // * Get updated list of possible gnx
-    const p_result = await this._leoIntegration.sendAction(
-        Constants.LEOBRIDGE.GET_ALL_GNX
-    );
-    this._possibleGnxList = p_result.gnx || [];
-    return await Promise.resolve(this._possibleGnxList);
-}
-
-</t>
 <t tx="felix.20200718040540.8">public watch(p_resource: vscode.Uri): vscode.Disposable {
     const w_gnx = utils.leoUriToStr(p_resource);
-    if (!this._watchedBodiesGnx.includes(w_gnx)) {
-        this._watchedBodiesGnx.push(w_gnx); // add gnx
+    if (!this.watchedBodiesGnx.includes(w_gnx)) {
+        this.watchedBodiesGnx.push(w_gnx); // add gnx
     } else {
     }
     return new vscode.Disposable(() =&gt; {
-        const w_position = this._watchedBodiesGnx.indexOf(w_gnx); // find and remove it
+        // console.log('DISPOSE watch body  ' + utils.leoUriToStr(p_resource));
+
+        const w_position = this.watchedBodiesGnx.indexOf(w_gnx); // find and remove it
         if (w_position &gt; -1) {
-            this._watchedBodiesGnx.splice(w_position, 1);
+            this.watchedBodiesGnx.splice(w_position, 1);
         }
     });
 }
@@ -7440,7 +7462,6 @@ export class LeoDocumentNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
     public contextValue: string;
-    private _id: string;
 
     constructor(
         public documentEntry: LeoDocument,
@@ -7448,7 +7469,6 @@ export class LeoDocumentNode extends vscode.TreeItem {
     ) {
         super(documentEntry.name);
         // Setup this instance
-        this._id = utils.getUniqueId();
         const w_isNamed: boolean = !!this.documentEntry.name;
         this.label = w_isNamed ? utils.getFileFromPath(this.documentEntry.name) : Constants.UNTITLED_FILE_NAME;
         this.tooltip = w_isNamed ? this.documentEntry.name : Constants.UNTITLED_FILE_NAME;
@@ -7502,6 +7522,8 @@ import { LeoDocument } from "./types";
  */
 export class LeoDocumentsProvider implements vscode.TreeDataProvider&lt;LeoDocumentNode&gt; {
 
+    public lastDocumentList: LeoDocumentNode[] = [];
+
     private _onDidChangeTreeData: vscode.EventEmitter&lt;LeoDocumentNode | undefined&gt; = new vscode.EventEmitter&lt;LeoDocumentNode | undefined&gt;();
 
     readonly onDidChangeTreeData: vscode.Event&lt;LeoDocumentNode | undefined&gt; = this._onDidChangeTreeData.event;
@@ -7543,12 +7565,15 @@ public refreshTreeRoot(): void {
                         w_index++;
                     });
                 }
+                this.lastDocumentList = w_list;
                 return w_list;
             } else {
+                this.lastDocumentList = [];
                 return [];
             }
         });
     } else {
+        this.lastDocumentList = [];
         return Promise.resolve([]); // Defaults to an empty list of children
     }
 }
@@ -8062,6 +8087,7 @@ import { ArchivedPosition, LeoPackageStates } from "./types";
 export class LeoStates {
 
     public qLastContextChange: Thenable&lt;unknown&gt;; // Promise that the last state change is applied
+    public leoCommanderId: string = "";
 
     // * Currently starting up a server
     private _leoStartingServer: boolean = false;
@@ -8109,6 +8135,7 @@ export class LeoStates {
 
 </t>
 <t tx="felix.20200718192411.3">public setLeoStateFlags(p_states: LeoPackageStates): void {
+    this.leoCommanderId = p_states.commanderId;
     this.leoChanged = p_states.changed; // Documents will be refresh if this changes
 
     this.leoCanUndo = p_states.canUndo;
@@ -8336,6 +8363,7 @@ export interface LeoBridgePackage {
     id: number;
     // * Possible answers from a "Constants.LEOBRIDGE" command
     leoID?: string;
+    valid?: boolean;
     gnx?: string[]; // get_all_gnx
     len?: number; // get_body_length
     body?: string; // get_body
@@ -8352,21 +8380,23 @@ export interface LeoBridgePackage {
     commander?: {
         changed: boolean,
         fileName: string;
+        id: string;
     }
     "position-data-list"?: ArchivedPosition[];
     "position-data-dict"?: { [key: string]: ArchivedPosition };
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
-    found?: boolean // find_next, find_previous
-    range?: [number, number] // find_next, find_previous
+    found?: boolean; // find_next, find_previous
+    use_nav_pane?: boolean;
+    range?: [number, number]; // find_next, find_previous
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     wrap?: boolean; // get_body_states
     tabWidth?: number | boolean; // get_body_states either the tabwidth or falsy
     node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
     children?: ArchivedPosition[]; // get_children
-    searchSettings?: LeoGuiFindTabManagerSettings // get_search_settings
+    searchSettings?: LeoGuiFindTabManagerSettings; // get_search_settings
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
     string?: string; // from cut / copy outline
@@ -8386,6 +8416,7 @@ export interface LeoBridgePackage {
  * * Leo document structure used in the 'Opened Leo Documents' tree view provider sent back by the server
  */
 export interface LeoDocument {
+    id: string; // Commander's id
     name: string;
     index: number;
     changed: boolean;
@@ -8418,6 +8449,7 @@ export interface Icon {
 export interface BodyTimeInfo {
     ctime: number;
     mtime: number;
+    lastBodyLength?: number;
 }
 
 </t>
@@ -8489,7 +8521,6 @@ export interface ConfigMembers {
     // statusBarColor: string;
 
     treeInExplorer: boolean;
-    showOpenAside: boolean;
     showEditOnNodes: boolean;
     // showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
@@ -8539,6 +8570,7 @@ export interface ReqRefresh {
     node?: boolean; // Reveal received selected node (Navigation only, no tree change)
     tree?: boolean; // Tree needs refresh
     body?: boolean; // Body needs refresh
+    excludeDetached?: boolean; // Body needs refresh EXCLUDE DETACHED
     scroll?: boolean; // Body needs to scroll to selection
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
@@ -8609,6 +8641,7 @@ export interface ArchivedPosition {
 
     // * ALPHA FEATURE
     _isRoot?: boolean; // Added front side by leoInteg, for internal usage
+    _lastBodyData?: string;
 
     // * unknown attributes
     u?: number;             // User-attributes displayed qty
@@ -8629,7 +8662,7 @@ var portfinder = require('portfinder');
 </t>
 <t tx="felix.20200718195558.10">/**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
- * with a scheme header like "leo:/" or 'more:/'
+ * with a scheme header like "leointeg:/" or 'more:/'
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */
@@ -8644,9 +8677,8 @@ export function strToLeoUri(p_str: string): vscode.Uri {
  * @returns The string source that was used to build this Uri
  */
 export function leoUriToStr(p_uri: vscode.Uri): string {
-    // TODO : Use length of a constant or something other than 'fsPath'
-    // For now, just remove the '/' (or backslash on Windows) before the path string
-    return p_uri.fsPath.substr(1);
+    // For now, just remove the '/' before the path string
+    return p_uri.path.substring(1);
 }
 
 </t>
@@ -8747,7 +8779,7 @@ export function isHexColor(p_hexString: string): boolean {
 @tabwidth -4
 # ![Leo Editor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
 
-_If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it. Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review") or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub")_
+_If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it. Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review") or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub"). (For a JavaScript implementation of the Leo Editor that runs in both VSCode and VSCode for the web, see the [**LeoJS**](https://github.com/boltex/leojs) extension)_
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
@@ -8781,7 +8813,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.7.8 or later\
+- Leo Editor 6.7.9 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
@@ -8793,6 +8825,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 <t tx="felix.20200718222035.1">## Features
 
 - UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector** along with a **Log Window** [output channel](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- **Detached Body Panes**, independent of the selected node can be opened with the 'Open Aside' command.
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
@@ -8828,24 +8861,28 @@ Listed here are the most useful commands and their keyboard shortcuts.
 | Move Outline Left  | `Ctrl + L` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Shift [+ Alt] + Left`  |
 | Move Outline Right | `Ctrl + R` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Shift [+ Alt] + Right` |
 
-_Move-Outline commands need the 'Alt' key modifier only when focus is on body pane._
+_Move-Outline commands need the `Alt` key modifier only when focus is on body pane._
 
-| Common Operations   |                                                                                                                           |
-| :------------------ | :------------------------------------------------------------------------------------------------------------------------ |
-| Toggle Outline/Body | `Ctrl + T`                                                                                                                |
-| Focus on Body       | `Tab` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Enter` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Alt + D` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Ctrl + G` |
-| Focus on Outline    | `Alt + T`                                                                                                                 |
-| Contract All        | `Alt + -`                                                                                                                 |
-| Sort Siblings       | `Alt + A`                                                                                                                 |
-| Start Search        | `Ctrl + F`                                                                                                                |
-| Find Next           | `F3`                                                                                                                      |
-| Find Previous       | `F2`                                                                                                                      |
-| Replace             | `Ctrl + =`                                                                                                                |
-| Replace then Find   | `Ctrl + -`                                                                                                                |
-| Extract             | `Ctrl + Shift + D`                                                                                                        |
-| Extract Names       | `Ctrl + Shift + N`                                                                                                        |
-| Execute Script      | `Ctrl + B`                                                                                                                |
-| Minibuffer Palette  | `Alt + X`                                                                                                                 |
+| Changing Focus                  |                                                   |
+| :------------------------------ | :------------------------------------------------ |
+| Toggle Outline/Body             | `Ctrl + T`                                        |
+| Focus on Outline                | `Alt + T`                                         |
+| Focus on Body (in any pane)     | `Alt + D` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Ctrl + G` |
+| Focus on Body (in Outline pane) | `Tab` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Enter`        |
+
+| Common Operations  |                    |
+| :----------------- | :----------------- |
+| Contract All       | `Alt + -`          |
+| Sort Siblings      | `Alt + A`          |
+| Start Search       | `Ctrl + F`         |
+| Find Next          | `F3`               |
+| Find Previous      | `F2`               |
+| Replace            | `Ctrl + =`         |
+| Replace then Find  | `Ctrl + -`         |
+| Extract            | `Ctrl + Shift + D` |
+| Extract Names      | `Ctrl + Shift + N` |
+| Execute Script     | `Ctrl + B`         |
+| Minibuffer Palette | `Alt + X`          |
 
 | Tree Navigation          |                                                              |
 | :----------------------- | :----------------------------------------------------------- |
@@ -8858,7 +8895,7 @@ _Move-Outline commands need the 'Alt' key modifier only when focus is on body pa
 | Browse Tree              | `Arrow Keys` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Alt + Arrow Keys` |
 | Go To Global Line        | `Alt + G`                                                    |
 
-_With the **'Leo Tree Browsing'** setting enabled by default, the arrows, home, end, pageUp/Down keys will change the outline's selection directly._
+_With the **'Leo Tree Browsing'** setting enabled by default, the arrows, home, end, pageUp/Down keys will change the outline's selection directly. Using tree navigation shortcuts from the body pane (with the `Alt` key modifier) will place focus in the outline._
 
 | File Commands       |                    |
 | :------------------ | :----------------- |
@@ -8929,7 +8966,7 @@ for more information.
 ### Keybindings Conflicts Resolution
 
 If you have a keybinding conflict for a command that you would like **not** to be resolved by Leo when the focus is on the body pane,
-add **`&amp;&amp; resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
+add **`&amp;&amp; resourceScheme != 'leointeg'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Move Outline Keyboard Commands
 
@@ -9227,6 +9264,7 @@ import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
 import { LeoApOutlineProvider } from './leoApOutline';
 import { LeoBodyProvider } from './leoBody';
+import { LeoBodyDetachedProvider } from "./leoBodyDetached";
 import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
 import { LeoStatusBar } from './leoStatusBar';
@@ -9640,10 +9678,15 @@ export class LeoIntegration {
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
 
     // * Body Pane
+    private _changedBodyWithMirrorDetached: string | undefined = undefined; // "id/gnx" string as true
+    private _changedDetachedWithMirrorBody: string | undefined = undefined; // "id/gnx" string as true
     private _bodyFileSystemStarted: boolean = false;
+    private _detachedFileSystemStarted: boolean = false;
     private _bodyEnablePreview: boolean = true;
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
+    private _leoDetachedFileSystem!: LeoBodyDetachedProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
     private _bodyTextDocument: vscode.TextDocument | undefined; // Set when selected in tree by user, or opening a Leo file in showBody. and by _locateOpenedBody.
+    public bodyDetachedTextDocument: vscode.TextDocument | undefined; // Last active detached body.
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
 
     private _languageFlagged: string[] = [];
@@ -9694,6 +9737,12 @@ export class LeoIntegration {
     private _needLastSelectedRefresh = false; // USED IN showBody
     private _bodyLastChangedDocument: vscode.TextDocument | undefined; // Only set in _onDocumentChanged
     private _bodyLastChangedDocumentSaved: boolean = true; // don't use 'isDirty' of the document!
+
+    // * Debounced method used to check for closed detached/body tabs
+    public checkClosedTabs: (() =&gt; void);
+
+    // * Debounced method used to refresh language of the active commander's detached bodies 
+    public refreshCommanderDetachedLanguage: (() =&gt; void);
 
     // * Debounced method used to refresh the outline-tree title desc
     public refreshDesc: (() =&gt; void);
@@ -9755,8 +9804,30 @@ private _isCurrentFileNamed(): boolean {
  * * Setup leoInteg's UI for having no opened Leo documents
  */
 private _setupNoOpenedLeoDocument(): void {
+    // Close ALL detached bodies.
+    const w_foundTabs: Set&lt;vscode.Tab&gt; = new Set();
+    const w_foundUri: Set&lt;vscode.Uri&gt; = new Set();
+    for (const p_tabGroup of vscode.window.tabGroups.all) {
+        for (const p_tab of p_tabGroup.tabs) {
+            if (p_tab.input &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+            ) {
+                w_foundTabs.add(p_tab);
+                w_foundUri.add((p_tab.input as vscode.TabInputText).uri);
+            }
+        }
+    }
+    if (w_foundTabs.size) {
+        void vscode.window.tabGroups.close([...w_foundTabs], true);
+        for (const w_uri of w_foundUri) {
+            void vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_uri);
+        }
+    }
     this.leoStates.fileOpenedReady = false;
+    this.leoStates.leoCommanderId = "";
     this._bodyTextDocument = undefined;
+    this.bodyDetachedTextDocument = undefined;
     this.lastSelectedNode = undefined;
     utils.setGlobalLastActiveFile(this._context, "");
     this._refreshOutline(false, RevealType.NoReveal);
@@ -9805,7 +9876,16 @@ private _setupOpenedLeoDocument(): void {
         );
         this._bodyFileSystemStarted = true;
     }
-
+    if (!this._detachedFileSystemStarted) {
+        this._context.subscriptions.push(
+            vscode.workspace.registerFileSystemProvider(
+                Constants.URI_LEO_DETACHED_SCHEME,
+                this._leoDetachedFileSystem,
+                { isCaseSensitive: true }
+            )
+        );
+        this._detachedFileSystemStarted = true;
+    }
     if (this.config.showUnlOnStatusBar &amp;&amp; utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 10 })) {
         this._leoStatusBar.show();
     }
@@ -9960,11 +10040,8 @@ private _onActiveEditorChanged(
     p_editor: vscode.TextEditor | undefined,
     p_internalCall?: boolean
 ): void {
-    if (p_editor &amp;&amp; p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-        if (this.bodyUri.fsPath !== p_editor.document.uri.fsPath) {
-            this._hideDeleteBody(p_editor);
-        }
-        this._checkPreviewMode(p_editor);
+    if (p_editor) {
+        this._hideBodiesUnknownToFileSys([p_editor]);
     }
     if (!p_internalCall) {
         this.triggerBodySave(true, true); // Save in case edits were pending
@@ -10026,6 +10103,7 @@ private _onActiveEditorChanged(
                 { scheme: Constants.URI_FILE_SCHEME },
                 { scheme: Constants.URI_UNTITLED_SCHEME },
                 { scheme: Constants.URI_LEO_SCHEME },
+                { scheme: Constants.URI_LEO_DETACHED_SCHEME },
                 { language: Constants.OUTPUT_CHANNEL_LANGUAGE }
             ],
             this.linkProvider
@@ -10170,6 +10248,8 @@ private _onActiveEditorChanged(
 
     // * Create Body Pane
     this._leoFileSystem = new LeoBodyProvider(this);
+    this._leoDetachedFileSystem = new LeoBodyDetachedProvider(this);
+
     this._bodyMainSelectionColumn = 1;
 
     // * Create Status bar Entry
@@ -10202,8 +10282,15 @@ private _onActiveEditorChanged(
     // * Configuration / Welcome webview
     this.leoSettingsWebview = new LeoSettingsProvider(_context, this);
 
-    // * 'onDid' event detections all pushed as disposables in context.subscription
+    // * 'onDid' event detections. All pushed as disposables in context.subscription
     this._context.subscriptions.push(
+
+        vscode.window.tabGroups.onDidChangeTabGroups((p_tabGroupEvent) =&gt;
+            this._onTabGroupsChanged(p_tabGroupEvent)
+        ),
+        vscode.window.tabGroups.onDidChangeTabs((p_tabEvent) =&gt;
+            this._onTabsChanged(p_tabEvent)
+        ),
 
         // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
         vscode.window.onDidChangeActiveTextEditor((p_editor) =&gt;
@@ -10246,6 +10333,14 @@ private _onActiveEditorChanged(
         )
     );
     // * Debounced refresh flags and UI parts, other than the tree and body
+    this.checkClosedTabs = debounce(
+        this._checkClosedTabs,
+        Constants.CLEANUP_DEBOUNCE_DELAY
+    );
+    this.refreshCommanderDetachedLanguage = debounce(
+        this._refreshCommanderDetachedLanguage,
+        Constants.DETACHED_LANGUAGE_DELAY
+    );
     this.refreshDesc = debounce(
         this._refreshDesc,
         Constants.OUTLINE_DESC_DEBOUNCE_DELAY
@@ -10291,6 +10386,195 @@ private _onActiveEditorChanged(
  * @param p_textDocumentChange Text changed event passed by vscode
  */
 private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent): void {
+
+    if (
+        p_textDocumentChange.contentChanges.length &amp;&amp;
+        (p_textDocumentChange.document.uri.scheme === Constants.URI_LEO_DETACHED_SCHEME)
+    ) {
+        const w_detachedGnx = utils.leoUriToStr(p_textDocumentChange.document.uri);
+        const [unused, id, gnx] = p_textDocumentChange.document.uri.path.split("/");
+        const w_bodyText = p_textDocumentChange.document.getText().replace(/\r\n/g, "\n");
+        const w_hasBody = !!w_bodyText.length;
+
+        const w_selectedCId = this.leoStates.leoCommanderId; // g.app.windowList[this.frameIndex].c.id.toString();
+        const w_sameCommander = w_selectedCId === id;
+        let w_needDocRefresh = false;
+        let w_alreadySaved = false;
+        let w_v: ArchivedPosition | undefined;
+
+        w_v = this._leoDetachedFileSystem.openedBodiesVNodes[w_detachedGnx];
+
+        // console.log(this._changedBodyWithMirrorDetached, (w_v &amp;&amp; (w_bodyText === w_v._lastBodyData)));
+
+        if (this._changedBodyWithMirrorDetached || (w_v &amp;&amp; (w_bodyText === w_v._lastBodyData))) {
+            // console.log('document changed DETACHED not user modification ' + (this.changedBodyWithMirrorDetached ? " Cleared changedBodyWithMirrorDetached" : ""), (w_v &amp;&amp; (w_bodyText === w_v._lastBodyData)));
+            // WAS NOT A USER MODIFICATION?
+            this._changedBodyWithMirrorDetached = undefined;
+            this._bodySaveDocument(p_textDocumentChange.document);
+            return;
+        } else if (w_v._lastBodyData) {
+            w_v._lastBodyData = undefined;
+        }
+
+        this.bodyDetachedTextDocument = p_textDocumentChange.document;
+
+        // * If body changed a line with and '@' directive, set w_needsRefresh
+        let w_needsRefresh = false;
+
+        for (const p_change of p_textDocumentChange.contentChanges) {
+            if (p_change.rangeLength || p_change.text.includes('@')) {
+                // is replacing a chunk. (pasting, deleting a range)
+                w_needsRefresh = true;
+                break;
+            }
+        }
+
+        // * Detect in active editor if current cursor line is language related, set w_needsRefresh if so.
+        const w_textEditor = vscode.window.activeTextEditor;
+        if (
+            w_textEditor &amp;&amp; w_textEditor.selections &amp;&amp; w_textEditor.selections.length &amp;&amp;
+            !w_needsRefresh &amp;&amp; p_textDocumentChange.document.uri.fsPath === w_textEditor.document.uri.fsPath
+        ) {
+            for (const p_selection of w_textEditor.selections) {
+                if (p_selection.active.line &lt; w_textEditor.document.lineCount) {
+                    // TRY TO DETECT IF LANGUAGE RESET NEEDED!
+                    let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
+                    if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('wrap') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
+                        w_needsRefresh = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        const w_uriKey = utils.leoUriToStr(this.bodyDetachedTextDocument.uri);
+        const w_node = this._leoDetachedFileSystem.openedBodiesVNodes[w_uriKey];
+        const w_detachedIconChanged = !w_node.dirty || (!!w_node.hasBody === !w_hasBody);
+
+        // If same commander, and node icon changed (or whole document was unchanged)
+        if (w_sameCommander) {
+            if (!this.leoStates.leoChanged || w_detachedIconChanged) {
+                if (!w_alreadySaved) {
+                    // console.log(
+                    //     'bodySAVE DETACHED because icon changed:\n' +
+                    //     ' this.leoStates.leoChanged: ' + this.leoStates.leoChanged +
+                    //     '\n w_node.dirty' + w_node.dirty +
+                    //     "\n!!w_node.hasBody === !w_hasBody" + (!!w_node.hasBody === !w_hasBody)
+                    // );
+
+                    void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                    w_alreadySaved = true;
+                }
+                if (w_detachedIconChanged) {
+                    this.findFocusTree = false;
+                    // NOT incrementing this.treeID to keep ids intact
+                    // NoReveal since we're keeping the same id.
+                    this._refreshOutline(false, RevealType.NoReveal);
+                }
+            }
+        } else {
+            for (const doc of this._leoDocumentsProvider.lastDocumentList) {
+                if (doc.documentEntry.id.toString() === id) {
+                    // found it.
+                    if (!doc.documentEntry.changed) {
+                        // not changed, so needs refresh of documents.
+                        w_needDocRefresh = true;
+                        if (!w_alreadySaved) {
+                            void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                            w_alreadySaved = true;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        // * SET NEW VSNODE STATES FOR FUTURE w_detachedIconChanged DETECTION!
+        w_node.dirty = true;
+        w_node.hasBody = w_hasBody;
+
+        if (w_needsRefresh) {
+            if (!w_alreadySaved) {
+                void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                w_alreadySaved = true;
+            }
+            // REFRESH LANGUAGE OF THIS DETACHED BODY
+            const w_foundVnode = this._leoDetachedFileSystem.openedBodiesVNodes[utils.leoUriToStr(p_textDocumentChange.document.uri)];
+            if (w_foundVnode) {
+                if (!w_alreadySaved) {
+                    // console.log('bodySAVE DETACHED because w_needsRefresh');
+
+                    void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                    w_alreadySaved = true;
+                }
+
+                this._getBodyLanguage(w_v, id).then((p_language) =&gt; {
+                    if (this.bodyDetachedTextDocument &amp;&amp; p_language !== this.bodyDetachedTextDocument.languageId) {
+                        void this._setBodyLanguage(this.bodyDetachedTextDocument, p_language);
+                    }
+                });
+
+            } else {
+                console.log('DETACHED VNODE not found when resetting language');
+            }
+            // REFRESH LANGUAGE OF OTHER DETACHED BODIES WITH DELAY
+            this.refreshCommanderDetachedLanguage();
+        }
+
+        // * CHECK FOR BODY THAT MATCHES! set w_sameBodyTabOpened if so.
+        let w_sameBodyTabOpened = false;
+        for (const p_tabGroup of vscode.window.tabGroups.all) {
+            for (const p_tab of p_tabGroup.tabs) {
+                if (p_tab.input &amp;&amp;
+                    (p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                    ((p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME)
+                ) {
+                    if (gnx === utils.leoUriToStr((p_tab.input as vscode.TabInputText).uri)) {
+                        w_sameBodyTabOpened = true;
+                        break;
+                    }
+                }
+            }
+            if (w_sameBodyTabOpened) {
+                // console.log('found same body that MATCHES!');
+                break;
+            }
+        }
+
+        // Check if exact same commander AND same gnx: BOTH THE SAME so refresh the body!
+        if (w_sameCommander) {
+            if (w_sameBodyTabOpened &amp;&amp; this.lastSelectedNode &amp;&amp; gnx === this.lastSelectedNode.gnx) {
+                // Same commander AND same gnx  !  
+                if (!w_alreadySaved) {
+                    // console.log('bodySAVE DETACHED because same tab opened');
+                    void this._bodySaveDocument(this.bodyDetachedTextDocument);
+                    w_alreadySaved = true;
+                }
+                if (this._leoFileSystem.watchedBodiesGnx.includes(gnx)) {
+                    // console.log("setting changedDetachedWithMirrorBody");
+
+                    this._changedDetachedWithMirrorBody = `${id}/${gnx}`; // PREVENT DOUBLE REFRESH
+                }
+                // console.log('fire refresh of body');
+                this._leoFileSystem.fireRefreshFile(this.lastSelectedNode.gnx);
+            }
+
+            if (w_needsRefresh) {
+                this.debouncedRefreshBodyStates(50); // And maybe changed in other node of same commander!
+            }
+
+        } else if (w_needDocRefresh) {
+            this.refreshDocumentsPane();
+        }
+
+        if (!this.leoStates.leoChanged) {
+            // also refresh document panel (icon may be dirty now)
+            this.leoStates.leoChanged = true;
+            this.refreshDocumentsPane();
+        }
+
+    }
+
     // ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
     if (
         this.lastSelectedNode &amp;&amp;
@@ -10303,31 +10587,68 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
         this._bodyLastChangedDocumentSaved = false;
         this._editorTouched = true; // To make sure to transfer content to Leo even if all undone
         this._bodyPreviewMode = false;
+        let w_hasSameDetachedTab = false;
+        const c_id = this.leoStates.leoCommanderId;
+        const w_lastSelNodeGnx = this.lastSelectedNode.gnx;
+
+
+        // CHECK FOR DETACHED THAT MATCHES! 
+        for (const p_tabGroup of vscode.window.tabGroups.all) {
+            for (const p_tab of p_tabGroup.tabs) {
+                if (p_tab.input &amp;&amp;
+                    (p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+                ) {
+                    const [unused, id, gnx] = (p_tab.input as vscode.TabInputText).uri.path.split("/");
+                    if (id === c_id &amp;&amp; gnx === w_lastSelNodeGnx) {
+                        w_hasSameDetachedTab = true;
+                        break;
+                    }
+                }
+            }
+            if (w_hasSameDetachedTab) {
+                // console.log('found same DETACHED that MATCHES!');
+                break;
+            }
+        }
 
         // * If icon should change then do it now (if there's no document edit pending)
         if (
             utils.leoUriToStr(p_textDocumentChange.document.uri) === this.lastSelectedNode.gnx
         ) {
-            const w_hasBody = !!p_textDocumentChange.document.getText().length;
+            const w_bodyText = p_textDocumentChange.document.getText().replace(/\r\n/g, "\n");
+            const w_hasBody = !!w_bodyText.length;
             const w_iconChanged = utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody);
 
             let w_skipSave = false;
 
-            // TODO : uncomment and test this to fix replace / replace-then-find!!
             if (
-                this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &amp;&amp;
-                p_textDocumentChange.document.getText().replace(/\r\n/g, "\n") === this._leoFileSystem.lastBodyData
+                this._changedDetachedWithMirrorBody ||
+                (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &amp;&amp;
+                    w_bodyText === this._leoFileSystem.lastBodyData)
             ) {
                 // WAS NOT A USER MODIFICATION? (external file change, replace, replace-then-find)
+                // console.log(
+                //     '--------- document changed BODY not user modification ' +
+                //     (this.changedDetachedWithMirrorBody ? " Cleared changedDetachedWithMirrorBody ! " : ""),
+                //     (this._leoFileSystem.lastGnx === this.lastSelectedNode.gnx &amp;&amp;
+                //         w_bodyText === this._leoFileSystem.lastBodyData)
+                // );
                 // Set proper cursor insertion point and selection range.
-
+                this._changedDetachedWithMirrorBody = undefined;
+                // this._bodySaveDocument(p_textDocumentChange.document);
                 // ALSO check if the icon would change!
                 this.showBody(false, true, true);
+                // this.refreshCommanderDetachedLanguage();
                 // w_skipSave = true;
-                // return; // ! TEST WITH \ WITHOUT RETURN !
+                return; // ! TEST WITH / WITHOUT RETURN !
+
+            } else {
+                this._leoFileSystem.lastBodyData = undefined;
+                // console.log('document changed BODY !');
             }
 
-            if (!this.leoStates.leoChanged || w_iconChanged) {
+            if (!this.leoStates.leoChanged || w_iconChanged || w_hasSameDetachedTab) {
                 // console.log('need to change icon');
 
                 if (this.preventIconChange &amp;&amp; !w_skipSave) {
@@ -10349,6 +10670,16 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                         q_save = this._bodySaveDocument(p_textDocumentChange.document);
                     }
                     q_save.then(() =&gt; {
+                        if (w_hasSameDetachedTab &amp;&amp; this.lastSelectedNode) {
+                            const gnxString = `${c_id}/${w_lastSelNodeGnx}`;
+                            if (this._leoDetachedFileSystem.watchedBodiesGnx.includes(gnxString)) {
+                                // console.log("setting changedBodyWithMirrorDetached");
+                                this._changedBodyWithMirrorDetached = gnxString; // PREVENT DOUBLE REFRESH
+                            }
+                            // console.log('fire refresh of DETACHED');
+
+                            this._leoDetachedFileSystem.fireRefreshFile(gnxString);
+                        }
                         if (w_iconChanged) {
                             // NOT incrementing this.treeID to keep ids intact
                             // NoReveal since we're keeping the same id.
@@ -10360,6 +10691,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
 
                 if (!this.leoStates.leoChanged) {
                     // also refresh document panel (icon may be dirty now)
+                    this.leoStates.leoChanged = true;
                     this.refreshDocumentsPane();
                 }
             }
@@ -10367,27 +10699,31 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
 
         // * If body changed a line with and '@' directive refresh body states
         let w_needsRefresh = false;
-        p_textDocumentChange.contentChanges.forEach(p_contentChange =&gt; {
-            if (p_contentChange.text.includes('@')) {
+        for (const p_change of p_textDocumentChange.contentChanges) {
+            if (p_change.rangeLength || p_change.text.includes('@')) {
                 // There may have been an @
                 w_needsRefresh = true;
+                break;
             }
-        });
+        }
 
         const w_textEditor = vscode.window.activeTextEditor;
 
-        // TODO : Make this check more intelligent by keeping all lines for an interval, and check all them after delay.
         if (w_textEditor &amp;&amp; p_textDocumentChange.document.uri.fsPath === w_textEditor.document.uri.fsPath) {
-            w_textEditor.selections.forEach(p_selection =&gt; {
-                // if line starts with @
-                let w_line = w_textEditor.document.lineAt(p_selection.active.line).text.toLowerCase();
-                if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
-                    w_needsRefresh = true;
+            for (const p_selection of w_textEditor.selections) {
+                // TRY TO DETECT IF LANGUAGE RESET NEEDED!
+                if (p_selection.active.line &lt; w_textEditor.document.lineCount) {
+                    let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
+                    if (w_line.trim().startsWith('@') || w_line.includes('language') || w_line.includes('wrap') || w_line.includes('killcolor') || w_line.includes('nocolor-node')) {
+                        w_needsRefresh = true;
+                        break;
+                    }
                 }
-            });
+            }
         }
         if (w_needsRefresh) {
             this.debouncedRefreshBodyStates(Constants.BODY_STATES_DEBOUNCE_DELAY);
+            this.refreshCommanderDetachedLanguage();
         }
 
     }
@@ -10414,6 +10750,13 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean, p_fromFocusChange?: boolean
             this._onDidHideResolve = p_resolve;
         });
         return w_resolveAfterEditHeadline;
+    }
+
+    // * Save any 'detached' dirty panels to leo
+    for (const doc of vscode.workspace.textDocuments) {
+        if (!doc.isClosed &amp;&amp; doc.isDirty &amp;&amp; doc.uri.scheme === Constants.URI_LEO_DETACHED_SCHEME) {
+            void this._bodySaveDocument(doc, p_forcedVsCodeSave);
+        }
     }
 
     // * Save body to Leo if a change has been made to the body 'document' so far
@@ -10453,7 +10796,7 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean, p_fromFocusChange?: boolean
 
 </t>
 <t tx="felix.20200719025231.33">/**
- * * Sets new body text on leo's side, and may optionally save vsCode's body editor (which will trim spaces)
+ * * Sets new body text (or detached body) on leo's side, and may optionally save vsCode's body editor (which will trim spaces)
  * @param p_document Vscode's text document which content will be used to be the new node's body text in Leo
  * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
  * @returns a promise that resolves when the complete saving process is finished
@@ -10462,20 +10805,52 @@ private async _bodySaveDocument(
     p_document: vscode.TextDocument,
     p_forcedVsCodeSave?: boolean
 ): Promise&lt;boolean&gt; {
+
     if (p_document) {
 
-        const w_param = {
-            gnx: utils.leoUriToStr(p_document.uri),
+        let id: string = ""; // STARTS FALSY
+        let w_gnx: string;
+
+        if (p_document.uri.scheme === Constants.URI_LEO_DETACHED_SCHEME) {
+            // detached body
+            id = p_document.uri.path.split("/")[1];
+            // find commander
+            w_gnx = p_document.uri.path.split("/")[2];
+
+        } else {
+            // regular body
+            w_gnx = utils.leoUriToStr(p_document.uri);
+        }
+
+        const w_param: Record&lt;string, string&gt; = {
+            gnx: w_gnx,
             body: p_document.getText().replace(/\r\n/g, "\n"),
         };
+        if (id) {
+            w_param["commanderId"] = id;
+        }
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
         // Don't wait for promise!
         this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
 
         // await for bodySaveSelection that is placed on the stack right after saving body
         await this._bodySaveSelection();
 
-        this._refreshType.states = true;
-        this.getStates();
+        if (!id) {
+            // if NOT detached
+            this._refreshType.states = true;
+            this.getStates();
+        }
+
         if (p_forcedVsCodeSave) {
             return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
         }
@@ -10789,6 +11164,7 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean, p_preven
         if (q_saved) {
             await q_saved;
             this.preventIconChange = true;
+            // console.log('fire refresh body in showBody1');
             this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
         }
 
@@ -10801,6 +11177,8 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean, p_preven
 
     // * Step 1 : Open the document
     const w_openedDocument = await vscode.workspace.openTextDocument(this.bodyUri);
+    this._bodyLastChangedDocument = undefined;
+    this._bodyLastChangedDocumentSaved = false;
 
     this._bodyTextDocument = w_openedDocument;
 
@@ -10915,6 +11293,8 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean, p_preven
     if (w_foundDocOpened &amp;&amp; !q_saved) {
         // Was the same and was asked to show body (and did not already had to fake-save and refresh)
         // this.preventIconChange = true; // ? NEEDED ?
+        // console.log('fire refresh body in showBody2');
+
         this._leoFileSystem.fireRefreshFile(w_openedDocumentGnx);
     }
 
@@ -10962,7 +11342,7 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean, p_preven
     // else q_bodyStates will exist.
     if (q_bodyStates &amp;&amp; !this._needLastSelectedRefresh) {
         Promise.all([q_bodyStates, q_showTextDocument]).then(
-            (p_values: [LeoBridgePackage, vscode.TextEditor]) =&gt; {
+            (p_values: [LeoBridgePackage, vscode.TextEditor | void]) =&gt; {
 
                 // * Set text selection range
                 const w_resultBodyStates = p_values[0];
@@ -11049,30 +11429,33 @@ public async showBody(p_aside: boolean, p_preventTakingFocus?: boolean, p_preven
 public async selectTreeNode(
     p_node: ArchivedPosition,
     p_internalCall?: boolean,
-    p_aside?: boolean
+    //p_aside?: boolean
 ): Promise&lt;void | LeoBridgePackage | vscode.TextEditor&gt; {
 
     await this.triggerBodySave(true);
 
     // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
-    if (p_aside &amp;&amp; p_node !== this.lastSelectedNode) {
-        this._revealNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
-    }
+    // if (p_aside &amp;&amp; p_node !== this.lastSelectedNode) {
+    //     this._revealNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
+    // }
 
     this.leoStates.setSelectedNodeFlags(p_node);
 
     // removed until proper API for knowing focus placement
     // this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
 
-    const w_showBodyKeepFocus = p_aside
-        ? this.config.treeKeepFocusWhenAside
-        : this.config.treeKeepFocus;
+    // const w_showBodyKeepFocus = p_aside
+    //     ? this.config.treeKeepFocusWhenAside
+    //     : this.config.treeKeepFocus;
 
     // * Check if having already this exact node position selected : Just show the body and exit
     // (other tree nodes with same gnx may have different syntax language coloring because of parents lineage)
     if (p_node === this.lastSelectedNode) {
         this._locateOpenedBody(p_node.gnx); // LOCATE NEW GNX
-        return this.showBody(!!p_aside, w_showBodyKeepFocus).catch((p_error) =&gt; {
+        // MAYBE DETACHED BODY CHANGED THAT CONTENT!
+        this._leoFileSystem.setNewBodyUriTime(utils.strToLeoUri(p_node.gnx));
+
+        return this.showBody(false, this.config.treeKeepFocus).catch((p_error) =&gt; {
             return Promise.resolve(); // intercept cancellation as success: next one is going to replace anyways.
         });
         // Voluntary exit
@@ -11111,7 +11494,7 @@ public async selectTreeNode(
 
     // * Apply the node to the body text without waiting for the selection promise to resolve
     this.showBodyIfClosed = true;
-    this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus);
+    this._tryApplyNodeToBody(p_node, false, this.config.treeKeepFocus);
     return q_setSelectedNode;
 }
 
@@ -11919,9 +12302,11 @@ public connect(): void {
                     if (w_lastFiles.length &amp;&amp; !this.serverHasOpenedFile) {
                         // This context flag will trigger 'Connecting...' placeholder
                         // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
-
                         setTimeout(() =&gt; {
-                            this._openLastFiles(); // Try to open last opened files, if any
+                            // Try to open last opened files, if any
+                            this._openLastFiles().catch(error =&gt; {
+                                // No open files
+                            });
                         }, 0);
                     } else {
                         this.leoStates.leoConnecting = false;
@@ -12013,7 +12398,10 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
  * @param p_event a change event containing the active editor's selection, if any.
  */
 private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
-    if (p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+    if (
+        p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME ||
+        p_event.textEditor.document.uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+    ) {
         if (p_event.selections.length) {
             this._selectionDirty = true;
             this._selection = p_event.selections[0];
@@ -12025,6 +12413,7 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 </t>
 <t tx="felix.20200928133238.1">/**
  * * Saves the cursor position along with the text selection range and scroll position
+ * of the last body, or detached body pane, that had its cursor info set in this._selection, etc.
  * @returns Promise that resolves when the "setSelection" action returns from Leo's side
  */
 private async _bodySaveSelection(): Promise&lt;boolean&gt; {
@@ -12038,8 +12427,20 @@ private async _bodySaveSelection(): Promise&lt;boolean&gt; {
             w_scroll = 0;
         }
 
+        let gnx: string | undefined;
+        let id: string = "";
+
+        if (!this._selectionGnx.includes('/')) {
+            // leo body
+            gnx = this._selectionGnx;
+        } else {
+            // DETACHED
+            [id, gnx] = this._selectionGnx.split('/');
+
+        }
+
         const w_param: BodySelectionInfo = {
-            gnx: this._selectionGnx,
+            gnx: gnx,
             scroll: w_scroll,
             insert: {
                 line: this._selection.active.line || 0,
@@ -12054,6 +12455,10 @@ private async _bodySaveSelection(): Promise&lt;boolean&gt; {
                 col: this._selection.end.character || 0,
             },
         };
+
+        if (id) {
+            w_param["commanderId"] = id;
+        }
 
         this._scrollDirty = false;
         this._selectionDirty = false; // don't wait for return of this call
@@ -12071,6 +12476,7 @@ private async _bodySaveSelection(): Promise&lt;boolean&gt; {
  * * LeoBody cursor active position and text selection state, along with gnx
  */
 export interface BodySelectionInfo {
+    commanderId?: string,
     gnx: string;
     // scroll is stored as-is as the 'scrollBarSpot' in Leo
     // ! TEST scroll as single number only (for Leo vertical scroll value)
@@ -12090,7 +12496,10 @@ export interface BodySelectionInfo {
  * @param p_event a change event containing the active editor's visible range, if any.
  */
 private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
-    if (p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+    if (
+        p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME ||
+        p_event.textEditor.document.uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+    ) {
         if (p_event.visibleRanges.length) {
             this._scrollDirty = true;
             this._scroll = p_event.visibleRanges[0];
@@ -12136,13 +12545,13 @@ public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
   "command": "leointeg.extract",
   "key": "ctrl+shift+d",
   "mac": "cmd+shift+d",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.extractNames",
   "key": "ctrl+shift+n",
   "mac": "cmd+shift+n",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leointeg"
 },
 </t>
 <t tx="felix.20201105010614.1">{
@@ -12650,6 +13059,11 @@ public static VSCODE_COMMANDS = {
     "group": "inline@2"
   },
   {
+    "command": "leointeg.revert",
+    "when": "viewItem =~ /^leoDocumentSelected/",
+    "group": "leoDocumentContext1@1"
+  },
+  {
     "command": "leointeg.editHeadline",
     "when": "config.leoIntegration.showEditOnNodes &amp;&amp; viewItem =~ /^leoNode/",
     "group": "inline@1"
@@ -12798,9 +13212,8 @@ private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
         p_tabGroup.tabs.forEach((p_tab) =&gt; {
             if (p_tab.input &amp;&amp;
                 (p_tab.input as vscode.TabInputText).uri &amp;&amp;
-                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &amp;&amp;
-                (p_tab.input as vscode.TabInputText).uri.fsPath === w_editorFsPath &amp;&amp;
-                this.bodyUri.fsPath !== w_editorFsPath // if BODY is now the same, dont hide!
+                (p_tab.input as vscode.TabInputText).uri.scheme.startsWith(Constants.URI_LEO_SCHEME) &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri.fsPath === w_editorFsPath
             ) {
                 w_foundTabs.push(p_tab);
             }
@@ -12842,15 +13255,7 @@ public _changedTextEditorViewColumn(
  */
 public _changedVisibleTextEditors(p_editors: readonly vscode.TextEditor[]): void {
     if (p_editors &amp;&amp; p_editors.length) {
-        // May be no changes - so check length
-        p_editors.forEach((p_textEditor) =&gt; {
-            if (p_textEditor &amp;&amp; p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-                if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
-                    this._hideDeleteBody(p_textEditor);
-                }
-                this._checkPreviewMode(p_textEditor);
-            }
-        });
+        this._hideBodiesUnknownToFileSys(p_editors);
     }
     this.triggerBodySave(true, true);
 }
@@ -13055,12 +13460,6 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "enablement": "leoTreeOpened",
   "title": "Find Previous",
   "icon": "$(leo-find-previous)"
-},
-{
-  "command": "leointeg.findVar",
-  "category": "Leo",
-  "enablement": "leoTreeOpened",
-  "title": "Find the var under the cursor"
 },
 {
   "command": "leointeg.findDef",
@@ -13343,13 +13742,19 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.goAnywhere",
   "key": "ctrl+p",
   "mac": "cmd+p",
-  "when": "config.leoIntegration.goAnywhereShortcut &amp;&amp; leoEditHeadline || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "config.leoIntegration.goAnywhereShortcut &amp;&amp; leoEditHeadline || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.startSearch",
   "key": "ctrl+f",
   "mac": "cmd+f",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+},
+{
+  "command": "leointeg.findQuick",
+  "key": "ctrl+shift+f",
+  "mac": "cmd+shift+f",
+  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.findNextFromOutline",
@@ -13359,7 +13764,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
 {
   "command": "leointeg.findNext",
   "key": "f3",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.findPreviousFromOutline",
@@ -13369,13 +13774,13 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
 {
   "command": "leointeg.findPrevious",
   "key": "f2",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.replace",
   "key": "ctrl+=",
   "mac": "cmd+=",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.replaceFromOutline",
@@ -13387,7 +13792,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.replaceThenFind",
   "key": "ctrl+-",
   "mac": "cmd+-",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.replaceThenFindFromOutline",
@@ -13398,73 +13803,73 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
 {
   "command": "leointeg.gotoGlobalLine",
   "key": "alt+g",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindEverywhereOption",
   "key": "ctrl+alt+e",
   "mac": "cmd+alt+e",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindNodeOnlyOption",
   "key": "ctrl+alt+n",
   "mac": "cmd+alt+n",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindFileOnlyOption",
   "key": "ctrl+alt+l",
   "mac": "cmd+alt+l",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindSuboutlineOnlyOption",
   "key": "ctrl+alt+s",
   "mac": "cmd+alt+s",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindIgnoreCaseOption",
   "key": "ctrl+alt+i",
   "mac": "cmd+alt+i",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindMarkChangesOption",
   "key": "ctrl+alt+c",
   "mac": "cmd+alt+c",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindMarkFindsOption",
   "key": "ctrl+alt+f",
   "mac": "cmd+alt+f",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindRegexpOption",
   "key": "ctrl+alt+x",
   "mac": "cmd+alt+x",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindWordOption",
   "key": "ctrl+alt+w",
   "mac": "cmd+alt+w",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindSearchBodyOption",
   "key": "ctrl+alt+b",
   "mac": "cmd+alt+b",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindSearchHeadlineOption",
   "key": "ctrl+alt+h",
   "mac": "cmd+alt+h",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
 <t tx="felix.20210522001751.1">import * as vscode from 'vscode';
@@ -14093,7 +14498,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'word-search-forward': Constants.COMMANDS.WORD_SEARCH,
     'word-search-backward': Constants.COMMANDS.WORD_SEARCH_BACKWARD,
 
-    'find-var': Constants.COMMANDS.FIND_VAR,
+    'find-var': Constants.COMMANDS.FIND_DEF, // find-var overriden with find-def just in case.
     'find-def': Constants.COMMANDS.FIND_DEF,
     'replace': Constants.COMMANDS.REPLACE,
     'replace-all': Constants.COMMANDS.REPLACE_ALL,
@@ -14246,172 +14651,172 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
 <t tx="felix.20210610022645.1">"editor/title": [
   {
     "command": "leointeg.prev",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.next",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@2"
   },
   {
     "command": "leointeg.executeScript",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@3"
   },
   {
     "command": "leointeg.extract",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@4"
   },
   {
     "command": "leointeg.extractNames",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@5"
   },
   {
     "command": "leointeg.importAnyFile",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@6"
   },
   {
     "command": "leointeg.chapterSelect",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@7"
   },
   {
     "command": "leointeg.writeDirtyAtFileNodes",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@8"
   },
   {
     "command": "leointeg.refreshFromDiskSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@9"
   },
   {
     "command": "leointeg.showSettingsPage",
-    "when": "resourceScheme == leo",
+    "when": "resourceScheme == leointeg",
     "group": "1_leoInteg@1"
   },
   {
     "command": "leointeg.showLogPane",
-    "when": "resourceScheme == leo &amp;&amp; leoBridgeReady",
+    "when": "resourceScheme == leointeg &amp;&amp; leoBridgeReady",
     "group": "1_leoInteg@2"
   },
   {
     "command": "leointeg.newLeoFile",
-    "when": "resourceScheme == leo &amp;&amp; leoBridgeReady",
+    "when": "resourceScheme == leointeg &amp;&amp; leoBridgeReady",
     "group": "1_leoInteg1@1"
   },
   {
     "command": "leointeg.openLeoFile",
-    "when": "resourceScheme == leo &amp;&amp; leoBridgeReady",
+    "when": "resourceScheme == leointeg &amp;&amp; leoBridgeReady",
     "group": "1_leoInteg1@2"
   },
   {
     "command": "leointeg.saveLeoFile",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg1@3"
   },
   {
     "command": "leointeg.saveAsLeoFile",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg1@4"
   },
   {
     "command": "leointeg.sortChildrenSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg2@1"
   },
   {
     "command": "leointeg.sortSiblingsSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg2@2"
   },
   {
     "command": "leointeg.promoteSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg2@3"
   },
   {
     "command": "leointeg.demoteSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg2@4"
   },
   {
     "command": "leointeg.cloneNodeSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg3@1"
   },
   {
     "command": "leointeg.cutNodeSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg3@2"
   },
   {
     "command": "leointeg.copyNodeSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg3@3"
   },
   {
     "command": "leointeg.pasteNodeAtSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg3@4"
   },
   {
     "command": "leointeg.pasteNodeAsCloneAtSelection",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg3@5"
   },
   {
     "command": "leointeg.readFileIntoNode",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg4@2"
   },
   {
     "command": "leointeg.writeFileFromNode",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg4@3"
   },
   {
     "command": "leointeg.writeAtFileNodes",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg4@4"
   },
   {
     "command": "leointeg.writeDirtyAtFileNodes",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg4@5"
   },
   {
     "command": "leointeg.cloneFindAll",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@1"
   },
   {
     "command": "leointeg.cloneFindAllFlattened",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@2"
   },
   {
     "command": "leointeg.cloneFindMarked",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@3"
   },
   {
     "command": "leointeg.cloneFindFlattenedMarked",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@4"
   },
   {
     "command": "leointeg.cloneFindParents",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@5"
   },
   {
     "command": "leointeg.cloneFindTag",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "1_leoInteg5@6"
   }
 ],
@@ -14607,59 +15012,80 @@ export function getUniqueId(): string {
  * @param p_def find-def instead of find-var
  * @returns Promise that resolves when the "launch refresh" is started
  */
-public async findSymbol(p_def: boolean): Promise&lt;any&gt; {
-    const w_action: string = p_def
-        ? Constants.LEOBRIDGE.FIND_DEF
-        : Constants.LEOBRIDGE.FIND_VAR;
+public async findSymbol(): Promise&lt;any&gt; {
 
     await this._isBusyTriggerSave(false, true);
 
-    const p_findResult = await this.sendAction(w_action, { fromOutline: false });
+    const p_findResult = await this.sendAction(Constants.LEOBRIDGE.FIND_DEF, { fromOutline: false });
 
-    if (!p_findResult.found || !p_findResult.focus) {
-        vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
+    if (!p_findResult.found) {
+        return vscode.window.showInformationMessage(Constants.USER_MESSAGES.SEARCH_NOT_FOUND);
     } else {
-        let w_finalFocus = Focus.Body;
-        const w_focus = p_findResult.focus.toLowerCase();
-        if (w_focus.includes('tree') || w_focus.includes('head')) {
-            // tree
-            w_finalFocus = Focus.Outline;
+
+        if (p_findResult.use_nav_pane) {
+            this._leoGotoProvider.refreshTreeRoot();
+            this.showGotoPane({ preserveFocus: true }); // show but dont change focus
+
+            let w_revealTarget = Focus.Body;
+            const w_focus = p_findResult.focus ? p_findResult.focus.toLowerCase() : "";
+
+            if (w_focus.includes('tree') || w_focus.includes('head')) {
+                // tree
+                w_revealTarget = Focus.Outline;
+                this.showOutlineIfClosed = true;
+            } else {
+                this.showBodyIfClosed = true;
+            }
+            this.loadSearchSettings(); // The nav text should now be set.
+            this.setupRefresh(
+                // ! KEEP FOCUS ON GOTO PANE !
+                Focus.Goto,
+                {
+                    tree: true,
+                    body: true,
+                    scroll: w_revealTarget === Focus.Body,
+                    // documents: false,
+                    // buttons: false,
+                    states: true,
+                },
+                p_findResult.node
+            );
+        } else {
+            // clones
+            this.setupRefresh(
+
+                Focus.NoChange,
+                {
+                    tree: true,
+                    body: true,
+                    // documents: false,
+                    // buttons: false,
+                    states: true,
+                },
+                p_findResult.node
+            );
         }
-        this.loadSearchSettings();
-        this.setupRefresh(
-            w_finalFocus,
-            {
-                tree: true,
-                body: true,
-                scroll: p_findResult.found &amp;&amp; w_finalFocus === Focus.Body,
-                // documents: false,
-                // buttons: false,
-                states: true,
-            });
-        this.launchRefresh();
+
+        return this.launchRefresh();
     }
+
 }
 
 </t>
 <t tx="felix.20210713005825.1">"editor/context": [
   {
-    "command": "leointeg.findVar",
-    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@1"
-  },
-  {
     "command": "leointeg.findDef",
-    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.extract",
-    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.extractNames",
-    "when": "editorHasSelection &amp;&amp; !editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "editorHasSelection &amp;&amp; !editorHasMultipleSelections &amp;&amp; resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   }
 ],
@@ -15104,47 +15530,6 @@ public getLeoJsFileUrl(): Promise&lt;string&gt; {
 - Easier access to the leo settings through the extension config title strings and the extension view menu.
 
 </t>
-<t tx="felix.20210917225004.1">/**
- * * Closes all visible text editors that have Leo filesystem scheme
- */
-function closeLeoTextEditors(): Thenable&lt;unknown&gt; {
-    const w_foundTabs: vscode.Tab[] = [];
-
-    vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
-        p_tabGroup.tabs.forEach((p_tab) =&gt; {
-            if (p_tab.input &amp;&amp;
-                (p_tab.input as vscode.TabInputText).uri &amp;&amp;
-                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &amp;&amp;
-                !p_tab.isDirty
-            ) {
-                w_foundTabs.push(p_tab);
-            }
-        });
-    });
-
-    let q_closedTabs;
-    if (w_foundTabs.length) {
-        q_closedTabs = vscode.window.tabGroups.close(w_foundTabs, true);
-        w_foundTabs.forEach((p_tab) =&gt; {
-            if (p_tab.input) {
-                vscode.commands.executeCommand(
-                    'vscode.removeFromRecentlyOpened',
-                    (p_tab.input as vscode.TabInputText).uri
-                );
-                // Delete to close all other body tabs.
-                // (w_oldUri will be deleted last below)
-                const w_edit = new vscode.WorkspaceEdit();
-                w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
-                vscode.workspace.applyEdit(w_edit);
-            }
-        });
-    } else {
-        q_closedTabs = Promise.resolve(true);
-    }
-    return q_closedTabs;
-}
-
-</t>
 <t tx="felix.20210919194259.1">## 0.1.20
 
 - Added .leojs JSON file format support.
@@ -15232,28 +15617,15 @@ public refreshBodyStates(): void {
     }
 
     // * Set document language along with the proper cursor position, selection range and scrolling position
-    let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
-    q_bodyStates = this.sendAction(
-        Constants.LEOBRIDGE.GET_BODY_STATES,
-        utils.buildNodeCommand(this.lastSelectedNode!)
-    );
-    q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
-        let w_language: string = p_bodyStates.language!;
-        let w_wrap: boolean = !!p_bodyStates.wrap;
-
-        // Replace language string if in 'exceptions' array
-        w_language = Constants.LEO_LANGUAGE_PREFIX +
-            (Constants.LANGUAGE_CODES[w_language] || w_language) +
-            (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
-
+    this._getBodyLanguage(this.lastSelectedNode!).then((p_language) =&gt; {
         // Apply language if the selected node is still the same after all those events
         if (this._bodyTextDocument &amp;&amp;
             !this._bodyTextDocument.isClosed &amp;&amp;
             this.lastSelectedNode &amp;&amp;
-            w_language !== this._bodyTextDocument.languageId &amp;&amp;
+            p_language !== this._bodyTextDocument.languageId &amp;&amp;
             utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
         ) {
-            this._setBodyLanguage(this._bodyTextDocument, w_language);
+            this._setBodyLanguage(this._bodyTextDocument, p_language);
         }
     });
 }
@@ -15272,16 +15644,16 @@ public debouncedRefreshBodyStates(p_delay?: number) {
         clearTimeout(this._bodyStatesTimer);
     }
     if (p_delay === 0) {
-        if (this._bodyLastChangedDocument &amp;&amp; this.leoStates.fileOpenedReady) {
+        if (this._bodyLastChangedDocument &amp;&amp; !this._bodyLastChangedDocument.isClosed &amp;&amp; this.leoStates.fileOpenedReady) {
             this._bodySaveDocument(this._bodyLastChangedDocument);
-            this.refreshBodyStates();
         }
+        this.refreshBodyStates();
     } else {
         this._bodyStatesTimer = setTimeout(() =&gt; {
-            if (this._bodyLastChangedDocument &amp;&amp; this.leoStates.fileOpenedReady) {
+            if (this._bodyLastChangedDocument &amp;&amp; !this._bodyLastChangedDocument.isClosed &amp;&amp; this.leoStates.fileOpenedReady) {
                 this._bodySaveDocument(this._bodyLastChangedDocument);
-                this.refreshBodyStates();
             }
+            this.refreshBodyStates();
         }, p_delay);
     }
 
@@ -15805,6 +16177,13 @@ public getTextFromClipboard(): string {
             focusOnField('findText');
             return;
         }
+        // Detect CTRL+SHIFT+F
+        if (p_event.ctrlKey &amp;&amp; p_event.shiftKey &amp;&amp; p_event.keyCode === 70) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            focusOnField('navText');
+            return;
+        }
 
         // ? NEEDED ?
         /*
@@ -16218,7 +16597,7 @@ import * as utils from "./utils";
   "command": "leointeg.findQuickTimeline",
   "category": "Leo",
   "enablement": "leoTreeOpened",
-  "title": "List timeline of nodes in reverse gnx order",
+  "title": "List nodes in reverse gnx order",
   "icon": "$(leo-find-quick-timeline)"
 },
 {
@@ -17801,7 +18180,7 @@ public isGnxStillValid(gnx: string, ts: number): boolean {
         this._commandStack.lastReceivedNode &amp;&amp;
         this._commandStack.lastReceivedNode.gnx !== gnx &amp;&amp;
         this._commandStack.lastReceivedNodeTS &gt; ts &amp;&amp;
-        (this._commandStack._finalRefreshType.tree || this._commandStack._finalRefreshType.node)
+        (this._commandStack.finalRefreshType.tree || this._commandStack.finalRefreshType.node)
     ) {
         // new commandStack lastReceivedNode, is different and newer and tree/node has to refresh
         return false;
@@ -17843,7 +18222,7 @@ public isGnxReselected(gnx: string, ts: number): boolean {
         this._commandStack.lastReceivedNode &amp;&amp;
         this._commandStack.lastReceivedNode.gnx === gnx &amp;&amp;
         this._commandStack.lastReceivedNodeTS &gt; ts &amp;&amp;
-        (this._commandStack._finalRefreshType.tree || this._commandStack._finalRefreshType.node)
+        (this._commandStack.finalRefreshType.tree || this._commandStack.finalRefreshType.node)
     ) {
         // new commandStack lastReceivedNode, is different and newer and tree/node has to refresh
         return true;
@@ -18516,7 +18895,7 @@ public isTsStillValid(ts: number): boolean {
     if (
         this._commandStack.lastReceivedNode &amp;&amp;
         this._commandStack.lastReceivedNodeTS &gt; ts &amp;&amp;
-        (this._commandStack._finalRefreshType.tree || this._commandStack._finalRefreshType.node)
+        (this._commandStack.finalRefreshType.tree || this._commandStack.finalRefreshType.node)
     ) {
         // new commandStack lastReceivedNode, is different and newer and tree/node has to refresh
         return false;
@@ -19174,7 +19553,7 @@ private _refreshDesc(): void {
 public static MIN_SERVER_VERSION_NUMBER = {
     major: 1,
     minor: 0,
-    patch: 10,
+    patch: 11,
 };
 
 </t>
@@ -19196,8 +19575,10 @@ public async gotoAnywhere(): Promise&lt;unknown&gt; {
             Object.values(p_result["position-data-dict"]).forEach(p_position =&gt; {
                 let w_description = p_position.gnx; // Defaults as gnx.
                 const w_gnxParts = w_description.split('.');
-                if (w_gnxParts.length === 3 &amp;&amp; w_gnxParts[1].length === 14) {
-                    // legit 3 part gnx
+                const dateString = w_gnxParts[1] ? w_gnxParts[1] : "";
+
+                if (w_gnxParts.length === 3 &amp;&amp; dateString.length === 14 &amp;&amp; /^\d+$/.test(dateString)) {
+                    // legit 3 part numeric gnx, so build a string date
                     const dateString = w_gnxParts[1];
                     const w_year = +dateString.substring(0, 4); // unary + operator to convert the strings to numbers.
                     const w_month = +dateString.substring(4, 6);
@@ -19289,19 +19670,17 @@ public setNewBodyUriTime(p_uri: vscode.Uri): void {
 
 </t>
 <t tx="felix.20230130154806.1">/**
- * * Adds entries in _openedBodiesGnx and _openedBodiesInfo if needed
+ * * Adds entries in openedBodiesGnx and _openedBodiesInfo if needed
  * * and sets the modified time of an opened body.
  */
 private _setOpenedBodyTime(p_gnx: string): void {
     const w_now = new Date().getTime();
     let w_created = w_now;
-    if (!this._openedBodiesGnx.includes(p_gnx)) {
-        this._openedBodiesGnx.push(p_gnx);
-    } else {
+    if (this._openedBodiesInfo[p_gnx]) {
         w_created = this._openedBodiesInfo[p_gnx].ctime; // Already created?
     }
     this._openedBodiesInfo[p_gnx] = {
-        ctime: w_created, // w_now, // maybe kept.
+        ctime: w_created,
         mtime: w_now // new 'modified' time for sure.
     };
 }
@@ -20058,7 +20437,7 @@ public setBodyWrap(): Thenable&lt;void&gt; {
         w_totalConfigName += langWrap;
         // w_languageSettings = vscode.workspace.getConfiguration(langWrap);
     }
-    w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName);
+    w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName, null);
 
     if (!w_languageSettings || !w_languageSettings['editor.wordWrap'] || w_languageSettings['editor.wordWrap'] !== 'on') {
         w_missing = true;
@@ -20158,7 +20537,8 @@ public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
 </t>
 <t tx="felix.20240330232425.1">## 1.0.21
 
-- ...
+- Fixed icons disabled appearance by changing the graphic format from SVG to a weoff2 font.
+- Changed behavior of the 'Open Aside' command: it now  opens 'detached' body panes, which allows text editing for a fixed gnx.
 
 </t>
 <t tx="felix.20240430200658.1">"icons": {
@@ -20646,6 +21026,931 @@ public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
     }
   }
 },
+</t>
+<t tx="felix.20240501232955.1">public cleanupBodies(): void {
+    const w_foundGnx: string[] = [];
+    vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
+        p_tabGroup.tabs.forEach((p_tab) =&gt; {
+            if (p_tab.input &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
+            ) {
+                w_foundGnx.push(utils.leoUriToStr((p_tab.input as vscode.TabInputText).uri));
+            }
+        });
+    });
+    if (!w_foundGnx.length) {
+        return;
+    }
+    for (const openBody of Object.keys(this._openedBodiesInfo)) {
+        if (!w_foundGnx.includes(openBody)) {
+            // Not an opened tab! remove it!
+
+            delete this._openedBodiesInfo[openBody];
+        }
+    }
+}
+</t>
+<t tx="felix.20240502002356.1">import * as vscode from "vscode";
+import * as utils from "./utils";
+import { Constants } from "./constants";
+import * as path from 'path';
+import { LeoIntegration } from "./leoIntegration";
+import { ArchivedPosition, BodyTimeInfo } from "./types";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20240502002356.10">public readDirectory(p_uri: vscode.Uri): [string, vscode.FileType][] {
+    const w_commanders: Set&lt;string&gt; = new Set();
+    const w_detached: Set&lt;string&gt; = new Set();
+    if (this._leoIntegration.leoStates.fileOpenedReady) {
+
+        for (const p_tabGroup of vscode.window.tabGroups.all) {
+            for (const p_tab of p_tabGroup.tabs) {
+                if (p_tab.input &amp;&amp;
+                    (p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+                ) {
+                    // Found detached. 
+                    const [unused, id, gnx] = (p_tab.input as vscode.TabInputText).uri.path.split("/");
+                    w_commanders.add(id);
+                    w_detached.add((p_tab.input as vscode.TabInputText).uri.path);
+                }
+            }
+        }
+    }
+
+    if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
+
+        const w_directory: [string, vscode.FileType][] = [];
+
+        for (const w_commander of [...w_commanders]) {
+            w_directory.push([w_commander, vscode.FileType.Directory]);
+        }
+        return w_directory;
+
+    } else if (
+        p_uri.path.split('/').length
+    ) {
+
+        const w_directory: [string, vscode.FileType][] = [];
+        for (const w_file of [...w_detached]) {
+            if (w_file.split('/')[1] === p_uri.path.split('/')[1]) {
+                w_directory.push([w_file.split('/')[2], vscode.FileType.File]);
+            }
+        }
+        return w_directory;
+
+    } else {
+        throw vscode.FileSystemError.FileNotFound(p_uri);
+    }
+}
+
+</t>
+<t tx="felix.20240502002356.11">public createDirectory(p_uri: vscode.Uri): void {
+    console.warn('DETACHED Called createDirectory with ', p_uri.path); // should not happen
+    throw vscode.FileSystemError.NoPermissions();
+}
+
+</t>
+<t tx="felix.20240502002356.12">public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
+    if (this.preventSaveToLeo) {
+        this.preventSaveToLeo = false;
+    } else {
+        void this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
+    }
+    const w_gnx = utils.leoUriToStr(p_uri);
+
+    if (!this._openedBodiesInfo[w_gnx]) {
+        console.error("LeoJS: Tried to save DETACHED but not in _openedBodiesGnx. gnx :", w_gnx);
+    }
+    this._setOpenedBodyTime(w_gnx);
+    this._openedBodiesInfo[w_gnx].lastBodyLength = p_content.byteLength;
+    this._fireSoon({ type: vscode.FileChangeType.Changed, uri: p_uri });
+}
+
+</t>
+<t tx="felix.20240502002356.13">public rename(p_oldUri: vscode.Uri, p_newUri: vscode.Uri, p_options: { overwrite: boolean }): void {
+    console.warn('DETACHED Called rename on ', p_oldUri.path, p_newUri.path); // should not happen
+    this._fireSoon(
+        { type: vscode.FileChangeType.Deleted, uri: p_oldUri },
+        { type: vscode.FileChangeType.Created, uri: p_newUri }
+    );
+}
+
+</t>
+<t tx="felix.20240502002356.14">public delete(p_uri: vscode.Uri): void {
+    const w_gnx = utils.leoUriToStr(p_uri);
+    if (this._openedBodiesInfo[w_gnx]) {
+        delete this._openedBodiesInfo[w_gnx];
+        delete this.openedBodiesVNodes[w_gnx];
+    } else {
+        // console.log("not deleted");
+    }
+
+    // dirname is just a slash "/"
+    let w_dirname = p_uri.with({ path: path.posix.dirname(p_uri.path) });
+
+    this._fireSoon(
+        { type: vscode.FileChangeType.Changed, uri: w_dirname },
+        { uri: p_uri, type: vscode.FileChangeType.Deleted }
+    );
+}
+
+</t>
+<t tx="felix.20240502002356.15">public copy(p_uri: vscode.Uri): void {
+    console.warn('DETACHED Called copy on ', p_uri.path); // should not happen
+    throw vscode.FileSystemError.NoPermissions();
+}
+
+</t>
+<t tx="felix.20240502002356.16">private _fireSoon(...p_events: vscode.FileChangeEvent[]): void {
+    this._bufferedEvents.push(...p_events);
+    if (this._fireSoonHandle) {
+        clearTimeout(this._fireSoonHandle);
+    }
+    this._fireSoonHandle = setTimeout(() =&gt; {
+        this._onDidChangeFileEmitter.fire(this._bufferedEvents);
+        this._bufferedEvents.length = 0; // clearing events array
+    }, 5);
+}
+
+</t>
+<t tx="felix.20240502002356.2">/**
+ * * Body panes implementation as a file system using "leointegDetached" as a scheme identifier
+ */
+export class LeoBodyDetachedProvider implements vscode.FileSystemProvider {
+
+    // * Flag normally false
+    public preventSaveToLeo: boolean = false;
+
+    // * Last file read data with the readFile method
+    private _lastGnx: string = ""; // gnx of last file read
+    private _lastBodyData: string = ""; // body content of last file read
+
+    // * List of currently VISIBLE opened body panes gnx (from 'watch' &amp; 'dispose' methods)
+    public watchedBodiesGnx: string[] = [];
+
+    // * List of gnx open in tab(s) (from tryApplyNodeToBody / switchBody and fs.delete)
+    public openedBodiesVNodes: { [key: string]: ArchivedPosition } = {};
+    private _openedBodiesInfo: { [key: string]: BodyTimeInfo } = {};
+
+    // * An event to signal that a resource has been changed
+    // * It should fire for resources that are being watched by clients of this provider
+    private _onDidChangeFileEmitter = new vscode.EventEmitter&lt;vscode.FileChangeEvent[]&gt;();
+    readonly onDidChangeFile: vscode.Event&lt;vscode.FileChangeEvent[]&gt; = this._onDidChangeFileEmitter.event;
+    private _bufferedEvents: vscode.FileChangeEvent[] = [];
+    private _fireSoonHandle?: NodeJS.Timer;
+
+    constructor(private _leoIntegration: LeoIntegration) { }
+
+    @others
+}
+</t>
+<t tx="felix.20240502002356.3">/**
+ * * Sets selected node body's modified time for this gnx virtual file
+ * @param p_uri URI of file for which to set made-up modified time
+ */
+public setNewBodyUriTime(p_uri: vscode.Uri, v: ArchivedPosition): void {
+    const w_gnx = utils.leoUriToStr(p_uri);
+    this._setOpenedBodyTime(w_gnx);
+    this.openedBodiesVNodes[w_gnx] = v;
+}
+
+</t>
+<t tx="felix.20240502002356.4">/**
+ * * Adds entries in _openedBodiesGnx and _openedBodiesInfo if needed
+ * * and sets the modified time of an opened body.
+ */
+private _setOpenedBodyTime(p_gnx: string): void {
+    const w_now = new Date().getTime();
+    let w_created = w_now;
+    if (this._openedBodiesInfo[p_gnx]) {
+        w_created = this._openedBodiesInfo[p_gnx].ctime; // Already created?
+    }
+
+    this._openedBodiesInfo[p_gnx] = {
+        ctime: w_created,
+        mtime: w_now // new 'modified' time.
+    };
+}
+
+</t>
+<t tx="felix.20240502002356.5">/**
+ * Remove entries of openedBodies if not in any tabGroups
+ * * This matches _hideBodiesUnknownToFileSys from leoUI !
+*/
+public cleanupDetachedBodies(): void {
+    const w_openedBodiesKeys = Object.keys(this._openedBodiesInfo);
+    if (!w_openedBodiesKeys.length) {
+        return; // Return if not even one to remove.
+    }
+    const w_foundTabsGnx: string[] = [];
+    vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
+        p_tabGroup.tabs.forEach((p_tab) =&gt; {
+            if (p_tab.input &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+            ) {
+                w_foundTabsGnx.push(utils.leoUriToStr((p_tab.input as vscode.TabInputText).uri));
+            }
+        });
+    });
+
+    for (const openBody of Object.keys(this._openedBodiesInfo)) {
+        if (!w_foundTabsGnx.includes(openBody)) {
+            // Not an opened tab! remove it!
+            delete this._openedBodiesInfo[openBody];
+            delete this.openedBodiesVNodes[openBody];
+        }
+    }
+}
+
+</t>
+<t tx="felix.20240502002356.6">/**
+ * * Refresh the body pane for a particular gnx by telling vscode that the file from the Leo file provider has changed
+ * @param p_gnx Gnx of body associated with this virtual file, mostly Leo's selected node
+ */
+public fireRefreshFile(p_gnx: string): void {
+
+    this._setOpenedBodyTime(p_gnx);
+
+    if (!this.watchedBodiesGnx.includes(p_gnx)) {
+        // * Should only be called if vscode.window.tabGroups contained an opened detached body.
+        console.log('called fireRefreshFile on an unwatched DETACHED !', p_gnx);
+        return; // Document is not being watched (closed tab or non-visible non-dirty tab)
+    }
+
+    this._onDidChangeFileEmitter.fire([{
+        type: vscode.FileChangeType.Changed,
+        uri: utils.strToLeoDetachedUri(p_gnx)
+    }]);
+}
+
+</t>
+<t tx="felix.20240502002356.7">public watch(p_resource: vscode.Uri, p_options: { readonly recursive: boolean; readonly excludes: readonly string[] }): vscode.Disposable {
+    const w_gnx = utils.leoUriToStr(p_resource);
+    if (!this.watchedBodiesGnx.includes(w_gnx)) {
+        this.watchedBodiesGnx.push(w_gnx); // add gnx
+    }
+    // else already in list
+    return new vscode.Disposable(() =&gt; {
+        const w_position = this.watchedBodiesGnx.indexOf(w_gnx); // find and remove it
+        if (w_position &gt; -1) {
+            this.watchedBodiesGnx.splice(w_position, 1);
+            this.cleanupDetachedBodies(); // IF NOT EVEN AN EXISTING TAB (not just hidden)
+        }
+    });
+}
+
+</t>
+<t tx="felix.20240502002356.8">public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable&lt;vscode.FileStat&gt; {
+    if (this._leoIntegration.leoStates.fileOpenedReady) {
+        const w_gnx = utils.leoUriToStr(p_uri);
+
+        const w_commanders: Set&lt;string&gt; = new Set();
+        const w_detached: Set&lt;string&gt; = new Set(); // same whole gnx string as with setNewBodyUriTime
+
+        for (const p_tabGroup of vscode.window.tabGroups.all) {
+            for (const p_tab of p_tabGroup.tabs) {
+                if (p_tab.input &amp;&amp;
+                    (p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+                ) {
+                    // Found detached. 
+                    const [unused, id, gnx] = (p_tab.input as vscode.TabInputText).uri.path.split("/");
+                    w_commanders.add(id);
+                    w_detached.add(utils.leoUriToStr((p_tab.input as vscode.TabInputText).uri));
+                }
+            }
+        }
+
+        // w_commanders and w_detached are filled up!
+        if (p_uri.fsPath.length === 1) {
+            return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
+        }
+
+        const [unused, id, gnx] = p_uri.path.split("/");
+
+        if (id &amp;&amp; !gnx) {
+            return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
+            // SPECIAL CASE -----------------------------------------------
+        } else if (w_gnx === this._lastGnx &amp;&amp; this._openedBodiesInfo[this._lastGnx]) {
+            return {
+                type: vscode.FileType.File,
+                ctime: this._openedBodiesInfo[this._lastGnx].ctime,
+                mtime: this._openedBodiesInfo[this._lastGnx].mtime,
+                size: this._openedBodiesInfo[this._lastGnx].lastBodyLength!
+            };
+            // ------------------------------------------------------------
+        } else if (this._openedBodiesInfo[w_gnx]) {
+            const id = p_uri.path.split("/")[1];
+            const bodyGnx = p_uri.path.split("/")[2];
+
+            return this._leoIntegration.sendAction(
+                Constants.LEOBRIDGE.GET_BODY_LENGTH,
+                { "gnx": bodyGnx, "commanderId": id }
+            ).then((p_result) =&gt; {
+                return Promise.resolve(
+                    {
+                        type: vscode.FileType.File,
+                        ctime: this._openedBodiesInfo[w_gnx].ctime,
+                        mtime: this._openedBodiesInfo[w_gnx].mtime,
+                        size: p_result.len ? p_result.len : 0
+                    }
+                );
+            });
+
+            // let c: Commands;
+            // let w_v: ArchivedPosition | undefined;
+            // const id = p_uri.path.split("/")[1];
+            // for (const w_frame of g.app.windowList) {
+            //     if (w_frame.c.id.toString() === id) {
+            //         c = w_frame.c;
+            //         w_v = c.fileCommands.gnxDict[p_uri.path.split("/")[2]];
+            //         break;
+            //     }
+            // }
+            // if (w_v) {
+            //     return {
+            //         type: vscode.FileType.File,
+            //         ctime: this._openedBodiesInfo[w_gnx].ctime,
+            //         mtime: this._openedBodiesInfo[w_gnx].mtime,
+            //         size: Buffer.byteLength(w_v.b, 'utf8') // w_v.b.length
+            //     };
+            // } else {
+            //     console.warn('DETACHED BODY stat: not found!');
+            // }
+        } else {
+            //  should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+            // console.error('DETACHED asked for STAT about file NOT IN _openedBodiesGnx ');
+        }
+    }
+    // throw vscode.FileSystemError.FileNotFound();
+    // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+    return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: 0 };
+}
+
+</t>
+<t tx="felix.20240502002356.9">public async readFile(p_uri: vscode.Uri): Promise&lt;Uint8Array&gt; {
+    if (this._leoIntegration.leoStates.fileOpenedReady) {
+
+        if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
+            throw vscode.FileSystemError.FileIsADirectory();
+        } else {
+            const w_gnx = utils.leoUriToStr(p_uri);
+
+            // * should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+            // if (!this._openedBodiesInfo[w_gnx]) {
+            //     console.warn('DETACHED readFile: ERROR File not in _openedBodiesGnx! gnx: ', w_gnx);
+            // }
+            const id = p_uri.path.split("/")[1];
+            const bodyGnx = p_uri.path.split("/")[2];
+
+            // console.log('detached read id: ', id, ' bodyGNX', bodyGnx);
+            let w_buffer: Uint8Array;
+
+            // * GET FROM SERVER
+            const p_result = await this._leoIntegration.sendAction(
+                Constants.LEOBRIDGE.GET_BODY,
+                { "gnx": bodyGnx, "commanderId": id }
+            );
+
+            if (p_result.body) {
+                // console.log('back from read gnx: ', w_gnx, '   - read ok has body');
+
+                this._lastGnx = w_gnx;
+                this._lastBodyData = p_result.body;
+                if (this.openedBodiesVNodes[w_gnx]) {
+                    this.openedBodiesVNodes[w_gnx]._lastBodyData = p_result.body;
+                }
+                w_buffer = Buffer.from(p_result.body);
+                this._openedBodiesInfo[this._lastGnx].lastBodyLength = w_buffer.byteLength;
+
+            } else if (p_result.body === "") {
+                // console.log('back from read gnx: ', w_gnx, '  - read ok has empty body');
+
+                this._lastGnx = w_gnx;
+                this._lastBodyData = "";
+                if (this.openedBodiesVNodes[w_gnx]) {
+                    this.openedBodiesVNodes[w_gnx]._lastBodyData = '';
+                }
+                w_buffer = Buffer.from("");
+                this._openedBodiesInfo[this._lastGnx].lastBodyLength = w_buffer.byteLength;
+
+            } else {
+                this._leoIntegration.fullRefresh();
+
+                if (this._lastGnx === w_gnx) {
+                    // was last gnx of closed file about to be switched to new document selected
+                    w_buffer = Buffer.from(this._lastBodyData || "");
+                } else {
+                    // * should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                    //console.error("DETACHED ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
+
+                    //  throw vscode.FileSystemError.FileNotFound();
+                    // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                    w_buffer = Buffer.from("");
+                }
+            }
+
+            return w_buffer;
+
+            // let c: Commands;
+            // let w_v: ArchivedPosition | undefined;
+
+            // const id = p_uri.path.split("/")[1];
+            // for (const w_frame of g.app.windowList) {
+            //     if (w_frame.c.id.toString() === id) {
+            //         c = w_frame.c;
+            //         w_v = c.fileCommands.gnxDict[p_uri.path.split("/")[2]];
+            //         break;
+            //     }
+            // }
+
+            // if (w_v) {
+            //     this._errorRefreshFlag = false; // got body so reset possible flag!
+            //     this._lastGnx = w_gnx;
+            //     this._lastBodyData = w_v.b;
+            //     const w_buffer: Uint8Array = Buffer.from(this._lastBodyData);
+            //     return w_buffer;
+            // } else {
+            //     if (!this._errorRefreshFlag) {
+            //         this._leoIntegration.fullRefresh();
+            //     }
+            //     if (this._lastGnx === w_gnx) {
+            //         // was last gnx of closed file about to be switched to new document selected
+            //         return Buffer.from(this._lastBodyData);
+            //     }
+            //     console.error("DETACHED ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
+            //     return Buffer.from("");
+            // }
+        }
+
+
+
+
+
+    } else {
+        throw vscode.FileSystemError.FileNotFound();
+    }
+}
+
+</t>
+<t tx="felix.20240502210859.1">/**
+* Builds a 'Leo Detached Scheme' vscode.Uri from a gnx 
+* @param p_str leo node gnx strings are used to build Uri
+* @returns A vscode 'Uri' object
+*/
+export function strToLeoDetachedUri(p_str: string): vscode.Uri {
+    return vscode.Uri.parse(Constants.URI_SCHEME_DETACHED_HEADER + p_str);
+}
+
+</t>
+<t tx="felix.20240502214807.1">/**
+ * * Opens a detached body aside, and set focus in a body pane locked to its commander/gnx. 
+ * - Does not select the node in the outline.
+ * - If already opened aside in the same targeted column, just reveal.
+ * @param p is the position node to be opened aside
+ */
+public async openAside(p?: ArchivedPosition): Promise&lt;unknown&gt; {
+    // Those 'body panes' opened aside, (other than the main body pane), 
+    // stay opened until the node's gnx becomes invalid/deleted, or it's commander is closed.
+    await this.triggerBodySave(true);
+
+    let c_id = this.leoStates.leoCommanderId;
+    if (!p) {
+        p = this.lastSelectedNode!;
+    }
+    const detachedUri = utils.strToLeoDetachedUri(`${c_id}/${p.gnx}`);
+
+    // * Step 1 : Open the document
+    this._leoDetachedFileSystem.setNewBodyUriTime(detachedUri, p);
+    const w_openedDocument = await vscode.workspace.openTextDocument(detachedUri);
+    this.bodyDetachedTextDocument = w_openedDocument;
+
+    let q_bodyStates = this.sendAction(
+        Constants.LEOBRIDGE.GET_BODY_STATES,
+        utils.buildNodeCommand(p!)
+    );
+
+    const w_showOptions: vscode.TextDocumentShowOptions =
+    {
+        viewColumn: vscode.ViewColumn.Beside,
+        preserveFocus: this.config.treeKeepFocusWhenAside,
+        preview: false,
+    };
+    // * Actually Show the body pane document in a text editor
+    const q_showTextDocument = vscode.window.showTextDocument(
+        this.bodyDetachedTextDocument,
+        w_showOptions
+    );
+
+    q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
+        let w_language: string = p_bodyStates.language!;
+        let w_wrap: boolean = !!p_bodyStates.wrap;
+        let w_tabWidth: number | boolean = p_bodyStates.tabWidth || !!p_bodyStates.tabWidth;
+        let w_gnx: string | undefined = p_bodyStates.selection?.gnx; // ? To verify if better than w_openedDocumentGnx ?
+
+        // Replace language string if in 'exceptions' array
+        w_language = Constants.LEO_LANGUAGE_PREFIX +
+            (Constants.LANGUAGE_CODES[w_language] || w_language) +
+            (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
+
+        // Apply language if the selected node is still the same after all those events
+        if (!w_openedDocument.isClosed) {
+            // w_openedDocument still OPEN
+            this._setBodyLanguage(w_openedDocument, w_language);
+
+        }
+        return p_bodyStates;
+    });
+
+
+    Promise.all([q_bodyStates, q_showTextDocument]).then(
+        (p_values: [LeoBridgePackage, vscode.TextEditor]) =&gt; {
+
+            // * Set text selection range
+            const w_resultBodyStates = p_values[0];
+            const w_bodyTextEditor = p_values[1];
+            if (!w_resultBodyStates.selection) {
+                console.log("no selection in returned package from get_body_states");
+            }
+
+            const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
+
+            // Cursor position and selection range
+            const w_activeRow: number = w_leoBodySel.insert.line;
+            const w_activeCol: number = w_leoBodySel.insert.col;
+            let w_anchorLine: number = w_leoBodySel.start.line;
+            let w_anchorCharacter: number = w_leoBodySel.start.col;
+
+            if (w_activeRow === w_anchorLine &amp;&amp; w_activeCol === w_anchorCharacter) {
+                // Active insertion same as start selection, so use the other ones
+                w_anchorLine = w_leoBodySel.end.line;
+                w_anchorCharacter = w_leoBodySel.end.col;
+            }
+
+            const w_selection = new vscode.Selection(
+                w_anchorLine,
+                w_anchorCharacter,
+                w_activeRow,
+                w_activeCol
+            );
+
+            let w_scrollRange: vscode.Range | undefined;
+
+            // Build scroll position from selection range.
+            w_scrollRange = new vscode.Range(
+                w_activeRow,
+                w_activeCol,
+                w_activeRow,
+                w_activeCol
+            );
+
+            if (w_bodyTextEditor) {
+                // this._revealType = RevealType.NoReveal; // ! IN CASE THIS WAS STILL UP FROM SHOW_OUTLINE
+
+                w_bodyTextEditor.selection = w_selection; // set cursor insertion point &amp; selection range
+                if (!w_scrollRange) {
+                    w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
+                }
+
+                if (this._refreshType.scroll) {
+                    this._refreshType.scroll = false;
+                    // Set scroll approximation
+                    w_bodyTextEditor.revealRange(w_scrollRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+                }
+
+            } else {
+                console.log("no selection in returned package from showTextDocument");
+            }
+
+        }
+    );
+    return q_showTextDocument;
+}
+
+</t>
+<t tx="felix.20240502215719.1">/**
+ * * Closes all visible text editors that have Leo filesystem scheme (that are not dirty)
+ */
+export async function closeLeoTextEditors(): Promise&lt;unknown&gt; {
+
+    const w_foundTabs: vscode.Tab[] = [];
+
+    vscode.window.tabGroups.all.forEach((p_tabGroup) =&gt; {
+        p_tabGroup.tabs.forEach((p_tab) =&gt; {
+            if (p_tab.input &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                ((p_tab.input as vscode.TabInputText).uri.scheme).startsWith(Constants.URI_LEO_SCHEME) &amp;&amp;
+                !p_tab.isDirty
+            ) {
+                w_foundTabs.push(p_tab);
+            }
+        });
+    });
+
+    let q_closedTabs;
+    if (w_foundTabs.length) {
+        q_closedTabs = vscode.window.tabGroups.close(w_foundTabs, true);
+        w_foundTabs.forEach((p_tab) =&gt; {
+            if (p_tab.input) {
+                vscode.commands.executeCommand(
+                    'vscode.removeFromRecentlyOpened',
+                    (p_tab.input as vscode.TabInputText).uri
+                );
+                // Delete to close all other body tabs.
+                // (w_oldUri will be deleted last below)
+                const w_edit = new vscode.WorkspaceEdit();
+                w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
+                vscode.workspace.applyEdit(w_edit);
+            }
+        });
+    } else {
+        q_closedTabs = Promise.resolve(true);
+    }
+    return q_closedTabs;
+}
+
+</t>
+<t tx="felix.20240502230536.1">/**
+ * React to the closing of 'tabs' via
+ * events from vscode.window.tabGroups
+ */
+public _onTabGroupsChanged(p_event: vscode.TabGroupChangeEvent): void {
+    this.checkClosedTabs(); // debounced
+}
+
+</t>
+<t tx="felix.20240502230541.1">/**
+ * React to the closing of 'tabgroups' via
+ * events from vscode.window.tabGroups
+ */
+public _onTabsChanged(p_event: vscode.TabChangeEvent): void {
+    this.checkClosedTabs(); // debounced
+}
+
+</t>
+<t tx="felix.20240502230658.1">private _refreshDetachedBodies() {
+    //  Refresh detached bodies as needed IF SAME COMMANDER, AND CLOSE : 
+    if (!this.leoStates.fileOpenedReady) {
+        this._refreshType.excludeDetached = false;
+        return;
+    }
+
+    const c_id = this.leoStates.leoCommanderId;
+    const q_foundResults: Array&lt;Promise&lt;LeoBridgePackage&gt;&gt; = [];
+    const w_sentFoundTabs: Array&lt;vscode.Tab&gt; = [];
+    const w_sentFoundUri: Array&lt;vscode.Uri&gt; = [];
+    let w_hasDetached = false;
+
+    for (const p_tabGroup of vscode.window.tabGroups.all) {
+        for (const p_tab of p_tabGroup.tabs) {
+            if (p_tab.input &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_DETACHED_SCHEME
+            ) {
+                const w_uri = (p_tab.input as vscode.TabInputText).uri;
+                const [unused, id, gnx] = w_uri.path.split("/");
+
+                if (id === c_id) {
+                    w_hasDetached = true;
+                }
+
+                // Refresh detached bodies if same commander  // ! ALSO FIRE REFRESH !
+                if (!this._refreshType.excludeDetached &amp;&amp; this._refreshType.body &amp;&amp; id === c_id) {
+                    // console.log('fire refresh DETACHED in _refreshDetachedBodies');
+                    this._leoDetachedFileSystem.fireRefreshFile(`${id}/${gnx}`);
+                }
+
+                // if refresh tree is true, validate that opened detached of same commander still valid and close as needed.
+                if (this._refreshType.tree &amp;&amp; id === c_id &amp;&amp; !this._refreshType.documents) {
+                    const w_foundVnode = this._leoDetachedFileSystem.openedBodiesVNodes[utils.leoUriToStr(w_uri)];
+                    if (w_foundVnode) {
+                        w_sentFoundTabs.push(p_tab);
+                        w_sentFoundUri.push(w_uri);
+                        q_foundResults.push(
+                            this.sendAction(
+                                Constants.LEOBRIDGE.GET_IS_VALID,
+                                utils.buildNodeCommand(w_foundVnode) // No need to specify commander
+                            )
+                        );
+                    }
+                } else if (this._refreshType.documents) {
+                    const w_foundVnode = this._leoDetachedFileSystem.openedBodiesVNodes[utils.leoUriToStr(w_uri)];
+                    if (w_foundVnode) {
+                        const param = utils.buildNodeCommand(w_foundVnode);
+                        param["commanderId"] = id;
+                        w_sentFoundTabs.push(p_tab);
+                        w_sentFoundUri.push(w_uri);
+                        q_foundResults.push(
+                            this.sendAction(
+                                Constants.LEOBRIDGE.GET_IS_VALID,
+                                param
+                            )
+                        );
+                    }
+
+                }
+
+            }
+
+        }
+    }
+    if (w_hasDetached &amp;&amp; this._refreshType.tree) {
+        this.refreshCommanderDetachedLanguage(); // May have moved outside of language specific outline
+    }
+    this._refreshType.excludeDetached = false;
+
+    if (q_foundResults.length) {
+
+        return Promise.all(q_foundResults).then((p_results) =&gt; {
+            const w_foundTabs: Set&lt;vscode.Tab&gt; = new Set();
+            const w_foundUri: Set&lt;vscode.Uri&gt; = new Set();
+
+            let w_resultIndex = 0;
+            for (const w_res of p_results) {
+                if (!w_res.valid) {
+                    w_foundTabs.add(w_sentFoundTabs[w_resultIndex]);
+                    w_foundUri.add(w_sentFoundUri[w_resultIndex]);
+                }
+                w_resultIndex = w_resultIndex + 1;
+            }
+
+            if (w_foundTabs.size) {
+                void vscode.window.tabGroups.close([...w_foundTabs], true);
+                for (const w_uri of w_foundUri) {
+                    void vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_uri);
+                }
+            }
+        });
+    }
+
+}
+
+</t>
+<t tx="felix.20240502230809.1">private _checkClosedTabs(): void {
+    // check if selected body still has opened textEditors
+    let bodyCount = 0;
+    for (const p_tabGroup of vscode.window.tabGroups.all) {
+        for (const p_tab of p_tabGroup.tabs) {
+            if (p_tab.input &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                ((p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME)
+            ) {
+                // a normal body (non detached found)
+                bodyCount++;
+                break;
+            }
+        }
+        if (bodyCount) {
+            break;
+        }
+    }
+    if (!bodyCount) {
+        // Make sure no more saving over possible detached with same gnx
+        this._bodyLastChangedDocument = undefined;
+        this._bodyLastChangedDocumentSaved = false;
+    }
+    this._leoFileSystem.cleanupBodies();
+    this._leoDetachedFileSystem.cleanupDetachedBodies();
+}
+
+</t>
+<t tx="felix.20240502230852.1">/**
+ * Debounced refresh language for all detached bodies of active commander
+ */
+private _refreshCommanderDetachedLanguage(): void {
+
+    const c_id = this.leoStates.leoCommanderId;
+    const w_documents: vscode.TextDocument[] = [];
+    const w_uris: string[] = [];
+
+    for (const p_tabGroup of vscode.window.tabGroups.all) {
+        for (const p_tab of p_tabGroup.tabs) {
+            if (p_tab.input &amp;&amp;
+                (p_tab.input as vscode.TabInputText).uri &amp;&amp;
+                ((p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_DETACHED_SCHEME)
+            ) {
+                const [unused, id, gnx] = (p_tab.input as vscode.TabInputText).uri.path.split("/");
+                if (id === c_id) {
+                    // From same commander
+                    if (!w_uris.includes((p_tab.input as vscode.TabInputText).uri.toString())) {
+                        w_uris.push((p_tab.input as vscode.TabInputText).uri.toString());
+                    }
+
+                }
+            }
+        }
+    }
+
+    for (const w_doc of vscode.workspace.textDocuments) {
+        if (!w_doc.isClosed &amp;&amp; w_uris.includes(w_doc.uri.toString())) {
+            w_documents.push(w_doc);
+        }
+    }
+
+    for (const w_doc of w_documents) {
+        const w_foundVnode = this._leoDetachedFileSystem.openedBodiesVNodes[utils.leoUriToStr(w_doc.uri)];
+        const id = w_doc.uri.path.split("/")[1];
+        if (w_foundVnode) {
+            void this.sendAction(
+                Constants.LEOBRIDGE.GET_BODY_STATES,
+                { gnx: w_foundVnode.gnx, commanderId: id }
+            ).then((p_bodyStates: LeoBridgePackage) =&gt; {
+                let w_language: string = p_bodyStates.language!;
+                let w_wrap: boolean = !!p_bodyStates.wrap;
+                let w_tabWidth: number | boolean = p_bodyStates.tabWidth || !!p_bodyStates.tabWidth;
+
+                // Replace language string if in 'exceptions' array
+                w_language = Constants.LEO_LANGUAGE_PREFIX +
+                    (Constants.LANGUAGE_CODES[w_language] || w_language) +
+                    (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
+
+                // Apply language if the selected node is still the same after all those events
+                if (!w_doc.isClosed) {
+                    // w_doc still OPEN
+                    this._setBodyLanguage(w_doc, w_language);
+
+                }
+
+            });
+        } else {
+            console.log('DETACHED VNODE not found when resetting language');
+        }
+    }
+
+}
+
+</t>
+<t tx="felix.20240505142143.1">/**
+ * * Looks for given position's coloring language, taking account of '@killcolor', etc.
+ */
+private async _getBodyLanguage(p: ArchivedPosition, c_id?: string): Promise&lt;string&gt; {
+    if (!p) {
+        p = this.lastSelectedNode!;
+    }
+    const param = utils.buildNodeCommand(p);
+    if (c_id) {
+        param["commanderId"] = c_id;
+    }
+    return this.sendAction(
+        Constants.LEOBRIDGE.GET_BODY_STATES,
+        param
+    ).then((p_bodyStates: LeoBridgePackage) =&gt; {
+        let w_language = p_bodyStates.language;
+        let w_wrap: boolean = !!p_bodyStates.wrap;
+
+        if (w_language) {
+            // Replace language string if in 'exceptions' array
+            w_language = Constants.LEO_LANGUAGE_PREFIX +
+                (Constants.LANGUAGE_CODES[w_language] || w_language) +
+                (w_wrap ? Constants.LEO_WRAP_SUFFIX : "");
+
+            return w_language;
+        } else {
+            return "";
+        }
+    });
+}
+
+</t>
+<t tx="felix.20240523231957.1">/**
+ * Close all tabs that are not part of their filesystems
+ * * This matches cleanupDetachedBodies from leoBodyDetached !
+ */
+private _hideBodiesUnknownToFileSys(p_editors: readonly vscode.TextEditor[]): void {
+    p_editors.forEach((p_editor) =&gt; {
+        if (p_editor) {
+            switch (p_editor.document.uri.scheme) {
+                case Constants.URI_LEO_SCHEME:
+                    if (this.bodyUri.fsPath !== p_editor.document.uri.fsPath) {
+                        void this._hideDeleteBody(p_editor);
+                    }
+                    this._checkPreviewMode(p_editor);
+                    break;
+
+                case Constants.URI_LEO_DETACHED_SCHEME:
+                    const w_gnx = utils.leoUriToStr(p_editor.document.uri);
+                    //if (!this._leoDetachedFileSystem.watchedBodiesGnx.includes(w_gnx)) {
+                    if (!this._leoDetachedFileSystem.openedBodiesVNodes[w_gnx]) {
+                        // unknown to the detached filesystem
+                        void this._hideDeleteBody(p_editor);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+
+        }
+
+    });
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
@@ -22020,7 +23325,7 @@ div.col-nav {
                 &lt;input id="treeKeepFocusWhenAside" name="treeKeepFocusWhenAside" type="checkbox" data-setting /&gt;
                 &lt;label for="treeKeepFocusWhenAside"&gt;Keep focus when opening on the side&lt;/label&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Keep focus in the outline when opening a body pane on the side&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Keep focus in the outline when opening a detached body pane on the side&lt;/span&gt;
             &lt;/div&gt;
 
             &lt;div class="break"&gt;&lt;/div&gt;
@@ -22075,27 +23380,6 @@ div.col-nav {
           &lt;img class="image__preview" src="#{root}/resources/treeInExplorerDisabled.png" /&gt;
           &lt;img class="image__preview--overlay hidden" src="#{root}/resources/treeInExplorerEnabled.png"
             data-visibility="treeInExplorer" /&gt;
-        &lt;/div&gt;
-      &lt;/section&gt;
-
-      &lt;section id="show-open-aside" class="section--settings"&gt;
-        &lt;div class="section__content"&gt;
-          &lt;div class="section__header"&gt;
-            &lt;div class="setting__input setting__input--big"&gt;
-              &lt;input id="showOpenAside" name="showOpenAside" type="checkbox" data-setting /&gt;
-              &lt;label for="showOpenAside"&gt;Show&amp;nbsp;'Open&amp;nbsp;to&amp;nbsp;the&amp;nbsp;Side'&lt;/label&gt;
-            &lt;/div&gt;
-            &lt;p class="section__header-hint"&gt;
-              Adds the command in the node's context menu
-            &lt;/p&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div class="break"&gt;&lt;/div&gt;
-        &lt;!-- Make sure to break line after this short title. --&gt;
-        &lt;div class="section__preview"&gt;
-          &lt;img class="image__preview" src="#{root}/resources/showOpenAsideDisabled.png" /&gt;
-          &lt;img class="image__preview--overlay hidden" src="#{root}/resources/showOpenAsideEnabled.png"
-            data-visibility="showOpenAside" /&gt;
         &lt;/div&gt;
       &lt;/section&gt;
 

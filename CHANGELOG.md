@@ -2,7 +2,8 @@
 
 ## 1.0.21
 
-- ...
+- Fixed icons disabled appearance by changing the graphic format from SVG to a weoff2 font.
+- Changed behavior of the 'Open Aside' command: it now  opens 'detached' body panes, which allows text editing for a fixed gnx.
 
 ## 1.0.20
 

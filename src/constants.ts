@@ -38,11 +38,13 @@ export class Constants {
     public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
     public static LEO_WRAP_SUFFIX: string = ".wrap"; // all lowercase.
 
-    public static URI_LEO_SCHEME: string = "leo";
+    public static URI_LEO_SCHEME: string = "leointeg";
+    public static URI_LEO_DETACHED_SCHEME: string = "leointegDetached";
     public static URI_FILE_SCHEME: string = "file";
-    public static URI_SCHEME_HEADER: string = "leo:/";
     public static URI_UNTITLED_SCHEME: string = 'untitled';
-    public static OUTPUT_CHANNEL_LANGUAGE = 'Log';
+    public static OUTPUT_CHANNEL_LANGUAGE: string = 'Log';
+    public static URI_SCHEME_HEADER: string = "leointeg:/";
+    public static URI_SCHEME_DETACHED_HEADER: string = "leointegDetached:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
     public static UNTITLED_FILE_NAME: string = "untitled";
     public static RECENT_FILES_KEY: string = "leoRecentFiles";
@@ -60,7 +62,8 @@ export class Constants {
 
     public static ERROR_PACKAGE_ID: number = 0;
     public static STARTING_PACKAGE_ID: number = 1;
-    // public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
+    public static CLEANUP_DEBOUNCE_DELAY: number = 40;
+    public static DETACHED_LANGUAGE_DELAY: number = 300;
     public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
     public static BUTTONS_DEBOUNCE_DELAY: number = 80;
     public static UNDOS_DEBOUNCE_DELAY: number = 180;
@@ -103,7 +106,7 @@ export class Constants {
     public static MIN_SERVER_VERSION_NUMBER = {
         major: 1,
         minor: 0,
-        patch: 10,
+        patch: 11,
     };
 
     /**
@@ -267,7 +270,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.8 is recommended.",
+        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.8-B1 is recommended.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language coloring not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language coloring not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
@@ -352,13 +355,8 @@ export class Constants {
         ACTIVITY_VIEW_SHORTCUT: "activityViewShortcut",
         GO_ANYWHERE_SHORTCUT: "goAnywhereShortcut",
 
-        // STATUSBAR_STRING: "statusBarString",
-        // STATUSBAR_COLOR: "statusBarColor",
-
         TREE_IN_EXPLORER: "treeInExplorer",
-        SHOW_OPEN_ASIDE: "showOpenAside",
         SHOW_EDIT: "showEditOnNodes",
-        // SHOW_ARROWS: "showArrowsOnNodes",
         SHOW_ADD: "showAddOnNodes",
         SHOW_MARK: "showMarkOnNodes",
         SHOW_CLONE: "showCloneOnNodes",
@@ -405,10 +403,7 @@ export class Constants {
         GO_ANYWHERE_SHORTCUT: true,
 
         SHOW_UNL_ON_STATUSBAR: true,
-        // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
-        // STATUSBAR_COLOR: "fb7c47",
         TREE_IN_EXPLORER: true,
-        SHOW_OPEN_ASIDE: true,
         SHOW_EDIT: true,
         SHOW_ARROWS: false,
         SHOW_ADD: false,
@@ -606,6 +601,7 @@ export class Constants {
         APPLY_CONFIG: "!set_config", // "applyConfig",
         ASK_RESULT: "!set_ask_result", // "askResult",
         // * GUI
+        GET_IS_VALID: "!get_is_valid",
         GET_ALL_GNX: "!get_all_gnx", // "getAllGnx",
         GET_BODY_LENGTH: "!get_body_length", // "getBodyLength",
         GET_BODY_STATES: "!get_body_states", // "getBodyStates",
@@ -735,7 +731,6 @@ export class Constants {
         FIND_ALL: "!find_all",
         FIND_NEXT: "!find_next",
         FIND_PREVIOUS: "!find_previous",
-        FIND_VAR: "!find_var",
         FIND_DEF: "!find_def",
         REPLACE: "!replace",
         REPLACE_THEN_FIND: "!replace_then_find",
@@ -799,7 +794,7 @@ export class Constants {
         TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
-        OPEN_ASIDE: Constants.NAME + ".openAside",
+        OPEN_ASIDE: Constants.NAME + ".openAside", // Opens aside a body pane locked to this gnx & commander.
         // * Goto operations that always finish with focus in outline
         PAGE_UP: Constants.NAME + ".pageUp",
         PAGE_DOWN: Constants.NAME + ".pageDown",
@@ -958,7 +953,6 @@ export class Constants {
         FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
         FIND_PREVIOUS: Constants.NAME + ".findPrevious",
         FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
-        FIND_VAR: Constants.NAME + ".findVar",
         FIND_DEF: Constants.NAME + ".findDef",
         REPLACE: Constants.NAME + ".replace",
         REPLACE_FO: Constants.NAME + ".replaceFromOutline",
@@ -1147,7 +1141,7 @@ export class Constants {
         'word-search-forward': Constants.COMMANDS.WORD_SEARCH,
         'word-search-backward': Constants.COMMANDS.WORD_SEARCH_BACKWARD,
 
-        'find-var': Constants.COMMANDS.FIND_VAR,
+        'find-var': Constants.COMMANDS.FIND_DEF, // find-var overriden with find-def just in case.
         'find-def': Constants.COMMANDS.FIND_DEF,
         'replace': Constants.COMMANDS.REPLACE,
         'replace-all': Constants.COMMANDS.REPLACE_ALL,

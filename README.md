@@ -1,6 +1,6 @@
 # ![Leo Editor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
 
-_If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it. Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review") or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub")_
+_If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it. Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review") or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub"). (For a JavaScript implementation of the Leo Editor that runs in both VSCode and VSCode for the web, see the [**LeoJS**](https://github.com/boltex/leojs) extension)_
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
@@ -15,7 +15,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Requirements
 
-- Leo Editor 6.7.8 or later\
+- Leo Editor 6.7.9 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
@@ -26,6 +26,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 ## Features
 
 - UI controls such as a **Leo Outline** in the explorer view, and as a standalone sidebar, **body pane**, **opened documents selector** along with a **Log Window** [output channel](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- **Detached Body Panes**, independent of the selected node can be opened with the 'Open Aside' command.
 - Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
@@ -73,24 +74,28 @@ Listed here are the most useful commands and their keyboard shortcuts.
 | Move Outline Left  | `Ctrl + L` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Shift [+ Alt] + Left`  |
 | Move Outline Right | `Ctrl + R` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Shift [+ Alt] + Right` |
 
-_Move-Outline commands need the 'Alt' key modifier only when focus is on body pane._
+_Move-Outline commands need the `Alt` key modifier only when focus is on body pane._
 
-| Common Operations   |                                                                                                                           |
-| :------------------ | :------------------------------------------------------------------------------------------------------------------------ |
-| Toggle Outline/Body | `Ctrl + T`                                                                                                                |
-| Focus on Body       | `Tab` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Enter` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Alt + D` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Ctrl + G` |
-| Focus on Outline    | `Alt + T`                                                                                                                 |
-| Contract All        | `Alt + -`                                                                                                                 |
-| Sort Siblings       | `Alt + A`                                                                                                                 |
-| Start Search        | `Ctrl + F`                                                                                                                |
-| Find Next           | `F3`                                                                                                                      |
-| Find Previous       | `F2`                                                                                                                      |
-| Replace             | `Ctrl + =`                                                                                                                |
-| Replace then Find   | `Ctrl + -`                                                                                                                |
-| Extract             | `Ctrl + Shift + D`                                                                                                        |
-| Extract Names       | `Ctrl + Shift + N`                                                                                                        |
-| Execute Script      | `Ctrl + B`                                                                                                                |
-| Minibuffer Palette  | `Alt + X`                                                                                                                 |
+| Changing Focus                  |                                                   |
+| :------------------------------ | :------------------------------------------------ |
+| Toggle Outline/Body             | `Ctrl + T`                                        |
+| Focus on Outline                | `Alt + T`                                         |
+| Focus on Body (in any pane)     | `Alt + D` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Ctrl + G` |
+| Focus on Body (in Outline pane) | `Tab` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Enter`        |
+
+| Common Operations  |                    |
+| :----------------- | :----------------- |
+| Contract All       | `Alt + -`          |
+| Sort Siblings      | `Alt + A`          |
+| Start Search       | `Ctrl + F`         |
+| Find Next          | `F3`               |
+| Find Previous      | `F2`               |
+| Replace            | `Ctrl + =`         |
+| Replace then Find  | `Ctrl + -`         |
+| Extract            | `Ctrl + Shift + D` |
+| Extract Names      | `Ctrl + Shift + N` |
+| Execute Script     | `Ctrl + B`         |
+| Minibuffer Palette | `Alt + X`          |
 
 | Tree Navigation          |                                                              |
 | :----------------------- | :----------------------------------------------------------- |
@@ -103,7 +108,7 @@ _Move-Outline commands need the 'Alt' key modifier only when focus is on body pa
 | Browse Tree              | `Arrow Keys` &nbsp;&nbsp;_or_&nbsp;&nbsp; `Alt + Arrow Keys` |
 | Go To Global Line        | `Alt + G`                                                    |
 
-_With the **'Leo Tree Browsing'** setting enabled by default, the arrows, home, end, pageUp/Down keys will change the outline's selection directly._
+_With the **'Leo Tree Browsing'** setting enabled by default, the arrows, home, end, pageUp/Down keys will change the outline's selection directly. Using tree navigation shortcuts from the body pane (with the `Alt` key modifier) will place focus in the outline._
 
 | File Commands       |                    |
 | :------------------ | :----------------- |
@@ -239,7 +244,7 @@ for more information.
 ### Keybindings Conflicts Resolution
 
 If you have a keybinding conflict for a command that you would like **not** to be resolved by Leo when the focus is on the body pane,
-add **`&& resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
+add **`&& resourceScheme != 'leointeg'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Move Outline Keyboard Commands
 

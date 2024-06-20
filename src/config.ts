@@ -21,12 +21,9 @@ export class Config implements ConfigMembers {
     public goAnywhereShortcut: boolean = Constants.CONFIG_DEFAULTS.GO_ANYWHERE_SHORTCUT;
 
     public showUnlOnStatusBar: boolean = Constants.CONFIG_DEFAULTS.SHOW_UNL_ON_STATUSBAR;
-    // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
-    // public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
-    public showOpenAside: boolean = Constants.CONFIG_DEFAULTS.SHOW_OPEN_ASIDE;
     public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
-    // public showArrowsOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ARROWS;
+
     public showAddOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ADD;
     public showMarkOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK;
     public showCloneOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLONE;
@@ -84,12 +81,8 @@ export class Config implements ConfigMembers {
             goAnywhereShortcut: this.goAnywhereShortcut,
 
             showUnlOnStatusBar: this.showUnlOnStatusBar,
-            // statusBarString: this.statusBarString,
-            // statusBarColor: this.statusBarColor,
             treeInExplorer: this.treeInExplorer,
-            showOpenAside: this.showOpenAside,
             showEditOnNodes: this.showEditOnNodes,
-            // showArrowsOnNodes: this.showArrowsOnNodes,
             showAddOnNodes: this.showAddOnNodes,
             showMarkOnNodes: this.showMarkOnNodes,
             showCloneOnNodes: this.showCloneOnNodes,
@@ -270,7 +263,7 @@ export class Config implements ConfigMembers {
             w_totalConfigName += langWrap;
             // w_languageSettings = vscode.workspace.getConfiguration(langWrap);
         }
-        w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName);
+        w_languageSettings = vscode.workspace.getConfiguration(w_totalConfigName, null);
 
         if (!w_languageSettings || !w_languageSettings['editor.wordWrap'] || w_languageSettings['editor.wordWrap'] !== 'on') {
             w_missing = true;
@@ -327,7 +320,6 @@ export class Config implements ConfigMembers {
             //     this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
             // }
             this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
-            this.showOpenAside = GET(NAME).get(NAMES.SHOW_OPEN_ASIDE, DEFAULTS.SHOW_OPEN_ASIDE);
             this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
             this.showAddOnNodes = GET(NAME).get(NAMES.SHOW_ADD, DEFAULTS.SHOW_ADD);
             this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
