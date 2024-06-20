@@ -13751,6 +13751,12 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
+  "command": "leointeg.findQuick",
+  "key": "ctrl+shift+f",
+  "mac": "cmd+shift+f",
+  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+},
+{
   "command": "leointeg.findNextFromOutline",
   "key": "f3",
   "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
@@ -16169,6 +16175,13 @@ public getTextFromClipboard(): string {
             p_event.preventDefault();
             p_event.stopPropagation();
             focusOnField('findText');
+            return;
+        }
+        // Detect CTRL+SHIFT+F
+        if (p_event.ctrlKey &amp;&amp; p_event.shiftKey &amp;&amp; p_event.keyCode === 70) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            focusOnField('navText');
             return;
         }
 

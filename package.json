@@ -4384,6 +4384,12 @@
         "when": "leoEditHeadline || leoTreeOpened && sideBarFocus && !editorFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leointeg"
       },
       {
+        "command": "leointeg.findQuick",
+        "key": "ctrl+shift+f",
+        "mac": "cmd+shift+f",
+        "when": "leoEditHeadline || leoTreeOpened && sideBarFocus && !editorFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leointeg"
+      },
+      {
         "command": "leointeg.findNextFromOutline",
         "key": "f3",
         "when": "leoEditHeadline || leoFindFocus || leoTreeOpened && !editorTextFocus && focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
