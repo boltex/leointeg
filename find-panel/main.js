@@ -181,7 +181,7 @@
         findReplaceInputIds.forEach((p_inputId) => {
             // @ts-expect-error
             document.getElementById(p_inputId).value = p_settings[p_inputId];
-            searchSettings[p_inputId] = p_settings[p_inputId];
+            searchSettings[p_inputId] = p_settings[p_inputId] === '<find pattern here>' ? '' : p_settings[p_inputId];
         });
         checkboxIds.forEach((p_inputId) => {
             // @ts-expect-error

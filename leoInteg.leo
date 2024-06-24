@@ -14564,6 +14564,9 @@ public gotoGlobalLine(p_lineNumber?: number): void {
  * * Overridden 'good' minibuffer commands
  */
 public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+
+    "close-window": Constants.COMMANDS.CLOSE_FILE,
+
     "find-quick": Constants.COMMANDS.FIND_QUICK,
     "find-quick-selected": Constants.COMMANDS.FIND_QUICK,
 
@@ -14686,7 +14689,6 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'change-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
     'replace-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
     'show-find-options': Constants.COMMANDS.START_SEARCH,
-
 
     'set-find-everywhere': Constants.COMMANDS.SET_FIND_EVERYWHERE_OPTION,
     'set-find-node-only': Constants.COMMANDS.SET_FIND_NODE_ONLY_OPTION,
@@ -16290,7 +16292,7 @@ public getTextFromClipboard(): string {
         findReplaceInputIds.forEach((p_inputId) =&gt; {
             // @ts-expect-error
             document.getElementById(p_inputId).value = p_settings[p_inputId];
-            searchSettings[p_inputId] = p_settings[p_inputId];
+            searchSettings[p_inputId] = p_settings[p_inputId] === '&lt;find pattern here&gt;' ? '' : p_settings[p_inputId];
         });
         checkboxIds.forEach((p_inputId) =&gt; {
             // @ts-expect-error
@@ -17221,6 +17223,8 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 
 </t>
 <t tx="felix.20220321211021.1">public static addMinibufferCommands: { label: string, detail: string }[] = [
+    { "label": "close-window", "detail": "Close the Leo window, prompting to save it if it has been changed." },
+
     { "label": "find-quick", "detail": "Opens the Nav tab." },
     { "label": "find-quick-selected", "detail": "Opens the Nav tab with the selected text as the search string." },
 
