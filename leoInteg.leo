@@ -9559,22 +9559,46 @@ private _removeLastFile(p_file: string): Thenable&lt;void&gt; {
  * @returns A promise that resolves when the a file is finally opened, rejected otherwise
  */
 public async showRecentLeoFiles(): Promise&lt;LeoBridgePackage | undefined&gt; {
-    // TODO showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO
-    // console.log("TODO : showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO");
+
     const w_recentFiles: string[] =
         this._context.workspaceState.get(Constants.RECENT_FILES_KEY) || [];
     let q_chooseFile: Thenable&lt;string | undefined&gt;;
-    if (w_recentFiles.length) {
-        q_chooseFile = vscode.window.showQuickPick(w_recentFiles, {
+
+    // Remove duplicates after capitalizing starting drive letters. (on windows) 
+    const normalizedPaths = w_recentFiles.map((filePath: string): string =&gt; {
+        if (filePath.length &gt; 1 &amp;&amp; filePath[1] === ':') {
+            // Check if the first character is a letter
+            if (filePath[0] &gt;= 'a' &amp;&amp; filePath[0] &lt;= 'z') {
+                // Convert the first character to uppercase
+                return filePath[0].toUpperCase() + filePath.slice(1);
+            }
+        }
+        return filePath; // Return the original path if no changes are needed
+    }
+
+    );
+    const uniquePaths = Array.from(new Set(normalizedPaths));
+
+    if (uniquePaths.length) {
+        q_chooseFile = vscode.window.showQuickPick(uniquePaths, {
             placeHolder: Constants.USER_MESSAGES.OPEN_RECENT_FILE,
         });
     } else {
         // No file to list
         return Promise.resolve(undefined);
     }
+
     const w_result = await q_chooseFile;
     if (w_result) {
-        return this.openLeoFile(vscode.Uri.file(w_result));
+        const fileUri = vscode.Uri.file(w_result);
+        if (fs.existsSync(fileUri.fsPath)) {
+            return this.openLeoFile(vscode.Uri.file(w_result));
+        } else {
+            vscode.window.showInformationMessage('File does not exist: ' + fileUri.fsPath);
+            // Remove from recent list!
+            this._removeRecentFile(w_result);
+            return Promise.resolve(undefined);
+        }
     } else {
         // Canceled
         return Promise.resolve(undefined);
@@ -12704,6 +12728,14 @@ public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
  */
 export function addFileToWorkspace(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable&lt;void&gt; {
     // Just push that string into the context.workspaceState.&lt;something&gt; array
+    // First, if on windows and a drive letter starts the string, make sure its uppercase.
+    if (p_file.length &gt; 1 &amp;&amp; p_file[1] === ':') {
+        // Check if the first character is a letter
+        if (p_file[0] &gt;= 'a' &amp;&amp; p_file[0] &lt;= 'z') {
+            // Convert the first character to uppercase
+            p_file = p_file[0].toUpperCase() + p_file.slice(1);
+        }
+    }
     const w_contextEntry: string[] = p_context.workspaceState.get(p_key) || [];
     if (w_contextEntry) {
         if (!w_contextEntry.includes(p_file)) {
@@ -12728,10 +12760,30 @@ export function addFileToWorkspace(p_context: vscode.ExtensionContext, p_file: s
  * @returns A promise that resolves when the workspace storage modification is done
   */
 export function removeFileFromWorkspace(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable&lt;void&gt; {
+    let alternate = ""; // An alternate spelling if startgin with a letter and colon
+    let modified = false;
+    // First, if on windows and a drive letter starts the string, make sure its uppercase.
+    if (p_file.length &gt; 1 &amp;&amp; p_file[1] === ':') {
+        // Check if the first character is a letter
+        if (p_file[0] &gt;= 'a' &amp;&amp; p_file[0] &lt;= 'z') {
+            // Convert the first character to uppercase
+            alternate = p_file[0].toUpperCase() + p_file.slice(1);
+        } else if (p_file[0] &gt;= 'A' &amp;&amp; p_file[0] &lt;= 'Z') {
+            // Convert the first character to lowercase since it was already uppercase
+            alternate = p_file[0].toLowerCase() + p_file.slice(1);
+        }
+    }
     // Check if exist in context.workspaceState.&lt;something&gt; and remove if found
     const w_files: string[] = p_context.workspaceState.get(p_key) || [];
     if (w_files &amp;&amp; w_files.includes(p_file)) {
         w_files.splice(w_files.indexOf(p_file), 1); // Splice and update
+        modified = true;
+    }
+    if (alternate &amp;&amp; w_files &amp;&amp; w_files.includes(alternate)) {
+        w_files.splice(w_files.indexOf(alternate), 1); // Splice and update if letter and colon
+        modified = true;
+    }
+    if (modified) {
         return p_context.workspaceState.update(p_key, w_files);
     }
     return Promise.resolve(); // not even in list so just resolve
@@ -20672,6 +20724,7 @@ public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
 - Fixed icons disabled appearance by changing the graphic format from SVG to a weoff2 font.
 - Changed behavior of the 'Open Aside' command: it now opens 'detached' body panes, which allows text editing for a fixed gnx.
 - Support renamed commands 'save-file-as-db' and 'file-save-as-db'.
+- Fixed Recent files list to capitalize drive letter and prevent duplicates.
 
 </t>
 <t tx="felix.20240430200658.1">"icons": {

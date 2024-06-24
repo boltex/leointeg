@@ -118,6 +118,14 @@ export function cleanLeoID(id_: string): string {
  */
 export function addFileToWorkspace(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable<void> {
     // Just push that string into the context.workspaceState.<something> array
+    // First, if on windows and a drive letter starts the string, make sure its uppercase.
+    if (p_file.length > 1 && p_file[1] === ':') {
+        // Check if the first character is a letter
+        if (p_file[0] >= 'a' && p_file[0] <= 'z') {
+            // Convert the first character to uppercase
+            p_file = p_file[0].toUpperCase() + p_file.slice(1);
+        }
+    }
     const w_contextEntry: string[] = p_context.workspaceState.get(p_key) || [];
     if (w_contextEntry) {
         if (!w_contextEntry.includes(p_file)) {
@@ -141,10 +149,30 @@ export function addFileToWorkspace(p_context: vscode.ExtensionContext, p_file: s
  * @returns A promise that resolves when the workspace storage modification is done
   */
 export function removeFileFromWorkspace(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable<void> {
+    let alternate = ""; // An alternate spelling if startgin with a letter and colon
+    let modified = false;
+    // First, if on windows and a drive letter starts the string, make sure its uppercase.
+    if (p_file.length > 1 && p_file[1] === ':') {
+        // Check if the first character is a letter
+        if (p_file[0] >= 'a' && p_file[0] <= 'z') {
+            // Convert the first character to uppercase
+            alternate = p_file[0].toUpperCase() + p_file.slice(1);
+        } else if (p_file[0] >= 'A' && p_file[0] <= 'Z') {
+            // Convert the first character to lowercase since it was already uppercase
+            alternate = p_file[0].toLowerCase() + p_file.slice(1);
+        }
+    }
     // Check if exist in context.workspaceState.<something> and remove if found
     const w_files: string[] = p_context.workspaceState.get(p_key) || [];
     if (w_files && w_files.includes(p_file)) {
         w_files.splice(w_files.indexOf(p_file), 1); // Splice and update
+        modified = true;
+    }
+    if (alternate && w_files && w_files.includes(alternate)) {
+        w_files.splice(w_files.indexOf(alternate), 1); // Splice and update if letter and colon
+        modified = true;
+    }
+    if (modified) {
         return p_context.workspaceState.update(p_key, w_files);
     }
     return Promise.resolve(); // not even in list so just resolve

@@ -1319,22 +1319,46 @@ export class LeoIntegration {
      * @returns A promise that resolves when the a file is finally opened, rejected otherwise
      */
     public async showRecentLeoFiles(): Promise<LeoBridgePackage | undefined> {
-        // TODO showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO
-        // console.log("TODO : showRecentLeoFiles USE REAL RECENT FILES LIST FROM LEO");
+
         const w_recentFiles: string[] =
             this._context.workspaceState.get(Constants.RECENT_FILES_KEY) || [];
         let q_chooseFile: Thenable<string | undefined>;
-        if (w_recentFiles.length) {
-            q_chooseFile = vscode.window.showQuickPick(w_recentFiles, {
+
+        // Remove duplicates after capitalizing starting drive letters. (on windows) 
+        const normalizedPaths = w_recentFiles.map((filePath: string): string => {
+            if (filePath.length > 1 && filePath[1] === ':') {
+                // Check if the first character is a letter
+                if (filePath[0] >= 'a' && filePath[0] <= 'z') {
+                    // Convert the first character to uppercase
+                    return filePath[0].toUpperCase() + filePath.slice(1);
+                }
+            }
+            return filePath; // Return the original path if no changes are needed
+        }
+
+        );
+        const uniquePaths = Array.from(new Set(normalizedPaths));
+
+        if (uniquePaths.length) {
+            q_chooseFile = vscode.window.showQuickPick(uniquePaths, {
                 placeHolder: Constants.USER_MESSAGES.OPEN_RECENT_FILE,
             });
         } else {
             // No file to list
             return Promise.resolve(undefined);
         }
+
         const w_result = await q_chooseFile;
         if (w_result) {
-            return this.openLeoFile(vscode.Uri.file(w_result));
+            const fileUri = vscode.Uri.file(w_result);
+            if (fs.existsSync(fileUri.fsPath)) {
+                return this.openLeoFile(vscode.Uri.file(w_result));
+            } else {
+                vscode.window.showInformationMessage('File does not exist: ' + fileUri.fsPath);
+                // Remove from recent list!
+                this._removeRecentFile(w_result);
+                return Promise.resolve(undefined);
+            }
         } else {
             // Canceled
             return Promise.resolve(undefined);

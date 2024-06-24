@@ -5,6 +5,7 @@
 - Fixed icons disabled appearance by changing the graphic format from SVG to a weoff2 font.
 - Changed behavior of the 'Open Aside' command: it now opens 'detached' body panes, which allows text editing for a fixed gnx.
 - Support renamed commands 'save-file-as-db' and 'file-save-as-db'.
+- Fixed Recent files list to capitalize drive letter and prevent duplicates.
 
 ## 1.0.20
 
