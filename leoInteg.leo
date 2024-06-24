@@ -16291,7 +16291,7 @@ public getTextFromClipboard(): string {
         // When opening a Leo document, set default values of fields
         findReplaceInputIds.forEach((p_inputId) =&gt; {
             // @ts-expect-error
-            document.getElementById(p_inputId).value = p_settings[p_inputId];
+            document.getElementById(p_inputId).value = p_settings[p_inputId] === '&lt;find pattern here&gt;' ? '' : p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId] === '&lt;find pattern here&gt;' ? '' : p_settings[p_inputId];
         });
         checkboxIds.forEach((p_inputId) =&gt; {
