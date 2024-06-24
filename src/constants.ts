@@ -1025,7 +1025,8 @@ export class Constants {
 
     public static unsupportedMinibufferCommands: string[] = [
         'read-outline-only', // Seems buggy in Leo. Not present until fixed or deprecated in Leo. (removed in Leo 6.7.5)
-        'restart-leo' // added to bad list for leoserver 1.0.6. (Can be removed in next leointeg version)
+        'restart-leo', // added to bad list for leoserver 1.0.6. (Can be removed in next leointeg version)
+        'write-edited-recent-files'
     ];
 
     /**
