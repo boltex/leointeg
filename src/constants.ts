@@ -82,6 +82,9 @@ export class Constants {
      */
     public static LANGUAGES = [
         "plain",
+        "julia",
+        "batch",
+        "shell",
         "python",
         "javascript",
         "typescript",

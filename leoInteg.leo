@@ -2397,6 +2397,96 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "configuration": "./language-configurations/leobody.plain.language-configuration.json"
   },
   {
+    "id": "leobody.julia",
+    "aliases": [
+      "Leo Body Julia",
+      "leobody.julia"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.julia.language-configuration.json"
+  },
+  {
+    "id": "leobody.julia.wrap",
+    "aliases": [
+      "Leo Body Julia",
+      "leobody.julia"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.julia.language-configuration.json"
+  },
+  {
+    "id": "leobody.batch",
+    "aliases": [
+      "Leo Body Batch",
+      "leobody.batch"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.batch.language-configuration.json"
+  },
+  {
+    "id": "leobody.batch.wrap",
+    "aliases": [
+      "Leo Body Batch",
+      "leobody.batch"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.batch.language-configuration.json"
+  },
+  {
+    "id": "leobody.shell",
+    "aliases": [
+      "Leo Body Shell",
+      "leobody.shell"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.shell.language-configuration.json"
+  },
+  {
+    "id": "leobody.shell.wrap",
+    "aliases": [
+      "Leo Body Shell",
+      "leobody.shell"
+    ],
+    "extensions": [
+      ""
+    ],
+    "icon": {
+      "light": "resources/light/body-pane.svg",
+      "dark": "resources/dark/body-pane.svg"
+    },
+    "configuration": "./language-configurations/leobody.shell.language-configuration.json"
+  },
+  {
     "id": "leobody.python",
     "aliases": [
       "Leo Body Python",
@@ -2890,6 +2980,36 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "path": "./syntaxes/leobody.plain.tmLanguage.json"
   },
   {
+    "language": "leobody.julia",
+    "scopeName": "source.leobody.julia",
+    "path": "./syntaxes/leobody.julia.tmLanguage.json"
+  },
+  {
+    "language": "leobody.julia.wrap",
+    "scopeName": "source.leobody.julia",
+    "path": "./syntaxes/leobody.julia.tmLanguage.json"
+  },
+  {
+    "language": "leobody.batch",
+    "scopeName": "source.leobody.batch",
+    "path": "./syntaxes/leobody.batch.tmLanguage.json"
+  },
+  {
+    "language": "leobody.batch.wrap",
+    "scopeName": "source.leobody.batch",
+    "path": "./syntaxes/leobody.batch.tmLanguage.json"
+  },
+  {
+    "language": "leobody.shell",
+    "scopeName": "source.leobody.shell",
+    "path": "./syntaxes/leobody.shell.tmLanguage.json"
+  },
+  {
+    "language": "leobody.shell.wrap",
+    "scopeName": "source.leobody.shell",
+    "path": "./syntaxes/leobody.shell.tmLanguage.json"
+  },
+  {
     "language": "leobody.python",
     "scopeName": "source.leobody.python",
     "path": "./syntaxes/leobody.python.tmLanguage.json"
@@ -3051,6 +3171,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   },
   {
     "injectTo": [
+      "source.leobody.batch",
       "source.leobody.c",
       "source.leobody.cpp",
       "source.leobody.css",
@@ -3060,14 +3181,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "source.leobody.java",
       "source.leobody.javascript",
       "source.leobody.json",
+      "source.leobody.julia",
       "source.leobody.markdown",
       "source.leobody.php",
       "source.leobody.plain",
       "source.leobody.python",
       "source.leobody.restructuredtext",
       "source.leobody.rust",
+      "source.leobody.shell",
       "source.leobody.typescript",
       "source.leobody.xml",
+      "source.leobody.batch.wrap",
       "source.leobody.c.wrap",
       "source.leobody.cpp.wrap",
       "source.leobody.css.wrap",
@@ -3077,12 +3201,14 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "source.leobody.java.wrap",
       "source.leobody.javascript.wrap",
       "source.leobody.json.wrap",
+      "source.leobody.julia.wrap",
       "source.leobody.markdown.wrap",
       "source.leobody.php.wrap",
       "source.leobody.plain.wrap",
       "source.leobody.python.wrap",
       "source.leobody.restructuredtext.wrap",
       "source.leobody.rust.wrap",
+      "source.leobody.shell.wrap",
       "source.leobody.typescript.wrap",
       "source.leobody.xml.wrap"
     ],
@@ -14452,6 +14578,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'file-save-as': Constants.COMMANDS.SAVE_AS_FILE,
     'file-save-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
     'file-save-as-zipped': Constants.COMMANDS.SAVE_AS_FILE,
+    'file-save-as-db': Constants.COMMANDS.SAVE_AS_FILE,
     'file-save-by-name': Constants.COMMANDS.SAVE_AS_FILE,
     'file-save-to': Constants.COMMANDS.SAVE_AS_FILE,
     'save': Constants.COMMANDS.SAVE_FILE,
@@ -14460,6 +14587,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'save-file-as': Constants.COMMANDS.SAVE_AS_FILE,
     'save-file-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
     'save-file-as-zipped': Constants.COMMANDS.SAVE_AS_FILE,
+    'save-file-as-db': Constants.COMMANDS.SAVE_AS_FILE,
     'save-file-by-name': Constants.COMMANDS.SAVE_AS_FILE,
     'save-file-to': Constants.COMMANDS.SAVE_AS_FILE,
     'save-to': Constants.COMMANDS.SAVE_AS_FILE,
@@ -20394,6 +20522,9 @@ export class UnlProvider implements vscode.DocumentLinkProvider {
  */
 public static LANGUAGES = [
     "plain",
+    "julia",
+    "batch",
+    "shell",
     "python",
     "javascript",
     "typescript",
@@ -20538,7 +20669,8 @@ public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
 <t tx="felix.20240330232425.1">## 1.0.21
 
 - Fixed icons disabled appearance by changing the graphic format from SVG to a weoff2 font.
-- Changed behavior of the 'Open Aside' command: it now  opens 'detached' body panes, which allows text editing for a fixed gnx.
+- Changed behavior of the 'Open Aside' command: it now opens 'detached' body panes, which allows text editing for a fixed gnx.
+- Support renamed commands 'save-file-as-db' and 'file-save-as-db'.
 
 </t>
 <t tx="felix.20240430200658.1">"icons": {
