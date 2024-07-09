@@ -20110,6 +20110,15 @@ If you check the **Tag** option, the **Nav** field and **Goto Pane** are then us
             &lt;br&gt;
             Kevin Henderson
         &lt;/td&gt;
+        &lt;td align="center"&gt;
+            &lt;img src="data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E"
+                    alt="Jon Nicoll"
+                    width="48"
+                    height="48"
+                &gt;
+            &lt;br&gt;
+            Jon Nicoll
+        &lt;/td&gt;
     &lt;/tr&gt;
 &lt;/table&gt;
 </t>
