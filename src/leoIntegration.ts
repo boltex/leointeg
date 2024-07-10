@@ -196,7 +196,7 @@ export class LeoIntegration {
     private _leoDocumentsExplorer: vscode.TreeView<LeoDocumentNode>;
 
     // * Goto nav panel
-    private _leoGotoProvider: LeoGotoProvider;
+    public leoGotoProvider: LeoGotoProvider;
     private _leoGoto: vscode.TreeView<LeoGotoNode>;
     private _leoGotoExplorer: vscode.TreeView<LeoGotoNode>;
 
@@ -461,10 +461,10 @@ export class LeoIntegration {
         );
 
         // * Create goto Treeview Providers and tree views
-        this._leoGotoProvider = new LeoGotoProvider(this);
+        this.leoGotoProvider = new LeoGotoProvider(this);
         this._leoGoto = vscode.window.createTreeView(Constants.GOTO_ID, {
             showCollapseAll: false,
-            treeDataProvider: this._leoGotoProvider,
+            treeDataProvider: this.leoGotoProvider,
         });
         this._context.subscriptions.push(
             this._leoGoto,
@@ -474,7 +474,7 @@ export class LeoIntegration {
         );
         this._leoGotoExplorer = vscode.window.createTreeView(Constants.GOTO_EXPLORER_ID, {
             showCollapseAll: false,
-            treeDataProvider: this._leoGotoProvider,
+            treeDataProvider: this.leoGotoProvider,
         });
         this._context.subscriptions.push(
             this._leoGotoExplorer,
@@ -483,7 +483,7 @@ export class LeoIntegration {
             )
         );
         // * Set 'last' goto tree view visible
-        this._leoGotoProvider.setLastGotoView((this.config.treeInExplorer && !w_effectiveLeojsInExplorer) ? this._leoGotoExplorer : this._leoGoto);
+        this.leoGotoProvider.setLastGotoView((this.config.treeInExplorer && !w_effectiveLeojsInExplorer) ? this._leoGotoExplorer : this._leoGoto);
 
         // * Create 'Undo History' Treeview Providers and tree views
         this._leoUndosProvider = new LeoUndosProvider(this);
@@ -1757,7 +1757,7 @@ export class LeoIntegration {
         p_explorerView: boolean
     ): void {
         if (p_event.visible) {
-            this._leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
+            this.leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
             // this.refreshGotoPane();  // No need to refresh because no selection needs to be set
         }
     }
@@ -3200,7 +3200,7 @@ export class LeoIntegration {
      * Goto Panel May be refreshed by other services (states service, ...)
      */
     private _refreshGotoPane(): void {
-        this._leoGotoProvider.refreshTreeRoot();
+        this.leoGotoProvider.refreshTreeRoot();
     }
 
     /**
@@ -5346,7 +5346,7 @@ export class LeoIntegration {
      */
     public async findQuickTimeline(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE);
-        this._leoGotoProvider.refreshTreeRoot();
+        this.leoGotoProvider.refreshTreeRoot();
         return this.showGotoPane();
     }
 
@@ -5356,7 +5356,7 @@ export class LeoIntegration {
      */
     public async findQuickChanged(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED);
-        this._leoGotoProvider.refreshTreeRoot();
+        this.leoGotoProvider.refreshTreeRoot();
         return this.showGotoPane();
     }
 
@@ -5365,7 +5365,7 @@ export class LeoIntegration {
      */
     public async findQuickHistory(): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY);
-        this._leoGotoProvider.refreshTreeRoot();
+        this.leoGotoProvider.refreshTreeRoot();
         return this.showGotoPane();
     }
 
@@ -5374,7 +5374,7 @@ export class LeoIntegration {
      */
     public async findQuickMarked(p_preserveFocus?: boolean): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
-        this._leoGotoProvider.refreshTreeRoot();
+        this.leoGotoProvider.refreshTreeRoot();
         if (p_preserveFocus && (this._leoGoto.visible || this._leoGotoExplorer.visible)) {
             return Promise.resolve();
         }
@@ -5400,7 +5400,7 @@ export class LeoIntegration {
     public async gotoNavEntry(p_node: LeoGotoNode): Promise<unknown> {
 
         await this._isBusyTriggerSave(false, true);
-        this._leoGotoProvider.resetSelectedNode(p_node); // Inform controller of last index chosen
+        this.leoGotoProvider.resetSelectedNode(p_node); // Inform controller of last index chosen
 
         if (p_node.entryType === 'tag') {
             // * For when the nav input IS CLEARED : GOTO PANE LISTS ALL TAGS!
@@ -5435,7 +5435,7 @@ export class LeoIntegration {
 
             setTimeout(async () => {
                 await this.sendAction(Constants.LEOBRIDGE.NAV_SEARCH);
-                this._leoGotoProvider.refreshTreeRoot();
+                this.leoGotoProvider.refreshTreeRoot();
                 await this.showGotoPane({ preserveFocus: true }); // show but dont change focus
             }, 10);
 
@@ -5483,7 +5483,7 @@ export class LeoIntegration {
      * * Goto the next, previous, first or last nav entry via arrow keys in
      */
     public navigateNavEntry(p_nav: LeoGotoNavKey): void {
-        this._leoGotoProvider.navigateNavEntry(p_nav);
+        this.leoGotoProvider.navigateNavEntry(p_nav);
     }
 
     /**
@@ -5494,7 +5494,7 @@ export class LeoIntegration {
         const w_package = await this.sendAction(
             Constants.LEOBRIDGE.NAV_SEARCH
         );
-        this._leoGotoProvider.refreshTreeRoot();
+        this.leoGotoProvider.refreshTreeRoot();
         this.showGotoPane({ preserveFocus: true }); // show but dont change focus
         return w_package;
     }
@@ -5507,7 +5507,7 @@ export class LeoIntegration {
         const w_package = await this.sendAction(
             Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH
         );
-        this._leoGotoProvider.refreshTreeRoot();
+        this.leoGotoProvider.refreshTreeRoot();
         this.showGotoPane({ preserveFocus: true }); // show but dont change focus
         return w_package;
     }
@@ -5520,7 +5520,7 @@ export class LeoIntegration {
         const w_package = await this.sendAction(
             Constants.LEOBRIDGE.NAV_CLEAR
         );
-        this._leoGotoProvider.refreshTreeRoot();
+        this.leoGotoProvider.refreshTreeRoot();
         return w_package;
     }
 
@@ -5666,7 +5666,7 @@ export class LeoIntegration {
         } else {
 
             if (p_findResult.use_nav_pane) {
-                this._leoGotoProvider.refreshTreeRoot();
+                this.leoGotoProvider.refreshTreeRoot();
                 this.showGotoPane({ preserveFocus: true }); // show but dont change focus
 
                 let w_revealTarget = Focus.Body;

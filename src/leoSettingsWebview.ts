@@ -40,7 +40,7 @@ export class LeoSettingsProvider {
                 }
             );
 
-            return this._getBaseHtml(this._panel.webview).then(p_baseHtml => {
+            return this._getBaseHtml().then(p_baseHtml => {
                 if (this._panel) {
 
                     this._context.subscriptions.push(this._panel);
@@ -145,7 +145,7 @@ export class LeoSettingsProvider {
         }
     }
 
-    private async _getBaseHtml(webview: vscode.Webview): Promise<string> {
+    private async _getBaseHtml(): Promise<string> {
         if (this._html !== undefined) {
             return this._html;
         } else {

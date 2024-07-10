@@ -8,12 +8,17 @@
     // @ts-expect-error
     const vscode = acquireVsCodeApi();
 
-    let timer; // for debouncing sending the settings from this webview to leointeg
+    let timer; // for debouncing sending the settings from this webview to LeoInteg
     let dirty = false; // all but nav input
     let navTextDirty = false;
 
-    let firstTabElId = 'searchOptions'; // The first tabbable element used to be 'findText' before nav inputs
-    let lastTabElId = 'searchBody';
+    let activeTab = 'tab2'; // Initial active tab
+    let firstFindTabElId = 'findText';
+    let lastFindTabElId = 'searchBody';
+    let firstNavTabElId = 'searchOptions';
+    let lastNavTabElId = 'navText';
+    let lastGotoContent = [];
+    let lastSelectedGotoItem;
 
     /**
      * * Flag for freezing the nav 'search as you type' headlines (concept from original nav plugin)
@@ -123,6 +128,69 @@
 
     }
 
+    const gotoPaneContainer = document.getElementById('gotopane');
+
+    // TODO CHECK IF NEEDED ?
+    // document.body.addEventListener('mousedown', () => {
+    //     if (!gotoPaneContainer) {
+    //         return;
+    //     }
+    //     // remove selected class
+    //     if (lastSelectedGotoItem) {
+    //         lastSelectedGotoItem.classList.remove('selected');
+    //         lastSelectedGotoItem = undefined;
+    //     }
+    // });
+
+    function clickedGotoItem(event) {
+        if (!gotoPaneContainer) {
+            return;
+        }
+        // remove selected class first
+        if (lastSelectedGotoItem) {
+            lastSelectedGotoItem.classList.remove('selected');
+        }
+        event.target.classList.add('selected');
+        lastSelectedGotoItem = event.target;
+        event.stopPropagation();
+        // CALL GOTO COMMAND!
+        vscode.postMessage({ type: 'gotoCommand', value: event.target.dataset.order });
+    }
+
+    function fillGotoPane(p_gotoContent) {
+        lastGotoContent = p_gotoContent;
+        if (!gotoPaneContainer) {
+            return;
+        }
+        let i = 0;
+        if (lastSelectedGotoItem) {
+            lastSelectedGotoItem.classList.remove('selected');
+            lastSelectedGotoItem = undefined;
+        }
+        while (gotoPaneContainer && gotoPaneContainer.firstChild) {
+            gotoPaneContainer.removeChild(gotoPaneContainer.firstChild);
+        }
+        let hasParent = false;
+        for (const gotoItem of p_gotoContent) {
+            const smallerDiv = document.createElement('div');
+            smallerDiv.dataset.order = i.toString();
+            smallerDiv.className = 'goto-item ' + gotoItem.entryType;
+            smallerDiv.textContent = gotoItem.label;
+            // smallerDiv.title = gotoItem.tooltip; // TOOLTIPS CANNOT BE STYLED!
+            smallerDiv.setAttribute('tabindex', '0');
+            if (gotoItem.entryType === 'parent') {
+                hasParent = true;
+            }
+            smallerDiv.addEventListener('mousedown', clickedGotoItem);
+            gotoPaneContainer.appendChild(smallerDiv);
+            i = i + 1;
+        }
+        gotoPaneContainer.classList.remove('show-parents');
+        if (hasParent) {
+            gotoPaneContainer.classList.add('show-parents');
+        }
+    }
+
     function setSearchSetting(p_id) {
         if (checkboxIds.includes(p_id)) {
             toggleCheckbox(p_id);
@@ -144,38 +212,26 @@
     }
 
     function setSettings(p_settings) {
-        if (p_settings["navText"] || p_settings["navText"] === '') {
+        // Nav controls
+        // @ts-expect-error
+        document.getElementById("navText").value = p_settings["navText"];
+        searchSettings["navText"] = p_settings["navText"];
 
-            // Nav controls
-            // @ts-expect-error
-            document.getElementById("navText").value = p_settings["navText"];
-            searchSettings["navText"] = p_settings["navText"];
+        // showParents
+        // @ts-expect-error
+        document.getElementById("showParents").checked = p_settings["showParents"];
+        searchSettings["showParents"] = p_settings["showParents"];
 
-            // showParents
-            // @ts-expect-error
-            document.getElementById("showParents").checked = p_settings["showParents"];
-            searchSettings["showParents"] = p_settings["showParents"];
+        // isTag
+        // @ts-expect-error
+        document.getElementById("isTag").checked = p_settings["isTag"];
+        searchSettings["isTag"] = p_settings["isTag"];
+        handleIsTagSwitch(false);
 
-            // isTag
-            // @ts-expect-error
-            document.getElementById("isTag").checked = p_settings["isTag"];
-            searchSettings["isTag"] = p_settings["isTag"];
-            handleIsTagSwitch(false);
-
-            // searchOptions
-            // @ts-expect-error
-            document.getElementById("searchOptions").value = p_settings["searchOptions"];
-            searchSettings["searchOptions"] = p_settings["searchOptions"];
-        } else {
-            // ! Not at least Leo 6.6 final : hide top elements !
-            firstTabElId = 'findText';
-            var elements = document.getElementsByClassName("nav-element");
-
-            for (var i = 0; i < elements.length; i++) {
-                // @ts-expect-error
-                elements[i].style.display = "none";
-            }
-        }
+        // searchOptions
+        // @ts-expect-error
+        document.getElementById("searchOptions").value = p_settings["searchOptions"];
+        searchSettings["searchOptions"] = p_settings["searchOptions"];
 
         // When opening a Leo document, set default values of fields
         findReplaceInputIds.forEach((p_inputId) => {
@@ -239,20 +295,24 @@
         if (!p_event) {
             p_event = window.event;
         }
-        var keyCode = p_event.code || p_event.key;
+        const keyCode = p_event.code || p_event.key;
 
         // Detect CTRL+F
         if (p_event.ctrlKey && !p_event.shiftKey && p_event.keyCode === 70) {
             p_event.preventDefault();
             p_event.stopPropagation();
-            focusOnField('findText');
+            // focusOnField('findText');
+            activateTab('tab2');
+
             return;
         }
         // Detect CTRL+SHIFT+F
         if (p_event.ctrlKey && p_event.shiftKey && p_event.keyCode === 70) {
             p_event.preventDefault();
             p_event.stopPropagation();
-            focusOnField('navText');
+            // focusOnField('navText');
+            activateTab('tab3');
+
             return;
         }
 
@@ -288,12 +348,61 @@
         }
         */
 
+        const actEl = document.activeElement;
         if (keyCode === 'Tab') {
-            var actEl = document.activeElement;
-            var lastEl = document.getElementById(lastTabElId);
-            var firstEl = document.getElementById(firstTabElId);
+            let lastEl;
+            let firstEl;
+            let selectedNavEl;
+            if (activeTab === 'tab2') {
+                // find panel
+                lastEl = document.getElementById(lastFindTabElId);
+                firstEl = document.getElementById(firstFindTabElId);
+            } else if (activeTab === 'tab3' && !lastGotoContent.length) {
+                // nav panel regular
+                lastEl = document.getElementById(lastNavTabElId);
+                firstEl = document.getElementById(firstNavTabElId);
+            } else if (activeTab === 'tab3' && lastGotoContent.length && gotoPaneContainer) {
+                // nav panel WITH nav results.
+                lastEl = document.getElementById(lastNavTabElId);
+                firstEl = document.getElementById(firstNavTabElId);
+                selectedNavEl = gotoPaneContainer?.children[0]; // default
+
+                if (lastSelectedGotoItem) {
+                    selectedNavEl = lastSelectedGotoItem;
+                }
+
+                if (actEl?.classList.contains('goto-item')) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    if (p_event.shiftKey) {
+                        lastEl = document.getElementById(lastNavTabElId);
+                        if (lastEl) {
+                            lastEl.focus();
+                        }
+                    } else {
+                        if (firstEl) {
+                            firstEl.focus();
+                        }
+                    }
+                    return;
+                }
+
+            }
 
             if (p_event.shiftKey) {
+                if (selectedNavEl && actEl === firstEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    if (lastSelectedGotoItem) {
+                        lastSelectedGotoItem.classList.remove('selected');
+                    }
+                    selectedNavEl.focus();
+                    selectedNavEl.classList.add('selected');
+                    lastSelectedGotoItem = selectedNavEl;
+                    return;
+                }
                 // shift + tab so if first got last
                 if (lastEl && actEl === firstEl) {
                     p_event.preventDefault();
@@ -303,6 +412,18 @@
                     return;
                 }
             } else {
+                if (selectedNavEl && actEl === lastEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    if (lastSelectedGotoItem) {
+                        lastSelectedGotoItem.classList.remove('selected');
+                    }
+                    selectedNavEl.focus();
+                    selectedNavEl.classList.add('selected');
+                    lastSelectedGotoItem = selectedNavEl;
+                    return;
+                }
                 // tab, so if last goto first
                 if (firstEl && actEl === lastEl) {
                     p_event.preventDefault();
@@ -313,7 +434,108 @@
                 }
             }
         }
+
+        if (activeTab === 'tab3' && lastGotoContent.length && actEl && gotoPaneContainer && (actEl === gotoPaneContainer || gotoPaneContainer.contains(actEl))) {
+            navKeyHandler(p_event);
+        }
+
     }
+
+    function navKeyHandler(p_event) {
+        // Handles up/down home/end pgUp/pgDown
+        // for GOTO PANE navigation under the nav input
+        // if(gotoPaneContainer){
+        //     gotoPaneContainer
+        // }
+        if (!p_event) {
+            p_event = window.event;
+        }
+        const keyCode = p_event.code || p_event.key;
+
+        let code = -1;
+        switch (keyCode) {
+            case 'ArrowUp':
+                code = 0;
+                break;
+            case 'ArrowDown':
+                code = 1;
+                break;
+            case 'PageUp':
+                code = 2;
+                break;
+            case 'PageDown':
+                code = 3;
+                break;
+            case 'Home':
+                code = 2;
+                break;
+            case 'End':
+                code = 3;
+                break;
+            case 'Enter':
+                const actEl = document.activeElement;
+                if (actEl && actEl.classList.contains('goto-item')) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    if (!gotoPaneContainer) {
+                        return;
+                    }
+                    // remove selected class first
+                    if (lastSelectedGotoItem) {
+                        lastSelectedGotoItem.classList.remove('selected');
+                    }
+                    actEl.classList.add('selected');
+                    lastSelectedGotoItem = actEl;
+                    // CALL GOTO COMMAND!
+                    // @ts-expect-error
+                    vscode.postMessage({ type: 'gotoCommand', value: actEl.dataset.order });
+                    return;
+                }
+                break;
+
+            default:
+                break;
+        }
+        if (code >= 0) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            p_event.stopImmediatePropagation();
+            vscode.postMessage({ type: 'navigateNavEntry', value: code });
+        }
+    }
+
+    function throttle(func, limit) {
+        let inThrottle;
+        let lastFunc;
+        let lastRan;
+        return function () {
+            const context = this;
+            const args = arguments;
+            if (!inThrottle) {
+                func.apply(context, args);
+                lastRan = Date.now();
+                inThrottle = true;
+                setTimeout(() => {
+                    inThrottle = false;
+                    if (lastFunc) {
+                        lastFunc.apply(context, args);
+                        lastRan = Date.now();
+                        lastFunc = null;
+                    }
+                }, limit);
+            } else {
+                lastFunc = func;
+            }
+        }
+    }
+
+    // TODO : USE THIS EXAMPLE INSTEAD OF CALLING LEOINTEG TO SWITCH RIGHT AWAY ! ! 
+    // Example usage
+    const throttledFunction = throttle(function () {
+        console.log('Function called!');
+    }, 1000); // The function will be called at most once every 1000ms (1 second)
+
 
     function focusOnField(p_id) {
         const inputField = document.querySelector('#' + p_id);
@@ -377,37 +599,40 @@
 
     // * Nav text input detection
     const w_navTextEl = document.getElementById('navText');
+    function navEnter() {
+        if (searchSettings.navText.length === 0 && searchSettings.isTag) {
+            setFrozen(false);
+            resetTagNav();
+        } else {
+            if (searchSettings.navText.length >= 3 || searchSettings.isTag) {
+                setFrozen(true);
+                if (navTextDirty) {
+                    navTextDirty = false;
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    if (navSearchTimer) {
+                        clearTimeout(navSearchTimer);
+                    }
+                    sendSearchConfig();
+                }
+                vscode.postMessage({ type: 'leoNavEnter' });
+            }
+            if (searchSettings.navText.length === 0) {
+                vscode.postMessage({ type: 'leoNavClear' });
+            }
+        }
+    }
+
     if (w_navTextEl) {
         w_navTextEl.onkeypress = function (p_event) {
             if (!p_event) {
                 // @ts-expect-error
                 p_event = window.event;
             }
-            var keyCode = p_event.code || p_event.key;
+            const keyCode = p_event.code || p_event.key;
             if (keyCode === 'Enter') {
-                if (searchSettings.navText.length === 0 && searchSettings.isTag) {
-                    setFrozen(false);
-                    resetTagNav();
-                } else {
-                    if (searchSettings.navText.length >= 3 || searchSettings.isTag) {
-                        setFrozen(true);
-                        if (navTextDirty) {
-                            navTextDirty = false;
-                            if (timer) {
-                                clearTimeout(timer);
-                            }
-                            if (navSearchTimer) {
-                                clearTimeout(navSearchTimer);
-                            }
-                            sendSearchConfig();
-                        }
-                        vscode.postMessage({ type: 'leoNavEnter' });
-                    }
-                    if (searchSettings.navText.length === 0) {
-                        vscode.postMessage({ type: 'leoNavClear' });
-                    }
-                }
-
+                navEnter();
                 return false;
             }
         };
@@ -468,7 +693,7 @@
                     // @ts-expect-error
                     p_event = window.event;
                 }
-                var keyCode = p_event.code || p_event.key;
+                const keyCode = p_event.code || p_event.key;
                 if (keyCode === 'Enter') {
                     if (timer) {
                         clearTimeout(timer);
@@ -512,24 +737,106 @@
         }
     });
 
-    const w_findTextsEl = document.getElementById('findText');
-    if (w_findTextsEl) {
-        w_findTextsEl.addEventListener('click', function () {
-            // @ts-expect-error
-            if (w_findTextsEl.value === "<find pattern here>") {
-                // @ts-expect-error
-                w_findTextsEl.select();
-            }
-        });
+    document.onkeydown = checkKeyDown;
+
+    const tabs = document.querySelectorAll('.tab-item');
+    const contents = document.querySelectorAll('.tab-content');
+
+    function showTab(newTab) {
+        // Remove active class from all tabs and contents
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+
+        // Add active class to the new tab and content
+        // @ts-expect-error
+        document.querySelector(`[data-tab="${newTab}"]`).classList.add('active');
+        // @ts-expect-error
+        document.getElementById(newTab).classList.add('active');
+
+        // Update the active tab state
+        activeTab = newTab;
     }
 
-    document.onkeydown = checkKeyDown;
+    function activateTab(newTab, replace) {
+        showTab(newTab);
+        setTimeout(() => {
+            if (activeTab === 'tab2') {
+                if (replace) {
+                    focusOnField('replaceText');
+                } else {
+                    focusOnField('findText');
+                }
+            } else if (activeTab === 'tab3') {
+                focusOnField('navText');
+            }
+        }, 0);
+    };
+
+    function revealNavEntry(p_index, p_preserveFocus) {
+        if (!p_preserveFocus) {
+            showTab('tab3');
+        }
+        if (lastSelectedGotoItem) {
+            lastSelectedGotoItem.classList.remove('selected');
+            lastSelectedGotoItem = undefined;
+        }
+        setTimeout(() => {
+            if (!gotoPaneContainer) {
+                return;
+            }
+            const children = gotoPaneContainer.children;
+            if (children && children.length && children.length > p_index) {
+                lastSelectedGotoItem = gotoPaneContainer.children[p_index];
+                lastSelectedGotoItem.classList.add('selected');
+                // Will have effect only if visible
+                lastSelectedGotoItem.scrollIntoView({ behavior: "instant", block: "nearest" });
+                // @ts-expect-error
+                if (lastSelectedGotoItem && lastSelectedGotoItem.focus && !p_preserveFocus) {
+                    // @ts-expect-error
+                    lastSelectedGotoItem.focus();
+                }
+            }
+        }, 0);
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener('mousedown', (event) => {
+            // @ts-expect-error
+            const newTab = tab.dataset.tab;
+            if (newTab !== activeTab) {
+                activateTab(newTab);
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        });
+    });
 
     document.addEventListener('focusin', (event) => {
         vscode.postMessage({ type: 'gotFocus' });
     });
+
     document.addEventListener('focusout', (event) => {
         vscode.postMessage({ type: 'lostFocus' });
+    });
+
+    const body = document.body;
+    const topShadow = document.getElementById("top-shadow");
+    let scrolled = false;
+    body.addEventListener('scroll', function (event) {
+        if (!topShadow) {
+            return;
+        }
+        if (body.scrollTop) {
+            if (!scrolled) {
+                topShadow.classList.add('scrolled');
+                scrolled = true;
+            }
+        } else {
+            if (scrolled) {
+                topShadow.classList.remove('scrolled');
+                scrolled = false;
+            }
+        }
     });
 
     // Handle messages sent from the extension to the webview
@@ -539,8 +846,10 @@
             // * Nav Tab Controls
             // Focus and select all text in 'nav' field
             case 'selectNav': {
-                focusOnField('navText');
-                if (message.text || message.text === "") {
+                // focusOnField('navText');
+                activateTab('tab3');
+
+                if (message.text) {
                     // @ts-expect-error
                     document.getElementById("navText").value = message.text;
                     searchSettings["navText"] = message.text;
@@ -548,18 +857,31 @@
                         clearTimeout(timer);
                     }
                     sendSearchConfig();
+                    if (message.forceEnter) {
+                        navEnter();
+                    }
                 }
+                break;
+            }
+            case 'showGoto': {
+                showTab('tab3');
+                break;
+            }
+            case 'revealNavEntry': {
+                revealNavEntry(message.value, message.preserveFocus);
                 break;
             }
             // * Find Tab Controls
             // Focus and select all text in 'find' field
             case 'selectFind': {
-                focusOnField('findText');
+                //focusOnField('findText');
+                activateTab('tab2');
                 break;
             }
             // Focus and select all text in 'replace' field
             case 'selectReplace': {
-                focusOnField('replaceText');
+                //focusOnField('replaceText');
+                activateTab('tab2', true);
                 break;
             }
             case 'getSettings': {
@@ -572,6 +894,10 @@
             }
             case 'setSearchSetting': {
                 setSearchSetting(message.id);
+                break;
+            }
+            case 'refreshGoto': {
+                fillGotoPane(message.gotoContent);
                 break;
             }
         }
