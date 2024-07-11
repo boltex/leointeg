@@ -388,7 +388,6 @@
 <v t="felix.20200719025231.26"><vh>_onTreeViewVisibilityChanged</vh></v>
 <v t="felix.20200719025231.27"><vh>_onDocTreeViewVisibilityChanged</vh></v>
 <v t="ekr.20200815085705.1"><vh>_onButtonsTreeViewVisibilityChanged</vh></v>
-<v t="felix.20220310224330.1"><vh>_onGotoTreeViewVisibilityChanged</vh></v>
 <v t="felix.20220706000811.1"><vh>_onUndosTreeViewVisibilityChanged</vh></v>
 <v t="felix.20220826004334.1"><vh>_onFindViewVisibilityChanged</vh></v>
 <v t="felix.20240502230536.1"><vh>_onTabGroupsChanged</vh></v>
@@ -410,6 +409,9 @@
 <v t="felix.20210806175431.1"><vh>_bodySaveDeactivate</vh></v>
 </v>
 <v t="felix.20200719030902.1"><vh>Refresh UI</vh>
+<v t="felix.20240710211515.1"><vh>safeReveal</vh></v>
+<v t="felix.20240710211520.1"><vh>_performReveal</vh></v>
+<v t="felix.20240710211525.1"><vh>_handleRevealCompletion</vh></v>
 <v t="felix.20201114185218.1"><vh>setTreeViewTitle</vh></v>
 <v t="felix.20200719025231.35"><vh>showOutline</vh></v>
 <v t="ekr.20200815085806.1"><vh>configTreeRefresh</vh></v>
@@ -417,6 +419,7 @@
 <v t="ekr.20200815085830.3"><vh>_launchRefresh</vh></v>
 <v t="felix.20220804203041.1"><vh>fullRefresh</vh></v>
 <v t="felix.20240502230658.1"><vh>_refreshDetachedBodies</vh></v>
+<v t="felix.20240710222918.1"><vh>showNavResults</vh></v>
 <v t="felix.20220824014747.1"><vh>isTsStillValid</vh></v>
 <v t="felix.20220804203829.1"><vh>isGnxStillValid</vh></v>
 <v t="felix.20220805212936.1"><vh>isGnxReselected</vh></v>
@@ -486,6 +489,7 @@
 <v t="felix.20220308213605.1"><vh>findQuick_marked</vh></v>
 <v t="felix.20220308213619.1"><vh>showGotoPane</vh></v>
 <v t="felix.20220309215616.1"><vh>gotoNavEntry</vh></v>
+<v t="felix.20240710211821.1"><vh>revealGotoNavEntry</vh></v>
 <v t="felix.20220903192048.1"><vh>navigateNavEntry</vh></v>
 </v>
 <v t="felix.20210530225640.1"><vh>Search</vh>
@@ -502,6 +506,7 @@
 <v t="felix.20210530230354.1"><vh>findAll &amp; replaceAll</vh></v>
 <v t="felix.20210530230400.1"><vh>cloneFind</vh></v>
 <v t="felix.20210530225306.1"><vh>setSearchOption</vh></v>
+<v t="felix.20240710211904.1"><vh>setGotoContent</vh></v>
 <v t="felix.20210525232728.1"><vh>loadSearchSettings</vh></v>
 <v t="felix.20210524215215.1"><vh>saveSearchSettings</vh></v>
 <v t="felix.20210601164915.1"><vh>gotoGlobalLine</vh></v>
@@ -1185,7 +1190,7 @@ private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): 
 private _revealNode(
     p_leoNode: ArchivedPosition,
     p_options?: { select?: boolean; focus?: boolean; expand?: boolean | number }
-): Thenable&lt;void&gt; {
+): void {
     let w_treeview: vscode.TreeView&lt;ArchivedPosition&gt; | undefined;
     if (this._leoTreeView.visible) {
         w_treeview = this._leoTreeView;
@@ -1207,7 +1212,7 @@ private _revealNode(
     }
     try {
         if (w_treeview) {
-            return w_treeview.reveal(p_leoNode, p_options).then(
+            this.safeReveal(w_treeview, p_leoNode, p_options).then(
                 () =&gt; {
                     // ok
                     this._revealNodeRetriedRefreshOutline = false;
@@ -1233,7 +1238,6 @@ private _revealNode(
             this._refreshOutline(true, RevealType.RevealSelect);
         }
     }
-    return Promise.resolve(); // Defaults to resolving even if both are hidden
 }
 
 </t>
@@ -4762,13 +4766,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.minibuffer",
   "key": "alt+x",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
 <t tx="ekr.20200815123601.78">{
   "command": "leointeg.showOutline",
   "key": "alt+t",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || focusedView =~ /^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || focusedView =~ /^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.showOutline",
@@ -4780,18 +4784,18 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.showBody",
   "key": "ctrl+t",
   "mac": "cmd+t",
-  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.showBody",
   "key": "alt+d",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointegDetached || leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointegDetached || leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.showBody",
   "key": "ctrl+g",
   "mac": "cmd+g",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointegDetached || leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointegDetached || leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.showBody",
@@ -4807,14 +4811,14 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.tabCycleNext",
   "key": "ctrl+tab",
   "mac": "cmd+tab",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/"
 },
 </t>
 <t tx="ekr.20200815123601.79">{
   "command": "leointeg.saveLeoFileFromOutline",
   "key": "ctrl+s",
   "mac": "cmd+s",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.saveLeoFile",
@@ -4826,13 +4830,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.newLeoFile",
   "key": "ctrl+n",
   "mac": "cmd+n",
-  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.openLeoFile",
   "key": "ctrl+o",
   "mac": "cmd+o",
-  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || editorTextFocus &amp;&amp; resourceScheme =~ /^leointeg/ || leoFindFocus || sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.writeAtFileNodes",
@@ -4844,7 +4848,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.writeAtFileNodesFromOutline",
   "key": "ctrl+shift+w",
   "mac": "cmd+shift+w",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.writeDirtyAtFileNodes",
@@ -4856,7 +4860,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.writeDirtyAtFileNodesFromOutline",
   "key": "ctrl+shift+q",
   "mac": "cmd+shift+q",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 </t>
 <t tx="ekr.20200815123601.8">"viewsContainers": {
@@ -4877,7 +4881,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.contractAllFromOutline",
   "key": "alt+-",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 </t>
 <t tx="ekr.20200815123601.81">{
@@ -5202,19 +5206,9 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
-  "command": "leointeg.gotoNavFirst",
-  "key": "home",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
-},
-{
   "command": "leointeg.scrollBottom",
   "key": "end",
   "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
-},
-{
-  "command": "leointeg.gotoNavLast",
-  "key": "end",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
 },
 {
   "command": "leointeg.pageUp",
@@ -5222,19 +5216,9 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
-  "command": "leointeg.gotoNavFirst",
-  "key": "pageup",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
-},
-{
   "command": "leointeg.pageDown",
   "key": "pagedown",
   "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
-},
-{
-  "command": "leointeg.gotoNavLast",
-  "key": "pagedown",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
 },
 {
   "command": "leointeg.gotoNextCloneSelectionFromOutline",
@@ -5252,11 +5236,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoEditHeadline || config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
-  "command": "leointeg.gotoNavNext",
-  "key": "down",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
-},
-{
   "command": "leointeg.gotoNextVisible",
   "key": "alt+down",
   "when": "leoTreeOpened &amp;&amp; leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
@@ -5265,11 +5244,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.gotoPrevVisible",
   "key": "up",
   "when": "config.leoIntegration.leoTreeBrowse &amp;&amp; leoEditHeadline || config.leoIntegration.leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
-},
-{
-  "command": "leointeg.gotoNavPrev",
-  "key": "up",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoGoto/"
 },
 {
   "command": "leointeg.gotoPrevVisible",
@@ -5337,13 +5311,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "visibility": "collapsed"
     },
     {
-      "id": "leoGotoPanelExplorer",
-      "name": "Leo Goto",
-      "contextualTitle": "Leo",
-      "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened &amp;&amp; !config.leojs.treeInExplorer",
-      "visibility": "collapsed"
-    },
-    {
       "id": "leoDocumentsExplorer",
       "name": "Leo Documents",
       "contextualTitle": "Leo",
@@ -5378,13 +5345,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "id": "leoFindPanel",
       "name": "Find",
       "title": "Find",
-      "when": "leoTreeOpened",
-      "visibility": "collapsed"
-    },
-    {
-      "id": "leoGotoPanel",
-      "contextualTitle": "Leo",
-      "name": "Goto",
       "when": "leoTreeOpened",
       "visibility": "collapsed"
     },
@@ -8958,7 +8918,6 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 - **'@button' panel** for [creating your own commands with @buttons](https://leo-editor.github.io/leo-editor/tutorial-tips.html#use-button-nodes)
 - **Find panel** that reacts to Leo's typical keybindings, Ctrl+F, F2, F3... when focus is in the outline or body pane
 - **Nav and Tag panel** controls are integrated in the Find panel
-- **Goto Anywhere panel** to navigate directly from list of nodes, such as the results of Nav or Tag searches
 - **Undo History panel**, showing all actions and allowing going back, or forward, to any undo states.
 
 </t>
@@ -8997,19 +8956,20 @@ _Move-Outline commands need the `Alt` key modifier only when focus is on body pa
 | Focus on Body (in any pane)     | `Alt + D` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Ctrl + G` |
 | Focus on Body (in Outline pane) | `Tab` &amp;nbsp;&amp;nbsp;_or_&amp;nbsp;&amp;nbsp; `Enter`        |
 
-| Common Operations  |                    |
-| :----------------- | :----------------- |
-| Contract All       | `Alt + -`          |
-| Sort Siblings      | `Alt + A`          |
-| Start Search       | `Ctrl + F`         |
-| Find Next          | `F3`               |
-| Find Previous      | `F2`               |
-| Replace            | `Ctrl + =`         |
-| Replace then Find  | `Ctrl + -`         |
-| Extract            | `Ctrl + Shift + D` |
-| Extract Names      | `Ctrl + Shift + N` |
-| Execute Script     | `Ctrl + B`         |
-| Minibuffer Palette | `Alt + X`          |
+| Common Operations   |                    |
+| :------------------ | :----------------- |
+| Contract All        | `Alt + -`          |
+| Sort Siblings       | `Alt + A`          |
+| Start Search        | `Ctrl + F`         |
+| Quick Find Selected | `Ctrl + Shift + F` |
+| Find Next           | `F3`               |
+| Find Previous       | `F2`               |
+| Replace             | `Ctrl + =`         |
+| Replace then Find   | `Ctrl + -`         |
+| Extract             | `Ctrl + Shift + D` |
+| Extract Names       | `Ctrl + Shift + N` |
+| Execute Script      | `Ctrl + B`         |
+| Minibuffer Palette  | `Alt + X`          |
 
 | Tree Navigation          |                                                              |
 | :----------------------- | :----------------------------------------------------------- |
@@ -9064,12 +9024,12 @@ A **notification** will inform you of the action taken instead.
 </t>
 <t tx="felix.20200718222102.1">## Extension Settings
 
-### Open the command palette `Ctrl+Shift+P` and start typing `leo settings` to access LeoInteg's welcome/settings screen
+### Open the command palette `Ctrl+Shift+P` and start typing `leo settings` to access its _welcome &amp; settings_ screen
 
 &gt; _(Changes are auto-saved to the user's profile after 0.5 seconds)_
 
 - Control the visibility of the outline pane in the explorer view.
-- Decide how and when to refresh and synchronize content when derived (external) file are modified.
+- Decide how and when to refresh and synchronize content when external files are modified.
 - Show additional icons on outline nodes (Move, delete, mark, copy, paste...)
 - Choose to either focus on the body pane, or keep focus in the outline when a node is selected.
 - Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
@@ -9754,6 +9714,14 @@ export class LeoIntegration {
     private _leoTreeExView: vscode.TreeView&lt;ArchivedPosition&gt;; // Outline tree view added to the Explorer Sidebar
     private _lastTreeView: vscode.TreeView&lt;ArchivedPosition&gt;; // Last visible treeview
     private _renamingHeadline: string = "";
+    private _pendingReveal: Thenable&lt;void&gt; | undefined;
+    private _nextRevealParams: {
+        tree: vscode.TreeView&lt;ArchivedPosition&gt;, element: ArchivedPosition, options?: {
+            select?: boolean;
+            focus?: boolean;
+            expand?: boolean | number;
+        }
+    } | undefined;
 
     private _revealNodeRetriedRefreshOutline: boolean = false; // USED IN _refreshOutline and _revealNode
 
@@ -9794,8 +9762,8 @@ export class LeoIntegration {
 
     // * Goto nav panel
     public leoGotoProvider: LeoGotoProvider;
-    private _leoGoto: vscode.TreeView&lt;LeoGotoNode&gt;;
-    private _leoGotoExplorer: vscode.TreeView&lt;LeoGotoNode&gt;;
+    // private _leoGoto: vscode.TreeView&lt;LeoGotoNode&gt;;
+    // private _leoGotoExplorer: vscode.TreeView&lt;LeoGotoNode&gt;;
 
     // * Undos pane
     private _leoUndosProvider!: LeoUndosProvider;
@@ -9815,7 +9783,7 @@ export class LeoIntegration {
     private _findPanelWebviewView: vscode.WebviewView | undefined;
     private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
     private _lastFindView: vscode.WebviewView | undefined;  // ? Maybe unused ?
-    private _findNeedsFocus: boolean = false;
+    private _findNeedsFocus: number = 0; // 0 none, 1 find, 2 nav
     private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
     public findFocusTree = false;
     public findHeadlineRange: [number, number] = [0, 0];
@@ -9975,6 +9943,7 @@ private _setupNoOpenedLeoDocument(): void {
             void vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_uri);
         }
     }
+    this._nextRevealParams = undefined;
     this.leoStates.fileOpenedReady = false;
     this.leoStates.leoCommanderId = "";
     this._bodyTextDocument = undefined;
@@ -10351,28 +10320,6 @@ private _onActiveEditorChanged(
 
     // * Create goto Treeview Providers and tree views
     this.leoGotoProvider = new LeoGotoProvider(this);
-    this._leoGoto = vscode.window.createTreeView(Constants.GOTO_ID, {
-        showCollapseAll: false,
-        treeDataProvider: this.leoGotoProvider,
-    });
-    this._context.subscriptions.push(
-        this._leoGoto,
-        this._leoGoto.onDidChangeVisibility((p_event) =&gt;
-            this._onGotoTreeViewVisibilityChanged(p_event, false)
-        )
-    );
-    this._leoGotoExplorer = vscode.window.createTreeView(Constants.GOTO_EXPLORER_ID, {
-        showCollapseAll: false,
-        treeDataProvider: this.leoGotoProvider,
-    });
-    this._context.subscriptions.push(
-        this._leoGotoExplorer,
-        this._leoGotoExplorer.onDidChangeVisibility((p_event) =&gt;
-            this._onGotoTreeViewVisibilityChanged(p_event, true)
-        )
-    );
-    // * Set 'last' goto tree view visible
-    this.leoGotoProvider.setLastGotoView((this.config.treeInExplorer &amp;&amp; !w_effectiveLeojsInExplorer) ? this._leoGotoExplorer : this._leoGoto);
 
     // * Create 'Undo History' Treeview Providers and tree views
     this._leoUndosProvider = new LeoUndosProvider(this);
@@ -10980,6 +10927,97 @@ private async _bodySaveDocument(
         if (id) {
             w_param["commanderId"] = id;
         }
+
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
+        //@ts-expect-error
         //@ts-expect-error
         //@ts-expect-error
         //@ts-expect-error
@@ -11035,7 +11073,7 @@ public async showOutline(p_focusOutline?: boolean): Promise&lt;unknown&gt; {
     }
     q_outline.then(() =&gt; {
         if (this.lastSelectedNode) {
-            return this._lastTreeView.reveal(this.lastSelectedNode, {
+            return this.safeReveal(this._lastTreeView, this.lastSelectedNode, {
                 select: true,
                 focus: !!p_focusOutline,
             }).then(
@@ -12032,10 +12070,10 @@ public async selectOpenedLeoDocument(p_index: number): Promise&lt;LeoBridgePacka
             {
                 tree: true,
                 body: true,
+                goto: true,
                 documents: true,
                 buttons: true,
                 states: true,
-                goto: true
 
             }
         );
@@ -12082,10 +12120,10 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                         {
                             tree: true,
                             body: true,
+                            goto: true,
                             documents: true,
                             buttons: true,
                             states: true,
-                            goto: true
                         }
                     );
                 } else {
@@ -12216,10 +12254,10 @@ public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
             {
                 tree: true,
                 body: true,
+                goto: true,
                 documents: true,
                 buttons: true,
                 states: true,
-                goto: true
             }
         );
         this.launchRefresh();
@@ -13056,27 +13094,27 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.findQuickSelected",
-    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.findQuickTimeline",
-    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.findQuickChanged",
-    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.history",
-    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.markedList",
-    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
@@ -13176,22 +13214,22 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.chapterBack",
-    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@5"
   },
   {
     "command": "leointeg.chapterNext",
-    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@5"
   },
   {
     "command": "leointeg.chapterSelect",
-    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@5"
   },
   {
     "command": "leointeg.chapterMain",
-    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@6"
   },
   {
@@ -13501,12 +13539,15 @@ public startSearch(): void {
 
     if (w_panel) {
         // ALREADY VISIBLE FIND PANEL
-        this._findNeedsFocus = false;
+        this._findNeedsFocus = 0;
         w_panel.webview.postMessage({ type: 'selectFind' });
         return;
     }
 
-    this._findNeedsFocus = true;
+    this._findNeedsFocus = 1;
+    setTimeout(() =&gt; {
+        this._findNeedsFocus = 0;
+    }, 250);
     let w_panelID = '';
     if (this._lastTreeView === this._leoTreeExView) {
         w_panelID = Constants.FIND_EXPLORER_ID;
@@ -13921,24 +13962,24 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.goAnywhere",
   "key": "ctrl+p",
   "mac": "cmd+p",
-  "when": "config.leoIntegration.goAnywhereShortcut &amp;&amp; leoEditHeadline || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "config.leoIntegration.goAnywhereShortcut &amp;&amp; leoEditHeadline || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || config.leoIntegration.goAnywhereShortcut &amp;&amp; leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.startSearch",
   "key": "ctrl+f",
   "mac": "cmd+f",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
-  "command": "leointeg.findQuick",
+  "command": "leointeg.findQuickSelected",
   "key": "ctrl+shift+f",
   "mac": "cmd+shift+f",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.findNextFromOutline",
   "key": "f3",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.findNext",
@@ -13948,7 +13989,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
 {
   "command": "leointeg.findPreviousFromOutline",
   "key": "f2",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.findPrevious",
@@ -13965,7 +14006,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.replaceFromOutline",
   "key": "ctrl+=",
   "mac": "cmd+=",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.replaceThenFind",
@@ -13977,78 +14018,78 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "command": "leointeg.replaceThenFindFromOutline",
   "key": "ctrl+-",
   "mac": "cmd+-",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.gotoGlobalLine",
   "key": "alt+g",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindEverywhereOption",
   "key": "ctrl+alt+e",
   "mac": "cmd+alt+e",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindNodeOnlyOption",
   "key": "ctrl+alt+n",
   "mac": "cmd+alt+n",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindFileOnlyOption",
   "key": "ctrl+alt+l",
   "mac": "cmd+alt+l",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.setFindSuboutlineOnlyOption",
   "key": "ctrl+alt+s",
   "mac": "cmd+alt+s",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindIgnoreCaseOption",
   "key": "ctrl+alt+i",
   "mac": "cmd+alt+i",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindMarkChangesOption",
   "key": "ctrl+alt+c",
   "mac": "cmd+alt+c",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindMarkFindsOption",
   "key": "ctrl+alt+f",
   "mac": "cmd+alt+f",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindRegexpOption",
   "key": "ctrl+alt+x",
   "mac": "cmd+alt+x",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindWordOption",
   "key": "ctrl+alt+w",
   "mac": "cmd+alt+w",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindSearchBodyOption",
   "key": "ctrl+alt+b",
   "mac": "cmd+alt+b",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.toggleFindSearchHeadlineOption",
   "key": "ctrl+alt+h",
   "mac": "cmd+alt+h",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
 <t tx="felix.20210522001751.1">import * as vscode from 'vscode';
@@ -14111,26 +14152,6 @@ export const enum LeoSearchScope {
 </t>
 <t tx="felix.20210522233604.1"></t>
 <t tx="felix.20210522233744.1">{
-  "view": "leoGotoPanel",
-  "contents": "Not connected",
-  "when": "!leoTreeOpened"
-},
-{
-  "view": "leoGotoPanelExplorer",
-  "contents": "Not connected",
-  "when": "!leoTreeOpened"
-},
-{
-  "view": "leoGotoPanel",
-  "contents": "No Results",
-  "when": "leoTreeOpened"
-},
-{
-  "view": "leoGotoPanelExplorer",
-  "contents": "No Results",
-  "when": "leoTreeOpened"
-},
-{
   "view": "leoFindPanel",
   "contents": "Not connected",
   "when": "!leoTreeOpened"
@@ -15846,13 +15867,13 @@ public debouncedRefreshBodyStates(p_delay?: number) {
   "command": "leointeg.undoFromOutline",
   "key": "ctrl+z",
   "mac": "cmd+z",
-  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !inputFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !inputFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.redoFromOutline",
   "key": "ctrl+shift+z",
   "mac": "cmd+shift+z",
-  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !inputFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoGoto|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !inputFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 </t>
 <t tx="felix.20211210001626.1">## 1.0.5
@@ -17142,7 +17163,7 @@ import * as utils from "./utils";
  * * Opens the Nav tab and focus on nav text input
  * @param p_string an optional string to be placed in the nav text input
  */
-public async findQuick(p_string?: string): Promise&lt;unknown&gt; {
+public async findQuick(p_string?: string, p_forceEnter?: boolean): Promise&lt;unknown&gt; {
 
     let w_panelID = '';
     let w_panel: vscode.WebviewView | undefined;
@@ -17160,12 +17181,25 @@ public async findQuick(p_string?: string): Promise&lt;unknown&gt; {
     if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
         w_panel.show(false);
     }
-    const w_message: { [key: string]: string } = { type: 'selectNav' };
-    if (p_string &amp;&amp; p_string?.trim()) {
+    const w_message: { [key: string]: string | boolean } = { type: 'selectNav' };
+    if (p_string &amp;&amp; p_string.trim()) {
         w_message["text"] = p_string.trim();
     }
+    if (p_forceEnter) {
+        w_message["forceEnter"] = true;
+    }
     if (w_panel) {
-        return w_panel.webview.postMessage(w_message);
+        void w_panel.webview.postMessage(w_message);
+    } else {
+        setTimeout(() =&gt; {
+            let w_panel: vscode.WebviewView | undefined;
+            if (this._lastTreeView === this._leoTreeExView) {
+                w_panel = this._findPanelWebviewExplorerView;
+            } else {
+                w_panel = this._findPanelWebviewView;
+            }
+            void w_panel?.webview.postMessage(w_message);
+        }, 290);
     }
 
     return Promise.resolve();
@@ -17182,10 +17216,10 @@ public findQuickSelected(): Thenable&lt;unknown&gt; {
         const selection = editor.selection;
         if (!selection.isEmpty) {
             const text = editor.document.getText(selection).replace(/\r\n/g, "\n");
-            return this.findQuick(text);
+            return this.findQuick(text, true);
         }
     }
-    return this.findQuick();
+    return this.findQuick("", true);
 }
 
 </t>
@@ -17226,7 +17260,12 @@ public async findQuickHistory(): Promise&lt;unknown&gt; {
 public async findQuickMarked(p_preserveFocus?: boolean): Promise&lt;unknown&gt; {
     await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
     this.leoGotoProvider.refreshTreeRoot();
-    if (p_preserveFocus &amp;&amp; (this._leoGoto.visible || this._leoGotoExplorer.visible)) {
+    if (
+        p_preserveFocus &amp;&amp; (
+            (this._findPanelWebviewView &amp;&amp; this._findPanelWebviewView.visible) ||
+            (this._findPanelWebviewExplorerView &amp;&amp; this._findPanelWebviewExplorerView.visible)
+        )
+    ) {
         return Promise.resolve();
     }
     return this.showGotoPane();
@@ -17237,13 +17276,34 @@ public async findQuickMarked(p_preserveFocus?: boolean): Promise&lt;unknown&gt; 
  * * Opens goto and focus in depending on passed options
  */
 public showGotoPane(p_options?: { preserveFocus?: boolean }): Thenable&lt;unknown&gt; {
-    let w_panel = "";
+    let w_panelID = '';
+    let w_panel: vscode.WebviewView | undefined;
     if (this._lastTreeView === this._leoTreeExView) {
-        w_panel = Constants.GOTO_EXPLORER_ID;
+        w_panelID = Constants.FIND_EXPLORER_ID;
+        w_panel = this._findPanelWebviewExplorerView;
     } else {
-        w_panel = Constants.GOTO_ID;
+        w_panelID = Constants.FIND_ID;
+        w_panel = this._findPanelWebviewView;
     }
-    return vscode.commands.executeCommand(w_panel + '.focus', p_options);
+    return vscode.commands.executeCommand(w_panelID + '.focus', p_options).then((p_result) =&gt; {
+        if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
+            w_panel.show(false);
+        }
+        const w_message: { [key: string]: string } = { type: 'showGoto' };
+        if (w_panel) {
+            void w_panel.webview.postMessage(w_message);
+        } else {
+            setTimeout(() =&gt; {
+                let w_panel: vscode.WebviewView | undefined;
+                if (this._lastTreeView === this._leoTreeExView) {
+                    w_panel = this._findPanelWebviewExplorerView;
+                } else {
+                    w_panel = this._findPanelWebviewView;
+                }
+                void w_panel?.webview.postMessage(w_message);
+            }, 290);
+        }
+    });
 }
 
 </t>
@@ -17251,6 +17311,10 @@ public showGotoPane(p_options?: { preserveFocus?: boolean }): Thenable&lt;unknow
  * * Handles a click (selection) of a nav panel node: Sends 'goto' command to server.
  */
 public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
+    if (!p_node) {
+        console.log('ERROR NO NODE TO SHOW IN GOTO PANE!');
+        return;
+    }
 
     await this._isBusyTriggerSave(false, true);
     this.leoGotoProvider.resetSelectedNode(p_node); // Inform controller of last index chosen
@@ -17329,22 +17393,6 @@ public async gotoNavEntry(p_node: LeoGotoNode): Promise&lt;unknown&gt; {
 
             return this.launchRefresh();
         }
-    }
-}
-
-</t>
-<t tx="felix.20220310224330.1">/**
- * * Handle the change of visibility of either goto treeview and refresh it if its visible
- * @param p_event The treeview-visibility-changed event passed by vscode
- * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
- */
-private _onGotoTreeViewVisibilityChanged(
-    p_event: vscode.TreeViewVisibilityChangeEvent,
-    p_explorerView: boolean
-): void {
-    if (p_event.visible) {
-        this.leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
-        // this.refreshGotoPane();  // No need to refresh because no selection needs to be set
     }
 }
 
@@ -17970,20 +18018,19 @@ public checkVersion(): void {
  * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
  */
 private _onUndosTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
-    if (p_explorerView) { } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
+        const lastLeoUndos = p_explorerView ? this._leoUndosExplorer : this._leoUndos;
+        const undosShown = p_explorerView ? this._leoUndosExplorerShown : this._leoUndosShown;
+
+        this._lastLeoUndos = lastLeoUndos;
+        if (undosShown) {
+            this._leoUndosProvider.refreshTreeRoot(); // Already shown, will redraw but not re-select
+        }
+
         if (p_explorerView) {
-            this._lastLeoUndos = this._leoUndosExplorer;
-            if (this._leoUndosExplorerShown) {
-                this._leoUndosProvider.refreshTreeRoot(); // Already shown, will redraw but not re-select
-            }
-            this._leoUndosExplorerShown = true; // either way set it
+            this._leoUndosExplorerShown = true;
         } else {
-            this._lastLeoUndos = this._leoUndos;
-            if (this._leoUndosShown) {
-                this._leoUndosProvider.refreshTreeRoot(); // Already shown, will redraw but not re-select
-            }
-            this._leoUndosShown = true; // either way set it
+            this._leoUndosShown = true;
         }
     }
 }
@@ -18023,6 +18070,7 @@ private _setUndoSelection(p_node: LeoUndoNode): void {
                 this._undoPaneReveal = undefined;
             },
             (p_error) =&gt; {
+                this._undoPaneReveal = undefined;
                 console.log('setUndoSelection could not reveal');
             }
         );
@@ -18467,7 +18515,7 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
         this._lastTreeView.visible
 
     ) {
-        void this._lastTreeView.reveal(p_element, {
+        this.safeReveal(this._lastTreeView, p_element, {
             select: true,
             focus: false
         }).then(
@@ -18493,7 +18541,7 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
                 clearTimeout(this._gotSelectedNodeRevealTimer);
             }
             this._gotSelectedNodeRevealTimer = setTimeout(() =&gt; {
-                this._lastTreeView.reveal(p_element, {
+                this.safeReveal(this._lastTreeView, p_element, {
                     select: true,
                     focus: w_focusTree
                 }).then(() =&gt; {
@@ -18573,6 +18621,7 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
                         this._documentPaneReveal = undefined;
                     },
                     (p_reason) =&gt; {
+                        this._documentPaneReveal = undefined;
                         console.log('shown doc error on reveal: ', p_reason);
                     }
                 );
@@ -18805,6 +18854,7 @@ public setFindPanel(p_panel: vscode.WebviewView): void {
                 this._onFindViewVisibilityChanged(false)
             ));
     }
+    this.setGotoContent();
     this.checkForceFindFocus(true);
 }
 
@@ -19517,6 +19567,11 @@ private async _doMinibufferCommand(p_picked?: vscode.QuickPickItem): Promise&lt;
  */
 public checkForceFindFocus(p_fromInit: boolean): void {
     if (this._findNeedsFocus) {
+        let message = 'selectFind';
+        if (this._findNeedsFocus === 2) {
+            message = 'selectNav';
+        }
+        this._findNeedsFocus = 0; // Set false before timeout.
         setTimeout(() =&gt; {
             let w_panel: vscode.WebviewView | undefined;
             if (this._findPanelWebviewView &amp;&amp; this._findPanelWebviewView.visible) {
@@ -19525,9 +19580,8 @@ public checkForceFindFocus(p_fromInit: boolean): void {
                 w_panel = this._findPanelWebviewExplorerView;
             }
             if (w_panel) {
-                this._findNeedsFocus = false;
-                w_panel.webview.postMessage({ type: 'selectFind' });
-                return;
+                this._findNeedsFocus = 0;
+                w_panel.webview.postMessage({ type: message });
             }
         }, 60);
 
@@ -19541,15 +19595,15 @@ public checkForceFindFocus(p_fromInit: boolean): void {
  * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
  */
 private _onFindViewVisibilityChanged(p_explorerView: boolean): void {
-    if (p_explorerView) {
-        if (this._findPanelWebviewExplorerView?.visible) {
-            this._lastFindView = this._findPanelWebviewExplorerView;
-            this.checkForceFindFocus(false);
-        }
-    } else {
-        if (this._findPanelWebviewView?.visible) {
-            this._lastFindView = this._findPanelWebviewView;
-            this.checkForceFindFocus(false);
+    const currentView = p_explorerView ? this._findPanelWebviewExplorerView : this._findPanelWebviewView;
+
+    if (currentView?.visible) {
+        this._lastFindView = currentView;
+        this.checkForceFindFocus(false);
+        this.setGotoContent();
+
+        if (this.leoGotoProvider.isSelected) {
+            this.revealGotoNavEntry(this.leoGotoProvider.selectedNodeIndex, true);
         }
     }
 }
@@ -20384,7 +20438,7 @@ private _finishOpenLastFiles(): void {
 </t>
 <t tx="felix.20230304182815.1">## Undo Panel
 
-&gt; In LeoInteg, the undo functionality is a multi-tiered system that segregates structural outline changes from text changes within the body pane. The Undo Panel captures outline alterations as individual 'Undo Beads', independent from VS Code's native text undo states. When focus resides in the body pane, the Undo keybinding triggers VS Code's text-specific undo action. However, once the focus shifts or a new node is selected, all concurrent text changes coalesce into a single 'Undo Bead' within the Undo Panel. These 'Undo Beads' can then be manipulated either through the Undo Panel or by keybindings, provided the focus is explicitly set on the outline pane. This dual-layer undo architecture enables precise control over both code and structural modifications.
+&gt; In LeoInteg, the undo functionality is a multi-tiered system that segregates structural outline changes from text changes within the body pane. The Undo Panel captures outline alterations as individual 'Undo Beads', independent from VS Code's native text undo states. When focus resides in the body pane, the Undo keybinding triggers VS Code's text-specific undo action. However, once the focus shifts, or a new node is selected, all concurrent text changes coalesce into a single 'Undo Bead' within the Undo Panel. These 'Undo Beads' can then be manipulated either through the Undo Panel or by keybindings, provided the focus is explicitly set on the outline pane. This dual-layer undo architecture enables precise control over both code and structural modifications.
 
 Use the undo / redo icons above the outline or above the undo pane itself. You can also right-click on an undo step to directly switch to that specific state!
 
@@ -20401,31 +20455,25 @@ Normally in vscode, the the **`Ctrl+P`** shortcut allows you to switch to any pr
 
 ![Goto Anywhere](https://raw.githubusercontent.com/boltex/leointeg/master/resources/goto-anywhere.gif)
 
-### Find Commands
+## Find Panel
 
-With focus in Leo's outline or body pane, Hit **`Ctrl+F`** to open the _find panel_.
+With the focus in Leo's outline or body pane, Hit **`Ctrl+F`** to open the Find tab of the _find panel_.
+
+![Find Panel](https://raw.githubusercontent.com/boltex/leojs/master/resources/new-find-panel.png)
 
 Enter your search pattern directly in the **\&lt;find pattern here\&gt;** field. Press **`Enter`** to find the first match starting from your current position.
 
 Hitting **`F3`** repeatedly will find the subsequent matches. (**`F2`** for previous matches)
 
-![Find results](https://raw.githubusercontent.com/boltex/leointeg/master/resources/find-in-headlines.gif)
+Using the Nav tab of the _find panel_, (**`Ctrl+Shift+F`** to accesss directly) you can type your search pattern in the **Nav** field instead to see all results appear below. This will show the headlines as you type.
 
-### Nav and the Goto Panel
-
-Type your search pattern in the **Nav** field instead to see all results show up below in leo's **Goto Pane**. This will show the headlines as you type.
+![Find Panel](https://raw.githubusercontent.com/boltex/leojs/master/resources/new-nav-panel-2.png)
 
 Press **`Enter`** to freeze the results and show results also found in **body text of any node**. This will add a snowflake icon ❄️ to the **Nav** field.
 
-From the **Goto Pane**, you can use the arrow keys, home/end, page up/down to cycle directly to any of those matches.
+![Find Panel](https://raw.githubusercontent.com/boltex/leojs/master/resources/new-nav-panel-3.png)
 
-![Goto pane](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-goto-pane.gif)
-
-### Using Tags
-
-If you check the **Tag** option, the **Nav** field and **Goto Pane** are then used to find nodes by their tag 🏷 _ua_ (user attribute).
-
-![Node tags](https://raw.githubusercontent.com/boltex/leointeg/master/resources/nav-tags.gif)
+If you check the **Tag** option, the **Nav** field is then used to find nodes by their tag 🏷 _ua_ (user attribute).
 
 </t>
 <t tx="felix.20230304215145.1">@language md
@@ -20531,9 +20579,9 @@ public async revert(): Promise&lt;unknown&gt; {
             refreshType: {
                 tree: true,
                 body: true,
+                goto: true,
                 documents: true,
                 buttons: true,
-                goto: true,
                 states: true,
             },
             finalFocus: Focus.NoChange, // use last
@@ -21099,6 +21147,10 @@ public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
 - Changed behavior of the 'Open Aside' command: it now opens 'detached' body panes, which allows text editing for a fixed gnx.
 - Support renamed commands 'save-file-as-db' and 'file-save-as-db'.
 - Fixed Recent files list to capitalize drive letter and prevent duplicates.
+- Simplified the find panel's input field placeholder.
+- Fixed find panel scrollbars as per VSCode issue #213045.
+- Deprecated the 'Goto Panel' by adding tabs to the find panel to separate 'find' and 'nav/tag' search inputs.
+- Reworked the icons for the 'quick find' commands (dirty-nodes, marked-nodes, reverse-gnx-order, visited-nodes-history and quick-find with selected text) to be graphical symbols instead of latin letters.
 
 </t>
 <t tx="felix.20240430200658.1">"icons": {
@@ -22627,6 +22679,98 @@ private _hideBodiesUnknownToFileSys(p_editors: readonly vscode.TextEditor[]): vo
 &lt;/body&gt;
 
 &lt;/html&gt;
+</t>
+<t tx="felix.20240710211515.1">/**
+ * Reveal that queues a follow up to prevent revealing before the last one finished.
+ */
+public safeReveal(tree: vscode.TreeView&lt;ArchivedPosition&gt;, element: ArchivedPosition, options?: {
+    select?: boolean;
+    focus?: boolean;
+    expand?: boolean | number;
+}): Thenable&lt;void&gt; {
+    if (!this._pendingReveal) {
+        // No reveal is currently pending, start the reveal
+        this._pendingReveal = this._performReveal(tree, element, options);
+        return this._pendingReveal;
+    } else {
+        // A reveal is already pending, store the parameters for the next reveal
+        this._nextRevealParams = { tree, element, options };
+        return this._pendingReveal;
+    }
+}
+
+</t>
+<t tx="felix.20240710211520.1">private _performReveal(tree: vscode.TreeView&lt;ArchivedPosition&gt;, element: ArchivedPosition, options?: {
+    select?: boolean;
+    focus?: boolean;
+    expand?: boolean | number;
+}): Thenable&lt;void&gt; {
+    return tree.reveal(element, options).then(
+        () =&gt; this._handleRevealCompletion(),
+        (error) =&gt; this._handleRevealCompletion(error)
+    );
+}
+
+</t>
+<t tx="felix.20240710211525.1">private _handleRevealCompletion(error?: any): Thenable&lt;void&gt; | void {
+    if (this._nextRevealParams) {
+        // If there are queued reveal parameters, start the next reveal
+        const { tree, element, options } = this._nextRevealParams;
+        this._nextRevealParams = undefined;
+        this._pendingReveal = this._performReveal(tree, element, options);
+        return this._pendingReveal;
+    } else {
+        // No more reveals are queued, clear the pending reveal
+        this._pendingReveal = undefined;
+        if (error) {
+            // Propagate the error if there was one
+            throw error;
+        }
+    }
+}
+
+</t>
+<t tx="felix.20240710211821.1">/**
+ * Reveals and selects the specific nav entry in the results of the nav pane.
+ */
+public revealGotoNavEntry(p_index: number, p_preserveFocus?: boolean): void {
+    if (this._findPanelWebviewExplorerView &amp;&amp; this._findPanelWebviewExplorerView.visible) {
+        void this._findPanelWebviewExplorerView!.webview.postMessage({ type: 'revealNavEntry', value: p_index, preserveFocus: p_preserveFocus });
+    } else if (this._findPanelWebviewView &amp;&amp; this._findPanelWebviewView.visible) {
+        void this._findPanelWebviewView!.webview.postMessage({ type: 'revealNavEntry', value: p_index, preserveFocus: p_preserveFocus });
+    }
+}
+
+</t>
+<t tx="felix.20240710211904.1">/**
+ * Send the new content of the goto pane to the findPanel.
+ */
+public setGotoContent(): void {
+    const content = this.leoGotoProvider.nodeList.map(
+        (gotoNode) =&gt; {
+            return {
+                "tooltip": gotoNode.tooltip,
+                "key": gotoNode.key,
+                "entryType": gotoNode.entryType,
+                "description": gotoNode.description,
+                "label": gotoNode.leoPaneLabel
+            };
+        }
+    );
+    if (this._findPanelWebviewExplorerView &amp;&amp; this._findPanelWebviewExplorerView.visible) {
+        void this._findPanelWebviewExplorerView!.webview.postMessage({ type: 'refreshGoto', gotoContent: content });
+    }
+    if (this._findPanelWebviewView &amp;&amp; this._findPanelWebviewView.visible) {
+        void this._findPanelWebviewView!.webview.postMessage({ type: 'refreshGoto', gotoContent: content });
+    }
+}
+
+</t>
+<t tx="felix.20240710222918.1">public showNavResults(): Thenable&lt;unknown&gt; {
+    this.leoGotoProvider.refreshTreeRoot();
+    return this.showGotoPane({ preserveFocus: true }); // show but dont change focus
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

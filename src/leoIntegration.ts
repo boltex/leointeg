@@ -157,6 +157,14 @@ export class LeoIntegration {
     private _leoTreeExView: vscode.TreeView<ArchivedPosition>; // Outline tree view added to the Explorer Sidebar
     private _lastTreeView: vscode.TreeView<ArchivedPosition>; // Last visible treeview
     private _renamingHeadline: string = "";
+    private _pendingReveal: Thenable<void> | undefined;
+    private _nextRevealParams: {
+        tree: vscode.TreeView<ArchivedPosition>, element: ArchivedPosition, options?: {
+            select?: boolean;
+            focus?: boolean;
+            expand?: boolean | number;
+        }
+    } | undefined;
 
     private _revealNodeRetriedRefreshOutline: boolean = false; // USED IN _refreshOutline and _revealNode
 
@@ -197,8 +205,8 @@ export class LeoIntegration {
 
     // * Goto nav panel
     public leoGotoProvider: LeoGotoProvider;
-    private _leoGoto: vscode.TreeView<LeoGotoNode>;
-    private _leoGotoExplorer: vscode.TreeView<LeoGotoNode>;
+    // private _leoGoto: vscode.TreeView<LeoGotoNode>;
+    // private _leoGotoExplorer: vscode.TreeView<LeoGotoNode>;
 
     // * Undos pane
     private _leoUndosProvider!: LeoUndosProvider;
@@ -218,7 +226,7 @@ export class LeoIntegration {
     private _findPanelWebviewView: vscode.WebviewView | undefined;
     private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
     private _lastFindView: vscode.WebviewView | undefined;  // ? Maybe unused ?
-    private _findNeedsFocus: boolean = false;
+    private _findNeedsFocus: number = 0; // 0 none, 1 find, 2 nav
     private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
     public findFocusTree = false;
     public findHeadlineRange: [number, number] = [0, 0];
@@ -462,28 +470,6 @@ export class LeoIntegration {
 
         // * Create goto Treeview Providers and tree views
         this.leoGotoProvider = new LeoGotoProvider(this);
-        this._leoGoto = vscode.window.createTreeView(Constants.GOTO_ID, {
-            showCollapseAll: false,
-            treeDataProvider: this.leoGotoProvider,
-        });
-        this._context.subscriptions.push(
-            this._leoGoto,
-            this._leoGoto.onDidChangeVisibility((p_event) =>
-                this._onGotoTreeViewVisibilityChanged(p_event, false)
-            )
-        );
-        this._leoGotoExplorer = vscode.window.createTreeView(Constants.GOTO_EXPLORER_ID, {
-            showCollapseAll: false,
-            treeDataProvider: this.leoGotoProvider,
-        });
-        this._context.subscriptions.push(
-            this._leoGotoExplorer,
-            this._leoGotoExplorer.onDidChangeVisibility((p_event) =>
-                this._onGotoTreeViewVisibilityChanged(p_event, true)
-            )
-        );
-        // * Set 'last' goto tree view visible
-        this.leoGotoProvider.setLastGotoView((this.config.treeInExplorer && !w_effectiveLeojsInExplorer) ? this._leoGotoExplorer : this._leoGoto);
 
         // * Create 'Undo History' Treeview Providers and tree views
         this._leoUndosProvider = new LeoUndosProvider(this);
@@ -1510,6 +1496,7 @@ export class LeoIntegration {
                 void vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_uri);
             }
         }
+        this._nextRevealParams = undefined;
         this.leoStates.fileOpenedReady = false;
         this.leoStates.leoCommanderId = "";
         this._bodyTextDocument = undefined;
@@ -1748,40 +1735,24 @@ export class LeoIntegration {
     }
 
     /**
-     * * Handle the change of visibility of either goto treeview and refresh it if its visible
-     * @param p_event The treeview-visibility-changed event passed by vscode
-     * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
-     */
-    private _onGotoTreeViewVisibilityChanged(
-        p_event: vscode.TreeViewVisibilityChangeEvent,
-        p_explorerView: boolean
-    ): void {
-        if (p_event.visible) {
-            this.leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
-            // this.refreshGotoPane();  // No need to refresh because no selection needs to be set
-        }
-    }
-
-    /**
      * * Handle the change of visibility of either undo treeview and refresh it if its visible
      * @param p_event The treeview-visibility-changed event passed by vscode
      * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
      */
     private _onUndosTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
-        if (p_explorerView) { } // (Facultative/unused) Do something different if explorer view is used
         if (p_event.visible) {
+            const lastLeoUndos = p_explorerView ? this._leoUndosExplorer : this._leoUndos;
+            const undosShown = p_explorerView ? this._leoUndosExplorerShown : this._leoUndosShown;
+
+            this._lastLeoUndos = lastLeoUndos;
+            if (undosShown) {
+                this._leoUndosProvider.refreshTreeRoot(); // Already shown, will redraw but not re-select
+            }
+
             if (p_explorerView) {
-                this._lastLeoUndos = this._leoUndosExplorer;
-                if (this._leoUndosExplorerShown) {
-                    this._leoUndosProvider.refreshTreeRoot(); // Already shown, will redraw but not re-select
-                }
-                this._leoUndosExplorerShown = true; // either way set it
+                this._leoUndosExplorerShown = true;
             } else {
-                this._lastLeoUndos = this._leoUndos;
-                if (this._leoUndosShown) {
-                    this._leoUndosProvider.refreshTreeRoot(); // Already shown, will redraw but not re-select
-                }
-                this._leoUndosShown = true; // either way set it
+                this._leoUndosShown = true;
             }
         }
     }
@@ -1792,15 +1763,15 @@ export class LeoIntegration {
      * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
      */
     private _onFindViewVisibilityChanged(p_explorerView: boolean): void {
-        if (p_explorerView) {
-            if (this._findPanelWebviewExplorerView?.visible) {
-                this._lastFindView = this._findPanelWebviewExplorerView;
-                this.checkForceFindFocus(false);
-            }
-        } else {
-            if (this._findPanelWebviewView?.visible) {
-                this._lastFindView = this._findPanelWebviewView;
-                this.checkForceFindFocus(false);
+        const currentView = p_explorerView ? this._findPanelWebviewExplorerView : this._findPanelWebviewView;
+
+        if (currentView?.visible) {
+            this._lastFindView = currentView;
+            this.checkForceFindFocus(false);
+            this.setGotoContent();
+
+            if (this.leoGotoProvider.isSelected) {
+                this.revealGotoNavEntry(this.leoGotoProvider.selectedNodeIndex, true);
             }
         }
     }
@@ -2333,6 +2304,7 @@ export class LeoIntegration {
                     this._onFindViewVisibilityChanged(false)
                 ));
         }
+        this.setGotoContent();
         this.checkForceFindFocus(true);
     }
 
@@ -2494,6 +2466,7 @@ export class LeoIntegration {
             if (id) {
                 w_param["commanderId"] = id;
             }
+
             // Don't wait for promise!
             this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
 
@@ -2529,6 +2502,53 @@ export class LeoIntegration {
             body: p_document.getText().replace(/\r\n/g, "\n"),
         };
         return this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
+    }
+
+    /**
+     * Reveal that queues a follow up to prevent revealing before the last one finished.
+     */
+    public safeReveal(tree: vscode.TreeView<ArchivedPosition>, element: ArchivedPosition, options?: {
+        select?: boolean;
+        focus?: boolean;
+        expand?: boolean | number;
+    }): Thenable<void> {
+        if (!this._pendingReveal) {
+            // No reveal is currently pending, start the reveal
+            this._pendingReveal = this._performReveal(tree, element, options);
+            return this._pendingReveal;
+        } else {
+            // A reveal is already pending, store the parameters for the next reveal
+            this._nextRevealParams = { tree, element, options };
+            return this._pendingReveal;
+        }
+    }
+
+    private _performReveal(tree: vscode.TreeView<ArchivedPosition>, element: ArchivedPosition, options?: {
+        select?: boolean;
+        focus?: boolean;
+        expand?: boolean | number;
+    }): Thenable<void> {
+        return tree.reveal(element, options).then(
+            () => this._handleRevealCompletion(),
+            (error) => this._handleRevealCompletion(error)
+        );
+    }
+
+    private _handleRevealCompletion(error?: any): Thenable<void> | void {
+        if (this._nextRevealParams) {
+            // If there are queued reveal parameters, start the next reveal
+            const { tree, element, options } = this._nextRevealParams;
+            this._nextRevealParams = undefined;
+            this._pendingReveal = this._performReveal(tree, element, options);
+            return this._pendingReveal;
+        } else {
+            // No more reveals are queued, clear the pending reveal
+            this._pendingReveal = undefined;
+            if (error) {
+                // Propagate the error if there was one
+                throw error;
+            }
+        }
     }
 
     /**
@@ -2574,7 +2594,7 @@ export class LeoIntegration {
         }
         q_outline.then(() => {
             if (this.lastSelectedNode) {
-                return this._lastTreeView.reveal(this.lastSelectedNode, {
+                return this.safeReveal(this._lastTreeView, this.lastSelectedNode, {
                     select: true,
                     focus: !!p_focusOutline,
                 }).then(
@@ -2868,6 +2888,11 @@ export class LeoIntegration {
 
     }
 
+    public showNavResults(): Thenable<unknown> {
+        this.leoGotoProvider.refreshTreeRoot();
+        return this.showGotoPane({ preserveFocus: true }); // show but dont change focus
+    }
+
     /**
      * * Checks timestamp only, if is still the latest lastReceivedNode
       * @param ts timestamp of last time
@@ -3039,7 +3064,7 @@ export class LeoIntegration {
     private _revealNode(
         p_leoNode: ArchivedPosition,
         p_options?: { select?: boolean; focus?: boolean; expand?: boolean | number }
-    ): Thenable<void> {
+    ): void {
         let w_treeview: vscode.TreeView<ArchivedPosition> | undefined;
         if (this._leoTreeView.visible) {
             w_treeview = this._leoTreeView;
@@ -3061,7 +3086,7 @@ export class LeoIntegration {
         }
         try {
             if (w_treeview) {
-                return w_treeview.reveal(p_leoNode, p_options).then(
+                this.safeReveal(w_treeview, p_leoNode, p_options).then(
                     () => {
                         // ok
                         this._revealNodeRetriedRefreshOutline = false;
@@ -3087,7 +3112,6 @@ export class LeoIntegration {
                 this._refreshOutline(true, RevealType.RevealSelect);
             }
         }
-        return Promise.resolve(); // Defaults to resolving even if both are hidden
     }
 
     /**
@@ -3108,7 +3132,7 @@ export class LeoIntegration {
             this._lastTreeView.visible
 
         ) {
-            void this._lastTreeView.reveal(p_element, {
+            this.safeReveal(this._lastTreeView, p_element, {
                 select: true,
                 focus: false
             }).then(
@@ -3134,7 +3158,7 @@ export class LeoIntegration {
                     clearTimeout(this._gotSelectedNodeRevealTimer);
                 }
                 this._gotSelectedNodeRevealTimer = setTimeout(() => {
-                    this._lastTreeView.reveal(p_element, {
+                    this.safeReveal(this._lastTreeView, p_element, {
                         select: true,
                         focus: w_focusTree
                     }).then(() => {
@@ -5296,7 +5320,7 @@ export class LeoIntegration {
      * * Opens the Nav tab and focus on nav text input
      * @param p_string an optional string to be placed in the nav text input
      */
-    public async findQuick(p_string?: string): Promise<unknown> {
+    public async findQuick(p_string?: string, p_forceEnter?: boolean): Promise<unknown> {
 
         let w_panelID = '';
         let w_panel: vscode.WebviewView | undefined;
@@ -5314,12 +5338,25 @@ export class LeoIntegration {
         if (w_panel && w_panel.show && !w_panel.visible) {
             w_panel.show(false);
         }
-        const w_message: { [key: string]: string } = { type: 'selectNav' };
-        if (p_string && p_string?.trim()) {
+        const w_message: { [key: string]: string | boolean } = { type: 'selectNav' };
+        if (p_string && p_string.trim()) {
             w_message["text"] = p_string.trim();
         }
+        if (p_forceEnter) {
+            w_message["forceEnter"] = true;
+        }
         if (w_panel) {
-            return w_panel.webview.postMessage(w_message);
+            void w_panel.webview.postMessage(w_message);
+        } else {
+            setTimeout(() => {
+                let w_panel: vscode.WebviewView | undefined;
+                if (this._lastTreeView === this._leoTreeExView) {
+                    w_panel = this._findPanelWebviewExplorerView;
+                } else {
+                    w_panel = this._findPanelWebviewView;
+                }
+                void w_panel?.webview.postMessage(w_message);
+            }, 290);
         }
 
         return Promise.resolve();
@@ -5335,10 +5372,10 @@ export class LeoIntegration {
             const selection = editor.selection;
             if (!selection.isEmpty) {
                 const text = editor.document.getText(selection).replace(/\r\n/g, "\n");
-                return this.findQuick(text);
+                return this.findQuick(text, true);
             }
         }
-        return this.findQuick();
+        return this.findQuick("", true);
     }
 
     /**
@@ -5375,7 +5412,12 @@ export class LeoIntegration {
     public async findQuickMarked(p_preserveFocus?: boolean): Promise<unknown> {
         await this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED);
         this.leoGotoProvider.refreshTreeRoot();
-        if (p_preserveFocus && (this._leoGoto.visible || this._leoGotoExplorer.visible)) {
+        if (
+            p_preserveFocus && (
+                (this._findPanelWebviewView && this._findPanelWebviewView.visible) ||
+                (this._findPanelWebviewExplorerView && this._findPanelWebviewExplorerView.visible)
+            )
+        ) {
             return Promise.resolve();
         }
         return this.showGotoPane();
@@ -5385,19 +5427,44 @@ export class LeoIntegration {
      * * Opens goto and focus in depending on passed options
      */
     public showGotoPane(p_options?: { preserveFocus?: boolean }): Thenable<unknown> {
-        let w_panel = "";
+        let w_panelID = '';
+        let w_panel: vscode.WebviewView | undefined;
         if (this._lastTreeView === this._leoTreeExView) {
-            w_panel = Constants.GOTO_EXPLORER_ID;
+            w_panelID = Constants.FIND_EXPLORER_ID;
+            w_panel = this._findPanelWebviewExplorerView;
         } else {
-            w_panel = Constants.GOTO_ID;
+            w_panelID = Constants.FIND_ID;
+            w_panel = this._findPanelWebviewView;
         }
-        return vscode.commands.executeCommand(w_panel + '.focus', p_options);
+        return vscode.commands.executeCommand(w_panelID + '.focus', p_options).then((p_result) => {
+            if (w_panel && w_panel.show && !w_panel.visible) {
+                w_panel.show(false);
+            }
+            const w_message: { [key: string]: string } = { type: 'showGoto' };
+            if (w_panel) {
+                void w_panel.webview.postMessage(w_message);
+            } else {
+                setTimeout(() => {
+                    let w_panel: vscode.WebviewView | undefined;
+                    if (this._lastTreeView === this._leoTreeExView) {
+                        w_panel = this._findPanelWebviewExplorerView;
+                    } else {
+                        w_panel = this._findPanelWebviewView;
+                    }
+                    void w_panel?.webview.postMessage(w_message);
+                }, 290);
+            }
+        });
     }
 
     /**
      * * Handles a click (selection) of a nav panel node: Sends 'goto' command to server.
      */
     public async gotoNavEntry(p_node: LeoGotoNode): Promise<unknown> {
+        if (!p_node) {
+            console.log('ERROR NO NODE TO SHOW IN GOTO PANE!');
+            return;
+        }
 
         await this._isBusyTriggerSave(false, true);
         this.leoGotoProvider.resetSelectedNode(p_node); // Inform controller of last index chosen
@@ -5480,6 +5547,17 @@ export class LeoIntegration {
     }
 
     /**
+     * Reveals and selects the specific nav entry in the results of the nav pane.
+     */
+    public revealGotoNavEntry(p_index: number, p_preserveFocus?: boolean): void {
+        if (this._findPanelWebviewExplorerView && this._findPanelWebviewExplorerView.visible) {
+            void this._findPanelWebviewExplorerView!.webview.postMessage({ type: 'revealNavEntry', value: p_index, preserveFocus: p_preserveFocus });
+        } else if (this._findPanelWebviewView && this._findPanelWebviewView.visible) {
+            void this._findPanelWebviewView!.webview.postMessage({ type: 'revealNavEntry', value: p_index, preserveFocus: p_preserveFocus });
+        }
+    }
+
+    /**
      * * Goto the next, previous, first or last nav entry via arrow keys in
      */
     public navigateNavEntry(p_nav: LeoGotoNavKey): void {
@@ -5540,12 +5618,15 @@ export class LeoIntegration {
 
         if (w_panel) {
             // ALREADY VISIBLE FIND PANEL
-            this._findNeedsFocus = false;
+            this._findNeedsFocus = 0;
             w_panel.webview.postMessage({ type: 'selectFind' });
             return;
         }
 
-        this._findNeedsFocus = true;
+        this._findNeedsFocus = 1;
+        setTimeout(() => {
+            this._findNeedsFocus = 0;
+        }, 250);
         let w_panelID = '';
         if (this._lastTreeView === this._leoTreeExView) {
             w_panelID = Constants.FIND_EXPLORER_ID;
@@ -5561,6 +5642,11 @@ export class LeoIntegration {
      */
     public checkForceFindFocus(p_fromInit: boolean): void {
         if (this._findNeedsFocus) {
+            let message = 'selectFind';
+            if (this._findNeedsFocus === 2) {
+                message = 'selectNav';
+            }
+            this._findNeedsFocus = 0; // Set false before timeout.
             setTimeout(() => {
                 let w_panel: vscode.WebviewView | undefined;
                 if (this._findPanelWebviewView && this._findPanelWebviewView.visible) {
@@ -5569,9 +5655,8 @@ export class LeoIntegration {
                     w_panel = this._findPanelWebviewExplorerView;
                 }
                 if (w_panel) {
-                    this._findNeedsFocus = false;
-                    w_panel.webview.postMessage({ type: 'selectFind' });
-                    return;
+                    this._findNeedsFocus = 0;
+                    w_panel.webview.postMessage({ type: message });
                 }
             }, 60);
 
@@ -6070,6 +6155,29 @@ export class LeoIntegration {
     }
 
     /**
+     * Send the new content of the goto pane to the findPanel.
+     */
+    public setGotoContent(): void {
+        const content = this.leoGotoProvider.nodeList.map(
+            (gotoNode) => {
+                return {
+                    "tooltip": gotoNode.tooltip,
+                    "key": gotoNode.key,
+                    "entryType": gotoNode.entryType,
+                    "description": gotoNode.description,
+                    "label": gotoNode.leoPaneLabel
+                };
+            }
+        );
+        if (this._findPanelWebviewExplorerView && this._findPanelWebviewExplorerView.visible) {
+            void this._findPanelWebviewExplorerView!.webview.postMessage({ type: 'refreshGoto', gotoContent: content });
+        }
+        if (this._findPanelWebviewView && this._findPanelWebviewView.visible) {
+            void this._findPanelWebviewView!.webview.postMessage({ type: 'refreshGoto', gotoContent: content });
+        }
+    }
+
+    /**
      * * Gets the search settings from Leo, and applies them to the find panel webviews
      */
     public loadSearchSettings(): void {
@@ -6453,6 +6561,7 @@ export class LeoIntegration {
                             this._documentPaneReveal = undefined;
                         },
                         (p_reason) => {
+                            this._documentPaneReveal = undefined;
                             console.log('shown doc error on reveal: ', p_reason);
                         }
                     );
@@ -6687,10 +6796,10 @@ export class LeoIntegration {
                 {
                     tree: true,
                     body: true,
+                    goto: true,
                     documents: true,
                     buttons: true,
                     states: true,
-                    goto: true
 
                 }
             );
@@ -6747,9 +6856,9 @@ export class LeoIntegration {
                 refreshType: {
                     tree: true,
                     body: true,
+                    goto: true,
                     documents: true,
                     buttons: true,
-                    goto: true,
                     states: true,
                 },
                 finalFocus: Focus.NoChange, // use last
@@ -6795,10 +6904,10 @@ export class LeoIntegration {
                             {
                                 tree: true,
                                 body: true,
+                                goto: true,
                                 documents: true,
                                 buttons: true,
                                 states: true,
-                                goto: true
                             }
                         );
                     } else {
@@ -6928,10 +7037,10 @@ export class LeoIntegration {
                 {
                     tree: true,
                     body: true,
+                    goto: true,
                     documents: true,
                     buttons: true,
                     states: true,
-                    goto: true
                 }
             );
             this.launchRefresh();
@@ -7726,6 +7835,7 @@ export class LeoIntegration {
                     this._undoPaneReveal = undefined;
                 },
                 (p_error) => {
+                    this._undoPaneReveal = undefined;
                     console.log('setUndoSelection could not reveal');
                 }
             );
