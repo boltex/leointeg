@@ -21151,6 +21151,7 @@ public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
 - Fixed Ctrl+Shift+F to be quick-find with selected text instead of just focusing on the nav text input.
 - Deprecated the 'Goto Panel' by adding tabs to the find panel to separate 'find' and 'nav/tag' search inputs.
 - Reworked the icons for the 'quick find' commands (dirty-nodes, marked-nodes, reverse-gnx-order, visited-nodes-history and quick-find with selected text) to be graphical symbols instead of latin letters.
+- Added language coloring and syntax support for julia, batch and shell languages.
 
 </t>
 <t tx="felix.20240430200658.1">"icons": {
