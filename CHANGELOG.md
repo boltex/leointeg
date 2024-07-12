@@ -2,7 +2,7 @@
 
 ## 1.0.21
 
-- Changed behavior of the 'Open Aside' command: it now opens 'detached' body panes, which allows text editing for a fixed gnx.
+- Changed behavior of the 'Open Aside' command: it now opens 'detached' body panes, which allows text editing for a fixed gnx: Requires Leo 6.8.0.
 - Fixed the icons 'disabled' appearance by changing the graphic format from SVG to a weoff2 font.
 - Support Leo's renamed commands 'save-file-as-db' and 'file-save-as-db'.
 - Fixed Recent files list to capitalize drive letter and prevent duplicates.
