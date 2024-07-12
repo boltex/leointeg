@@ -6,6 +6,10 @@
 - Changed behavior of the 'Open Aside' command: it now opens 'detached' body panes, which allows text editing for a fixed gnx.
 - Support renamed commands 'save-file-as-db' and 'file-save-as-db'.
 - Fixed Recent files list to capitalize drive letter and prevent duplicates.
+- Simplified the find panel's input field placeholder.
+- Fixed find panel scrollbars as per VSCode issue #213045.
+- Deprecated the 'Goto Panel' by adding tabs to the find panel to separate 'find' and 'nav/tag' search inputs.
+- Reworked the icons for the 'quick find' commands (dirty-nodes, marked-nodes, reverse-gnx-order, visited-nodes-history and quick-find with selected text) to be graphical symbols instead of latin letters.
 
 ## 1.0.20
 

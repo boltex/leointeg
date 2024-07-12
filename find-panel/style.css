@@ -9,6 +9,11 @@ html {
   height: 100%;
 }
 
+@supports selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: unset;
+  }
+}
 
 *,
 *:before,
@@ -37,9 +42,9 @@ img {
 }
 
 html:focus:after {
-  content:'';
+  content: "";
   position: fixed;
-  top:0;
+  top: 0;
   bottom: 0;
   left: 0;
   right: 0;
@@ -53,21 +58,21 @@ html:focus:after {
 
 body {
   height: 100%;
-  margin-left: 20px;
+  /* margin-left: 20px; */
   background-color: transparent;
-  padding: 0 var(--container-padding);
-  scrollbar-gutter: stable;
-  overflow:hidden;
-  padding-right: 4px;
+  /* padding: 0 var(--container-padding); */
+  /* scrollbar-gutter: stable; */
+  overflow: hidden;
+  /* padding-right: 4px; */
   color: var(--vscode-foreground);
   font-size: var(--vscode-font-size);
   font-weight: var(--vscode-font-weight);
   font-family: var(--vscode-font-family);
 }
 
-body:hover {
+/* body:hover {
   overflow-y: auto;
-} 
+} */
 
 .row .col:nth-child(2) {
   padding-right: 4px;
@@ -78,11 +83,11 @@ ul {
   padding-left: var(--container-padding);
 }
 
-body>*,
-form>* {
+/* body > *,
+form > * {
   margin-block-start: var(--input-margin-vertical);
   margin-block-end: var(--input-margin-vertical);
-}
+} */
 
 *:focus {
   outline-color: var(--vscode-focusBorder);
@@ -136,8 +141,8 @@ select {
   color: var(--vscode-input-foreground);
   border-color: var(--vscode-dropdown-border);
   cursor: pointer;
-  width: 50px;
-  left: 15%;
+  /* width: 50px; */
+  /* left: 15%; */
   position: relative;
   border-radius: 2px;
 }
@@ -175,16 +180,29 @@ textarea {
   background-color: var(--vscode-input-background);
 }
 
+input[type="text"] {
+  height: 24px;
+}
+
 input[type="checkbox"],
 input[type="radio"] {
   cursor: pointer;
 }
 
-input[type="checkbox"]:focus+label {
+input[type="checkbox"] {
+  vertical-align: text-top;
+}
+
+.label-nav {
+  vertical-align: baseline;
+  line-height: 19px;
+}
+
+input[type="checkbox"]:focus + label {
   border: 1px solid var(--vscode-button-background);
 }
 
-input[type="radio"]:focus+label {
+input[type="radio"]:focus + label {
   border: 1px solid var(--vscode-button-background);
 }
 
@@ -204,8 +222,8 @@ u {
   text-underline-offset: 0.04em;
 }
 
-body>div>div>label:focus,
-body>div>div>label:active {
+body > div > div > label:focus,
+body > div > div > label:active {
   outline-color: none !important;
   border: none !important;
 }
@@ -213,9 +231,9 @@ body>div>div>label:active {
 #freeze {
   cursor: default;
   position: absolute;
-  right: 0.9em;
+  right: 0.3em;
   line-height: 1em;
-  top: 1.05em;
+  top: 1.555em;
   font-size: 1.8em;
   color: #5c87ff80;
   padding: 0;
@@ -229,6 +247,15 @@ body>div>div>label:active {
 div.row {
   overflow-x: hidden;
   white-space: nowrap;
+}
+
+div.col-full {
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 100%;
+  margin-top: 6px;
+  margin-bottom: 3px;
 }
 
 div.col {
@@ -250,26 +277,67 @@ div.col-nav {
 .mt-0 {
   margin-top: 0;
 }
-
+.mt-1 {
+  margin-top: 1px;
+}
+.mt-2 {
+  margin-top: 2px;
+}
+.mt-3 {
+  margin-top: 3px;
+}
 .mt-4 {
   margin-top: 4px;
+}
+.mt-5 {
+  margin-top: 5px;
+}
+.mt-6 {
+  margin-top: 6px;
+}
+.mt-7 {
+  margin-top: 7px;
+}
+.mt-8 {
+  margin-top: 8px;
 }
 
 .mb-0 {
   margin-bottom: 0;
 }
-
+.mb-1 {
+  margin-bottom: 1px;
+}
+.mb-2 {
+  margin-bottom: 2px;
+}
+.mb-3 {
+  margin-bottom: 3px;
+}
 .mb-4 {
   margin-bottom: 4px;
 }
-
+.mb-5 {
+  margin-bottom: 5px;
+}
 .mb-6 {
   margin-bottom: 6px;
+}
+.mb-7 {
+  margin-bottom: 7px;
+}
+.mb-8 {
+  margin-bottom: 8px;
 }
 
 .input-holder {
   padding: 0;
+  margin-left: 6px;
   margin-right: 6px;
+}
+
+#searchOptions {
+  height: 24px;
 }
 
 .align-right {
@@ -290,5 +358,143 @@ div.col-nav {
 
 .label-fix {
   vertical-align: top;
-  line-height: 18px;
+  line-height: 19px;
+}
+
+.tab-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tab-list {
+  position: relative;
+  list-style: none;
+  padding: 0;
+  padding-top: 4px;
+  margin: 0;
+  display: flex;
+  border-bottom: 1px solid var(--vscode-input-background);
+}
+
+.tab-item {
+  padding: 3px 14px;
+  margin-left: 6px;
+  cursor: pointer;
+  border-bottom: none;
+  color: var(--vscode-disabledForeground);
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.tab-item.active {
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-foreground);
+}
+
+.tab-content {
+  flex-grow: 1;
+  min-height: 0;
+  flex-direction: column;
+  position: relative;
+  display: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-top-section {
+  flex-shrink: 0;
+}
+
+.tab-content.active {
+  display: flex;
+}
+
+.bottom-scroll {
+  overflow-y: hidden;
+  min-height: 0;
+  flex-grow: 1;
+  padding-bottom: 4px;
+}
+
+.bottom-scroll:hover {
+  overflow-y: auto;
+}
+
+.goto-item {
+  width: 100%;
+  line-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.goto-item.generic {
+  padding-left: 20px;
+}
+.goto-item.parent {
+  padding-left: 20px;
+}
+.goto-item.headline {
+  font-weight: bold;
+  padding-left: 20px;
+}
+.goto-item.body {
+  padding-left: 30px;
+}
+.goto-item.tag {
+  font-weight: bold;
+  padding-left: 20px;
+}
+
+.show-parents .goto-item.generic {
+  padding-left: 20px;
+}
+.show-parents .goto-item.parent {
+  padding-left: 20px;
+}
+.show-parents .goto-item.headline {
+  font-weight: bold;
+  padding-left: 30px;
+}
+.show-parents .goto-item.body {
+  padding-left: 40px;
+}
+.show-parents .goto-item.tag {
+  font-weight: bold;
+  padding-left: 30px;
+}
+
+.goto-item:hover {
+  background-color: var(--vscode-list-hoverBackground);
+}
+
+.goto-item.selected,
+.goto-item.selected:hover {
+  background-color: var(--vscode-list-inactiveSelectionBackground);
+}
+
+.goto-item.selected:focus,
+.goto-item.selected:focus:hover {
+  background-color: var(--vscode-list-activeSelectionBackground);
+  outline: 1px solid
+    var(
+      --vscode-list-focusAndSelectionOutline,
+      var(--vscode-contrastActiveBorder, var(--vscode-list-focusOutline))
+    );
+  outline-offset: -1px;
+}
+
+#top-shadow {
+  top: -4px;
+  height: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+}
+
+#top-shadow.scrolled {
+  box-shadow: var(--vscode-sideBarStickyScroll-shadow) 0 6px 6px -6px inset;
+  height: 3px;
 }

@@ -16,16 +16,23 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
 
     private _lastGotoView: vscode.TreeView<LeoGotoNode> | undefined;
 
-    private _nodeList: LeoGotoNode[] = []; // Node list kept here.
+    public nodeList: LeoGotoNode[] = []; // Node list kept here.
     private _viewSwitch: boolean = false;
 
-    private _selectedNodeIndex: number = 0;
+    public selectedNodeIndex: number = 0;
+    public isSelected = false;
 
-    constructor(private _leoIntegration: LeoIntegration) { }
+    constructor(private _leoIntegration: LeoIntegration) {
+        this.onDidChangeTreeData(() => {
+            this.getChildren().then(() => {
+                this._leoIntegration.setGotoContent();
+            });
+        }, this);
+    }
 
-    public setLastGotoView(p_view: vscode.TreeView<LeoGotoNode>): void {
-        this._lastGotoView = p_view;
-        if (this._nodeList && this._nodeList.length) {
+    public setLastGotoView(): void {
+        // this._lastGotoView = p_view;
+        if (this.nodeList && this.nodeList.length) {
             this._viewSwitch = true;
             this._onDidChangeTreeData.fire(undefined);
         }
@@ -36,53 +43,71 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
     }
 
     public resetSelectedNode(p_node?: LeoGotoNode): void {
-        this._selectedNodeIndex = 0;
+        this.selectedNodeIndex = 0;
+        this.isSelected = false;
         if (p_node) {
-            const w_found = this._nodeList.indexOf(p_node);
+            const w_found = this.nodeList.indexOf(p_node);
             if (w_found >= 0) {
-                this._selectedNodeIndex = w_found;
+                this.selectedNodeIndex = w_found;
+                this.isSelected = true;
                 return;
             }
         }
     }
 
-    public navigateNavEntry(p_nav: LeoGotoNavKey): void {
-        if (!this._nodeList.length) {
+    public async navigateNavEntry(p_nav: LeoGotoNavKey): Promise<void> {
+        if (!this.nodeList.length) {
+            this.selectedNodeIndex = 0;
+            this.isSelected = false;
             return;
         }
         switch (p_nav.valueOf()) {
             case LeoGotoNavKey.first:
-                this._selectedNodeIndex = 0;
+                this.selectedNodeIndex = 0;
+                this.isSelected = true;
                 break;
 
             case LeoGotoNavKey.last:
-                this._selectedNodeIndex = this._nodeList.length - 1;
+                this.selectedNodeIndex = this.nodeList.length - 1;
+                this.isSelected = true;
                 break;
 
             case LeoGotoNavKey.next:
-                if (this._selectedNodeIndex < this._nodeList.length - 1) {
-                    this._selectedNodeIndex += 1;
+                if (this.selectedNodeIndex < this.nodeList.length - 1) {
+                    this.selectedNodeIndex += 1;
+                    this.isSelected = true;
                 }
                 break;
 
             case LeoGotoNavKey.prev:
-                if (this._selectedNodeIndex > 0) {
-                    this._selectedNodeIndex -= 1;
+                if (this.selectedNodeIndex > 0) {
+                    this.selectedNodeIndex -= 1;
+                    this.isSelected = true;
                 }
                 break;
-
         }
-        const node = this._nodeList[this._selectedNodeIndex];
-        this._lastGotoView?.reveal(node, { select: true, focus: true });
-        this._leoIntegration.gotoNavEntry(node);
+        // Check if array long enough!
+        if (!this.nodeList[this.selectedNodeIndex]) {
+            this.selectedNodeIndex = 0;
+            this.isSelected = true;
+            return; // Cancel
+        }
+        const node = this.nodeList[this.selectedNodeIndex];
+        await this._leoIntegration.gotoNavEntry(node);
+        this._leoIntegration.revealGotoNavEntry(this.selectedNodeIndex);
+        // await this._lastGotoView?.reveal(node, {
+        //     select: true,
+        //     focus: true
+        // });
     }
 
     /**
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
-        this._nodeList = [];
-        this._selectedNodeIndex = 0;
+        this.nodeList = [];
+        this.selectedNodeIndex = 0;
+        this.isSelected = false;
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -90,7 +115,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
         return element;
     }
 
-    public getChildren(element?: LeoGotoNode): Thenable<LeoGotoNode[]> | LeoGotoNode[] {
+    public getChildren(element?: LeoGotoNode): Thenable<LeoGotoNode[]> {
 
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady && !element) {
@@ -98,32 +123,36 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
             // WAS JUST A VIEW SWITCH:
             if (this._viewSwitch) {
                 this._viewSwitch = false;
+                console.log('WAS JUST A VIEW SWITCH ! !');
                 setTimeout(() => {
-                    if (this._nodeList.length && (this._selectedNodeIndex + 1) <= this._nodeList.length) {
-                        void this._lastGotoView?.reveal(this._nodeList[this._selectedNodeIndex], {
-                            select: true,
-                            focus: false
-                        }).then(() => { }, () => {
-                            console.log('Reveal failed for goto panel switching detected.');
-                        });
+                    if (this.nodeList.length && (this.selectedNodeIndex + 1) <= this.nodeList.length) {
+
+                        this._leoIntegration.revealGotoNavEntry(this.selectedNodeIndex, true);
+
+                        // void this._lastGotoView?.reveal(this.nodeList[this._selectedNodeIndex], {
+                        //     select: true,
+                        //     focus: false
+                        // }).then(() => { }, () => {
+                        //     console.log('Reveal failed for goto panel switching detected.');
+                        // });
                     }
                 }, 0);
-                return this._nodeList; // Make sure the nodes are valid (give back)
+                return Promise.resolve(this.nodeList); // Make sure the nodes are valid (give back)
             }
 
             // call action to get get list, and convert to LeoButtonNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package => {
-                this._nodeList = [];
+                this.nodeList = [];
                 if (p_package && p_package.navList) {
 
                     const w_navList: LeoGoto[] = p_package.navList;
                     if (w_navList && w_navList.length) {
                         w_navList.forEach((p_goto: LeoGoto) => {
                             const w_newNode = new LeoGotoNode(this._leoIntegration, p_goto, p_package.navOptions!);
-                            this._nodeList.push(w_newNode);
+                            this.nodeList.push(w_newNode);
                         });
                     }
-                    return this._nodeList;
+                    return this.nodeList;
                 } else {
                     return [];
                 }
@@ -131,7 +160,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
 
 
         } else {
-            return []; // Defaults to an empty list of children
+            return Promise.resolve([]); // Defaults to an empty list of children
         }
     }
 
@@ -154,6 +183,7 @@ export class LeoGotoNode extends vscode.TreeItem {
     private _iconIndex: number; // default to tag
     private _leoIntegration: LeoIntegration;
     public key: number; // id from python
+    public leoPaneLabel: string;
 
     constructor(
         p_leoIntegration: LeoIntegration,
@@ -170,7 +200,10 @@ export class LeoGotoNode extends vscode.TreeItem {
             w_label = w_spacing + p_gotoEntry.h;
         }
         super(w_label);
-
+        this.leoPaneLabel = "";
+        if (["tag", "headline"].includes(p_gotoEntry.t)) {
+            this.leoPaneLabel = p_gotoEntry.h;
+        }
         // Setup this instance
         this._leoIntegration = p_leoIntegration;
         this._id = utils.getUniqueId();
@@ -186,12 +219,15 @@ export class LeoGotoNode extends vscode.TreeItem {
             } else {
                 this._description = "  " + this._headline;
             }
+            this.leoPaneLabel = this._headline;
         } else if (this.entryType === 'parent') {
             this._iconIndex = 0;
             this._description = this._headline.trim();
+            this.leoPaneLabel = this._description;
         } else if (this.entryType === 'generic') {
             this._iconIndex = 4;
             this._description = this._headline;
+            this.leoPaneLabel = this._description;
         } else if (this.entryType === 'headline') {
             this._iconIndex = 1;
         } else {
