@@ -5572,8 +5572,7 @@ export class LeoIntegration {
         const w_package = await this.sendAction(
             Constants.LEOBRIDGE.NAV_SEARCH
         );
-        this.leoGotoProvider.refreshTreeRoot();
-        this.showGotoPane({ preserveFocus: true }); // show but dont change focus
+        this.showNavResults();
         return w_package;
     }
 
@@ -5585,8 +5584,7 @@ export class LeoIntegration {
         const w_package = await this.sendAction(
             Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH
         );
-        this.leoGotoProvider.refreshTreeRoot();
-        this.showGotoPane({ preserveFocus: true }); // show but dont change focus
+        this.showNavResults();
         return w_package;
     }
 

@@ -24,8 +24,9 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
 
     constructor(private _leoIntegration: LeoIntegration) {
         this.onDidChangeTreeData(() => {
-            this.getChildren(); // THIS KEEPS THE DATA UP TO DATE
-            this._leoIntegration.setGotoContent();
+            this.getChildren().then(() => {
+                this._leoIntegration.setGotoContent();
+            });
         }, this);
     }
 
@@ -114,7 +115,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
         return element;
     }
 
-    public getChildren(element?: LeoGotoNode): Thenable<LeoGotoNode[]> | LeoGotoNode[] {
+    public getChildren(element?: LeoGotoNode): Thenable<LeoGotoNode[]> {
 
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady && !element) {
@@ -136,7 +137,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
                         // });
                     }
                 }, 0);
-                return this.nodeList; // Make sure the nodes are valid (give back)
+                return Promise.resolve(this.nodeList); // Make sure the nodes are valid (give back)
             }
 
             // call action to get get list, and convert to LeoButtonNode(s) array
@@ -159,7 +160,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
 
 
         } else {
-            return []; // Defaults to an empty list of children
+            return Promise.resolve([]); // Defaults to an empty list of children
         }
     }
 
