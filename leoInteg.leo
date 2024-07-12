@@ -17046,8 +17046,7 @@ public async navEnter(): Promise&lt;LeoBridgePackage&gt; {
     const w_package = await this.sendAction(
         Constants.LEOBRIDGE.NAV_SEARCH
     );
-    this.leoGotoProvider.refreshTreeRoot();
-    this.showGotoPane({ preserveFocus: true }); // show but dont change focus
+    this.showNavResults();
     return w_package;
 }
 
@@ -17060,8 +17059,7 @@ public async navTextChange(): Promise&lt;LeoBridgePackage&gt; {
     const w_package = await this.sendAction(
         Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH
     );
-    this.leoGotoProvider.refreshTreeRoot();
-    this.showGotoPane({ preserveFocus: true }); // show but dont change focus
+    this.showNavResults();
     return w_package;
 }
 
@@ -19665,8 +19663,9 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 
     constructor(private _leoIntegration: LeoIntegration) {
         this.onDidChangeTreeData(() =&gt; {
-            this.getChildren(); // THIS KEEPS THE DATA UP TO DATE
-            this._leoIntegration.setGotoContent();
+            this.getChildren().then(() =&gt; {
+                this._leoIntegration.setGotoContent();
+            });
         }, this);
     }
 
@@ -19755,7 +19754,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
         return element;
     }
 
-    public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; | LeoGotoNode[] {
+    public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; {
 
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
@@ -19777,7 +19776,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
                         // });
                     }
                 }, 0);
-                return this.nodeList; // Make sure the nodes are valid (give back)
+                return Promise.resolve(this.nodeList); // Make sure the nodes are valid (give back)
             }
 
             // call action to get get list, and convert to LeoButtonNode(s) array
@@ -19800,7 +19799,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 
 
         } else {
-            return []; // Defaults to an empty list of children
+            return Promise.resolve([]); // Defaults to an empty list of children
         }
     }
 
@@ -20459,7 +20458,7 @@ Normally in vscode, the the **`Ctrl+P`** shortcut allows you to switch to any pr
 
 With the focus in Leo's outline or body pane, Hit **`Ctrl+F`** to open the Find tab of the _find panel_.
 
-![Find Panel](https://raw.githubusercontent.com/boltex/leojs/master/resources/new-find-panel.png)
+![Find Panel](https://raw.githubusercontent.com/boltex/leointeg/master/resources/new-find-panel.png)
 
 Enter your search pattern directly in the **\&lt;find pattern here\&gt;** field. Press **`Enter`** to find the first match starting from your current position.
 
@@ -20467,11 +20466,11 @@ Hitting **`F3`** repeatedly will find the subsequent matches. (**`F2`** for prev
 
 Using the Nav tab of the _find panel_, (**`Ctrl+Shift+F`** to accesss directly) you can type your search pattern in the **Nav** field instead to see all results appear below. This will show the headlines as you type.
 
-![Find Panel](https://raw.githubusercontent.com/boltex/leojs/master/resources/new-nav-panel-2.png)
+![Find Panel](https://raw.githubusercontent.com/boltex/leointeg/master/resources/new-nav-panel-2.png)
 
 Press **`Enter`** to freeze the results and show results also found in **body text of any node**. This will add a snowflake icon ❄️ to the **Nav** field.
 
-![Find Panel](https://raw.githubusercontent.com/boltex/leojs/master/resources/new-nav-panel-3.png)
+![Find Panel](https://raw.githubusercontent.com/boltex/leointeg/master/resources/new-nav-panel-3.png)
 
 If you check the **Tag** option, the **Nav** field is then used to find nodes by their tag 🏷 _ua_ (user attribute).
 
