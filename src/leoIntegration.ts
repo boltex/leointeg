@@ -3228,7 +3228,6 @@ export class LeoIntegration {
      */
     private _refreshDocumentsPane(): void {
         this._leoDocumentsProvider.refreshTreeRoot();
-        this.checkConfirmBeforeClose();
     }
 
     /**

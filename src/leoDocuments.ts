@@ -48,14 +48,17 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
                         });
                     }
                     this.lastDocumentList = w_list;
+                    this._leoIntegration.checkConfirmBeforeClose();
                     return w_list;
                 } else {
                     this.lastDocumentList = [];
+                    this._leoIntegration.checkConfirmBeforeClose();
                     return [];
                 }
             });
         } else {
             this.lastDocumentList = [];
+            this._leoIntegration.checkConfirmBeforeClose();
             return Promise.resolve([]); // Defaults to an empty list of children
         }
     }
