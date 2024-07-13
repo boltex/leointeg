@@ -353,6 +353,7 @@ export class Constants {
         LEO_TREE_BROWSE: "leoTreeBrowse",
         TREE_KEEP_FOCUS: "treeKeepFocus",
         TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
+        ASK_FOR_EXIT_CONFIRMATION_IF_DIRTY: "askForExitConfirmationIfDirty",
 
         COLLAPSE_ALL_SHORTCUT: "collapseAllShortcut",
         ACTIVITY_VIEW_SHORTCUT: "activityViewShortcut",
@@ -365,18 +366,7 @@ export class Constants {
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
         SHOW_BRANCH_OUTLINE: "showBranchInOutlineTitle",
-
         SHOW_UNL_ON_STATUSBAR: "showUnlOnStatusBar",
-        // SHOW_EDITION_BODY: "showEditionOnBody",
-        // SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
-        // SHOW_PROMOTE_BODY: "showPromoteOnBody",
-        // SHOW_EXECUTE_BODY: "showExecuteOnBody",
-        // SHOW_EXTRACT_BODY: "showExtractOnBody",
-        // SHOW_IMPORT_BODY: "showImportOnBody",
-        // SHOW_REFRESH_BODY: "showRefreshOnBody",
-        // SHOW_HOIST_BODY: "showHoistOnBody",
-        // SHOW_MARK_BODY: "showMarkOnBody",
-        // SHOW_SORT_BODY: "showSortOnBody",
 
         INVERT_NODES: "invertNodeContrast",
         LEO_EDITOR_PATH: "leoEditorPath",
@@ -400,6 +390,7 @@ export class Constants {
         LEO_TREE_BROWSE: true,
         TREE_KEEP_FOCUS: true,
         TREE_KEEP_FOCUS_WHEN_ASIDE: false,
+        ASK_FOR_EXIT_CONFIRMATION_IF_DIRTY: true,
 
         COLLAPSE_ALL_SHORTCUT: true,
         ACTIVITY_VIEW_SHORTCUT: true,
@@ -414,17 +405,6 @@ export class Constants {
         SHOW_CLONE: false,
         SHOW_COPY: false,
         SHOW_BRANCH_OUTLINE: false,
-
-        // SHOW_EDITION_BODY: true,
-        // SHOW_CLIPBOARD_BODY: true,
-        // SHOW_PROMOTE_BODY: true,
-        // SHOW_EXECUTE_BODY: true,
-        // SHOW_EXTRACT_BODY: true,
-        // SHOW_IMPORT_BODY: true,
-        // SHOW_REFRESH_BODY: true,
-        // SHOW_HOIST_BODY: true,
-        // SHOW_MARK_BODY: true,
-        // SHOW_SORT_BODY: true,
 
         INVERT_NODES: false,
         LEO_PYTHON_COMMAND: "",
@@ -444,6 +424,7 @@ export class Constants {
         description: Constants.USER_MESSAGES.MINIBUFFER_HISTORY_DESC,
         iconPath: new vscode.ThemeIcon("history")
     };
+
     /**
      * * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
      */

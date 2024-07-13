@@ -1,11 +1,9 @@
-// @ts-check
-
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 // Send message to leointeg with vscode.postMessage({ keyNameEx1: someValue, ... });
 // Receive messages from leointeg with window.addEventListener('message', event => { ... });
 (function () {
-    // @ts-expect-error
+
     const vscode = acquireVsCodeApi();
 
     let timer; // for debouncing sending the settings from this webview to LeoInteg
@@ -213,38 +211,31 @@
 
     function setSettings(p_settings) {
         // Nav controls
-        // @ts-expect-error
         document.getElementById("navText").value = p_settings["navText"];
         searchSettings["navText"] = p_settings["navText"];
 
         // showParents
-        // @ts-expect-error
         document.getElementById("showParents").checked = p_settings["showParents"];
         searchSettings["showParents"] = p_settings["showParents"];
 
         // isTag
-        // @ts-expect-error
         document.getElementById("isTag").checked = p_settings["isTag"];
         searchSettings["isTag"] = p_settings["isTag"];
         handleIsTagSwitch(false);
 
         // searchOptions
-        // @ts-expect-error
         document.getElementById("searchOptions").value = p_settings["searchOptions"];
         searchSettings["searchOptions"] = p_settings["searchOptions"];
 
         // When opening a Leo document, set default values of fields
         findReplaceInputIds.forEach((p_inputId) => {
-            // @ts-expect-error
             document.getElementById(p_inputId).value = p_settings[p_inputId] === '<find pattern here>' ? '' : p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId] === '<find pattern here>' ? '' : p_settings[p_inputId];
         });
         checkboxIds.forEach((p_inputId) => {
-            // @ts-expect-error
             document.getElementById(p_inputId).checked = p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId];
         });
-        // @ts-expect-error
         document.getElementById(radioIds[p_settings['searchScope']]).checked = true;
         searchSettings.searchScope = p_settings['searchScope'];
     }
@@ -265,11 +256,9 @@
     function toggleCheckbox(p_inputId) {
         let w_checkbox = document.getElementById(p_inputId);
         let w_setTo = true;
-        // @ts-expect-error
         if (w_checkbox.checked) {
             w_setTo = false;
         }
-        // @ts-expect-error
         w_checkbox.checked = w_setTo;
         searchSettings[p_inputId] = w_setTo;
         if (timer) {
@@ -279,10 +268,8 @@
     }
 
     function setRadio(p_inputId) {
-        // @ts-expect-error
         document.getElementById(p_inputId).checked = true;
         searchSettings['searchScope'] = parseInt(
-            // @ts-expect-error
             document.querySelector('input[name="searchScope"]:checked').value
         );
         if (timer) {
@@ -488,7 +475,6 @@
                     actEl.classList.add('selected');
                     lastSelectedGotoItem = actEl;
                     // CALL GOTO COMMAND!
-                    // @ts-expect-error
                     vscode.postMessage({ type: 'gotoCommand', value: actEl.dataset.order });
                     return;
                 }
@@ -540,11 +526,9 @@
     function focusOnField(p_id) {
         const inputField = document.querySelector('#' + p_id);
         if (inputField) {
-            // @ts-expect-error
             inputField.select();
             // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
             setTimeout(() => {
-                // @ts-expect-error
                 inputField.select();
             }, 0);
         }
@@ -566,14 +550,11 @@
         if (searchSettings.isTag) {
 
             if (w_input) {
-                // @ts-expect-error
                 w_input.placeholder = "<tag pattern here>";
                 w_input.title = "Enter a tag name to list tagged nodes in the Goto pane\nClear this field to list all tags used in this file";
             }
 
-            // @ts-expect-error
             w_showParent.disabled = true;
-            // @ts-expect-error
             w_navSelect.disabled = true;
             if (p_wasSet) {
                 // if nav text is empty: show all tags
@@ -585,13 +566,10 @@
             }
         } else {
             if (w_input) {
-                // @ts-expect-error
                 w_input.placeholder = "<nav pattern here>";
                 w_input.title = "Typing searches headlines interactively\nEnter freezes input and searches body text";
             }
-            // @ts-expect-error
             w_showParent.disabled = false;
-            // @ts-expect-error
             w_navSelect.disabled = false;
         }
 
@@ -627,7 +605,6 @@
     if (w_navTextEl) {
         w_navTextEl.onkeypress = function (p_event) {
             if (!p_event) {
-                // @ts-expect-error
                 p_event = window.event;
             }
             const keyCode = p_event.code || p_event.key;
@@ -638,7 +615,6 @@
         };
 
         w_navTextEl.addEventListener('input', function (p_event) {
-            // @ts-expect-error
             searchSettings.navText = this.value;
             navTextDirty = true;
             navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
@@ -648,7 +624,6 @@
     const w_showParentsEl = document.getElementById('showParents');
     if (w_showParentsEl) {
         w_showParentsEl.addEventListener('change', function (p_event) {
-            // @ts-expect-error
             searchSettings.showParents = this.checked;
             processChange();
         });
@@ -657,7 +632,6 @@
     const w_isTagEl = document.getElementById('isTag');
     if (w_isTagEl) {
         w_isTagEl.addEventListener('change', function (p_event) {
-            // @ts-expect-error
             let w_checked = this.checked;
             let w_wasSet = false;
             if (searchSettings.isTag !== w_checked) {
@@ -677,7 +651,6 @@
     const w_searchOptionsEl = document.getElementById('searchOptions');
     if (w_searchOptionsEl) {
         w_searchOptionsEl.addEventListener('change', function (p_event) {
-            // @ts-expect-error
             searchSettings.searchOptions = Number(this.value);
             processChange();
         });
@@ -690,7 +663,6 @@
 
             w_inputEl.onkeypress = function (p_event) {
                 if (!p_event) {
-                    // @ts-expect-error
                     p_event = window.event;
                 }
                 const keyCode = p_event.code || p_event.key;
@@ -704,7 +676,6 @@
                 }
             };
             w_inputEl.addEventListener('input', function (p_event) {
-                // @ts-expect-error
                 searchSettings[p_inputId] = this.value;
                 processChange();
             });
@@ -716,7 +687,6 @@
         if (w_inputEl) {
 
             w_inputEl.addEventListener('change', function (p_event) {
-                // @ts-expect-error
                 searchSettings[p_inputId] = this.checked;
                 processChange();
             });
@@ -729,7 +699,6 @@
 
             w_inputEl.addEventListener('change', function (p_event) {
                 searchSettings['searchScope'] = parseInt(
-                    // @ts-expect-error
                     document.querySelector('input[name="searchScope"]:checked').value
                 );
                 processChange();
@@ -748,9 +717,7 @@
         contents.forEach(c => c.classList.remove('active'));
 
         // Add active class to the new tab and content
-        // @ts-expect-error
         document.querySelector(`[data-tab="${newTab}"]`).classList.add('active');
-        // @ts-expect-error
         document.getElementById(newTab).classList.add('active');
 
         // Update the active tab state
@@ -790,9 +757,7 @@
                 lastSelectedGotoItem.classList.add('selected');
                 // Will have effect only if visible
                 lastSelectedGotoItem.scrollIntoView({ behavior: "instant", block: "nearest" });
-                // @ts-expect-error
                 if (lastSelectedGotoItem && lastSelectedGotoItem.focus && !p_preserveFocus) {
-                    // @ts-expect-error
                     lastSelectedGotoItem.focus();
                 }
             }
@@ -801,7 +766,6 @@
 
     tabs.forEach(tab => {
         tab.addEventListener('mousedown', (event) => {
-            // @ts-expect-error
             const newTab = tab.dataset.tab;
             if (newTab !== activeTab) {
                 activateTab(newTab);
@@ -850,7 +814,6 @@
                 activateTab('tab3');
 
                 if (message.text) {
-                    // @ts-expect-error
                     document.getElementById("navText").value = message.text;
                     searchSettings["navText"] = message.text;
                     if (timer) {

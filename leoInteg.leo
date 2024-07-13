@@ -203,6 +203,7 @@
 <v t="felix.20210818225820.1"><vh>checkEnablePreview</vh></v>
 <v t="felix.20210821202347.1"><vh>checkCloseEmptyGroups</vh></v>
 <v t="felix.20240121200637.1"><vh>checkBodyWrap</vh></v>
+<v t="felix.20240712222429.1"><vh>setConfirmBeforeClose</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
 </v>
@@ -400,6 +401,7 @@
 <v t="felix.20201014020145.1"><vh>_onChangeEditorScroll</vh></v>
 <v t="felix.20200719025231.31"><vh>_onDocumentChanged</vh></v>
 <v t="felix.20221031200229.1"><vh>_refreshDesc</vh></v>
+<v t="felix.20240712215956.1"><vh>checkConfirmBeforeClose</vh></v>
 <v t="felix.20220806151117.1"><vh>setFindPanel</vh></v>
 </v>
 <v t="felix.20200719030842.1"><vh>Body Editing</vh>
@@ -943,6 +945,7 @@ public static CONFIG_DEFAULTS = {
     LEO_TREE_BROWSE: true,
     TREE_KEEP_FOCUS: true,
     TREE_KEEP_FOCUS_WHEN_ASIDE: false,
+    ASK_FOR_EXIT_CONFIRMATION_IF_DIRTY: true,
 
     COLLAPSE_ALL_SHORTCUT: true,
     ACTIVITY_VIEW_SHORTCUT: true,
@@ -957,17 +960,6 @@ public static CONFIG_DEFAULTS = {
     SHOW_CLONE: false,
     SHOW_COPY: false,
     SHOW_BRANCH_OUTLINE: false,
-
-    // SHOW_EDITION_BODY: true,
-    // SHOW_CLIPBOARD_BODY: true,
-    // SHOW_PROMOTE_BODY: true,
-    // SHOW_EXECUTE_BODY: true,
-    // SHOW_EXTRACT_BODY: true,
-    // SHOW_IMPORT_BODY: true,
-    // SHOW_REFRESH_BODY: true,
-    // SHOW_HOIST_BODY: true,
-    // SHOW_MARK_BODY: true,
-    // SHOW_SORT_BODY: true,
 
     INVERT_NODES: false,
     LEO_PYTHON_COMMAND: "",
@@ -4292,6 +4284,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "type": "boolean",
   "description": "Specifies whether to keep focus in the outline when opening a body pane on the side"
 },
+"leoIntegration.askForExitConfirmationIfDirty": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Opens a confirmation dialog if a Leo document is dirty when exiting VSCode"
+},
 "leoIntegration.goAnywhereShortcut": {
   "scope": "application",
   "default": true,
@@ -6100,6 +6098,7 @@ public static CONFIG_NAMES = {
     LEO_TREE_BROWSE: "leoTreeBrowse",
     TREE_KEEP_FOCUS: "treeKeepFocus",
     TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
+    ASK_FOR_EXIT_CONFIRMATION_IF_DIRTY: "askForExitConfirmationIfDirty",
 
     COLLAPSE_ALL_SHORTCUT: "collapseAllShortcut",
     ACTIVITY_VIEW_SHORTCUT: "activityViewShortcut",
@@ -6112,18 +6111,7 @@ public static CONFIG_NAMES = {
     SHOW_CLONE: "showCloneOnNodes",
     SHOW_COPY: "showCopyOnNodes",
     SHOW_BRANCH_OUTLINE: "showBranchInOutlineTitle",
-
     SHOW_UNL_ON_STATUSBAR: "showUnlOnStatusBar",
-    // SHOW_EDITION_BODY: "showEditionOnBody",
-    // SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
-    // SHOW_PROMOTE_BODY: "showPromoteOnBody",
-    // SHOW_EXECUTE_BODY: "showExecuteOnBody",
-    // SHOW_EXTRACT_BODY: "showExtractOnBody",
-    // SHOW_IMPORT_BODY: "showImportOnBody",
-    // SHOW_REFRESH_BODY: "showRefreshOnBody",
-    // SHOW_HOIST_BODY: "showHoistOnBody",
-    // SHOW_MARK_BODY: "showMarkOnBody",
-    // SHOW_SORT_BODY: "showSortOnBody",
 
     INVERT_NODES: "invertNodeContrast",
     LEO_EDITOR_PATH: "leoEditorPath",
@@ -6437,6 +6425,7 @@ export class Config implements ConfigMembers {
     public leoTreeBrowse: boolean = Constants.CONFIG_DEFAULTS.LEO_TREE_BROWSE;
     public treeKeepFocus: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS;
     public treeKeepFocusWhenAside: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE;
+    public askForExitConfirmationIfDirty: boolean = Constants.CONFIG_DEFAULTS.ASK_FOR_EXIT_CONFIRMATION_IF_DIRTY;
 
     public collapseAllShortcut: boolean = Constants.CONFIG_DEFAULTS.COLLAPSE_ALL_SHORTCUT;
     public activityViewShortcut: boolean = Constants.CONFIG_DEFAULTS.ACTIVITY_VIEW_SHORTCUT;
@@ -6500,6 +6489,7 @@ public getConfig(): ConfigMembers {
         leoTreeBrowse: this.leoTreeBrowse,
         treeKeepFocus: this.treeKeepFocus,
         treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
+        askForExitConfirmationIfDirty: this.askForExitConfirmationIfDirty,
 
         collapseAllShortcut: this.collapseAllShortcut,
         activityViewShortcut: this.activityViewShortcut,
@@ -6588,6 +6578,7 @@ public buildFromSavedSettings(): boolean {
         this.leoTreeBrowse = GET(NAME).get(NAMES.LEO_TREE_BROWSE, DEFAULTS.LEO_TREE_BROWSE);
         this.treeKeepFocus = GET(NAME).get(NAMES.TREE_KEEP_FOCUS, DEFAULTS.TREE_KEEP_FOCUS);
         this.treeKeepFocusWhenAside = GET(NAME).get(NAMES.TREE_KEEP_FOCUS_WHEN_ASIDE, DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE);
+        this.askForExitConfirmationIfDirty = GET(NAME).get(NAMES.ASK_FOR_EXIT_CONFIRMATION_IF_DIRTY, DEFAULTS.ASK_FOR_EXIT_CONFIRMATION_IF_DIRTY);
 
         this.collapseAllShortcut = GET(NAME).get(NAMES.COLLAPSE_ALL_SHORTCUT, DEFAULTS.COLLAPSE_ALL_SHORTCUT);
         this.activityViewShortcut = GET(NAME).get(NAMES.ACTIVITY_VIEW_SHORTCUT, DEFAULTS.ACTIVITY_VIEW_SHORTCUT);
@@ -8598,6 +8589,8 @@ export interface ConfigMembers {
     leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
+    askForExitConfirmationIfDirty: boolean;
+
 
     collapseAllShortcut: boolean;
     activityViewShortcut: boolean;
@@ -10927,7 +10920,6 @@ private async _bodySaveDocument(
         if (id) {
             w_param["commanderId"] = id;
         }
-
         //@ts-expect-error
         //@ts-expect-error
         //@ts-expect-error
@@ -16130,14 +16122,12 @@ public getTextFromClipboard(): string {
 }
 
 </t>
-<t tx="felix.20220301224252.1">// @ts-check
-
-// This script will be run within the webview itself
+<t tx="felix.20220301224252.1">// This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 // Send message to leointeg with vscode.postMessage({ keyNameEx1: someValue, ... });
 // Receive messages from leointeg with window.addEventListener('message', event =&gt; { ... });
 (function () {
-    // @ts-expect-error
+
     const vscode = acquireVsCodeApi();
 
     let timer; // for debouncing sending the settings from this webview to LeoInteg
@@ -16345,38 +16335,31 @@ public getTextFromClipboard(): string {
 
     function setSettings(p_settings) {
         // Nav controls
-        // @ts-expect-error
         document.getElementById("navText").value = p_settings["navText"];
         searchSettings["navText"] = p_settings["navText"];
 
         // showParents
-        // @ts-expect-error
         document.getElementById("showParents").checked = p_settings["showParents"];
         searchSettings["showParents"] = p_settings["showParents"];
 
         // isTag
-        // @ts-expect-error
         document.getElementById("isTag").checked = p_settings["isTag"];
         searchSettings["isTag"] = p_settings["isTag"];
         handleIsTagSwitch(false);
 
         // searchOptions
-        // @ts-expect-error
         document.getElementById("searchOptions").value = p_settings["searchOptions"];
         searchSettings["searchOptions"] = p_settings["searchOptions"];
 
         // When opening a Leo document, set default values of fields
         findReplaceInputIds.forEach((p_inputId) =&gt; {
-            // @ts-expect-error
             document.getElementById(p_inputId).value = p_settings[p_inputId] === '&lt;find pattern here&gt;' ? '' : p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId] === '&lt;find pattern here&gt;' ? '' : p_settings[p_inputId];
         });
         checkboxIds.forEach((p_inputId) =&gt; {
-            // @ts-expect-error
             document.getElementById(p_inputId).checked = p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId];
         });
-        // @ts-expect-error
         document.getElementById(radioIds[p_settings['searchScope']]).checked = true;
         searchSettings.searchScope = p_settings['searchScope'];
     }
@@ -16397,11 +16380,9 @@ public getTextFromClipboard(): string {
     function toggleCheckbox(p_inputId) {
         let w_checkbox = document.getElementById(p_inputId);
         let w_setTo = true;
-        // @ts-expect-error
         if (w_checkbox.checked) {
             w_setTo = false;
         }
-        // @ts-expect-error
         w_checkbox.checked = w_setTo;
         searchSettings[p_inputId] = w_setTo;
         if (timer) {
@@ -16411,10 +16392,8 @@ public getTextFromClipboard(): string {
     }
 
     function setRadio(p_inputId) {
-        // @ts-expect-error
         document.getElementById(p_inputId).checked = true;
         searchSettings['searchScope'] = parseInt(
-            // @ts-expect-error
             document.querySelector('input[name="searchScope"]:checked').value
         );
         if (timer) {
@@ -16620,7 +16599,6 @@ public getTextFromClipboard(): string {
                     actEl.classList.add('selected');
                     lastSelectedGotoItem = actEl;
                     // CALL GOTO COMMAND!
-                    // @ts-expect-error
                     vscode.postMessage({ type: 'gotoCommand', value: actEl.dataset.order });
                     return;
                 }
@@ -16672,11 +16650,9 @@ public getTextFromClipboard(): string {
     function focusOnField(p_id) {
         const inputField = document.querySelector('#' + p_id);
         if (inputField) {
-            // @ts-expect-error
             inputField.select();
             // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
             setTimeout(() =&gt; {
-                // @ts-expect-error
                 inputField.select();
             }, 0);
         }
@@ -16698,14 +16674,11 @@ public getTextFromClipboard(): string {
         if (searchSettings.isTag) {
 
             if (w_input) {
-                // @ts-expect-error
                 w_input.placeholder = "&lt;tag pattern here&gt;";
                 w_input.title = "Enter a tag name to list tagged nodes in the Goto pane\nClear this field to list all tags used in this file";
             }
 
-            // @ts-expect-error
             w_showParent.disabled = true;
-            // @ts-expect-error
             w_navSelect.disabled = true;
             if (p_wasSet) {
                 // if nav text is empty: show all tags
@@ -16717,13 +16690,10 @@ public getTextFromClipboard(): string {
             }
         } else {
             if (w_input) {
-                // @ts-expect-error
                 w_input.placeholder = "&lt;nav pattern here&gt;";
                 w_input.title = "Typing searches headlines interactively\nEnter freezes input and searches body text";
             }
-            // @ts-expect-error
             w_showParent.disabled = false;
-            // @ts-expect-error
             w_navSelect.disabled = false;
         }
 
@@ -16759,7 +16729,6 @@ public getTextFromClipboard(): string {
     if (w_navTextEl) {
         w_navTextEl.onkeypress = function (p_event) {
             if (!p_event) {
-                // @ts-expect-error
                 p_event = window.event;
             }
             const keyCode = p_event.code || p_event.key;
@@ -16770,7 +16739,6 @@ public getTextFromClipboard(): string {
         };
 
         w_navTextEl.addEventListener('input', function (p_event) {
-            // @ts-expect-error
             searchSettings.navText = this.value;
             navTextDirty = true;
             navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
@@ -16780,7 +16748,6 @@ public getTextFromClipboard(): string {
     const w_showParentsEl = document.getElementById('showParents');
     if (w_showParentsEl) {
         w_showParentsEl.addEventListener('change', function (p_event) {
-            // @ts-expect-error
             searchSettings.showParents = this.checked;
             processChange();
         });
@@ -16789,7 +16756,6 @@ public getTextFromClipboard(): string {
     const w_isTagEl = document.getElementById('isTag');
     if (w_isTagEl) {
         w_isTagEl.addEventListener('change', function (p_event) {
-            // @ts-expect-error
             let w_checked = this.checked;
             let w_wasSet = false;
             if (searchSettings.isTag !== w_checked) {
@@ -16809,7 +16775,6 @@ public getTextFromClipboard(): string {
     const w_searchOptionsEl = document.getElementById('searchOptions');
     if (w_searchOptionsEl) {
         w_searchOptionsEl.addEventListener('change', function (p_event) {
-            // @ts-expect-error
             searchSettings.searchOptions = Number(this.value);
             processChange();
         });
@@ -16822,7 +16787,6 @@ public getTextFromClipboard(): string {
 
             w_inputEl.onkeypress = function (p_event) {
                 if (!p_event) {
-                    // @ts-expect-error
                     p_event = window.event;
                 }
                 const keyCode = p_event.code || p_event.key;
@@ -16836,7 +16800,6 @@ public getTextFromClipboard(): string {
                 }
             };
             w_inputEl.addEventListener('input', function (p_event) {
-                // @ts-expect-error
                 searchSettings[p_inputId] = this.value;
                 processChange();
             });
@@ -16848,7 +16811,6 @@ public getTextFromClipboard(): string {
         if (w_inputEl) {
 
             w_inputEl.addEventListener('change', function (p_event) {
-                // @ts-expect-error
                 searchSettings[p_inputId] = this.checked;
                 processChange();
             });
@@ -16861,7 +16823,6 @@ public getTextFromClipboard(): string {
 
             w_inputEl.addEventListener('change', function (p_event) {
                 searchSettings['searchScope'] = parseInt(
-                    // @ts-expect-error
                     document.querySelector('input[name="searchScope"]:checked').value
                 );
                 processChange();
@@ -16880,9 +16841,7 @@ public getTextFromClipboard(): string {
         contents.forEach(c =&gt; c.classList.remove('active'));
 
         // Add active class to the new tab and content
-        // @ts-expect-error
         document.querySelector(`[data-tab="${newTab}"]`).classList.add('active');
-        // @ts-expect-error
         document.getElementById(newTab).classList.add('active');
 
         // Update the active tab state
@@ -16922,9 +16881,7 @@ public getTextFromClipboard(): string {
                 lastSelectedGotoItem.classList.add('selected');
                 // Will have effect only if visible
                 lastSelectedGotoItem.scrollIntoView({ behavior: "instant", block: "nearest" });
-                // @ts-expect-error
                 if (lastSelectedGotoItem &amp;&amp; lastSelectedGotoItem.focus &amp;&amp; !p_preserveFocus) {
-                    // @ts-expect-error
                     lastSelectedGotoItem.focus();
                 }
             }
@@ -16933,7 +16890,6 @@ public getTextFromClipboard(): string {
 
     tabs.forEach(tab =&gt; {
         tab.addEventListener('mousedown', (event) =&gt; {
-            // @ts-expect-error
             const newTab = tab.dataset.tab;
             if (newTab !== activeTab) {
                 activateTab(newTab);
@@ -16982,7 +16938,6 @@ public getTextFromClipboard(): string {
                 activateTab('tab3');
 
                 if (message.text) {
-                    // @ts-expect-error
                     document.getElementById("navText").value = message.text;
                     searchSettings["navText"] = message.text;
                     if (timer) {
@@ -20661,6 +20616,7 @@ For those familiar with Leo, the 'minibuffer' serves as the nerve center for com
     description: Constants.USER_MESSAGES.MINIBUFFER_HISTORY_DESC,
     iconPath: new vscode.ThemeIcon("history")
 };
+
 </t>
 <t tx="felix.20231009003516.1">## 1.0.16
 
@@ -22773,6 +22729,25 @@ public setGotoContent(): void {
 }
 
 </t>
+<t tx="felix.20240712215956.1">public checkConfirmBeforeClose(): void {
+    let hasDirty = false;
+    // TODO !
+    // for (const frame of g.app.windowList) {
+    //     if (frame.c.changed) {
+    //         hasDirty = true;
+    //     }
+    // }
+    //
+    void this.config.setConfirmBeforeClose(hasDirty);
+}
+
+</t>
+<t tx="felix.20240712222429.1">public setConfirmBeforeClose(p_state: boolean): Thenable&lt;void&gt; {
+    return vscode.workspace.getConfiguration("window")
+        .update("confirmBeforeClose", p_state ? "always" : this._confirmOffValue, true);
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -23579,8 +23554,6 @@ div.col-nav {
 </t>
 <t tx="fil.20210603223933.1"></t>
 <t tx="fil.20210603223933.165">@language javascript
-// @ts-check
-
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 // Send message to LeoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
@@ -23588,7 +23561,6 @@ div.col-nav {
 (function () {
     const cssColorRegex = /^(?:(#?)([0-9a-f]{3}|[0-9a-f]{6})|((?:rgb|hsl)a?)\((-?\d+%?)[,\s]+(-?\d+%?)[,\s]+(-?\d+%?)[,\s]*(-?[\d.]+%?)?\))$/i;
 
-    // @ts-expect-error
     const vscode = acquireVsCodeApi();
 
     initializeAndWatchThemeColors();
@@ -23615,11 +23587,9 @@ div.col-nav {
     let frontConfig = {};
     let vscodeConfig = {};
 
-    // @ts-expect-error
     vscodeConfig = window.leoConfig; // PRE SET BY leoSettingsWebview
     frontConfig = JSON.parse(JSON.stringify(vscodeConfig));
 
-    // @ts-expect-error
     let vscodePlatform = window.platform; // PRE SET BY leoSettingsWebview
     let _platform = JSON.parse(JSON.stringify(vscodePlatform));
     console.log("_platform", _platform);
@@ -23649,7 +23619,6 @@ div.col-nav {
                 case "newEditorPath":
                     const w_element = document.getElementById("leoEditorPath");
                     if (w_element) {
-                        // @ts-expect-error
                         w_element.value = message.editorPath;
                         onInputChanged(w_element);
                     }
@@ -23882,10 +23851,8 @@ div.col-nav {
             if (frontConfig.hasOwnProperty(key)) {
                 const w_element = document.getElementById(key);
                 if (w_element &amp;&amp; w_element.getAttribute('type') === 'checkbox') {
-                    // @ts-expect-error
                     w_element.checked = frontConfig[key];
                 } else if (w_element) {
-                    // @ts-expect-error
                     w_element.value = frontConfig[key];
                 } else {
                     console.log('ERROR : w_element', key, ' is ', w_element);
@@ -23896,7 +23863,6 @@ div.col-nav {
 
     function setVisibility(state) {
         for (const el of document.querySelectorAll('[data-visibility]')) {
-            // @ts-expect-error
             el.classList.toggle('hidden', !evaluateStateExpression(el.dataset.visibility, state));
         }
     }
@@ -23961,7 +23927,6 @@ div.col-nav {
     function resultingCommand() {
 
         if (resultingCommandEl &amp;&amp; leoPythonCommandEl) {
-            // @ts-expect-errorts
             let w_serverScriptPath = (leoEditorPathEl.value &amp;&amp; leoEditorPathEl.value.trim()) ? leoEditorPathEl.value.trim() + "/leo/core" : "";
             if (!w_serverScriptPath.trim()) {
                 resultingCommandEl.innerHTML = "Please set your Leo-Editor installation path";
@@ -23971,12 +23936,9 @@ div.col-nav {
 
             let w_pythonPath = ""; // Command of child.spawn call
             let w_args = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
-            // @ts-expect-errorts
             let w_leoPythonCommand = leoPythonCommandEl.value ? leoPythonCommandEl.value : "";
 
-            // @ts-expect-errorts
             let w_usingPort = connectionPortEl.value ? connectionPortEl.value : 32125;
-            // @ts-expect-errorts
             let w_limitUsers = limitUsersEl.value ? limitUsersEl.value : 0;
 
             if (w_leoPythonCommand &amp;&amp; w_leoPythonCommand.length) {
@@ -24312,6 +24274,18 @@ div.col-nav {
                 &lt;label for="treeKeepFocusWhenAside"&gt;Keep focus when opening on the side&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Keep focus in the outline when opening a detached body pane on the side&lt;/span&gt;
+            &lt;/div&gt;
+
+            &lt;div class="break"&gt;&lt;/div&gt;
+
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="askForExitConfirmationIfDirty" name="askForExitConfirmationIfDirty" type="checkbox"
+                  data-setting /&gt;
+                &lt;label for="askForExitConfirmationIfDirty"&gt;Ask for exit confirmation if dirty&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Opens a confirmation dialog if a Leo document is dirty when exiting
+                VSCode&lt;/span&gt;
             &lt;/div&gt;
 
             &lt;div class="break"&gt;&lt;/div&gt;

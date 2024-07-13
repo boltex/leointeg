@@ -18,6 +18,8 @@ export interface ConfigMembers {
     leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
+    askForExitConfirmationIfDirty: boolean;
+
 
     collapseAllShortcut: boolean;
     activityViewShortcut: boolean;

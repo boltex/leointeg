@@ -336,6 +336,8 @@ export class LeoIntegration {
     constructor(private _context: vscode.ExtensionContext) {
 
         const w_effectiveLeojsInExplorer = vscode.workspace.getConfiguration('leojs').get('treeInExplorer', false);
+        // Set confirm on close to 'never' on startup 
+        void this.checkConfirmBeforeClose();
 
         // * Setup States
         this.leoStates = new LeoStates(_context, this);
@@ -1497,6 +1499,7 @@ export class LeoIntegration {
             }
         }
         this._nextRevealParams = undefined;
+        void this.checkConfirmBeforeClose();
         this.leoStates.fileOpenedReady = false;
         this.leoStates.leoCommanderId = "";
         this._bodyTextDocument = undefined;
@@ -1854,6 +1857,10 @@ export class LeoIntegration {
     public _changedWindowState(p_windowState: vscode.WindowState): void {
         // no other action
         this.triggerBodySave(true, true);
+        if (p_windowState.focused) {
+            // We are focused!
+            this.checkConfirmBeforeClose();
+        }
     }
 
     /**
@@ -2282,6 +2289,19 @@ export class LeoIntegration {
         }
     }
 
+    public checkConfirmBeforeClose(): void {
+        let hasDirty = false;
+
+        for (const doc of this._leoDocumentsProvider.lastDocumentList) {
+            if (doc.documentEntry.changed) {
+                hasDirty = true;
+            }
+        }
+        if (this.config.askForExitConfirmationIfDirty) {
+            void this.config.setConfirmBeforeClose(hasDirty);
+        }
+    }
+
     /**
      * * Capture instance for further calls on find panel webview
      * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
@@ -2466,7 +2486,6 @@ export class LeoIntegration {
             if (id) {
                 w_param["commanderId"] = id;
             }
-
             // Don't wait for promise!
             this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
 
@@ -3209,6 +3228,7 @@ export class LeoIntegration {
      */
     private _refreshDocumentsPane(): void {
         this._leoDocumentsProvider.refreshTreeRoot();
+        this.checkConfirmBeforeClose();
     }
 
     /**
