@@ -336,8 +336,6 @@ export class LeoIntegration {
     constructor(private _context: vscode.ExtensionContext) {
 
         const w_effectiveLeojsInExplorer = vscode.workspace.getConfiguration('leojs').get('treeInExplorer', false);
-        // Set confirm on close to 'never' on startup 
-        void this.checkConfirmBeforeClose();
 
         // * Setup States
         this.leoStates = new LeoStates(_context, this);
@@ -627,6 +625,8 @@ export class LeoIntegration {
             this._launchRefresh,
             Constants.REFRESH_DEBOUNCE_DELAY
         );
+        // Set confirm on close to 'never' on startup 
+        void this.checkConfirmBeforeClose();
 
     }
 

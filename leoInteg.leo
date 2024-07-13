@@ -4759,7 +4759,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.executeScript",
   "key": "ctrl+b",
   "mac": "cmd+b",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.minibuffer",
@@ -4904,7 +4904,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.markSelectionFromOutline",
   "key": "ctrl+m",
   "mac": "cmd+m",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; !leoMarked &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline &amp;&amp; !leoMarked || leoFindFocus &amp;&amp; !leoMarked ||  leoTreeOpened &amp;&amp; !leoMarked &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.unmarkSelection",
@@ -4916,7 +4916,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.unmarkSelectionFromOutline",
   "key": "ctrl+m",
   "mac": "cmd+m",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; leoMarked &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline &amp;&amp; leoMarked || leoFindFocus &amp;&amp; leoMarked || leoTreeOpened &amp;&amp; leoMarked &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 </t>
 <t tx="ekr.20200815123601.82"></t>
@@ -4936,7 +4936,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineDownSelectionFromOutline",
   "key": "ctrl+d",
   "mac": "cmd+d",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.moveOutlineDownSelectionFromOutline",
@@ -4966,7 +4966,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineLeftSelectionFromOutline",
   "key": "ctrl+l",
   "mac": "cmd+l",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.moveOutlineLeftSelectionFromOutline",
@@ -4996,7 +4996,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineRightSelectionFromOutline",
   "key": "ctrl+r",
   "mac": "cmd+r",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.moveOutlineRightSelectionFromOutline",
@@ -5026,7 +5026,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.moveOutlineUpSelectionFromOutline",
   "key": "ctrl+u",
   "mac": "cmd+u",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.moveOutlineUpSelectionFromOutline",
@@ -5048,7 +5048,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.sortSiblingsSelectionFromOutline",
   "key": "alt+a",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.promoteSelection",
@@ -5064,7 +5064,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "win": "ctrl+oem_4",
   "linux": "ctrl+[",
   "mac": "cmd+[BracketLeft]",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.demoteSelection",
@@ -5080,7 +5080,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "win": "ctrl+oem_6",
   "linux": "ctrl+]",
   "mac": "cmd+[BracketRight]",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.insertNodeSelection",
@@ -5092,7 +5092,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.insertNodeSelectionFromOutline",
   "key": "ctrl+i",
   "mac": "cmd+i",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.insertNodeSelection",
@@ -5138,7 +5138,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "win": "ctrl+oem_3",
   "linux": "ctrl+`",
   "mac": "cmd+`",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.cutNodeSelection",
@@ -5150,13 +5150,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.cutNodeSelectionFromOutline",
   "key": "ctrl+shift+x",
   "mac": "cmd+shift+x",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoFindPanel/"
 },
 {
   "command": "leointeg.copyNodeSelection",
   "key": "ctrl+shift+c",
   "mac": "cmd+shift+c",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoFindPanel/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.pasteNodeAtSelection",
@@ -5168,7 +5168,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.pasteNodeAtSelectionFromOutline",
   "key": "ctrl+shift+v",
   "mac": "cmd+shift+v",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoFindPanel/"
 },
 {
   "command": "leointeg.deleteSelection",
@@ -5180,7 +5180,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.deleteSelectionFromOutline",
   "key": "ctrl+shift+backspace",
   "mac": "cmd+shift+backspace",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.deleteSelectionFromOutline",
@@ -5221,7 +5221,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 {
   "command": "leointeg.gotoNextCloneSelectionFromOutline",
   "key": "alt+n",
-  "when": "leoEditHeadline || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/"
 },
 {
   "command": "leointeg.gotoNextCloneSelection",
@@ -9937,6 +9937,7 @@ private _setupNoOpenedLeoDocument(): void {
         }
     }
     this._nextRevealParams = undefined;
+    void this.checkConfirmBeforeClose();
     this.leoStates.fileOpenedReady = false;
     this.leoStates.leoCommanderId = "";
     this._bodyTextDocument = undefined;
@@ -10468,6 +10469,8 @@ private _onActiveEditorChanged(
         this._launchRefresh,
         Constants.REFRESH_DEBOUNCE_DELAY
     );
+    // Set confirm on close to 'never' on startup 
+    void this.checkConfirmBeforeClose();
 
 }
 
@@ -12726,13 +12729,13 @@ public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
   "command": "leointeg.extract",
   "key": "ctrl+shift+d",
   "mac": "cmd+shift+d",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leointeg"
 },
 {
   "command": "leointeg.extractNames",
   "key": "ctrl+shift+n",
   "mac": "cmd+shift+n",
-  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leointeg"
+  "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leointeg"
 },
 </t>
 <t tx="felix.20201105010614.1">{
@@ -13477,6 +13480,10 @@ public _changedVisibleTextEditors(p_editors: readonly vscode.TextEditor[]): void
 public _changedWindowState(p_windowState: vscode.WindowState): void {
     // no other action
     this.triggerBodySave(true, true);
+    if (p_windowState.focused) {
+        // We are focused!
+        this.checkConfirmBeforeClose();
+    }
 }
 
 </t>
@@ -18611,6 +18618,7 @@ public setupRefresh(p_finalFocus: Focus, p_refreshType: ReqRefresh, p_node?: Arc
  */
 private _refreshDocumentsPane(): void {
     this._leoDocumentsProvider.refreshTreeRoot();
+    this.checkConfirmBeforeClose();
 }
 
 </t>
@@ -21106,6 +21114,7 @@ public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
 - Fixed find panel scrollbars as per VSCode issue #213045.
 - Fixed Ctrl+Shift+F to be quick-find with selected text instead of just focusing on the nav text input.
 - Deprecated the 'Goto Panel' by adding tabs to the find panel to separate 'find' and 'nav/tag' search inputs.
+- Added confirmation dialog for exiting while a Leo document is dirty.
 - Reworked the icons for the 'quick find' commands (dirty-nodes, marked-nodes, reverse-gnx-order, visited-nodes-history and quick-find with selected text) to be graphical symbols instead of latin letters.
 - Added language coloring and syntax support for julia, batch and shell languages.
 
@@ -22731,20 +22740,21 @@ public setGotoContent(): void {
 </t>
 <t tx="felix.20240712215956.1">public checkConfirmBeforeClose(): void {
     let hasDirty = false;
-    // TODO !
-    // for (const frame of g.app.windowList) {
-    //     if (frame.c.changed) {
-    //         hasDirty = true;
-    //     }
-    // }
-    //
-    void this.config.setConfirmBeforeClose(hasDirty);
+
+    for (const doc of this._leoDocumentsProvider.lastDocumentList) {
+        if (doc.documentEntry.changed) {
+            hasDirty = true;
+        }
+    }
+    if (this.config.askForExitConfirmationIfDirty) {
+        void this.config.setConfirmBeforeClose(hasDirty);
+    }
 }
 
 </t>
 <t tx="felix.20240712222429.1">public setConfirmBeforeClose(p_state: boolean): Thenable&lt;void&gt; {
     return vscode.workspace.getConfiguration("window")
-        .update("confirmBeforeClose", p_state ? "always" : this._confirmOffValue, true);
+        .update("confirmBeforeClose", p_state ? "always" : 'never', true);
 }
 
 </t>
