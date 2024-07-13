@@ -7644,14 +7644,17 @@ public refreshTreeRoot(): void {
                     });
                 }
                 this.lastDocumentList = w_list;
+                this._leoIntegration.checkConfirmBeforeClose();
                 return w_list;
             } else {
                 this.lastDocumentList = [];
+                this._leoIntegration.checkConfirmBeforeClose();
                 return [];
             }
         });
     } else {
         this.lastDocumentList = [];
+        this._leoIntegration.checkConfirmBeforeClose();
         return Promise.resolve([]); // Defaults to an empty list of children
     }
 }
@@ -10047,6 +10050,14 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
                 if (!this.config.showUnlOnStatusBar &amp;&amp; this._leoStatusBar) {
                     this._leoStatusBar.hide();
                 }
+
+                if (this.leoStates.leoBridgeReady &amp;&amp; p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.ASK_FOR_EXIT_CONFIRMATION_IF_DIRTY)) {
+                    if (!this.config.askForExitConfirmationIfDirty) {
+                        void this.config.setConfirmBeforeClose(false); // was set false. so dont check for sure.
+                    }
+                    this.checkConfirmBeforeClose(); // may have been set true or false
+                }
+
             }
         );
 
@@ -13480,10 +13491,6 @@ public _changedVisibleTextEditors(p_editors: readonly vscode.TextEditor[]): void
 public _changedWindowState(p_windowState: vscode.WindowState): void {
     // no other action
     this.triggerBodySave(true, true);
-    if (p_windowState.focused) {
-        // We are focused!
-        this.checkConfirmBeforeClose();
-    }
 }
 
 </t>
@@ -18618,7 +18625,6 @@ public setupRefresh(p_finalFocus: Focus, p_refreshType: ReqRefresh, p_node?: Arc
  */
 private _refreshDocumentsPane(): void {
     this._leoDocumentsProvider.refreshTreeRoot();
-    this.checkConfirmBeforeClose();
 }
 
 </t>

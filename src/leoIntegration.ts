@@ -1607,6 +1607,14 @@ export class LeoIntegration {
                     if (!this.config.showUnlOnStatusBar && this._leoStatusBar) {
                         this._leoStatusBar.hide();
                     }
+
+                    if (this.leoStates.leoBridgeReady && p_event.affectsConfiguration(Constants.CONFIG_NAME + "." + Constants.CONFIG_NAMES.ASK_FOR_EXIT_CONFIRMATION_IF_DIRTY)) {
+                        if (!this.config.askForExitConfirmationIfDirty) {
+                            void this.config.setConfirmBeforeClose(false); // was set false. so dont check for sure.
+                        }
+                        this.checkConfirmBeforeClose(); // may have been set true or false
+                    }
+
                 }
             );
 
@@ -1857,10 +1865,6 @@ export class LeoIntegration {
     public _changedWindowState(p_windowState: vscode.WindowState): void {
         // no other action
         this.triggerBodySave(true, true);
-        if (p_windowState.focused) {
-            // We are focused!
-            this.checkConfirmBeforeClose();
-        }
     }
 
     /**
