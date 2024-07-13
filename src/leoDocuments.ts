@@ -30,7 +30,6 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
     }
 
     public getChildren(element?: LeoDocumentNode): Thenable<LeoDocumentNode[]> {
-
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady && !element) {
 
@@ -48,17 +47,14 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
                         });
                     }
                     this.lastDocumentList = w_list;
-                    this._leoIntegration.checkConfirmBeforeClose();
                     return w_list;
                 } else {
                     this.lastDocumentList = [];
-                    this._leoIntegration.checkConfirmBeforeClose();
                     return [];
                 }
             });
         } else {
             this.lastDocumentList = [];
-            this._leoIntegration.checkConfirmBeforeClose();
             return Promise.resolve([]); // Defaults to an empty list of children
         }
     }

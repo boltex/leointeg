@@ -7626,7 +7626,6 @@ public refreshTreeRoot(): void {
 
 </t>
 <t tx="felix.20200718165108.5">public getChildren(element?: LeoDocumentNode): Thenable&lt;LeoDocumentNode[]&gt; {
-
     // if called with element, or not ready, give back empty array as there won't be any children
     if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
 
@@ -7644,17 +7643,14 @@ public refreshTreeRoot(): void {
                     });
                 }
                 this.lastDocumentList = w_list;
-                this._leoIntegration.checkConfirmBeforeClose();
                 return w_list;
             } else {
                 this.lastDocumentList = [];
-                this._leoIntegration.checkConfirmBeforeClose();
                 return [];
             }
         });
     } else {
         this.lastDocumentList = [];
-        this._leoIntegration.checkConfirmBeforeClose();
         return Promise.resolve([]); // Defaults to an empty list of children
     }
 }
@@ -9620,6 +9616,7 @@ export class LeoIntegration {
 
     // * Configuration Settings Service
     public config: Config; // Public configuration service singleton, used in leoSettingsWebview, leoBridge, for inverted contrast
+    private _checkConfirmBeforeCloseTimer?: NodeJS.Timer;
 
     // * Icon Paths
     public nodeIcons: Icon[] = []; // Singleton static array of all icon paths used for rendering in treeview
@@ -10480,9 +10477,6 @@ private _onActiveEditorChanged(
         this._launchRefresh,
         Constants.REFRESH_DEBOUNCE_DELAY
     );
-    // Set confirm on close to 'never' on startup 
-    void this.checkConfirmBeforeClose();
-
 }
 
 </t>
@@ -18625,6 +18619,7 @@ public setupRefresh(p_finalFocus: Focus, p_refreshType: ReqRefresh, p_node?: Arc
  */
 private _refreshDocumentsPane(): void {
     this._leoDocumentsProvider.refreshTreeRoot();
+    this.checkConfirmBeforeClose();
 }
 
 </t>
@@ -19731,7 +19726,6 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
             // WAS JUST A VIEW SWITCH:
             if (this._viewSwitch) {
                 this._viewSwitch = false;
-                console.log('WAS JUST A VIEW SWITCH ! !');
                 setTimeout(() =&gt; {
                     if (this.nodeList.length &amp;&amp; (this.selectedNodeIndex + 1) &lt;= this.nodeList.length) {
 
@@ -22745,16 +22739,26 @@ public setGotoContent(): void {
 
 </t>
 <t tx="felix.20240712215956.1">public checkConfirmBeforeClose(): void {
-    let hasDirty = false;
-
-    for (const doc of this._leoDocumentsProvider.lastDocumentList) {
-        if (doc.documentEntry.changed) {
-            hasDirty = true;
+    // Debounced
+    if (this._checkConfirmBeforeCloseTimer) {
+        clearTimeout(this._checkConfirmBeforeCloseTimer);
+    }
+    this._checkConfirmBeforeCloseTimer = setTimeout(async () =&gt; {
+        let hasDirty = false;
+        if (this.leoStates.leoBridgeReady) {
+            const w_package = await this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
+            if (w_package &amp;&amp; w_package.files) {
+                for (const doc of w_package.files) {
+                    if (doc.changed) {
+                        hasDirty = true;
+                    }
+                }
+            }
         }
-    }
-    if (this.config.askForExitConfirmationIfDirty) {
-        void this.config.setConfirmBeforeClose(hasDirty);
-    }
+        if (this.config.askForExitConfirmationIfDirty) {
+            void this.config.setConfirmBeforeClose(hasDirty);
+        }
+    }, 150);
 }
 
 </t>
@@ -23608,7 +23612,6 @@ div.col-nav {
 
     let vscodePlatform = window.platform; // PRE SET BY leoSettingsWebview
     let _platform = JSON.parse(JSON.stringify(vscodePlatform));
-    console.log("_platform", _platform);
     let _isWin32 = _platform === "win32";
 
     // Handle messages sent from the extension to the webview

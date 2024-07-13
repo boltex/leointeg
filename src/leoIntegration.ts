@@ -67,6 +67,7 @@ export class LeoIntegration {
 
     // * Configuration Settings Service
     public config: Config; // Public configuration service singleton, used in leoSettingsWebview, leoBridge, for inverted contrast
+    private _checkConfirmBeforeCloseTimer?: NodeJS.Timer;
 
     // * Icon Paths
     public nodeIcons: Icon[] = []; // Singleton static array of all icon paths used for rendering in treeview
@@ -625,9 +626,6 @@ export class LeoIntegration {
             this._launchRefresh,
             Constants.REFRESH_DEBOUNCE_DELAY
         );
-        // Set confirm on close to 'never' on startup 
-        void this.checkConfirmBeforeClose();
-
     }
 
     /**
@@ -2294,16 +2292,26 @@ export class LeoIntegration {
     }
 
     public checkConfirmBeforeClose(): void {
-        let hasDirty = false;
-
-        for (const doc of this._leoDocumentsProvider.lastDocumentList) {
-            if (doc.documentEntry.changed) {
-                hasDirty = true;
+        // Debounced
+        if (this._checkConfirmBeforeCloseTimer) {
+            clearTimeout(this._checkConfirmBeforeCloseTimer);
+        }
+        this._checkConfirmBeforeCloseTimer = setTimeout(async () => {
+            let hasDirty = false;
+            if (this.leoStates.leoBridgeReady) {
+                const w_package = await this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
+                if (w_package && w_package.files) {
+                    for (const doc of w_package.files) {
+                        if (doc.changed) {
+                            hasDirty = true;
+                        }
+                    }
+                }
             }
-        }
-        if (this.config.askForExitConfirmationIfDirty) {
-            void this.config.setConfirmBeforeClose(hasDirty);
-        }
+            if (this.config.askForExitConfirmationIfDirty) {
+                void this.config.setConfirmBeforeClose(hasDirty);
+            }
+        }, 150);
     }
 
     /**
@@ -3232,6 +3240,7 @@ export class LeoIntegration {
      */
     private _refreshDocumentsPane(): void {
         this._leoDocumentsProvider.refreshTreeRoot();
+        this.checkConfirmBeforeClose();
     }
 
     /**

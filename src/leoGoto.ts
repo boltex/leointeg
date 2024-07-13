@@ -123,7 +123,6 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
             // WAS JUST A VIEW SWITCH:
             if (this._viewSwitch) {
                 this._viewSwitch = false;
-                console.log('WAS JUST A VIEW SWITCH ! !');
                 setTimeout(() => {
                     if (this.nodeList.length && (this.selectedNodeIndex + 1) <= this.nodeList.length) {
 

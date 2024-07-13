@@ -36,7 +36,6 @@
 
     let vscodePlatform = window.platform; // PRE SET BY leoSettingsWebview
     let _platform = JSON.parse(JSON.stringify(vscodePlatform));
-    console.log("_platform", _platform);
     let _isWin32 = _platform === "win32";
 
     // Handle messages sent from the extension to the webview
