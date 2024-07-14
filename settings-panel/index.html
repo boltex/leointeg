@@ -36,7 +36,7 @@
     <div class="content__area">
       <section id="welcome" class="section--full mb-0">
         <h2 class="section__title section__title--primary">
-          Welcome to <span class="highlight">LeoInteg 1.0.20</span>
+          Welcome to <span class="highlight">LeoInteg 1.0.21</span>
         </h2>
         <div class="center mt-1">
           <a class="button button--flat is-sidebar-hidden"
@@ -46,7 +46,7 @@
           </a>
           <a class="button button--flat" title="LeoInteg's Features"
             href="https://github.com/boltex/leointeg#features-">
-            See What's New in LeoInteg 1.0.20
+            See What's New in LeoInteg 1.0.21
           </a>
         </div>
         <p class="blurb center ml-0 mr-0">
@@ -239,7 +239,19 @@
                 <input id="treeKeepFocusWhenAside" name="treeKeepFocusWhenAside" type="checkbox" data-setting />
                 <label for="treeKeepFocusWhenAside">Keep focus when opening on the side</label>
               </div>
-              <span class="setting__hint">Keep focus in the outline when opening a body pane on the side</span>
+              <span class="setting__hint">Keep focus in the outline when opening a detached body pane on the side</span>
+            </div>
+
+            <div class="break"></div>
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="askForExitConfirmationIfDirty" name="askForExitConfirmationIfDirty" type="checkbox"
+                  data-setting />
+                <label for="askForExitConfirmationIfDirty">Ask for exit confirmation if dirty</label>
+              </div>
+              <span class="setting__hint">Opens a confirmation dialog if a Leo document is dirty when exiting
+                VSCode</span>
             </div>
 
             <div class="break"></div>
@@ -294,27 +306,6 @@
           <img class="image__preview" src="#{root}/resources/treeInExplorerDisabled.png" />
           <img class="image__preview--overlay hidden" src="#{root}/resources/treeInExplorerEnabled.png"
             data-visibility="treeInExplorer" />
-        </div>
-      </section>
-
-      <section id="show-open-aside" class="section--settings">
-        <div class="section__content">
-          <div class="section__header">
-            <div class="setting__input setting__input--big">
-              <input id="showOpenAside" name="showOpenAside" type="checkbox" data-setting />
-              <label for="showOpenAside">Show&nbsp;'Open&nbsp;to&nbsp;the&nbsp;Side'</label>
-            </div>
-            <p class="section__header-hint">
-              Adds the command in the node's context menu
-            </p>
-          </div>
-        </div>
-        <div class="break"></div>
-        <!-- Make sure to break line after this short title. -->
-        <div class="section__preview">
-          <img class="image__preview" src="#{root}/resources/showOpenAsideDisabled.png" />
-          <img class="image__preview--overlay hidden" src="#{root}/resources/showOpenAsideEnabled.png"
-            data-visibility="showOpenAside" />
         </div>
       </section>
 

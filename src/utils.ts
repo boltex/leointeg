@@ -18,6 +18,47 @@ export function getUniqueId(): string {
 }
 
 /**
+ * * Closes all visible text editors that have Leo filesystem scheme (that are not dirty)
+ */
+export async function closeLeoTextEditors(): Promise<unknown> {
+
+    const w_foundTabs: vscode.Tab[] = [];
+
+    vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+        p_tabGroup.tabs.forEach((p_tab) => {
+            if (p_tab.input &&
+                (p_tab.input as vscode.TabInputText).uri &&
+                ((p_tab.input as vscode.TabInputText).uri.scheme).startsWith(Constants.URI_LEO_SCHEME) &&
+                !p_tab.isDirty
+            ) {
+                w_foundTabs.push(p_tab);
+            }
+        });
+    });
+
+    let q_closedTabs;
+    if (w_foundTabs.length) {
+        q_closedTabs = vscode.window.tabGroups.close(w_foundTabs, true);
+        w_foundTabs.forEach((p_tab) => {
+            if (p_tab.input) {
+                vscode.commands.executeCommand(
+                    'vscode.removeFromRecentlyOpened',
+                    (p_tab.input as vscode.TabInputText).uri
+                );
+                // Delete to close all other body tabs.
+                // (w_oldUri will be deleted last below)
+                const w_edit = new vscode.WorkspaceEdit();
+                w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
+                vscode.workspace.applyEdit(w_edit);
+            }
+        });
+    } else {
+        q_closedTabs = Promise.resolve(true);
+    }
+    return q_closedTabs;
+}
+
+/**
  * * Compares major, minor and patch members of versions
  * @param p_version given version 
  * @param p_min minimal version
@@ -77,6 +118,14 @@ export function cleanLeoID(id_: string): string {
  */
 export function addFileToWorkspace(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable<void> {
     // Just push that string into the context.workspaceState.<something> array
+    // First, if on windows and a drive letter starts the string, make sure its uppercase.
+    if (p_file.length > 1 && p_file[1] === ':') {
+        // Check if the first character is a letter
+        if (p_file[0] >= 'a' && p_file[0] <= 'z') {
+            // Convert the first character to uppercase
+            p_file = p_file[0].toUpperCase() + p_file.slice(1);
+        }
+    }
     const w_contextEntry: string[] = p_context.workspaceState.get(p_key) || [];
     if (w_contextEntry) {
         if (!w_contextEntry.includes(p_file)) {
@@ -100,10 +149,30 @@ export function addFileToWorkspace(p_context: vscode.ExtensionContext, p_file: s
  * @returns A promise that resolves when the workspace storage modification is done
   */
 export function removeFileFromWorkspace(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable<void> {
+    let alternate = ""; // An alternate spelling if startgin with a letter and colon
+    let modified = false;
+    // First, if on windows and a drive letter starts the string, make sure its uppercase.
+    if (p_file.length > 1 && p_file[1] === ':') {
+        // Check if the first character is a letter
+        if (p_file[0] >= 'a' && p_file[0] <= 'z') {
+            // Convert the first character to uppercase
+            alternate = p_file[0].toUpperCase() + p_file.slice(1);
+        } else if (p_file[0] >= 'A' && p_file[0] <= 'Z') {
+            // Convert the first character to lowercase since it was already uppercase
+            alternate = p_file[0].toLowerCase() + p_file.slice(1);
+        }
+    }
     // Check if exist in context.workspaceState.<something> and remove if found
     const w_files: string[] = p_context.workspaceState.get(p_key) || [];
     if (w_files && w_files.includes(p_file)) {
         w_files.splice(w_files.indexOf(p_file), 1); // Splice and update
+        modified = true;
+    }
+    if (alternate && w_files && w_files.includes(alternate)) {
+        w_files.splice(w_files.indexOf(alternate), 1); // Splice and update if letter and colon
+        modified = true;
+    }
+    if (modified) {
         return p_context.workspaceState.update(p_key, w_files);
     }
     return Promise.resolve(); // not even in list so just resolve
@@ -382,7 +451,7 @@ export function fixSlashesDriveLetter(p_path: string): string {
 
 /**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
- * with a scheme header like "leo:/" or 'more:/'
+ * with a scheme header like "leointeg:/" or 'more:/'
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */
@@ -391,14 +460,22 @@ export function strToLeoUri(p_str: string): vscode.Uri {
 }
 
 /**
+* Builds a 'Leo Detached Scheme' vscode.Uri from a gnx 
+* @param p_str leo node gnx strings are used to build Uri
+* @returns A vscode 'Uri' object
+*/
+export function strToLeoDetachedUri(p_str: string): vscode.Uri {
+    return vscode.Uri.parse(Constants.URI_SCHEME_DETACHED_HEADER + p_str);
+}
+
+/**
  * * Gets the gnx, (or another string like 'LEO BODY' or other), from a vscode.Uri object
  * @param p_uri Source uri to extract from
  * @returns The string source that was used to build this Uri
  */
 export function leoUriToStr(p_uri: vscode.Uri): string {
-    // TODO : Use length of a constant or something other than 'fsPath'
-    // For now, just remove the '/' (or backslash on Windows) before the path string
-    return p_uri.fsPath.substr(1);
+    // For now, just remove the '/' before the path string
+    return p_uri.path.substring(1);
 }
 
 /**

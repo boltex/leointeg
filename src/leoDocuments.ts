@@ -10,6 +10,8 @@ import { LeoDocument } from "./types";
  */
 export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocumentNode> {
 
+    public lastDocumentList: LeoDocumentNode[] = [];
+
     private _onDidChangeTreeData: vscode.EventEmitter<LeoDocumentNode | undefined> = new vscode.EventEmitter<LeoDocumentNode | undefined>();
 
     readonly onDidChangeTreeData: vscode.Event<LeoDocumentNode | undefined> = this._onDidChangeTreeData.event;
@@ -28,7 +30,6 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
     }
 
     public getChildren(element?: LeoDocumentNode): Thenable<LeoDocumentNode[]> {
-
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady && !element) {
 
@@ -45,12 +46,15 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
                             w_index++;
                         });
                     }
+                    this.lastDocumentList = w_list;
                     return w_list;
                 } else {
+                    this.lastDocumentList = [];
                     return [];
                 }
             });
         } else {
+            this.lastDocumentList = [];
             return Promise.resolve([]); // Defaults to an empty list of children
         }
     }
@@ -69,7 +73,6 @@ export class LeoDocumentNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
     public contextValue: string;
-    private _id: string;
 
     constructor(
         public documentEntry: LeoDocument,
@@ -77,7 +80,6 @@ export class LeoDocumentNode extends vscode.TreeItem {
     ) {
         super(documentEntry.name);
         // Setup this instance
-        this._id = utils.getUniqueId();
         const w_isNamed: boolean = !!this.documentEntry.name;
         this.label = w_isNamed ? utils.getFileFromPath(this.documentEntry.name) : Constants.UNTITLED_FILE_NAME;
         this.tooltip = w_isNamed ? this.documentEntry.name : Constants.UNTITLED_FILE_NAME;

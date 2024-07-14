@@ -15,7 +15,8 @@ export class CommandStack {
     private _busy: boolean = false; // Flag stating commands started resolving
 
     // Refresh type, for use after the last command has done resolving (From highest so far)
-    public _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
+    public finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
+    private _allowDetachedExclusion = true;
 
     // Flag used to set focus on outline instead of body when done resolving (From last pushed)
     private _finalFocus: Focus = Focus.NoChange;
@@ -112,7 +113,16 @@ export class CommandStack {
         const w_jsonParam = utils.buildNodeCommand(w_node!, w_command); // 'Insert Named Node' or 'Edit Headline'
 
         // Setup _finalRefreshType, if command requires higher than the one setup so far
-        Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
+        Object.assign(this.finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
+
+        // TODO : Maybe implement this in a better way: excludeDetached IS A NEGATIVE FLAG 
+        // * Check if we added a body refresh that did not exclude detached. If so make it also refresh detached.
+        if (w_command.refreshType.body && !w_command.refreshType.excludeDetached) {
+            this._allowDetachedExclusion = false;
+        }
+        if (!this._allowDetachedExclusion && this.finalRefreshType.excludeDetached) {
+            delete this.finalRefreshType.excludeDetached;
+        }
 
         // Submit this action to Leo and return a promise of its packaged answer
         return this._leoIntegration.sendAction(w_command.action, w_jsonParam)
@@ -144,17 +154,18 @@ export class CommandStack {
         if (!this.size()) {
             // If last is done then do refresh outline and focus on outline, or body, as required
             this._busy = false;
-            if (Object.keys(this._finalRefreshType).length) {
+            if (Object.keys(this.finalRefreshType).length) {
                 // At least some type of refresh
                 this._leoIntegration.setupRefresh(
                     this._finalFocus,
-                    this._finalRefreshType,
+                    this.finalRefreshType,
                     p_package.node
                 );
                 this._leoIntegration.launchRefresh();
             }
             // Reset refresh type nonetheless
-            this._finalRefreshType = {};
+            this.finalRefreshType = {};
+            this._allowDetachedExclusion = true;
         } else {
             // Size > 0, so call _runStackCommand again, keep _busy set to true
             this._runStackCommand().then((p_package: LeoBridgePackage) => {

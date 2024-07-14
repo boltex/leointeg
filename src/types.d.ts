@@ -18,6 +18,8 @@ export interface ConfigMembers {
     leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
+    askForExitConfirmationIfDirty: boolean;
+
 
     collapseAllShortcut: boolean;
     activityViewShortcut: boolean;
@@ -28,7 +30,6 @@ export interface ConfigMembers {
     // statusBarColor: string;
 
     treeInExplorer: boolean;
-    showOpenAside: boolean;
     showEditOnNodes: boolean;
     // showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
@@ -92,6 +93,7 @@ export interface ReqRefresh {
     node?: boolean; // Reveal received selected node (Navigation only, no tree change)
     tree?: boolean; // Tree needs refresh
     body?: boolean; // Body needs refresh
+    excludeDetached?: boolean; // Body needs refresh EXCLUDE DETACHED
     scroll?: boolean; // Body needs to scroll to selection
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
@@ -158,6 +160,7 @@ export interface ArchivedPosition {
 
     // * ALPHA FEATURE
     _isRoot?: boolean; // Added front side by leoInteg, for internal usage
+    _lastBodyData?: string;
 
     // * unknown attributes
     u?: number;             // User-attributes displayed qty
@@ -170,6 +173,7 @@ export interface ArchivedPosition {
  */
 export interface LeoPackageStates {
 
+    commanderId: string; // Commander's python 'id'.
     changed: boolean; // Leo document has changed (is dirty)
 
     canUndo: boolean; // Leo document can undo the last operation done
@@ -197,6 +201,7 @@ export interface LeoBridgePackage {
     id: number;
     // * Possible answers from a "Constants.LEOBRIDGE" command
     leoID?: string;
+    valid?: boolean;
     gnx?: string[]; // get_all_gnx
     len?: number; // get_body_length
     body?: string; // get_body
@@ -213,21 +218,23 @@ export interface LeoBridgePackage {
     commander?: {
         changed: boolean,
         fileName: string;
+        id: string;
     }
     "position-data-list"?: ArchivedPosition[];
     "position-data-dict"?: { [key: string]: ArchivedPosition };
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
-    found?: boolean // find_next, find_previous
-    range?: [number, number] // find_next, find_previous
+    found?: boolean; // find_next, find_previous
+    use_nav_pane?: boolean;
+    range?: [number, number]; // find_next, find_previous
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     wrap?: boolean; // get_body_states
     tabWidth?: number | boolean; // get_body_states either the tabwidth or falsy
     node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
     children?: ArchivedPosition[]; // get_children
-    searchSettings?: LeoGuiFindTabManagerSettings // get_search_settings
+    searchSettings?: LeoGuiFindTabManagerSettings; // get_search_settings
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
     string?: string; // from cut / copy outline
@@ -246,6 +253,7 @@ export interface LeoBridgePackage {
  * * Leo document structure used in the 'Opened Leo Documents' tree view provider sent back by the server
  */
 export interface LeoDocument {
+    id: string; // Commander's id
     name: string;
     index: number;
     changed: boolean;
@@ -348,6 +356,7 @@ export interface Icon {
 export interface BodyTimeInfo {
     ctime: number;
     mtime: number;
+    lastBodyLength?: number;
 }
 
 /**
@@ -363,6 +372,7 @@ export interface BodyPosition {
  * * LeoBody cursor active position and text selection state, along with gnx
  */
 export interface BodySelectionInfo {
+    commanderId?: string,
     gnx: string;
     // scroll is stored as-is as the 'scrollBarSpot' in Leo
     // ! TEST scroll as single number only (for Leo vertical scroll value)

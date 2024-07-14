@@ -12,6 +12,7 @@ import { ArchivedPosition, LeoPackageStates } from "./types";
 export class LeoStates {
 
     public qLastContextChange: Thenable<unknown>; // Promise that the last state change is applied
+    public leoCommanderId: string = "";
 
     // * Currently starting up a server
     private _leoStartingServer: boolean = false;
@@ -294,6 +295,7 @@ export class LeoStates {
     }
 
     public setLeoStateFlags(p_states: LeoPackageStates): void {
+        this.leoCommanderId = p_states.commanderId;
         this.leoChanged = p_states.changed; // Documents will be refresh if this changes
 
         this.leoCanUndo = p_states.canUndo;

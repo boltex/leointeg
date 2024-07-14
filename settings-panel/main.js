@@ -1,5 +1,3 @@
-// @ts-check
-
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 // Send message to LeoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
@@ -7,7 +5,6 @@
 (function () {
     const cssColorRegex = /^(?:(#?)([0-9a-f]{3}|[0-9a-f]{6})|((?:rgb|hsl)a?)\((-?\d+%?)[,\s]+(-?\d+%?)[,\s]+(-?\d+%?)[,\s]*(-?[\d.]+%?)?\))$/i;
 
-    // @ts-expect-error
     const vscode = acquireVsCodeApi();
 
     initializeAndWatchThemeColors();
@@ -34,14 +31,11 @@
     let frontConfig = {};
     let vscodeConfig = {};
 
-    // @ts-expect-error
     vscodeConfig = window.leoConfig; // PRE SET BY leoSettingsWebview
     frontConfig = JSON.parse(JSON.stringify(vscodeConfig));
 
-    // @ts-expect-error
     let vscodePlatform = window.platform; // PRE SET BY leoSettingsWebview
     let _platform = JSON.parse(JSON.stringify(vscodePlatform));
-    console.log("_platform", _platform);
     let _isWin32 = _platform === "win32";
 
     // Handle messages sent from the extension to the webview
@@ -68,7 +62,6 @@
                 case "newEditorPath":
                     const w_element = document.getElementById("leoEditorPath");
                     if (w_element) {
-                        // @ts-expect-error
                         w_element.value = message.editorPath;
                         onInputChanged(w_element);
                     }
@@ -301,10 +294,8 @@
             if (frontConfig.hasOwnProperty(key)) {
                 const w_element = document.getElementById(key);
                 if (w_element && w_element.getAttribute('type') === 'checkbox') {
-                    // @ts-expect-error
                     w_element.checked = frontConfig[key];
                 } else if (w_element) {
-                    // @ts-expect-error
                     w_element.value = frontConfig[key];
                 } else {
                     console.log('ERROR : w_element', key, ' is ', w_element);
@@ -315,7 +306,6 @@
 
     function setVisibility(state) {
         for (const el of document.querySelectorAll('[data-visibility]')) {
-            // @ts-expect-error
             el.classList.toggle('hidden', !evaluateStateExpression(el.dataset.visibility, state));
         }
     }
@@ -380,7 +370,6 @@
     function resultingCommand() {
 
         if (resultingCommandEl && leoPythonCommandEl) {
-            // @ts-expect-errorts
             let w_serverScriptPath = (leoEditorPathEl.value && leoEditorPathEl.value.trim()) ? leoEditorPathEl.value.trim() + "/leo/core" : "";
             if (!w_serverScriptPath.trim()) {
                 resultingCommandEl.innerHTML = "Please set your Leo-Editor installation path";
@@ -390,12 +379,9 @@
 
             let w_pythonPath = ""; // Command of child.spawn call
             let w_args = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
-            // @ts-expect-errorts
             let w_leoPythonCommand = leoPythonCommandEl.value ? leoPythonCommandEl.value : "";
 
-            // @ts-expect-errorts
             let w_usingPort = connectionPortEl.value ? connectionPortEl.value : 32125;
-            // @ts-expect-errorts
             let w_limitUsers = limitUsersEl.value ? limitUsersEl.value : 0;
 
             if (w_leoPythonCommand && w_leoPythonCommand.length) {

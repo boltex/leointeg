@@ -39,5 +39,14 @@
             <br>
             Kevin Henderson
         </td>
+        <td align="center">
+            <img src="data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E"
+                    alt="Jon Nicoll"
+                    width="48"
+                    height="48"
+                >
+            <br>
+            Jon Nicoll
+        </td>
     </tr>
 </table>

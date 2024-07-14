@@ -38,11 +38,13 @@ export class Constants {
     public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
     public static LEO_WRAP_SUFFIX: string = ".wrap"; // all lowercase.
 
-    public static URI_LEO_SCHEME: string = "leo";
+    public static URI_LEO_SCHEME: string = "leointeg";
+    public static URI_LEO_DETACHED_SCHEME: string = "leointegDetached";
     public static URI_FILE_SCHEME: string = "file";
-    public static URI_SCHEME_HEADER: string = "leo:/";
     public static URI_UNTITLED_SCHEME: string = 'untitled';
-    public static OUTPUT_CHANNEL_LANGUAGE = 'Log';
+    public static OUTPUT_CHANNEL_LANGUAGE: string = 'Log';
+    public static URI_SCHEME_HEADER: string = "leointeg:/";
+    public static URI_SCHEME_DETACHED_HEADER: string = "leointegDetached:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
     public static UNTITLED_FILE_NAME: string = "untitled";
     public static RECENT_FILES_KEY: string = "leoRecentFiles";
@@ -60,7 +62,8 @@ export class Constants {
 
     public static ERROR_PACKAGE_ID: number = 0;
     public static STARTING_PACKAGE_ID: number = 1;
-    // public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
+    public static CLEANUP_DEBOUNCE_DELAY: number = 40;
+    public static DETACHED_LANGUAGE_DELAY: number = 300;
     public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
     public static BUTTONS_DEBOUNCE_DELAY: number = 80;
     public static UNDOS_DEBOUNCE_DELAY: number = 180;
@@ -79,6 +82,9 @@ export class Constants {
      */
     public static LANGUAGES = [
         "plain",
+        "julia",
+        "batch",
+        "shell",
         "python",
         "javascript",
         "typescript",
@@ -103,7 +109,7 @@ export class Constants {
     public static MIN_SERVER_VERSION_NUMBER = {
         major: 1,
         minor: 0,
-        patch: 10,
+        patch: 11,
     };
 
     /**
@@ -267,7 +273,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.8 is recommended.",
+        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.8-B1 is recommended.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language coloring not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language coloring not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
@@ -347,35 +353,20 @@ export class Constants {
         LEO_TREE_BROWSE: "leoTreeBrowse",
         TREE_KEEP_FOCUS: "treeKeepFocus",
         TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
+        ASK_FOR_EXIT_CONFIRMATION_IF_DIRTY: "askForExitConfirmationIfDirty",
 
         COLLAPSE_ALL_SHORTCUT: "collapseAllShortcut",
         ACTIVITY_VIEW_SHORTCUT: "activityViewShortcut",
         GO_ANYWHERE_SHORTCUT: "goAnywhereShortcut",
 
-        // STATUSBAR_STRING: "statusBarString",
-        // STATUSBAR_COLOR: "statusBarColor",
-
         TREE_IN_EXPLORER: "treeInExplorer",
-        SHOW_OPEN_ASIDE: "showOpenAside",
         SHOW_EDIT: "showEditOnNodes",
-        // SHOW_ARROWS: "showArrowsOnNodes",
         SHOW_ADD: "showAddOnNodes",
         SHOW_MARK: "showMarkOnNodes",
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
         SHOW_BRANCH_OUTLINE: "showBranchInOutlineTitle",
-
         SHOW_UNL_ON_STATUSBAR: "showUnlOnStatusBar",
-        // SHOW_EDITION_BODY: "showEditionOnBody",
-        // SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
-        // SHOW_PROMOTE_BODY: "showPromoteOnBody",
-        // SHOW_EXECUTE_BODY: "showExecuteOnBody",
-        // SHOW_EXTRACT_BODY: "showExtractOnBody",
-        // SHOW_IMPORT_BODY: "showImportOnBody",
-        // SHOW_REFRESH_BODY: "showRefreshOnBody",
-        // SHOW_HOIST_BODY: "showHoistOnBody",
-        // SHOW_MARK_BODY: "showMarkOnBody",
-        // SHOW_SORT_BODY: "showSortOnBody",
 
         INVERT_NODES: "invertNodeContrast",
         LEO_EDITOR_PATH: "leoEditorPath",
@@ -399,16 +390,14 @@ export class Constants {
         LEO_TREE_BROWSE: true,
         TREE_KEEP_FOCUS: true,
         TREE_KEEP_FOCUS_WHEN_ASIDE: false,
+        ASK_FOR_EXIT_CONFIRMATION_IF_DIRTY: true,
 
         COLLAPSE_ALL_SHORTCUT: true,
         ACTIVITY_VIEW_SHORTCUT: true,
         GO_ANYWHERE_SHORTCUT: true,
 
         SHOW_UNL_ON_STATUSBAR: true,
-        // STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
-        // STATUSBAR_COLOR: "fb7c47",
         TREE_IN_EXPLORER: true,
-        SHOW_OPEN_ASIDE: true,
         SHOW_EDIT: true,
         SHOW_ARROWS: false,
         SHOW_ADD: false,
@@ -416,17 +405,6 @@ export class Constants {
         SHOW_CLONE: false,
         SHOW_COPY: false,
         SHOW_BRANCH_OUTLINE: false,
-
-        // SHOW_EDITION_BODY: true,
-        // SHOW_CLIPBOARD_BODY: true,
-        // SHOW_PROMOTE_BODY: true,
-        // SHOW_EXECUTE_BODY: true,
-        // SHOW_EXTRACT_BODY: true,
-        // SHOW_IMPORT_BODY: true,
-        // SHOW_REFRESH_BODY: true,
-        // SHOW_HOIST_BODY: true,
-        // SHOW_MARK_BODY: true,
-        // SHOW_SORT_BODY: true,
 
         INVERT_NODES: false,
         LEO_PYTHON_COMMAND: "",
@@ -446,6 +424,7 @@ export class Constants {
         description: Constants.USER_MESSAGES.MINIBUFFER_HISTORY_DESC,
         iconPath: new vscode.ThemeIcon("history")
     };
+
     /**
      * * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
      */
@@ -606,6 +585,7 @@ export class Constants {
         APPLY_CONFIG: "!set_config", // "applyConfig",
         ASK_RESULT: "!set_ask_result", // "askResult",
         // * GUI
+        GET_IS_VALID: "!get_is_valid",
         GET_ALL_GNX: "!get_all_gnx", // "getAllGnx",
         GET_BODY_LENGTH: "!get_body_length", // "getBodyLength",
         GET_BODY_STATES: "!get_body_states", // "getBodyStates",
@@ -735,7 +715,6 @@ export class Constants {
         FIND_ALL: "!find_all",
         FIND_NEXT: "!find_next",
         FIND_PREVIOUS: "!find_previous",
-        FIND_VAR: "!find_var",
         FIND_DEF: "!find_def",
         REPLACE: "!replace",
         REPLACE_THEN_FIND: "!replace_then_find",
@@ -799,7 +778,7 @@ export class Constants {
         TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
-        OPEN_ASIDE: Constants.NAME + ".openAside",
+        OPEN_ASIDE: Constants.NAME + ".openAside", // Opens aside a body pane locked to this gnx & commander.
         // * Goto operations that always finish with focus in outline
         PAGE_UP: Constants.NAME + ".pageUp",
         PAGE_DOWN: Constants.NAME + ".pageDown",
@@ -958,7 +937,6 @@ export class Constants {
         FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
         FIND_PREVIOUS: Constants.NAME + ".findPrevious",
         FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
-        FIND_VAR: Constants.NAME + ".findVar",
         FIND_DEF: Constants.NAME + ".findDef",
         REPLACE: Constants.NAME + ".replace",
         REPLACE_FO: Constants.NAME + ".replaceFromOutline",
@@ -995,6 +973,8 @@ export class Constants {
     };
 
     public static addMinibufferCommands: { label: string, detail: string }[] = [
+        { "label": "close-window", "detail": "Close the Leo window, prompting to save it if it has been changed." },
+
         { "label": "find-quick", "detail": "Opens the Nav tab." },
         { "label": "find-quick-selected", "detail": "Opens the Nav tab with the selected text as the search string." },
 
@@ -1028,13 +1008,17 @@ export class Constants {
 
     public static unsupportedMinibufferCommands: string[] = [
         'read-outline-only', // Seems buggy in Leo. Not present until fixed or deprecated in Leo. (removed in Leo 6.7.5)
-        'restart-leo' // added to bad list for leoserver 1.0.6. (Can be removed in next leointeg version)
+        'restart-leo', // added to bad list for leoserver 1.0.6. (Can be removed in next leointeg version)
+        'write-edited-recent-files'
     ];
 
     /**
      * * Overridden 'good' minibuffer commands
      */
     public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+
+        "close-window": Constants.COMMANDS.CLOSE_FILE,
+
         "find-quick": Constants.COMMANDS.FIND_QUICK,
         "find-quick-selected": Constants.COMMANDS.FIND_QUICK,
 
@@ -1101,6 +1085,7 @@ export class Constants {
         'file-save-as': Constants.COMMANDS.SAVE_AS_FILE,
         'file-save-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
         'file-save-as-zipped': Constants.COMMANDS.SAVE_AS_FILE,
+        'file-save-as-db': Constants.COMMANDS.SAVE_AS_FILE,
         'file-save-by-name': Constants.COMMANDS.SAVE_AS_FILE,
         'file-save-to': Constants.COMMANDS.SAVE_AS_FILE,
         'save': Constants.COMMANDS.SAVE_FILE,
@@ -1109,6 +1094,7 @@ export class Constants {
         'save-file-as': Constants.COMMANDS.SAVE_AS_FILE,
         'save-file-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
         'save-file-as-zipped': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-file-as-db': Constants.COMMANDS.SAVE_AS_FILE,
         'save-file-by-name': Constants.COMMANDS.SAVE_AS_FILE,
         'save-file-to': Constants.COMMANDS.SAVE_AS_FILE,
         'save-to': Constants.COMMANDS.SAVE_AS_FILE,
@@ -1147,7 +1133,7 @@ export class Constants {
         'word-search-forward': Constants.COMMANDS.WORD_SEARCH,
         'word-search-backward': Constants.COMMANDS.WORD_SEARCH_BACKWARD,
 
-        'find-var': Constants.COMMANDS.FIND_VAR,
+        'find-var': Constants.COMMANDS.FIND_DEF, // find-var overriden with find-def just in case.
         'find-def': Constants.COMMANDS.FIND_DEF,
         'replace': Constants.COMMANDS.REPLACE,
         'replace-all': Constants.COMMANDS.REPLACE_ALL,
@@ -1155,7 +1141,6 @@ export class Constants {
         'change-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
         'replace-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
         'show-find-options': Constants.COMMANDS.START_SEARCH,
-
 
         'set-find-everywhere': Constants.COMMANDS.SET_FIND_EVERYWHERE_OPTION,
         'set-find-node-only': Constants.COMMANDS.SET_FIND_NODE_ONLY_OPTION,
