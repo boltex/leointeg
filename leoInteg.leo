@@ -22771,7 +22771,8 @@ public setGotoContent(): void {
 </t>
 <t tx="felix.20240714123516.1">## 1.0.22
 
-- ...
+- Updated package libraries/dependencies.
+- Updated minimal Leo requirement documentation
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

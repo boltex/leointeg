@@ -2,7 +2,8 @@
 
 ## 1.0.22
 
-- ...
+- Updated package libraries/dependencies.
+- Updated minimal Leo requirement documentation
 
 ## 1.0.21
 
