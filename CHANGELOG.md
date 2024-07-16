@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.22
+
+- ...
+
 ## 1.0.21
 
 - Changed behavior of the 'Open Aside' command: it now opens 'detached' body panes, which allows text editing for a fixed gnx: Requires Leo 6.8.0.

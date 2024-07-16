@@ -23,6 +23,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20240714123516.1"><vh>1.0.22</vh></v>
 <v t="felix.20240330232425.1"><vh>1.0.21</vh></v>
 <v t="felix.20240122213243.1"><vh>1.0.20</vh></v>
 <v t="felix.20231216214036.1"><vh>1.0.19</vh></v>
@@ -2280,7 +2281,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -8892,7 +8893,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.7.9 or later\
+- Leo Editor 6.8.0 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
@@ -22768,6 +22769,11 @@ public setGotoContent(): void {
 }
 
 </t>
+<t tx="felix.20240714123516.1">## 1.0.22
+
+- ...
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -24089,7 +24095,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.21&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.22&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"
@@ -24099,7 +24105,7 @@ div.col-nav {
           &lt;/a&gt;
           &lt;a class="button button--flat" title="LeoInteg's Features"
             href="https://github.com/boltex/leointeg#features-"&gt;
-            See What's New in LeoInteg 1.0.21
+            See What's New in LeoInteg 1.0.22
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
