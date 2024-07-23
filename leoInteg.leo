@@ -13228,7 +13228,7 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.saveLeoFileFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled &amp;&amp; config.leoIntegration.showFileOnOutline",
     "group": "navigation@2"
   },
   {
@@ -14960,16 +14960,6 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
     "command": "leointeg.chapterSelect",
     "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@7"
-  },
-  {
-    "command": "leointeg.writeDirtyAtFileNodes",
-    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
-    "group": "navigation@8"
-  },
-  {
-    "command": "leointeg.refreshFromDiskSelection",
-    "when": "resourceScheme == leointeg &amp;&amp; leoTreeOpened",
-    "group": "navigation@9"
   },
   {
     "command": "leointeg.showSettingsPage",
@@ -25268,6 +25258,10 @@ ul {
   bottom: 0;
   right: 0;
   padding-right: 17%;
+}
+
+.float-container-no-padding {
+  padding-right: 5%;
 }
 
 .image__preview__body--float-container {

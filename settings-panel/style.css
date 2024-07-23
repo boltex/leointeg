@@ -523,6 +523,10 @@ ul {
   padding-right: 17%;
 }
 
+.float-container-no-padding {
+  padding-right: 5%;
+}
+
 .image__preview__body--float-container {
   left: 0;
   position: absolute;

@@ -3570,16 +3570,6 @@
           "group": "navigation@7"
         },
         {
-          "command": "leointeg.writeDirtyAtFileNodes",
-          "when": "resourceScheme == leointeg && leoTreeOpened",
-          "group": "navigation@8"
-        },
-        {
-          "command": "leointeg.refreshFromDiskSelection",
-          "when": "resourceScheme == leointeg && leoTreeOpened",
-          "group": "navigation@9"
-        },
-        {
           "command": "leointeg.showSettingsPage",
           "when": "resourceScheme == leointeg",
           "group": "1_leoInteg@1"
@@ -3830,7 +3820,7 @@
         },
         {
           "command": "leointeg.saveLeoFileFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoTreeTitled",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoTreeTitled && config.leoIntegration.showFileOnOutline",
           "group": "navigation@2"
         },
         {
