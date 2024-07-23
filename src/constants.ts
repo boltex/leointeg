@@ -360,6 +360,16 @@ export class Constants {
         GO_ANYWHERE_SHORTCUT: "goAnywhereShortcut",
 
         TREE_IN_EXPLORER: "treeInExplorer",
+
+        SHOW_FILE_ON_OUTLINE: "showFileOnOutline",
+        SHOW_HOIST_DEHOIST_ON_OUTLINE: "showHoistDehoistOnOutline",
+        SHOW_PREV_NEXT_ON_OUTLINE: "showPrevNextOnOutline",
+        SHOW_PROMOTE_DEMOTE_ON_OUTLINE: "showPromoteDemoteOnOutline",
+        SHOW_RECENT_FILES_ON_OUTLINE: "showRecentFilesOnOutline",
+        SHOW_SETTINGS_ON_OUTLINE: "showSettingsOnOutline",
+        SHOW_SHOW_LOG_ON_OUTLINE: "showShowLogOnOutline",
+        SHOW_UNDO_REDO_ON_OUTLINE: "showUndoRedoOnOutline",
+
         SHOW_EDIT: "showEditOnNodes",
         SHOW_ADD: "showAddOnNodes",
         SHOW_MARK: "showMarkOnNodes",
@@ -398,6 +408,16 @@ export class Constants {
 
         SHOW_UNL_ON_STATUSBAR: true,
         TREE_IN_EXPLORER: true,
+
+        SHOW_FILE_ON_OUTLINE: true,
+        SHOW_HOIST_DEHOIST_ON_OUTLINE: true,
+        SHOW_PREV_NEXT_ON_OUTLINE: true,
+        SHOW_PROMOTE_DEMOTE_ON_OUTLINE: true,
+        SHOW_RECENT_FILES_ON_OUTLINE: false,
+        SHOW_SETTINGS_ON_OUTLINE: false,
+        SHOW_SHOW_LOG_ON_OUTLINE: false,
+        SHOW_UNDO_REDO_ON_OUTLINE: true,
+
         SHOW_EDIT: true,
         SHOW_ARROWS: false,
         SHOW_ADD: false,
@@ -483,33 +503,6 @@ export class Constants {
 
         // Flags for focus context
         FOCUS_FIND: "leoFindFocus",
-
-        // Flags that match specific LeoInteg config settings
-        // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE,     // Force ar'jan's suggestion of Leo's tree behavior override
-        // TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER,   // Leo outline also in the explorer view
-        // SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,     // Show 'open aside' in context menu
-        // SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,                 // Hover Icons on outline nodes
-        // SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,             // Hover Icons on outline nodes
-        // SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                   // Hover Icons on outline nodes
-        // SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,                 // Hover Icons on outline nodes
-        // SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,               // Hover Icons on outline nodes
-        // SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,                 // Hover Icons on outline nodes
-        // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER, // Used at startup
-        // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,           // Used at startup
-
-        // AUTO_CONNECT: 'leoAutoConnect',             // Used at startup by 'views-welcome'
-        // AUTO_START_SERVER: 'leoAutoStartServer',    // Used at startup by 'views-welcome'
-
-        // SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
-        // SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
-        // SHOW_PROMOTE_BODY: Constants.CONFIG_NAMES.SHOW_PROMOTE_BODY,
-        // SHOW_EXECUTE_BODY: Constants.CONFIG_NAMES.SHOW_EXECUTE_BODY,
-        // SHOW_EXTRACT_BODY: Constants.CONFIG_NAMES.SHOW_EXTRACT_BODY,
-        // SHOW_IMPORT_BODY: Constants.CONFIG_NAMES.SHOW_IMPORT_BODY,
-        // SHOW_REFRESH_BODY: Constants.CONFIG_NAMES.SHOW_REFRESH_BODY,
-        // SHOW_HOIST_BODY: Constants.CONFIG_NAMES.SHOW_HOIST_BODY,
-        // SHOW_MARK_BODY: Constants.CONFIG_NAMES.SHOW_MARK_BODY,
-        // SHOW_SORT_BODY: Constants.CONFIG_NAMES.SHOW_SORT_BODY
 
     };
 

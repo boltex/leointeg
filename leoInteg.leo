@@ -955,6 +955,16 @@ public static CONFIG_DEFAULTS = {
 
     SHOW_UNL_ON_STATUSBAR: true,
     TREE_IN_EXPLORER: true,
+
+    SHOW_FILE_ON_OUTLINE: true,
+    SHOW_HOIST_DEHOIST_ON_OUTLINE: true,
+    SHOW_PREV_NEXT_ON_OUTLINE: true,
+    SHOW_PROMOTE_DEMOTE_ON_OUTLINE: true,
+    SHOW_RECENT_FILES_ON_OUTLINE: false,
+    SHOW_SETTINGS_ON_OUTLINE: false,
+    SHOW_SHOW_LOG_ON_OUTLINE: false,
+    SHOW_UNDO_REDO_ON_OUTLINE: true,
+
     SHOW_EDIT: true,
     SHOW_ARROWS: false,
     SHOW_ADD: false,
@@ -4361,11 +4371,53 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "type": "boolean",
   "description": "Show the outline tree in the explorer view"
 },
-"leoIntegration.showOpenAside": {
+"leoIntegration.showFileOnOutline": {
   "scope": "application",
   "default": true,
   "type": "boolean",
-  "description": "Offer 'Open to the Side' in nodes context menu"
+  "description": "Shows 'New', 'Open' and 'Save' buttons on the outline pane"
+},
+"leoIntegration.showHoistDehoistOnOutline": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows 'Hoist' and 'Dehoist' buttons on the outline pane"
+},
+"leoIntegration.showPrevNextOnOutline": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows 'Previous' and 'Next' visited node buttons on the outline pane"
+},
+"leoIntegration.showPromoteDemoteOnOutline": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows 'Promote' and 'Demote' buttons on the outline pane"
+},
+"leoIntegration.showRecentFilesOnOutline": {
+  "scope": "application",
+  "default": false,
+  "type": "boolean",
+  "description": "Shows 'Recent Files' button on the outline pane"
+},
+"leoIntegration.showSettingsOnOutline": {
+  "scope": "application",
+  "default": false,
+  "type": "boolean",
+  "description": "Shows 'LeoInteg Settings' button on the outline pane"
+},
+"leoIntegration.showShowLogOnOutline": {
+  "scope": "application",
+  "default": false,
+  "type": "boolean",
+  "description": "Shows 'Open Log Pane' button on the outline pane"
+},
+"leoIntegration.showUndoRedoOnOutline": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows 'Undo' and 'Redo' buttons on the outline pane"
 },
 "leoIntegration.showEditOnNodes": {
   "scope": "application",
@@ -6107,6 +6159,16 @@ public static CONFIG_NAMES = {
     GO_ANYWHERE_SHORTCUT: "goAnywhereShortcut",
 
     TREE_IN_EXPLORER: "treeInExplorer",
+
+    SHOW_FILE_ON_OUTLINE: "showFileOnOutline",
+    SHOW_HOIST_DEHOIST_ON_OUTLINE: "showHoistDehoistOnOutline",
+    SHOW_PREV_NEXT_ON_OUTLINE: "showPrevNextOnOutline",
+    SHOW_PROMOTE_DEMOTE_ON_OUTLINE: "showPromoteDemoteOnOutline",
+    SHOW_RECENT_FILES_ON_OUTLINE: "showRecentFilesOnOutline",
+    SHOW_SETTINGS_ON_OUTLINE: "showSettingsOnOutline",
+    SHOW_SHOW_LOG_ON_OUTLINE: "showShowLogOnOutline",
+    SHOW_UNDO_REDO_ON_OUTLINE: "showUndoRedoOnOutline",
+
     SHOW_EDIT: "showEditOnNodes",
     SHOW_ADD: "showAddOnNodes",
     SHOW_MARK: "showMarkOnNodes",
@@ -6186,33 +6248,6 @@ public static CONTEXT_FLAGS = {
 
     // Flags for focus context
     FOCUS_FIND: "leoFindFocus",
-
-    // Flags that match specific LeoInteg config settings
-    // LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE,     // Force ar'jan's suggestion of Leo's tree behavior override
-    // TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER,   // Leo outline also in the explorer view
-    // SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,     // Show 'open aside' in context menu
-    // SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,                 // Hover Icons on outline nodes
-    // SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,             // Hover Icons on outline nodes
-    // SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                   // Hover Icons on outline nodes
-    // SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,                 // Hover Icons on outline nodes
-    // SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,               // Hover Icons on outline nodes
-    // SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,                 // Hover Icons on outline nodes
-    // AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER, // Used at startup
-    // AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,           // Used at startup
-
-    // AUTO_CONNECT: 'leoAutoConnect',             // Used at startup by 'views-welcome'
-    // AUTO_START_SERVER: 'leoAutoStartServer',    // Used at startup by 'views-welcome'
-
-    // SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
-    // SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
-    // SHOW_PROMOTE_BODY: Constants.CONFIG_NAMES.SHOW_PROMOTE_BODY,
-    // SHOW_EXECUTE_BODY: Constants.CONFIG_NAMES.SHOW_EXECUTE_BODY,
-    // SHOW_EXTRACT_BODY: Constants.CONFIG_NAMES.SHOW_EXTRACT_BODY,
-    // SHOW_IMPORT_BODY: Constants.CONFIG_NAMES.SHOW_IMPORT_BODY,
-    // SHOW_REFRESH_BODY: Constants.CONFIG_NAMES.SHOW_REFRESH_BODY,
-    // SHOW_HOIST_BODY: Constants.CONFIG_NAMES.SHOW_HOIST_BODY,
-    // SHOW_MARK_BODY: Constants.CONFIG_NAMES.SHOW_MARK_BODY,
-    // SHOW_SORT_BODY: Constants.CONFIG_NAMES.SHOW_SORT_BODY
 
 };
 
@@ -6435,8 +6470,17 @@ export class Config implements ConfigMembers {
 
     public showUnlOnStatusBar: boolean = Constants.CONFIG_DEFAULTS.SHOW_UNL_ON_STATUSBAR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
-    public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
 
+    public showFileOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_FILE_ON_OUTLINE;
+    public showHoistDehoistOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_HOIST_DEHOIST_ON_OUTLINE;
+    public showPrevNextOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_PREV_NEXT_ON_OUTLINE;
+    public showPromoteDemoteOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_PROMOTE_DEMOTE_ON_OUTLINE;
+    public showRecentFilesOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_RECENT_FILES_ON_OUTLINE;
+    public showSettingsOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_SETTINGS_ON_OUTLINE;
+    public showShowLogOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_SHOW_LOG_ON_OUTLINE;
+    public showUndoRedoOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_UNDO_REDO_ON_OUTLINE;
+
+    public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
     public showAddOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ADD;
     public showMarkOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK;
     public showCloneOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLONE;
@@ -6499,6 +6543,16 @@ public getConfig(): ConfigMembers {
 
         showUnlOnStatusBar: this.showUnlOnStatusBar,
         treeInExplorer: this.treeInExplorer,
+
+        showFileOnOutline: this.showFileOnOutline,
+        showHoistDehoistOnOutline: this.showHoistDehoistOnOutline,
+        showPrevNextOnOutline: this.showPrevNextOnOutline,
+        showPromoteDemoteOnOutline: this.showPromoteDemoteOnOutline,
+        showRecentFilesOnOutline: this.showRecentFilesOnOutline,
+        showSettingsOnOutline: this.showSettingsOnOutline,
+        showShowLogOnOutline: this.showShowLogOnOutline,
+        showUndoRedoOnOutline: this.showUndoRedoOnOutline,
+
         showEditOnNodes: this.showEditOnNodes,
         showAddOnNodes: this.showAddOnNodes,
         showMarkOnNodes: this.showMarkOnNodes,
@@ -6569,7 +6623,6 @@ public buildFromSavedSettings(): boolean {
     const NAME = Constants.CONFIG_NAME;
     const NAMES = Constants.CONFIG_NAMES;
     const DEFAULTS = Constants.CONFIG_DEFAULTS;
-    const FLAGS = Constants.CONTEXT_FLAGS;
 
     if (this._isBusySettingConfig) {
         // * Currently setting config, wait until its done all, and this will be called automatically
@@ -6596,14 +6649,22 @@ public buildFromSavedSettings(): boolean {
         //     this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
         // }
         this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
+
+        this.showFileOnOutline = GET(NAME).get(NAMES.SHOW_FILE_ON_OUTLINE, DEFAULTS.SHOW_FILE_ON_OUTLINE);
+        this.showHoistDehoistOnOutline = GET(NAME).get(NAMES.SHOW_HOIST_DEHOIST_ON_OUTLINE, DEFAULTS.SHOW_HOIST_DEHOIST_ON_OUTLINE);
+        this.showPrevNextOnOutline = GET(NAME).get(NAMES.SHOW_PREV_NEXT_ON_OUTLINE, DEFAULTS.SHOW_PREV_NEXT_ON_OUTLINE);
+        this.showPromoteDemoteOnOutline = GET(NAME).get(NAMES.SHOW_PROMOTE_DEMOTE_ON_OUTLINE, DEFAULTS.SHOW_PROMOTE_DEMOTE_ON_OUTLINE);
+        this.showRecentFilesOnOutline = GET(NAME).get(NAMES.SHOW_RECENT_FILES_ON_OUTLINE, DEFAULTS.SHOW_RECENT_FILES_ON_OUTLINE);
+        this.showSettingsOnOutline = GET(NAME).get(NAMES.SHOW_SETTINGS_ON_OUTLINE, DEFAULTS.SHOW_SETTINGS_ON_OUTLINE);
+        this.showShowLogOnOutline = GET(NAME).get(NAMES.SHOW_SHOW_LOG_ON_OUTLINE, DEFAULTS.SHOW_SHOW_LOG_ON_OUTLINE);
+        this.showUndoRedoOnOutline = GET(NAME).get(NAMES.SHOW_UNDO_REDO_ON_OUTLINE, DEFAULTS.SHOW_UNDO_REDO_ON_OUTLINE);
+
         this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
         this.showAddOnNodes = GET(NAME).get(NAMES.SHOW_ADD, DEFAULTS.SHOW_ADD);
         this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
         this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
         this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
         this.showBranchInOutlineTitle = GET(NAME).get(NAMES.SHOW_BRANCH_OUTLINE, DEFAULTS.SHOW_BRANCH_OUTLINE);
-
-        // this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
 
         // this.showEditionOnBody = GET(NAME).get(NAMES.SHOW_EDITION_BODY, DEFAULTS.SHOW_EDITION_BODY);
         // this.showClipboardOnBody = GET(NAME).get(NAMES.SHOW_CLIPBOARD_BODY, DEFAULTS.SHOW_CLIPBOARD_BODY);
@@ -6632,17 +6693,6 @@ public buildFromSavedSettings(): boolean {
             this._leoIntegration.sendConfigToServer(this.getConfig());
         }
 
-        // utils.setContext(FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
-        // utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
-        // utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
-        // utils.setContext(FLAGS.SHOW_EDIT, this.showEditOnNodes);
-        // utils.setContext(FLAGS.SHOW_ADD, this.showAddOnNodes);
-        // utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
-        // utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
-        // utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
-
-        // utils.setContext(FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
-
         // utils.setContext(FLAGS.SHOW_EDITION_BODY, this.showEditionOnBody);
         // utils.setContext(FLAGS.SHOW_CLIPBOARD_BODY, this.showClipboardOnBody);
         // utils.setContext(FLAGS.SHOW_PROMOTE_BODY, this.showPromoteOnBody);
@@ -6654,16 +6704,6 @@ public buildFromSavedSettings(): boolean {
         // utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
         // utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
 
-        // utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
-
-        if (!this._leoIntegration.leoStates.leoStartupFinished &amp;&amp; this.leoEditorPath) {
-            // Only relevant 'viewWelcome' content at startup.
-            // utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically);  // ok
-            // utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
-        } else {
-            // utils.setContext(FLAGS.AUTO_START_SERVER, false); // Save option but not context flag
-            //utils.setContext(FLAGS.AUTO_CONNECT, false);
-        }
         return true;
     }
 }
@@ -8598,12 +8638,19 @@ export interface ConfigMembers {
     goAnywhereShortcut: boolean;
 
     showUnlOnStatusBar: boolean,
-    // statusBarString: string;
-    // statusBarColor: string;
 
     treeInExplorer: boolean;
+
+    showFileOnOutline: boolean;
+    showHoistDehoistOnOutline: boolean;
+    showPrevNextOnOutline: boolean;
+    showPromoteDemoteOnOutline: boolean;
+    showRecentFilesOnOutline: boolean;
+    showSettingsOnOutline: boolean;
+    showShowLogOnOutline: boolean;
+    showUndoRedoOnOutline: boolean;
+
     showEditOnNodes: boolean;
-    // showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
     showMarkOnNodes: boolean;
     showCloneOnNodes: boolean;
@@ -12756,7 +12803,7 @@ public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
   "command": "leointeg.extractNames",
   "category": "Leo",
   "title": "Extract Names",
-  "enablement": "leoTreeOpened",
+  "enablement": "leoTreeOpened &amp;&amp; editorHasSelection",
   "icon": "$(leo-extract-name)"
 },
 </t>
@@ -13080,9 +13127,19 @@ public static VSCODE_COMMANDS = {
     "group": "navigation@9"
   },
   {
+    "command": "leointeg.showSettingsPage",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showSettingsOnOutline",
+    "group": "navigation@11"
+  },
+  {
     "command": "leointeg.showLogPane",
     "when": "view =~ /^leoDocuments|^leoButtons/ &amp;&amp; leoBridgeReady",
     "group": "navigation@9"
+  },
+  {
+    "command": "leointeg.showLogPane",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showShowLogOnOutline",
+    "group": "navigation@11"
   },
   {
     "command": "leointeg.recentLeoFiles",
@@ -13091,8 +13148,8 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.recentLeoFiles",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoBridgeReady &amp;&amp; !leoTreeOpened",
-    "group": "navigation@1"
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showRecentFilesOnOutline",
+    "group": "navigation@11"
   },
   {
     "command": "leointeg.findQuickSelected",
@@ -13146,62 +13203,87 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.openLeoFile",
-    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "when": "view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.openLeoFile",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showFileOnOutline",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.newLeoFile",
-    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "when": "view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.newLeoFile",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showFileOnOutline",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.saveLeoFileFromOutline",
-    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled",
+    "when": "view =~ /^leoDocuments/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled &amp;&amp; config.leoIntegration.showFileOnOutline",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.saveLeoFileFromOutline",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled",
     "group": "navigation@2"
   },
   {
     "command": "leointeg.saveAsLeoFile",
-    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
+    "when": "view =~ /^leoDocuments/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
     "group": "navigation@2"
   },
   {
-    "command": "leointeg.saveAsLeoJsFile",
-    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
+    "command": "leointeg.saveAsLeoFile",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled &amp;&amp; config.leoIntegration.showFileOnOutline",
     "group": "navigation@2"
   },
   {
     "command": "leointeg.prevFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showPrevNextOnOutline",
     "group": "navigation@3"
   },
   {
     "command": "leointeg.nextFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showPrevNextOnOutline",
     "group": "navigation@4"
   },
   {
     "command": "leointeg.undoFromOutline",
-    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoUndo/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@5"
+  },
+  {
+    "command": "leointeg.undoFromOutline",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showUndoRedoOnOutline",
     "group": "navigation@5"
   },
   {
     "command": "leointeg.redoFromOutline",
-    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoUndo/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@6"
+  },
+  {
+    "command": "leointeg.redoFromOutline",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showUndoRedoOnOutline",
     "group": "navigation@6"
   },
   {
     "command": "leointeg.deHoistFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTopHoistChapter",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTopHoistChapter &amp;&amp; config.leoIntegration.showHoistDehoistOnOutline",
     "group": "navigation@7"
   },
   {
     "command": "leointeg.chapterMain",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTopHoistChapter",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTopHoistChapter &amp;&amp; config.leoIntegration.showHoistDehoistOnOutline",
     "group": "navigation@7"
   },
   {
     "command": "leointeg.hoistSelectionFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showHoistDehoistOnOutline",
     "group": "navigation@8"
   },
   {
@@ -13230,24 +13312,14 @@ public static VSCODE_COMMANDS = {
     "group": "navigation@5"
   },
   {
-    "command": "leointeg.chapterMain",
-    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@6"
-  },
-  {
     "command": "leointeg.promoteSelectionFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showPromoteDemoteOnOutline",
     "group": "navigation@9"
   },
   {
     "command": "leointeg.demoteSelectionFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; config.leoIntegration.showPromoteDemoteOnOutline",
     "group": "navigation@10"
-  },
-  {
-    "command": "leointeg.importAnyFile",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@11"
   },
   {
     "command": "leointeg.contractAllFromOutline",
@@ -13314,7 +13386,7 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.openAside",
-    "when": "config.leoIntegration.showOpenAside &amp;&amp; viewItem =~ /^leoNode/",
+    "when": "viewItem =~ /^leoNode/",
     "group": "leoNodeContext1@1"
   },
   {
@@ -21528,8 +21600,8 @@ public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
       "fontCharacter": "\\f13a"
     }
   },
-  "leo-save-as-leo": {
-    "description": "Save As .leo",
+  "leo-save-as-leojs": {
+    "description": "Save As .leojs",
     "default": {
       "fontPath": "resources/leoicons.woff2",
       "fontCharacter": "\\f13b"
@@ -24413,13 +24485,111 @@ div.col-nav {
         &lt;/div&gt;
       &lt;/section&gt;
 
+      &lt;section id="outline-commands" class="section--settings"&gt;
+        &lt;div class="section__content"&gt;
+          &lt;div class="section__header"&gt;
+            &lt;h2&gt;Outline Pane Commands&lt;/h2&gt;
+            &lt;p class="section__header-hint"&gt;
+              Hovering the outline pane displays command icons -
+              Choose which commands to display when hovering
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class="section__preview"&gt;
+            &lt;img class="image__preview" src="#{root}/resources/outline-icons-empty.png" /&gt;
+
+            &lt;div class="image__preview--float-container float-container-no-padding"&gt;
+
+              &lt;img class="image__preview--float" src="#{root}/resources/outline-icons-show-log.png"
+                data-visibility="showShowLogOnOutline" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/outline-icons-recent-files.png"
+                data-visibility="showRecentFilesOnOutline" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/outline-icons-settings.png"
+                data-visibility="showSettingsOnOutline" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/outline-icons-promote-demote.png"
+                data-visibility="showPromoteDemoteOnOutline" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/outline-icons-hoist-dehoist.png"
+                data-visibility="showHoistDehoistOnOutline" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/outline-icons-undo-redo.png"
+                data-visibility="showUndoRedoOnOutline" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/outline-icons-prev-next.png"
+                data-visibility="showPrevNextOnOutline" /&gt;
+              &lt;img class="image__preview--float" src="#{root}/resources/outline-icons-file.png"
+                data-visibility="showFileOnOutline" /&gt;
+
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class="settings"&gt;
+
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showFileOnOutline" name="showFileOnOutline" type="checkbox" data-setting /&gt;
+                &lt;label for="showFileOnOutline"&gt;File&amp;nbsp;Commands&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'New, Open &amp; Save' on hover&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showHoistDehoistOnOutline" name="showHoistDehoistOnOutline" type="checkbox" data-setting /&gt;
+                &lt;label for="showHoistDehoistOnOutline"&gt;Hoist&amp;nbsp;/&amp;nbsp;Dehoist&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'Hoist &amp; Dehoist' on hover&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showPrevNextOnOutline" name="showPrevNextOnOutline" type="checkbox" data-setting /&gt;
+                &lt;label for="showPrevNextOnOutline"&gt;Previous&amp;nbsp;/&amp;nbsp;Next Visited Nodes&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'Previous &amp; Next' on hover&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showPromoteDemoteOnOutline" name="showPromoteDemoteOnOutline" type="checkbox" data-setting /&gt;
+                &lt;label for="showPromoteDemoteOnOutline"&gt;Promote&amp;nbsp;/&amp;nbsp;Demote&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'Promote &amp; Demote' on hover&lt;/span&gt;
+            &lt;/div&gt;
+
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showRecentFilesOnOutline" name="showRecentFilesOnOutline" type="checkbox" data-setting /&gt;
+                &lt;label for="showRecentFilesOnOutline"&gt;Recent&amp;nbsp;Files&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'Recent Files' on hover&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showSettingsOnOutline" name="showSettingsOnOutline" type="checkbox" data-setting /&gt;
+                &lt;label for="showSettingsOnOutline"&gt;LeoJS&amp;nbsp;Settings&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'LeoJS Settings' on hover&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showShowLogOnOutline" name="showShowLogOnOutline" type="checkbox" data-setting /&gt;
+                &lt;label for="showShowLogOnOutline"&gt;Show&amp;nbsp;Log&amp;nbsp;Pane&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'Open Log Pane' on hover&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showUndoRedoOnOutline" name="showUndoRedoOnOutline" type="checkbox" data-setting /&gt;
+                &lt;label for="showUndoRedoOnOutline"&gt;Undo&amp;nbsp;/&amp;nbsp;Redo&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Shows 'Undo' and 'Redo' on hover&lt;/span&gt;
+            &lt;/div&gt;
+
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+
       &lt;section id="node-commands" class="section--settings"&gt;
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
             &lt;h2&gt;Node Commands&lt;/h2&gt;
             &lt;p class="section__header-hint"&gt;
               Hovering tree nodes displays an edit icon -
-              Choose more commands to display when hovering
+              Choose which commands to display when hovering
             &lt;/p&gt;
           &lt;/div&gt;
           &lt;div class="section__preview"&gt;
@@ -24528,14 +24698,14 @@ div.col-nav {
             &lt;a href="#tree-in-explorer" title="Outline visibility settings"&gt;Outline in Explorer&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#show-open-aside" title="Outline context menu settings"&gt;Open to the Side&lt;/a&gt;
-          &lt;/li&gt;
-          &lt;li&gt;
             &lt;a href="#show-branch-in-title" title="Outline git branch visibility settings"&gt;Show branch in title&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
             &lt;a href="#invert-contrast" title="UI contrast settings"&gt;Invert Contrast&lt;/a&gt;
           &lt;/li&gt;
+          &lt;li&gt;
+            &lt;a href="#outline-commands" title="Outline Pane settings"&gt;Outline Pane Commands&lt;/a&gt;
+          &lt;/li&gt;/
           &lt;li&gt;
             &lt;a href="#node-commands" title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
           &lt;/li&gt;
@@ -24579,7 +24749,7 @@ html {
   height: 100%;
   font-size: 62.5%;
   box-sizing: border-box;
-  scroll-behavior: smooth
+  scroll-behavior: smooth;
 }
 
 body {
@@ -24588,11 +24758,11 @@ body {
   font-family: var(--font-family);
   height: 100%;
   line-height: 1.4;
-  font-size: 100% !important
+  font-size: 100% !important;
 }
 
 body.vscode-light {
-  background-color: var(--color-background--darken-075)
+  background-color: var(--color-background--darken-075);
 }
 
 a {
@@ -24600,35 +24770,35 @@ a {
   color: var(--color-link-foreground);
   font-weight: 400;
   outline: none;
-  text-decoration: none
+  text-decoration: none;
 }
 
 a:not([href]):not([tabindex]):focus,
 a:not([href]):not([tabindex]):hover {
   color: inherit;
-  text-decoration: none
+  text-decoration: none;
 }
 
 a:focus {
-  outline-color: var(--color-focus-border)
+  outline-color: var(--color-focus-border);
 }
 
 a:hover {
-  color: var(--color-link-foreground--lighten-20)
+  color: var(--color-link-foreground--lighten-20);
 }
 
 a,
 a:active,
 a:focus {
-  outline: none
+  outline: none;
 }
 
 b {
-  font-weight: 600
+  font-weight: 600;
 }
 
 span.heart {
-  color: #8b3177
+  color: #8b3177;
 }
 
 code,
@@ -24636,19 +24806,19 @@ code,
   border-radius: 4px;
   color: var(--color-foreground);
   padding: 2px 6px 0 6px;
-  vertical-align: baseline
+  vertical-align: baseline;
 }
 
 .vscode-dark code,
 .vscode-dark .shortcut-key {
   background-color: var(--color-background--lighten-15);
-  border-bottom: 2px solid var(--color-background--lighten-15)
+  border-bottom: 2px solid var(--color-background--lighten-15);
 }
 
 .vscode-light code,
 .vscode-light .shortcut-key {
   background-color: var(--color-background--darken-15);
-  border-bottom: 2px solid var(--color-background--darken-15)
+  border-bottom: 2px solid var(--color-background--darken-15);
 }
 
 h1 {
@@ -24657,7 +24827,7 @@ h1 {
   font-weight: 400;
   margin: 0;
   padding: 0;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 h2 {
@@ -24665,7 +24835,7 @@ h2 {
   font-weight: 200;
   line-height: normal;
   margin: 1em 0 0.3em 0;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 h3 {
@@ -24673,7 +24843,7 @@ h3 {
   font-weight: 200;
   line-height: normal;
   margin: 1em 0 0.3em 0;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 h4 {
@@ -24681,7 +24851,7 @@ h4 {
   font-weight: 200;
   line-height: normal;
   margin: 1em 0 0.3em 0;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 header {
@@ -24691,7 +24861,7 @@ header {
   grid-gap: 1em 3em;
   align-items: center;
   justify-items: center;
-  margin: 0 3em
+  margin: 0 3em;
 }
 
 input,
@@ -24699,7 +24869,7 @@ select,
 button {
   font-family: var(--font-family);
   font-size: inherit;
-  margin: 0
+  margin: 0;
 }
 
 input[type="checkbox"] {
@@ -24707,18 +24877,18 @@ input[type="checkbox"] {
   border: none;
   cursor: pointer;
   margin: 0;
-  padding: 0 10px
+  padding: 0 10px;
 }
 
 input[type="checkbox"]:focus {
   background: rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  outline: none
+  outline: none;
 }
 
 input[type="checkbox"][disabled] {
   color: var(--color-foreground--75);
-  cursor: default
+  cursor: default;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -24726,7 +24896,7 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  margin: 0
+  margin: 0;
 }
 
 input[type="number"],
@@ -24736,61 +24906,61 @@ input:not([type]) {
   color: var(--color-foreground);
   margin: 0 10px;
   max-width: 300px;
-  padding: 4px
+  padding: 4px;
 }
 
 .vscode-dark input[type="number"],
 .vscode-dark input[type="text"],
 .vscode-dark input:not([type]) {
-  border: 1px solid rgba(255, 255, 255, 0.3)
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .vscode-light input[type="number"],
 .vscode-light input[type="text"],
 .vscode-light input:not([type]) {
-  border: 1px solid rgba(0, 0, 0, 0.3)
+  border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 input[type="number"]:focus,
 input[type="text"]:focus,
 input:not([type]):focus {
-  outline-color: var(--color-focus-border)
+  outline-color: var(--color-focus-border);
 }
 
 .vscode-light input[type="number"]:focus,
 .vscode-light input[type="text"]:focus,
 .vscode-light input:not([type]):focus {
-  background-color: rgba(255, 255, 255, 0.4)
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .vscode-dark input[type="number"]:focus,
 .vscode-dark input[type="text"]:focus,
 .vscode-dark input:not([type]):focus {
-  background-color: rgba(0, 0, 0, 0.2)
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 input[type="number"].is-invalid,
 input[type="text"].is-invalid,
 input:not([type]).is-invalid {
   outline-color: red !important;
-  border-color: red !important
+  border-color: red !important;
 }
 
 input[type="number"][disabled],
 input[type="text"][disabled],
 input:not([type])[disabled] {
   color: var(--color-foreground--75);
-  cursor: default
+  cursor: default;
 }
 
 input[type="number"]::placeholder,
 input[type="text"]::placeholder,
 input:not([type])::placeholder {
-  color: var(--vscode-input-placeholderForeground)
+  color: var(--vscode-input-placeholderForeground);
 }
 
 label {
-  cursor: pointer
+  cursor: pointer;
 }
 
 select {
@@ -24799,58 +24969,58 @@ select {
   cursor: pointer;
   margin: 0 0.75em;
   padding: 2px;
-  min-width: 14em
+  min-width: 14em;
 }
 
 .vscode-light select {
-  border: 1px solid rgba(0, 0, 0, 0.3)
+  border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 .vscode-dark select {
-  border: 1px solid rgba(255, 255, 255, 0.3)
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 select:focus {
-  outline-color: var(--color-focus-border)
+  outline-color: var(--color-focus-border);
 }
 
 .vscode-light select:focus {
-  background-color: rgba(255, 255, 255, 0.4)
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .vscode-dark select:focus {
-  background-color: rgba(0, 0, 0, 0.2)
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 select[disabled] {
   color: var(--color-foreground--75);
-  cursor: default
+  cursor: default;
 }
 
 .vscode-light select option {
-  background-color: var(--color-background--darken-05)
+  background-color: var(--color-background--darken-05);
 }
 
 .vscode-dark select option {
-  background-color: var(--color-background--lighten-05)
+  background-color: var(--color-background--lighten-05);
 }
 
 select option:focus {
-  outline-color: var(--color-focus-border)
+  outline-color: var(--color-focus-border);
 }
 
 .vscode-light select option:focus {
-  background-color: rgba(255, 255, 255, 0.4)
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .vscode-dark select option:focus {
-  background-color: rgba(0, 0, 0, 0.2)
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 ul {
   list-style: none;
   margin: 0;
-  padding: 0
+  padding: 0;
 }
 
 .button {
@@ -24866,45 +25036,45 @@ ul {
   text-decoration: none;
   text-transform: uppercase;
   user-select: none;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 .button:focus {
-  outline: none
+  outline: none;
 }
 
 .button--big {
-  font-size: 1.5rem
+  font-size: 1.5rem;
 }
 
 .button--flat {
-  transition: background-color 250ms, border-color 250ms, color 250ms
+  transition: background-color 250ms, border-color 250ms, color 250ms;
 }
 
 .vscode-light .button--flat {
   border: 1px solid rgba(0, 0, 0, 0.6);
-  color: black
+  color: black;
 }
 
 .vscode-dark .button--flat {
   border: 1px solid rgba(255, 255, 255, 0.6);
-  color: white !important
+  color: white !important;
 }
 
 .vscode-light .button--flat:hover {
   background-color: var(--color-button-background--darken-30);
   border-color: var(--color-button-background--darken-30);
-  color: white !important
+  color: white !important;
 }
 
 .vscode-dark .button--flat:hover {
   background-color: white;
   border-color: white;
-  color: black !important
+  color: black !important;
 }
 
 .preload .button--flat {
-  transition-duration: 0s !important
+  transition-duration: 0s !important;
 }
 
 .button--flat-inverse {
@@ -24912,17 +25082,17 @@ ul {
   border: 1px solid white;
   color: black !important;
   font-weight: 600;
-  transition: background-color 250ms, border-color 250ms, color 250ms
+  transition: background-color 250ms, border-color 250ms, color 250ms;
 }
 
 .button--flat-inverse:hover {
   background: rgba(0, 0, 0, 0.2);
   border-color: rgba(255, 255, 255, 0.6);
-  color: white !important
+  color: white !important;
 }
 
 .preload .button--flat-inverse {
-  transition-duration: 0s !important
+  transition-duration: 0s !important;
 }
 
 .button--flat-primary {
@@ -24930,49 +25100,49 @@ ul {
   border: 1px solid var(--color-button-background);
   color: var(--color-button-foreground) !important;
   font-weight: 600;
-  transition: background-color 250ms, border-color 250ms, color 250ms
+  transition: background-color 250ms, border-color 250ms, color 250ms;
 }
 
 .vscode-dark .button--flat-primary:hover {
   background-color: white;
   border-color: white;
-  color: black !important
+  color: black !important;
 }
 
 .vscode-light .button--flat-primary:hover {
   background-color: var(--color-button-background--darken-30);
   border-color: var(--color-button-background--darken-30);
-  color: white !important
+  color: white !important;
 }
 
 .preload .button--flat-primary {
-  transition-duration: 0s !important
+  transition-duration: 0s !important;
 }
 
 .button--choose-path {
   padding: 0.6em 0.7em;
   margin-left: 0.2rem;
-  margin-bottom: 0
+  margin-bottom: 0;
 }
 
 .blurb {
   font-size: 1.5rem;
   font-weight: 200;
   color: var(--color-foreground--65);
-  margin: 1em
+  margin: 1em;
 }
 
 .blurb b {
-  color: var(--color-foreground--85)
+  color: var(--color-foreground--85);
 }
 
 .vscode-light .blurb {
-  color: var(--color-foreground--75)
+  color: var(--color-foreground--75);
 }
 
 .command {
   font-weight: 600;
-  padding: 1px 3px
+  padding: 1px 3px;
 }
 
 .container {
@@ -24982,64 +25152,41 @@ ul {
   margin: 1em auto;
   grid-gap: 1em 3em;
   max-width: 1200px;
-  min-width: 450px
+  min-width: 450px;
 }
 
 @media all and (max-width: 768px) {
   .container {
-    grid-gap: 1em 0
+    grid-gap: 1em 0;
   }
 }
 
 .content__area {
   grid-area: content;
-  font-size: 1.4rem
+  font-size: 1.4rem;
 }
 
 .vscode-dark .content__area {
-  background-color: var(--color-background--lighten-05)
+  background-color: var(--color-background--lighten-05);
 }
 
 .vscode-light .content__area {
-  background-color: var(--color-background)
+  background-color: var(--color-background);
 }
 
 @media all and (max-width: 768px) {
   .content__area {
-    grid-column: span 1
+    grid-column: span 1;
   }
 }
 
 .content__area--full-scroll {
   background-color: unset !important;
-  margin-bottom: 90vh
+  margin-bottom: 90vh;
 }
 
 .content__area--full-scroll .section--settings {
-  margin: 0 0 1em 0
-}
-
-.cta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  font-size: 1.3rem;
-  margin: 0
-}
-
-.cta p {
-  margin-left: 10%;
-  margin-right: 10%;
-  margin-top: -0.5em;
-  opacity: 0.6
-}
-
-.cta--primary {
-  margin: 0 1em
-}
-
-.cta--secondary {
-  margin: 0 1em
+  margin: 0 0 1em 0;
 }
 
 .header__blurb {
@@ -25048,34 +25195,34 @@ ul {
   font-size: 1.5rem;
   font-weight: 200;
   margin: 0;
-  min-width: 345px
+  min-width: 345px;
 }
 
 @media all and (max-width: 880px) {
   .header__blurb {
-    margin: 0 2em
+    margin: 0 2em;
   }
 }
 
 .header__link {
   color: var(--color-foreground);
-  outline: none
+  outline: none;
 }
 
 .header__link:hover,
 .header__link:active,
 .header__link:focus {
   color: var(--color-foreground);
-  outline: none
+  outline: none;
 }
 
 .header__logo {
   display: flex;
-  flex-wrap: nowrap
+  flex-wrap: nowrap;
 }
 
 .header__logo--highlight {
-  color: #8d3d17
+  color: #8d3d17;
 }
 
 .header__subtitle {
@@ -25083,132 +25230,35 @@ ul {
   font-size: 2rem;
   font-weight: 100;
   margin: -0.2em 0 0 0;
-  white-space: nowrap
-}
-
-.hero__area {
-  grid-area: hero;
-  color: var(--color-foreground--75);
-  font-size: 1.5rem;
-  font-weight: 200;
-  margin: 0 1em
-}
-
-.hero__area b {
-  color: var(--color-foreground--85)
-}
-
-.hero__area--sticky {
-  background: var(--color-background);
-  margin: 0;
-  padding: 1em 0;
-  position: sticky;
-  top: -1px;
-  z-index: 1;
-  grid-column: span 1
-}
-
-.vscode-light .hero__area--sticky {
-  background: var(--color-background--darken-075)
-}
-
-.hero__row {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: baseline;
-  justify-content: space-between
-}
-
-.hero__subtitle {
-  color: var(--color-foreground--75);
-  font-size: 1.4rem;
-  margin: 0.25em 0 0 0
-}
-
-.hero__title {
-  font-size: 4rem;
-  margin: 0
-}
-
-.hero__title-actions {
-  margin: 0 1em
-}
-
-.hero__toolbar {
-  flex: 1 1 auto;
-  display: flex;
-  justify-content: flex-end;
-  white-space: nowrap
-}
-
-.hero__toolbar select,
-.hero__toolbar option {
-  background-color: var(--color-background) !important;
-  margin-right: 0
-}
-
-@media all and (max-width: 768px) {
-
-  .hero__toolbar select,
-  .hero__toolbar option {
-    margin-right: unset
-  }
-}
-
-.hero__toolbar-scope {
-  flex: 0 0 auto
-}
-
-.icon {
-  background-color: var(--color-foreground);
-  display: inline-block;
-  height: 24px;
-  margin-right: 3px;
-  position: relative;
-  width: 19px;
-  top: 9px
-}
-
-h2 .icon {
-  top: 7px
-}
-
-.icon--md {
-  height: 30px;
-  width: 24px;
-  top: 12px
-}
-
-.icon--lg {
-  height: 36px;
-  width: 30px;
-  top: 15px
+  white-space: nowrap;
 }
 
 .image__logo {
   margin: 9px 1em 0 0;
   max-height: 64px;
-  max-width: 64px
+  max-width: 64px;
 }
 
 .image__preview {
   display: block;
   border-radius: 8px;
-  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8), 0px 0px 12px 1px rgba(0, 0, 0, 0.5);
-  width: 600px
+  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8),
+    0px 0px 12px 1px rgba(0, 0, 0, 0.5);
+  width: 600px;
 }
 
 .image__preview__body {
   display: block;
   border-radius: 8px;
-  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8), 0px 0px 12px 1px rgba(0, 0, 0, 0.5);
-  width: 680px
+  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8),
+    0px 0px 12px 1px rgba(0, 0, 0, 0.5);
+  width: 680px;
 }
 
 .image__preview--overlay {
   left: 0;
   position: absolute;
-  top: 0
+  top: 0;
 }
 
 .image__preview--float-container {
@@ -25217,7 +25267,7 @@ h2 .icon {
   top: 0;
   bottom: 0;
   right: 0;
-  padding-right: 17%
+  padding-right: 17%;
 }
 
 .image__preview__body--float-container {
@@ -25228,42 +25278,29 @@ h2 .icon {
   right: 0;
   padding-right: 7px;
   padding-left: 7px;
-  overflow: hidden
+  overflow: hidden;
 }
 
 .image__preview--float {
-  float: right
-}
-
-.link__configure,
-.link__learn-more {
-  margin-left: 10px
-}
-
-.presets {
-  align-items: baseline;
-  justify-content: center;
-  display: flex;
-  width: 100%;
-  flex-wrap: wrap
+  float: right;
 }
 
 section {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 1em;
-  padding: 1em
+  padding: 1em;
 }
 
 section h2 {
   flex: 1 0 auto;
   display: flex;
   margin-top: 0;
-  margin-bottom: 1em
+  margin-bottom: 1em;
 }
 
 .section--full {
-  flex-flow: column
+  flex-flow: column;
 }
 
 .section--settings {
@@ -25272,79 +25309,21 @@ section h2 {
   flex-wrap: wrap;
   border-radius: 8px;
   margin: 1em;
-  padding: 1em 0 0.5em 1em
+  padding: 1em 0 0.5em 1em;
 }
 
 .vscode-dark .section--settings {
-  background: var(--color-background--lighten-075)
+  background: var(--color-background--lighten-075);
 }
 
 .vscode-light .section--settings {
-  background: var(--color-background--darken-05)
-}
-
-.vscode-light .section--collapsible {
-  background: var(--color-background)
-}
-
-.section--collapsible .section__header {
-  cursor: pointer;
-  flex: 1 0 100%;
-  margin-right: 0
-}
-
-.section--collapsible .section__header:after {
-  background-color: var(--color-foreground--75);
-  content: "";
-  height: 40px;
-  -webkit-mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125"&gt;&lt;path d="M50 62a3 3 0 0 1-2-1L26 44a3 3 0 0 1 3-5l21 16 21-16a3 3 0 1 1 3 5L52 61a3 3 0 0 1-2 1z"/&gt;&lt;/svg&gt;');
-  mask-image: url('data:image/svg+xml;utf8,&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 125"&gt;&lt;path d="M50 62a3 3 0 0 1-2-1L26 44a3 3 0 0 1 3-5l21 16 21-16a3 3 0 1 1 3 5L52 61a3 3 0 0 1-2 1z"/&gt;&lt;/svg&gt;');
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: 32px 40px;
-  mask-size: 32px 40px;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: transform 250ms ease-in-out;
-  width: 32px
-}
-
-.section--collapsible.collapsed .section__header {
-  margin-bottom: 0
-}
-
-.section--collapsible.collapsed .section__header:after {
-  transform: translateY(-9px) rotate(-180deg)
-}
-
-.section--collapsible.collapsed .section__header h2 {
-  margin-bottom: 0
-}
-
-.section--collapsible.collapsed .section__collapsible {
-  display: none
-}
-
-.section__collapsible {
-  display: flex;
-  flex-wrap: wrap
+  background: var(--color-background--darken-05);
 }
 
 .section__content {
   flex: 1 1 100%;
   display: flex;
-  flex-flow: column wrap
-}
-
-.section__group {
-  flex: 1 0 100%;
-  display: flex;
-  flex-flow: wrap-reverse
-}
-
-.section__group+.section__group {
-  margin-top: 1em
+  flex-flow: column wrap;
 }
 
 .section__header {
@@ -25354,53 +25333,34 @@ section h2 {
   flex-flow: column;
   margin-bottom: 1em;
   margin-right: 1em;
-  position: relative
+  position: relative;
 }
 
 .section__header h2 {
-  margin-bottom: 0
+  margin-bottom: 0;
 }
 
 .section__header .link__configure,
 .section__header .link__learn-more {
-  visibility: hidden
+  visibility: hidden;
 }
 
 .section__header:hover .link__configure,
 .section__header:hover .link__learn-more {
-  visibility: visible
+  visibility: visible;
 }
 
 .section__header-hint {
   color: var(--color-foreground--75);
   font-weight: 200;
-  margin: 0.25em 0
-}
-
-.section__header-info {
-  display: grid;
-  grid-template-columns: auto auto;
-  grid-gap: 1em;
-  align-items: center;
-  color: var(--color-foreground--75);
-  font-weight: 200;
-  margin: 0.25em 0.5em
-}
-
-.section__header-info p {
-  margin: 0;
-  line-height: 2rem
-}
-
-.section__header-info .icon {
-  top: 3px
+  margin: 0.25em 0;
 }
 
 .section__hint {
   flex: 0 0 auto;
   color: var(--color-foreground--75);
   font-weight: 200;
-  margin: 0
+  margin: 0;
 }
 
 .section__preview {
@@ -25408,50 +25368,50 @@ section h2 {
   position: relative;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 0.65rem
+  margin-bottom: 0.65rem;
 }
 
 .section__collapsible .section__preview {
-  margin-bottom: 1em
+  margin-bottom: 1em;
 }
 
 .section__preview-hint {
   color: var(--color-foreground--75);
   font-weight: 200;
   margin: 0.5em 0.5em 0 0.5em;
-  text-align: center
+  text-align: center;
 }
 
 .section__title {
   flex: 1 0 auto;
-  margin: 0
+  margin: 0;
 }
 
 .section__title--primary {
   font-size: 3rem;
   margin: 0.3em 0;
-  justify-content: center
+  justify-content: center;
 }
 
 .section__title--break {
   margin: 0.3em 15% 0 15%;
   padding-top: 1em;
-  justify-content: center
+  justify-content: center;
 }
 
 .vscode-dark .section__title--break {
-  border-top: 1px solid var(--color-background--lighten-30)
+  border-top: 1px solid var(--color-background--lighten-30);
 }
 
 .vscode-light .section__title--break {
-  border-top: 1px solid var(--color-background--darken-30)
+  border-top: 1px solid var(--color-background--darken-30);
 }
 
 .setting {
   flex: 0 1 auto;
   position: relative;
   margin-right: 1em;
-  min-width: 15.5em
+  min-width: 15.5em;
 }
 
 .setting input[type="checkbox"] {
@@ -25460,16 +25420,16 @@ section h2 {
   margin: 0 10px 0 0;
   position: relative;
   top: 3px;
-  width: 16px
+  width: 16px;
 }
 
 .setting[disabled] label {
   color: var(--color-foreground--75);
-  cursor: default
+  cursor: default;
 }
 
 #interface-behavior .setting {
-  min-width: 29em
+  min-width: 29em;
 }
 
 fieldset {
@@ -25484,23 +25444,23 @@ fieldset {
 
 fieldset.info {
   background-color: #00378010;
-  border-color: #3e6092
+  border-color: #3e6092;
 }
 
 fieldset.alert {
   background-color: #80000010;
-  border-color: #92473e
+  border-color: #92473e;
 }
 
 fieldset p {
   margin: 0;
   padding-right: 1em;
   width: 100%;
-  color: var(--color-foreground--65)
+  color: var(--color-foreground--65);
 }
 
 fieldset p span {
-  color: var(--color-foreground)
+  color: var(--color-foreground);
 }
 
 .setting__input {
@@ -25508,55 +25468,55 @@ fieldset p span {
   flex-wrap: nowrap;
   align-items: baseline;
   line-height: normal;
-  margin: 0.5em 0
+  margin: 0.5em 0;
 }
 
 .setting__input input,
 .setting__input select {
-  flex-grow: 1
+  flex-grow: 1;
 }
 
-.setting__input input+.link__configure,
-.setting__input input+.link__learn-more,
-.setting__input select+.link__configure,
-.setting__input select+.link__learn-more {
-  margin-left: 0
+.setting__input input + .link__configure,
+.setting__input input + .link__learn-more,
+.setting__input select + .link__configure,
+.setting__input select + .link__learn-more {
+  margin-left: 0;
 }
 
 .setting__input input[type="text"],
 .setting__input input:not([type]) {
-  min-width: 150px
+  min-width: 150px;
 }
 
 .setting__input label {
-  flex-grow: 0
+  flex-grow: 0;
 }
 
-.setting__input label&gt;select {
-  margin-top: 0.25em
+.setting__input label &gt; select {
+  margin-top: 0.25em;
 }
 
 .setting__input .link__learn-more,
 .setting__input .link__configure {
   visibility: hidden;
-  max-height: 15px
+  max-height: 15px;
 }
 
 .setting__input .link__learn-more .icon,
 .setting__input .link__configure .icon {
   display: block;
-  top: unset
+  top: unset;
 }
 
 .setting__input:hover .link__learn-more,
 .setting__input:hover .link__configure {
-  visibility: visible
+  visibility: visible;
 }
 
 .setting__input--big {
   font-size: 2.2rem;
   font-weight: 200;
-  margin: 0
+  margin: 0;
 }
 
 .setting__input--big input[type="checkbox"] {
@@ -25566,25 +25526,25 @@ fieldset p span {
   position: relative;
   top: 3px;
   left: -5px;
-  width: 1em
+  width: 1em;
 }
 
 .setting__input--big label {
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 .setting__input--big .link__learn-more,
 .setting__input--big .link__configure {
-  max-height: 17px
+  max-height: 17px;
 }
 
 .setting__input--format {
-  display: flex
+  display: flex;
 }
 
 .setting__input--format input[type="text"],
 .setting__input--format input:not([type]) {
-  max-width: unset
+  max-width: unset;
 }
 
 .setting__hint {
@@ -25592,22 +25552,22 @@ fieldset p span {
   display: block;
   font-weight: 200;
   font-size: 1.3rem;
-  margin: 0 1em 0.5em 1em
+  margin: 0 1em 0.5em 1em;
 }
 
 .settings {
   flex: 1 0 auto;
   display: flex;
-  flex-wrap: wrap
+  flex-wrap: wrap;
 }
 
 .break {
   flex-basis: 100%;
-  height: 0
+  height: 0;
 }
 
 .settings--fixed {
-  display: block
+  display: block;
 }
 
 .sidebar {
@@ -25616,39 +25576,39 @@ fieldset p span {
   font-size: 1.3rem;
   position: sticky;
   top: 0;
-  z-index: 2
+  z-index: 2;
 }
 
 @media all and (max-width: 768px) {
   .sidebar {
-    display: none
+    display: none;
   }
 }
 
 .sidebar li {
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 .sidebar .button {
-  margin: 0
+  margin: 0;
 }
 
 .sidebar__group {
-  margin-top: 1em
+  margin-top: 1em;
 }
 
 .sidebar__group h2 {
-  font-size: 2rem
+  font-size: 2rem;
 }
 
 .sidebar__group p {
   font-weight: 400;
   opacity: 0.5;
-  text-align: center
+  text-align: center;
 }
 
 .sidebar__jump-link.active {
-  font-weight: 700
+  font-weight: 700;
 }
 
 .sidebar__jump-link.active:before {
@@ -25657,41 +25617,41 @@ fieldset p span {
   position: absolute;
   left: -1em;
   height: 1em;
-  padding-bottom: 4px
+  padding-bottom: 4px;
 }
 
 .vscode-light .sidebar__jump-link.active:before {
-  border-left-color: var(--color-link-foreground--lighten-20)
+  border-left-color: var(--color-link-foreground--lighten-20);
 }
 
 .sponsor__image {
   opacity: 0.8;
   transition: opacity 250ms;
   transform: scale(0.6);
-  margin: -2.5em 0
+  margin: -2.5em 0;
 }
 
 .sponsor__image:hover {
-  opacity: 1
+  opacity: 1;
 }
 
 .sponsor__tag {
   font-size: 1.1rem;
   margin: -1em 0.5em 0 0.5em;
   opacity: 0.5;
-  text-align: center
+  text-align: center;
 }
 
 .bold {
-  font-weight: 600
+  font-weight: 600;
 }
 
 .center {
-  text-align: center
+  text-align: center;
 }
 
 .hidden {
-  display: none !important
+  display: none !important;
 }
 
 .highlight {
@@ -25702,105 +25662,53 @@ fieldset p span {
   margin: 0 0.25em;
   padding: 2px 10px;
   text-align: center;
-  vertical-align: bottom
+  vertical-align: bottom;
 }
 
 .is-sidebar-hidden {
-  display: none
+  display: none;
 }
 
 @media all and (max-width: 768px) {
   .is-sidebar-hidden {
-    display: initial
+    display: initial;
   }
 }
 
 .mb-0 {
-  margin-bottom: 0 !important
-}
-
-.mb-05 {
-  margin-bottom: 0.5em !important
-}
-
-.mb-1 {
-  margin-bottom: 1em !important
-}
-
-.mb-2 {
-  margin-bottom: 2em !important
+  margin-bottom: 0 !important;
 }
 
 .ml-0 {
-  margin-left: 0 !important
-}
-
-.ml-1 {
-  margin-left: 1em !important
-}
-
-.ml-2 {
-  margin-left: 2em !important
-}
-
-.ml-3 {
-  margin-left: 3em !important
-}
-
-.ml-4 {
-  margin-left: 4em !important
+  margin-left: 0 !important;
 }
 
 .mr-0 {
-  margin-right: 0 !important
-}
-
-.mr-1 {
-  margin-right: 1em !important
-}
-
-.mr-2 {
-  margin-right: 2em !important
-}
-
-.mt-n1 {
-  margin-top: -1em !important
+  margin-right: 0 !important;
 }
 
 .mt-0 {
-  margin-top: 0 !important
-}
-
-.mt-05 {
-  margin-top: 0.5em !important
+  margin-top: 0 !important;
 }
 
 .mt-1 {
-  margin-top: 1em !important
-}
-
-.mt-2 {
-  margin-top: 2em !important
-}
-
-.non-interactive {
-  cursor: default !important
+  margin-top: 1em !important;
 }
 
 .nowrap {
-  white-space: nowrap !important
+  white-space: nowrap !important;
 }
 
 .vscode-dark .light {
-  display: none
+  display: none;
 }
 
 .vscode-light .dark {
-  display: none
+  display: none;
 }
 
 ::-webkit-scrollbar-corner {
-  background-color: transparent !important
+  background-color: transparent !important;
 }
 
 #saved-config-toast {
@@ -25817,43 +25725,43 @@ fieldset p span {
   margin-left: -30%;
   visibility: hidden;
   font-size: 2rem;
-  z-index: 100
+  z-index: 100;
 }
 
 #saved-config-toast.show {
   visibility: visible;
-  animation: fadein 0.5s, fadeout 0.5s 1s
+  animation: fadein 0.5s, fadeout 0.5s 1s;
 }
 
 #resultingCommand {
   margin: 0 10px;
   padding: 4px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   background-color: #12121240;
 }
 
 .cursor-default {
-  cursor: default
+  cursor: default;
 }
 
-.text-italic{
+.text-italic {
   font-style: italic;
 }
 
 .vscode-light #saved-config-toast:before {
-  border-bottom-color: var(--color-background--darken-075)
+  border-bottom-color: var(--color-background--darken-075);
 }
 
 .vscode-dark #saved-config-toast:before {
-  border-bottom-color: var(--color-background--lighten-075)
+  border-bottom-color: var(--color-background--lighten-075);
 }
 
 .vscode-light #saved-config-toast {
-  background: var(--color-background--darken-075)
+  background: var(--color-background--darken-075);
 }
 
 .vscode-dark #saved-config-toast {
-  background: var(--color-background--lighten-075)
+  background: var(--color-background--lighten-075);
 }
 
 #dirty-config-toast {
@@ -25870,124 +25778,49 @@ fieldset p span {
   margin-left: -30%;
   visibility: hidden;
   font-size: 2rem;
-  z-index: 100
+  z-index: 100;
 }
 
 #dirty-config-toast.show {
-  visibility: visible
+  visibility: visible;
 }
 
 .vscode-light #dirty-config-toast:before {
-  border-bottom-color: var(--color-background--darken-075)
+  border-bottom-color: var(--color-background--darken-075);
 }
 
 .vscode-dark #dirty-config-toast:before {
-  border-bottom-color: var(--color-background--lighten-075)
+  border-bottom-color: var(--color-background--lighten-075);
 }
 
 .vscode-light #dirty-config-toast {
   background-color: #cc5d1a;
-  color: #f2f2f2
+  color: #f2f2f2;
 }
 
 .vscode-dark #dirty-config-toast {
   background-color: #cc5d1a;
-  color: #f2f2f2
+  color: #f2f2f2;
 }
 
 @keyframes fadein {
   from {
-    opacity: 0.8
+    opacity: 0.8;
   }
 
   to {
-    opacity: 1
+    opacity: 1;
   }
 }
 
 @keyframes fadeout {
   from {
-    opacity: 1
+    opacity: 1;
   }
 
   to {
-    opacity: 0
+    opacity: 0;
   }
-}
-
-.token-popup__scroller {
-  margin-right: -0.4em;
-  max-height: 35vh;
-  overflow-y: scroll;
-  padding-right: 0.4em
-}
-
-.token-popup__hint {
-  color: var(--color-foreground--75);
-  display: inline-block;
-  font-weight: 200;
-  margin: 1.25em 0.5em 0 0.25em
-}
-
-.token-popup__title {
-  color: var(--color-foreground);
-  font-weight: 400;
-  margin: 0.25em 0 1em 0;
-  text-align: center
-}
-
-.token-popup__table {
-  border-collapse: collapse;
-  color: var(--color-foreground--75);
-  table-layout: fixed
-}
-
-.vscode-light .token-popup__table tr:nth-child(even) {
-  background-color: rgba(0, 0, 0, 0.05)
-}
-
-.vscode-dark .token-popup__table tr:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.04)
-}
-
-.token-popup__table td {
-  padding: 6px
-}
-
-.token-popup__table td i {
-  opacity: 0.6
-}
-
-.token-popup__table td:first-child {
-  padding: 6px 12px
-}
-
-.token-popup__table td:last-child {
-  padding-right: 12px;
-  text-align: end
-}
-
-.token {
-  background: var(--color-link-foreground--darken-20);
-  border-bottom: 2px solid var(--color-link-foreground--darken-20);
-  border-radius: 3px;
-  color: white;
-  cursor: pointer;
-  display: inline-block;
-  padding: 1px 8px !important
-}
-
-.token:before {
-  content:"${"
-}
-
-.token:after {
-  content: "}"
-}
-
-.vscode-light .token {
-  background: var(--color-link-foreground--lighten-20);
-  border-bottom-color: var(--color-link-foreground--lighten-20)
 }
 </t>
 <t tx="fil.20210609233100.1">/**

@@ -26,12 +26,19 @@ export interface ConfigMembers {
     goAnywhereShortcut: boolean;
 
     showUnlOnStatusBar: boolean,
-    // statusBarString: string;
-    // statusBarColor: string;
 
     treeInExplorer: boolean;
+
+    showFileOnOutline: boolean;
+    showHoistDehoistOnOutline: boolean;
+    showPrevNextOnOutline: boolean;
+    showPromoteDemoteOnOutline: boolean;
+    showRecentFilesOnOutline: boolean;
+    showSettingsOnOutline: boolean;
+    showShowLogOnOutline: boolean;
+    showUndoRedoOnOutline: boolean;
+
     showEditOnNodes: boolean;
-    // showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
     showMarkOnNodes: boolean;
     showCloneOnNodes: boolean;

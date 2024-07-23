@@ -347,13 +347,111 @@
         </div>
       </section>
 
+      <section id="outline-commands" class="section--settings">
+        <div class="section__content">
+          <div class="section__header">
+            <h2>Outline Pane Commands</h2>
+            <p class="section__header-hint">
+              Hovering the outline pane displays command icons -
+              Choose which commands to display when hovering
+            </p>
+          </div>
+          <div class="section__preview">
+            <img class="image__preview" src="#{root}/resources/outline-icons-empty.png" />
+
+            <div class="image__preview--float-container float-container-no-padding">
+
+              <img class="image__preview--float" src="#{root}/resources/outline-icons-show-log.png"
+                data-visibility="showShowLogOnOutline" />
+              <img class="image__preview--float" src="#{root}/resources/outline-icons-recent-files.png"
+                data-visibility="showRecentFilesOnOutline" />
+              <img class="image__preview--float" src="#{root}/resources/outline-icons-settings.png"
+                data-visibility="showSettingsOnOutline" />
+              <img class="image__preview--float" src="#{root}/resources/outline-icons-promote-demote.png"
+                data-visibility="showPromoteDemoteOnOutline" />
+              <img class="image__preview--float" src="#{root}/resources/outline-icons-hoist-dehoist.png"
+                data-visibility="showHoistDehoistOnOutline" />
+              <img class="image__preview--float" src="#{root}/resources/outline-icons-undo-redo.png"
+                data-visibility="showUndoRedoOnOutline" />
+              <img class="image__preview--float" src="#{root}/resources/outline-icons-prev-next.png"
+                data-visibility="showPrevNextOnOutline" />
+              <img class="image__preview--float" src="#{root}/resources/outline-icons-file.png"
+                data-visibility="showFileOnOutline" />
+
+            </div>
+          </div>
+
+          <div class="settings">
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showFileOnOutline" name="showFileOnOutline" type="checkbox" data-setting />
+                <label for="showFileOnOutline">File&nbsp;Commands</label>
+              </div>
+              <span class="setting__hint">Shows 'New, Open & Save' on hover</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showHoistDehoistOnOutline" name="showHoistDehoistOnOutline" type="checkbox" data-setting />
+                <label for="showHoistDehoistOnOutline">Hoist&nbsp;/&nbsp;Dehoist</label>
+              </div>
+              <span class="setting__hint">Shows 'Hoist & Dehoist' on hover</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showPrevNextOnOutline" name="showPrevNextOnOutline" type="checkbox" data-setting />
+                <label for="showPrevNextOnOutline">Previous&nbsp;/&nbsp;Next Visited Nodes</label>
+              </div>
+              <span class="setting__hint">Shows 'Previous & Next' on hover</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showPromoteDemoteOnOutline" name="showPromoteDemoteOnOutline" type="checkbox" data-setting />
+                <label for="showPromoteDemoteOnOutline">Promote&nbsp;/&nbsp;Demote</label>
+              </div>
+              <span class="setting__hint">Shows 'Promote & Demote' on hover</span>
+            </div>
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showRecentFilesOnOutline" name="showRecentFilesOnOutline" type="checkbox" data-setting />
+                <label for="showRecentFilesOnOutline">Recent&nbsp;Files</label>
+              </div>
+              <span class="setting__hint">Shows 'Recent Files' on hover</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showSettingsOnOutline" name="showSettingsOnOutline" type="checkbox" data-setting />
+                <label for="showSettingsOnOutline">LeoJS&nbsp;Settings</label>
+              </div>
+              <span class="setting__hint">Shows 'LeoJS Settings' on hover</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showShowLogOnOutline" name="showShowLogOnOutline" type="checkbox" data-setting />
+                <label for="showShowLogOnOutline">Show&nbsp;Log&nbsp;Pane</label>
+              </div>
+              <span class="setting__hint">Shows 'Open Log Pane' on hover</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showUndoRedoOnOutline" name="showUndoRedoOnOutline" type="checkbox" data-setting />
+                <label for="showUndoRedoOnOutline">Undo&nbsp;/&nbsp;Redo</label>
+              </div>
+              <span class="setting__hint">Shows 'Undo' and 'Redo' on hover</span>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       <section id="node-commands" class="section--settings">
         <div class="section__content">
           <div class="section__header">
             <h2>Node Commands</h2>
             <p class="section__header-hint">
               Hovering tree nodes displays an edit icon -
-              Choose more commands to display when hovering
+              Choose which commands to display when hovering
             </p>
           </div>
           <div class="section__preview">
@@ -462,14 +560,14 @@
             <a href="#tree-in-explorer" title="Outline visibility settings">Outline in Explorer</a>
           </li>
           <li>
-            <a href="#show-open-aside" title="Outline context menu settings">Open to the Side</a>
-          </li>
-          <li>
             <a href="#show-branch-in-title" title="Outline git branch visibility settings">Show branch in title</a>
           </li>
           <li>
             <a href="#invert-contrast" title="UI contrast settings">Invert Contrast</a>
           </li>
+          <li>
+            <a href="#outline-commands" title="Outline Pane settings">Outline Pane Commands</a>
+          </li>/
           <li>
             <a href="#node-commands" title="Outline nodes settings">Node Hover Commands</a>
           </li>
