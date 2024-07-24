@@ -13198,7 +13198,7 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.stopServer",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; !leoBridgeReady &amp;&amp; !leoTreeOpened",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; !leoTreeOpened",
     "group": "navigation@1"
   },
   {
@@ -22842,6 +22842,7 @@ public setGotoContent(): void {
 
 - Fixed 'Save as .leojs' command Icon.
 - Made command icons above the outline pane customizable with new configuration settings, also available in the Welcome/Settings webview.
+- Made 'Stop Server' command icon visible above main LeoInteg panel when server started when LeoInteg is only connected, with no file opened.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
