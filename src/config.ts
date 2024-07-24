@@ -23,8 +23,17 @@ export class Config implements ConfigMembers {
 
     public showUnlOnStatusBar: boolean = Constants.CONFIG_DEFAULTS.SHOW_UNL_ON_STATUSBAR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
-    public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
 
+    public showFileOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_FILE_ON_OUTLINE;
+    public showHoistDehoistOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_HOIST_DEHOIST_ON_OUTLINE;
+    public showPrevNextOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_PREV_NEXT_ON_OUTLINE;
+    public showPromoteDemoteOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_PROMOTE_DEMOTE_ON_OUTLINE;
+    public showRecentFilesOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_RECENT_FILES_ON_OUTLINE;
+    public showSettingsOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_SETTINGS_ON_OUTLINE;
+    public showShowLogOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_SHOW_LOG_ON_OUTLINE;
+    public showUndoRedoOnOutline: boolean = Constants.CONFIG_DEFAULTS.SHOW_UNDO_REDO_ON_OUTLINE;
+
+    public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
     public showAddOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ADD;
     public showMarkOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK;
     public showCloneOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLONE;
@@ -84,6 +93,16 @@ export class Config implements ConfigMembers {
 
             showUnlOnStatusBar: this.showUnlOnStatusBar,
             treeInExplorer: this.treeInExplorer,
+
+            showFileOnOutline: this.showFileOnOutline,
+            showHoistDehoistOnOutline: this.showHoistDehoistOnOutline,
+            showPrevNextOnOutline: this.showPrevNextOnOutline,
+            showPromoteDemoteOnOutline: this.showPromoteDemoteOnOutline,
+            showRecentFilesOnOutline: this.showRecentFilesOnOutline,
+            showSettingsOnOutline: this.showSettingsOnOutline,
+            showShowLogOnOutline: this.showShowLogOnOutline,
+            showUndoRedoOnOutline: this.showUndoRedoOnOutline,
+
             showEditOnNodes: this.showEditOnNodes,
             showAddOnNodes: this.showAddOnNodes,
             showMarkOnNodes: this.showMarkOnNodes,
@@ -301,7 +320,6 @@ export class Config implements ConfigMembers {
         const NAME = Constants.CONFIG_NAME;
         const NAMES = Constants.CONFIG_NAMES;
         const DEFAULTS = Constants.CONFIG_DEFAULTS;
-        const FLAGS = Constants.CONTEXT_FLAGS;
 
         if (this._isBusySettingConfig) {
             // * Currently setting config, wait until its done all, and this will be called automatically
@@ -328,14 +346,22 @@ export class Config implements ConfigMembers {
             //     this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
             // }
             this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
+
+            this.showFileOnOutline = GET(NAME).get(NAMES.SHOW_FILE_ON_OUTLINE, DEFAULTS.SHOW_FILE_ON_OUTLINE);
+            this.showHoistDehoistOnOutline = GET(NAME).get(NAMES.SHOW_HOIST_DEHOIST_ON_OUTLINE, DEFAULTS.SHOW_HOIST_DEHOIST_ON_OUTLINE);
+            this.showPrevNextOnOutline = GET(NAME).get(NAMES.SHOW_PREV_NEXT_ON_OUTLINE, DEFAULTS.SHOW_PREV_NEXT_ON_OUTLINE);
+            this.showPromoteDemoteOnOutline = GET(NAME).get(NAMES.SHOW_PROMOTE_DEMOTE_ON_OUTLINE, DEFAULTS.SHOW_PROMOTE_DEMOTE_ON_OUTLINE);
+            this.showRecentFilesOnOutline = GET(NAME).get(NAMES.SHOW_RECENT_FILES_ON_OUTLINE, DEFAULTS.SHOW_RECENT_FILES_ON_OUTLINE);
+            this.showSettingsOnOutline = GET(NAME).get(NAMES.SHOW_SETTINGS_ON_OUTLINE, DEFAULTS.SHOW_SETTINGS_ON_OUTLINE);
+            this.showShowLogOnOutline = GET(NAME).get(NAMES.SHOW_SHOW_LOG_ON_OUTLINE, DEFAULTS.SHOW_SHOW_LOG_ON_OUTLINE);
+            this.showUndoRedoOnOutline = GET(NAME).get(NAMES.SHOW_UNDO_REDO_ON_OUTLINE, DEFAULTS.SHOW_UNDO_REDO_ON_OUTLINE);
+
             this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
             this.showAddOnNodes = GET(NAME).get(NAMES.SHOW_ADD, DEFAULTS.SHOW_ADD);
             this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
             this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
             this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
             this.showBranchInOutlineTitle = GET(NAME).get(NAMES.SHOW_BRANCH_OUTLINE, DEFAULTS.SHOW_BRANCH_OUTLINE);
-
-            // this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
 
             // this.showEditionOnBody = GET(NAME).get(NAMES.SHOW_EDITION_BODY, DEFAULTS.SHOW_EDITION_BODY);
             // this.showClipboardOnBody = GET(NAME).get(NAMES.SHOW_CLIPBOARD_BODY, DEFAULTS.SHOW_CLIPBOARD_BODY);
@@ -364,17 +390,6 @@ export class Config implements ConfigMembers {
                 this._leoIntegration.sendConfigToServer(this.getConfig());
             }
 
-            // utils.setContext(FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
-            // utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
-            // utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
-            // utils.setContext(FLAGS.SHOW_EDIT, this.showEditOnNodes);
-            // utils.setContext(FLAGS.SHOW_ADD, this.showAddOnNodes);
-            // utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
-            // utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
-            // utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
-
-            // utils.setContext(FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
-
             // utils.setContext(FLAGS.SHOW_EDITION_BODY, this.showEditionOnBody);
             // utils.setContext(FLAGS.SHOW_CLIPBOARD_BODY, this.showClipboardOnBody);
             // utils.setContext(FLAGS.SHOW_PROMOTE_BODY, this.showPromoteOnBody);
@@ -386,16 +401,6 @@ export class Config implements ConfigMembers {
             // utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
             // utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
 
-            // utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
-
-            if (!this._leoIntegration.leoStates.leoStartupFinished && this.leoEditorPath) {
-                // Only relevant 'viewWelcome' content at startup.
-                // utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically);  // ok
-                // utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
-            } else {
-                // utils.setContext(FLAGS.AUTO_START_SERVER, false); // Save option but not context flag
-                //utils.setContext(FLAGS.AUTO_CONNECT, false);
-            }
             return true;
         }
     }

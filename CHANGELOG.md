@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.23
+
+- Fixed 'Save as .leojs' command Icon.
+- Made command icons above the outline pane customizable with new configuration settings, also available in the Welcome/Settings webview.
+- Made 'Stop Server' command icon visible above main LeoInteg panel when server started when LeoInteg is only connected, with no file opened.
+
 ## 1.0.22
 
 - Updated package libraries/dependencies.

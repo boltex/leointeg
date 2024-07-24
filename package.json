@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -126,11 +126,53 @@
           "type": "boolean",
           "description": "Show the outline tree in the explorer view"
         },
-        "leoIntegration.showOpenAside": {
+        "leoIntegration.showFileOnOutline": {
           "scope": "application",
           "default": true,
           "type": "boolean",
-          "description": "Offer 'Open to the Side' in nodes context menu"
+          "description": "Shows 'New', 'Open' and 'Save' buttons on the outline pane"
+        },
+        "leoIntegration.showHoistDehoistOnOutline": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows 'Hoist' and 'Dehoist' buttons on the outline pane"
+        },
+        "leoIntegration.showPrevNextOnOutline": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows 'Previous' and 'Next' visited node buttons on the outline pane"
+        },
+        "leoIntegration.showPromoteDemoteOnOutline": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows 'Promote' and 'Demote' buttons on the outline pane"
+        },
+        "leoIntegration.showRecentFilesOnOutline": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Shows 'Recent Files' button on the outline pane"
+        },
+        "leoIntegration.showSettingsOnOutline": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Shows 'LeoInteg Settings' button on the outline pane"
+        },
+        "leoIntegration.showShowLogOnOutline": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Shows 'Open Log Pane' button on the outline pane"
+        },
+        "leoIntegration.showUndoRedoOnOutline": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows 'Undo' and 'Redo' buttons on the outline pane"
         },
         "leoIntegration.showEditOnNodes": {
           "scope": "application",
@@ -1803,8 +1845,8 @@
           "fontCharacter": "\\f13a"
         }
       },
-      "leo-save-as-leo": {
-        "description": "Save As .leo",
+      "leo-save-as-leojs": {
+        "description": "Save As .leojs",
         "default": {
           "fontPath": "resources/leoicons.woff2",
           "fontCharacter": "\\f13b"
@@ -2357,7 +2399,7 @@
         "command": "leointeg.extractNames",
         "category": "Leo",
         "title": "Extract Names",
-        "enablement": "leoTreeOpened",
+        "enablement": "leoTreeOpened && editorHasSelection",
         "icon": "$(leo-extract-name)"
       },
       {
@@ -3528,16 +3570,6 @@
           "group": "navigation@7"
         },
         {
-          "command": "leointeg.writeDirtyAtFileNodes",
-          "when": "resourceScheme == leointeg && leoTreeOpened",
-          "group": "navigation@8"
-        },
-        {
-          "command": "leointeg.refreshFromDiskSelection",
-          "when": "resourceScheme == leointeg && leoTreeOpened",
-          "group": "navigation@9"
-        },
-        {
           "command": "leointeg.showSettingsPage",
           "when": "resourceScheme == leointeg",
           "group": "1_leoInteg@1"
@@ -3687,9 +3719,19 @@
           "group": "navigation@9"
         },
         {
+          "command": "leointeg.showSettingsPage",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showSettingsOnOutline",
+          "group": "navigation@11"
+        },
+        {
           "command": "leointeg.showLogPane",
           "when": "view =~ /^leoDocuments|^leoButtons/ && leoBridgeReady",
           "group": "navigation@9"
+        },
+        {
+          "command": "leointeg.showLogPane",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showShowLogOnOutline",
+          "group": "navigation@11"
         },
         {
           "command": "leointeg.recentLeoFiles",
@@ -3698,8 +3740,8 @@
         },
         {
           "command": "leointeg.recentLeoFiles",
-          "when": "view =~ /^leoIntegration/ && leoBridgeReady && !leoTreeOpened",
-          "group": "navigation@1"
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showRecentFilesOnOutline",
+          "group": "navigation@11"
         },
         {
           "command": "leointeg.findQuickSelected",
@@ -3748,67 +3790,92 @@
         },
         {
           "command": "leointeg.stopServer",
-          "when": "view =~ /^leoIntegration/ && !leoBridgeReady && !leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && !leoTreeOpened",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.openLeoFile",
-          "when": "view =~ /^leoIntegration|^leoDocuments/ && leoBridgeReady",
+          "when": "view =~ /^leoDocuments/ && leoBridgeReady",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.openLeoFile",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showFileOnOutline",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.newLeoFile",
-          "when": "view =~ /^leoIntegration|^leoDocuments/ && leoBridgeReady",
+          "when": "view =~ /^leoDocuments/ && leoBridgeReady",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.newLeoFile",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showFileOnOutline",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.saveLeoFileFromOutline",
-          "when": "view =~ /^leoIntegration|^leoDocuments/ && leoTreeOpened && leoTreeTitled",
+          "when": "view =~ /^leoDocuments/ && leoTreeOpened && leoTreeTitled && config.leoIntegration.showFileOnOutline",
+          "group": "navigation@2"
+        },
+        {
+          "command": "leointeg.saveLeoFileFromOutline",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoTreeTitled && config.leoIntegration.showFileOnOutline",
           "group": "navigation@2"
         },
         {
           "command": "leointeg.saveAsLeoFile",
-          "when": "view =~ /^leoIntegration|^leoDocuments/ && leoTreeOpened && !leoTreeTitled",
+          "when": "view =~ /^leoDocuments/ && leoTreeOpened && !leoTreeTitled",
           "group": "navigation@2"
         },
         {
-          "command": "leointeg.saveAsLeoJsFile",
-          "when": "view =~ /^leoIntegration|^leoDocuments/ && leoTreeOpened && !leoTreeTitled",
+          "command": "leointeg.saveAsLeoFile",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoTreeTitled && config.leoIntegration.showFileOnOutline",
           "group": "navigation@2"
         },
         {
           "command": "leointeg.prevFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showPrevNextOnOutline",
           "group": "navigation@3"
         },
         {
           "command": "leointeg.nextFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showPrevNextOnOutline",
           "group": "navigation@4"
         },
         {
           "command": "leointeg.undoFromOutline",
-          "when": "view =~ /^leoIntegration|^leoUndo/ && leoTreeOpened",
+          "when": "view =~ /^leoUndo/ && leoTreeOpened",
+          "group": "navigation@5"
+        },
+        {
+          "command": "leointeg.undoFromOutline",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showUndoRedoOnOutline",
           "group": "navigation@5"
         },
         {
           "command": "leointeg.redoFromOutline",
-          "when": "view =~ /^leoIntegration|^leoUndo/ && leoTreeOpened",
+          "when": "view =~ /^leoUndo/ && leoTreeOpened",
+          "group": "navigation@6"
+        },
+        {
+          "command": "leointeg.redoFromOutline",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showUndoRedoOnOutline",
           "group": "navigation@6"
         },
         {
           "command": "leointeg.deHoistFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoTopHoistChapter",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoTopHoistChapter && config.leoIntegration.showHoistDehoistOnOutline",
           "group": "navigation@7"
         },
         {
           "command": "leointeg.chapterMain",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoTopHoistChapter",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoTopHoistChapter && config.leoIntegration.showHoistDehoistOnOutline",
           "group": "navigation@7"
         },
         {
           "command": "leointeg.hoistSelectionFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showHoistDehoistOnOutline",
           "group": "navigation@8"
         },
         {
@@ -3837,24 +3904,14 @@
           "group": "navigation@5"
         },
         {
-          "command": "leointeg.chapterMain",
-          "when": "view =~ /^leoFindPanel/ && leoTreeOpened",
-          "group": "navigation@6"
-        },
-        {
           "command": "leointeg.promoteSelectionFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showPromoteDemoteOnOutline",
           "group": "navigation@9"
         },
         {
           "command": "leointeg.demoteSelectionFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && config.leoIntegration.showPromoteDemoteOnOutline",
           "group": "navigation@10"
-        },
-        {
-          "command": "leointeg.importAnyFile",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
-          "group": "navigation@11"
         },
         {
           "command": "leointeg.contractAllFromOutline",
@@ -3920,7 +3977,7 @@
         },
         {
           "command": "leointeg.openAside",
-          "when": "config.leoIntegration.showOpenAside && viewItem =~ /^leoNode/",
+          "when": "viewItem =~ /^leoNode/",
           "group": "leoNodeContext1@1"
         },
         {
