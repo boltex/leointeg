@@ -22840,7 +22840,7 @@ public setGotoContent(): void {
 </t>
 <t tx="felix.20240716191935.1">## 1.0.23
 
-- Fixed 'Save As' command Icon.
+- Fixed 'Save as .leojs' command Icon.
 - Made command icons above the outline pane customizable with new configuration settings, also available in the Welcome/Settings webview.
 
 </t>

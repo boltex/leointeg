@@ -2,7 +2,7 @@
 
 ## 1.0.23
 
-- Fixed 'Save As' command Icon.
+- Fixed 'Save as .leojs' command Icon.
 - Made command icons above the outline pane customizable with new configuration settings, also available in the Welcome/Settings webview.
 
 ## 1.0.22
