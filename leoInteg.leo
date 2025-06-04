@@ -362,6 +362,7 @@
 <v t="felix.20210613210351.1"><vh>chooseLeoFolder</vh></v>
 <v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
 <v t="felix.20240107202609.1"><vh>handleUnl</vh></v>
+<v t="felix.20250603200522.1"><vh>showLineInLeoOutline</vh></v>
 </v>
 <v t="felix.20200719025231.10"><vh>Recently Opened Files</vh>
 <v t="felix.20200719025231.11"><vh>_openLastFiles</vh></v>
@@ -1415,7 +1416,6 @@ private _tryApplyNodeToBody(
  * @returns Promise back from command's execution, if added on stack, undefined otherwise.
  * (see command stack 'rules' in commandStack.ts)
  */
-
 public async nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise&lt;LeoBridgePackage | undefined&gt; {
     // No forced vscode save-triggers for direct calls from extension.js
     await this.triggerBodySave();
@@ -1703,6 +1703,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     finalFocus: Focus.Body
 })],
+
+[CMD.SHOW_LINE_IN_LEO_OUTLINE, (p_arg: any) =&gt; w_leo.showLineInLeoOutline(p_arg)],
 
 [CMD.TAB_CYCLE_NEXT, () =&gt; w_leo.tabCycle()],
 
@@ -3537,6 +3539,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "title": "Git Diff"
 },
 {
+  "command": "leointeg.showLineInLeoOutline",
+  "category": "Leo",
+  "enablement": "leoTreeOpened &amp;&amp; editorTextFocus",
+  "title": "Show Line In Leo Outline"
+},
+{
   "command": "leointeg.tabCycleNext",
   "category": "Leo",
   "enablement": "leoTreeOpened",
@@ -4487,6 +4495,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 },
 </t>
 <t tx="ekr.20200815123601.61">{
+  "command": "leointeg.showLineInLeoOutline",
+  "when": "false"
+},
+{
   "command": "leointeg.openAside",
   "when": "false"
 },
@@ -4748,7 +4760,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 <t tx="ekr.20200815123601.68">"explorer/context": [
   {
     "command": "leointeg.openLeoFile",
-    "when": "leoBridgeReady &amp;&amp; resourceScheme == file &amp;&amp; resourceExtname == .leo || leoBridgeReady &amp;&amp; resourceScheme == file &amp;&amp; resourceExtname == .leojs",
+    "when": "leoBridgeReady &amp;&amp; resourceScheme == file &amp;&amp; resourceExtname =~ /^\\.leojs$|^\\.leo$/",
     "group": "navigation@1"
   }
 ],
@@ -5351,6 +5363,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "id": "leoIntegrationExplorer",
       "name": "Leo Integration",
       "contextualTitle": "Leo",
+      "icon": "$(symbol-class)",
       "when": "config.leoIntegration.treeInExplorer &amp;&amp; !config.leojs.treeInExplorer",
       "visibility": "visible"
     },
@@ -5360,6 +5373,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "contextualTitle": "Leo",
       "name": "Leo Find",
       "title": "Leo Find",
+      "icon": "$(search)",
       "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened &amp;&amp; !config.leojs.treeInExplorer",
       "visibility": "collapsed"
     },
@@ -5367,6 +5381,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "id": "leoDocumentsExplorer",
       "name": "Leo Documents",
       "contextualTitle": "Leo",
+      "icon": "$(symbol-folder)",
       "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened &amp;&amp; !config.leojs.treeInExplorer",
       "visibility": "collapsed"
     },
@@ -5374,6 +5389,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "id": "leoUndosExplorer",
       "name": "Leo Undo History",
       "contextualTitle": "Leo",
+      "icon": "$(leo-undo)",
       "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened &amp;&amp; !config.leojs.treeInExplorer",
       "visibility": "collapsed"
     },
@@ -5381,6 +5397,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "id": "leoButtonsExplorer",
       "name": "Leo Buttons",
       "contextualTitle": "Leo",
+      "icon": "$(play)",
       "when": "config.leoIntegration.treeInExplorer &amp;&amp; leoTreeOpened &amp;&amp; !config.leojs.treeInExplorer",
       "visibility": "collapsed"
     }
@@ -5390,6 +5407,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "id": "leoIntegration",
       "contextualTitle": "Leo",
       "name": "Integration",
+      "icon": "$(symbol-class)",
       "visibility": "visible"
     },
     {
@@ -5399,6 +5417,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "name": "Find",
       "title": "Find",
       "when": "leoTreeOpened",
+      "icon": "$(search)",
       "visibility": "collapsed"
     },
     {
@@ -5406,6 +5425,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "contextualTitle": "Leo",
       "name": "Documents",
       "when": "leoTreeOpened",
+      "icon": "$(symbol-folder)",
       "visibility": "collapsed"
     },
     {
@@ -5413,6 +5433,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "contextualTitle": "Leo",
       "name": "Undo History",
       "when": "leoTreeOpened",
+      "icon": "$(leo-undo)",
       "visibility": "collapsed"
     },
     {
@@ -5420,6 +5441,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
       "contextualTitle": "Leo",
       "name": "Buttons",
       "when": "leoTreeOpened",
+      "icon": "$(play)",
       "visibility": "collapsed"
     }
   ]
@@ -5592,6 +5614,7 @@ public static LEOBRIDGE = {
     DELETE_MARKED_NODES: "deleteMarked",
     MOVE_MARKED_NODES: "moveMarked",
     GIT_DIFF: "gitDiff",
+    SHOW_LINE_IN_LEO_OUTLINE: "!show_line_in_leo_outline",
     GET_FOCUS: "!get_focus",
 
     GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
@@ -5676,6 +5699,7 @@ public static COMMANDS = {
     GOTO_SCRIPT: Constants.NAME + ".gotoScript",
     MINIBUFFER: Constants.NAME + ".minibuffer",
     GIT_DIFF: Constants.NAME + ".gitDiff",
+    SHOW_LINE_IN_LEO_OUTLINE: Constants.NAME + ".showLineInLeoOutline",
     TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
     // * Outline selection
     SELECT_NODE: Constants.NAME + ".selectTreeNode",
@@ -10978,106 +11002,6 @@ private async _bodySaveDocument(
         if (id) {
             w_param["commanderId"] = id;
         }
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
-        //@ts-expect-error
         // Don't wait for promise!
         this.sendAction(Constants.LEOBRIDGE.SET_BODY, w_param);
 
@@ -15347,6 +15271,11 @@ public async findSymbol(): Promise&lt;any&gt; {
     "group": "navigation@1"
   },
   {
+    "command": "leointeg.showLineInLeoOutline",
+    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme =~ /^file$/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
     "command": "leointeg.extract",
     "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
@@ -15546,7 +15475,7 @@ private _bodySaveDeactivate(
 <t tx="felix.20210812004050.1">{
   "command": "workbench.files.action.collapseExplorerFolders",
   "key": "alt+-",
-  "when": "config.leoIntegration.collapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == untitled || config.leoIntegration.collapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == file || config.leoIntegration.collapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; explorerViewletFocus"
+  "when": "config.leoIntegration.collapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp;  resourceScheme =~ /^untitled$|^file$/ || config.leoIntegration.collapseAllShortcut &amp;&amp; !inSearchEditor &amp;&amp; explorerViewletFocus"
 },
 {
   "command": "workbench.view.extension.leoIntegrationView",
@@ -22849,6 +22778,85 @@ public setGotoContent(): void {
 <t tx="felix.20240723210726.1">## 1.0.24
 
 - ...
+
+</t>
+<t tx="felix.20250603200522.1">public async showLineInLeoOutline(p_arg: any): Promise&lt;any&gt; {
+    // When the active editor is an external file referenced by an @file node 
+    // in the current Leo outline, this method finds that @file node,
+    // selects it in the Leo outline, and attempts to place the cursor
+    // to the corresponding line number in the body pane of the selected node.
+    // It processes the first matching @file node found.
+
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        void vscode.window.showErrorMessage('No active editor');
+        return;
+    }
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const lineNumber = position.line; // 0-indexed
+    const filePath = document.uri.fsPath;
+
+    await this.triggerBodySave(true);
+    try {
+
+        const p_result: LeoBridgePackage = await this.sendAction(
+            Constants.LEOBRIDGE.SHOW_LINE_IN_LEO_OUTLINE,
+            { filePath, lineNumber }
+        );
+
+        if (p_result['found']) {
+            this.setupRefresh(
+                Focus.Body,
+                {
+                    tree: true,
+                    body: true,
+                    states: true,
+                    buttons: false,
+                    documents: false,
+                    goto: false,
+                }
+            );
+            this.launchRefresh();
+        } else {
+            // Not found. Offer to import as an @auto, an @clean, or to cancel.
+            // Open modal dialog with options.
+            const choices = [
+                'Import File in Leo',
+            ];
+            const selection = await vscode.window.showInformationMessage( // Added await
+                `The file "${filePath}" was not found in the current Leo outline.`,
+                { modal: true },
+                ...choices
+            );
+            if (selection === 'Import File in Leo') {
+                // Handle Import File in Leo
+                return this.importAnyFile(document.uri).then(() =&gt; {
+
+                    this.setupRefresh(
+                        Focus.NoChange,
+                        {
+                            tree: true,
+                            body: true,
+                            states: true,
+                            buttons: false,
+                            documents: true,
+                            goto: false,
+                        }
+                    );
+                    this.launchRefresh();
+                });
+            } else {
+                // Handle Cancel or dismiss
+                console.log('User cancelled or dismissed the dialog');
+            }
+        }
+    }
+    catch (e) {
+        console.log('FAILED SHOW LINE IN LEO OUTLINE', p_arg);
+    }
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

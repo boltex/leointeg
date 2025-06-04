@@ -147,6 +147,8 @@ export function activate(p_context: vscode.ExtensionContext) {
             finalFocus: Focus.Body
         })],
 
+        [CMD.SHOW_LINE_IN_LEO_OUTLINE, (p_arg: any) => w_leo.showLineInLeoOutline(p_arg)],
+
         [CMD.TAB_CYCLE_NEXT, () => w_leo.tabCycle()],
 
         [CMD.HEADLINE, (p_ap: ArchivedPosition) => w_leo.editHeadline(p_ap, true)],

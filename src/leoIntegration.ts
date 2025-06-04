@@ -1147,6 +1147,84 @@ export class LeoIntegration {
         }
     }
 
+    public async showLineInLeoOutline(p_arg: any): Promise<any> {
+        // When the active editor is an external file referenced by an @file node 
+        // in the current Leo outline, this method finds that @file node,
+        // selects it in the Leo outline, and attempts to place the cursor
+        // to the corresponding line number in the body pane of the selected node.
+        // It processes the first matching @file node found.
+
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            void vscode.window.showErrorMessage('No active editor');
+            return;
+        }
+
+        const document = editor.document;
+        const position = editor.selection.active;
+        const lineNumber = position.line; // 0-indexed
+        const filePath = document.uri.fsPath;
+
+        await this.triggerBodySave(true);
+        try {
+
+            const p_result: LeoBridgePackage = await this.sendAction(
+                Constants.LEOBRIDGE.SHOW_LINE_IN_LEO_OUTLINE,
+                { filePath, lineNumber }
+            );
+
+            if (p_result['found']) {
+                this.setupRefresh(
+                    Focus.Body,
+                    {
+                        tree: true,
+                        body: true,
+                        states: true,
+                        buttons: false,
+                        documents: false,
+                        goto: false,
+                    }
+                );
+                this.launchRefresh();
+            } else {
+                // Not found. Offer to import as an @auto, an @clean, or to cancel.
+                // Open modal dialog with options.
+                const choices = [
+                    'Import File in Leo',
+                ];
+                const selection = await vscode.window.showInformationMessage( // Added await
+                    `The file "${filePath}" was not found in the current Leo outline.`,
+                    { modal: true },
+                    ...choices
+                );
+                if (selection === 'Import File in Leo') {
+                    // Handle Import File in Leo
+                    return this.importAnyFile(document.uri).then(() => {
+
+                        this.setupRefresh(
+                            Focus.NoChange,
+                            {
+                                tree: true,
+                                body: true,
+                                states: true,
+                                buttons: false,
+                                documents: true,
+                                goto: false,
+                            }
+                        );
+                        this.launchRefresh();
+                    });
+                } else {
+                    // Handle Cancel or dismiss
+                    console.log('User cancelled or dismissed the dialog');
+                }
+            }
+        }
+        catch (e) {
+            console.log('FAILED SHOW LINE IN LEO OUTLINE', p_arg);
+        }
+    }
+
     /**
      * * Open Leo files found in "context.workspaceState.leoFiles"
      * @returns promise that resolves immediately, or rejects if empty, or files not opened.
@@ -4735,7 +4813,6 @@ export class LeoIntegration {
      * @returns Promise back from command's execution, if added on stack, undefined otherwise.
      * (see command stack 'rules' in commandStack.ts)
      */
-
     public async nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): Promise<LeoBridgePackage | undefined> {
         // No forced vscode save-triggers for direct calls from extension.js
         await this.triggerBodySave();

@@ -291,6 +291,7 @@
           "id": "leoIntegrationExplorer",
           "name": "Leo Integration",
           "contextualTitle": "Leo",
+          "icon": "$(symbol-class)",
           "when": "config.leoIntegration.treeInExplorer && !config.leojs.treeInExplorer",
           "visibility": "visible"
         },
@@ -300,6 +301,7 @@
           "contextualTitle": "Leo",
           "name": "Leo Find",
           "title": "Leo Find",
+          "icon": "$(search)",
           "when": "config.leoIntegration.treeInExplorer && leoTreeOpened && !config.leojs.treeInExplorer",
           "visibility": "collapsed"
         },
@@ -307,6 +309,7 @@
           "id": "leoDocumentsExplorer",
           "name": "Leo Documents",
           "contextualTitle": "Leo",
+          "icon": "$(symbol-folder)",
           "when": "config.leoIntegration.treeInExplorer && leoTreeOpened && !config.leojs.treeInExplorer",
           "visibility": "collapsed"
         },
@@ -314,6 +317,7 @@
           "id": "leoUndosExplorer",
           "name": "Leo Undo History",
           "contextualTitle": "Leo",
+          "icon": "$(leo-undo)",
           "when": "config.leoIntegration.treeInExplorer && leoTreeOpened && !config.leojs.treeInExplorer",
           "visibility": "collapsed"
         },
@@ -321,6 +325,7 @@
           "id": "leoButtonsExplorer",
           "name": "Leo Buttons",
           "contextualTitle": "Leo",
+          "icon": "$(play)",
           "when": "config.leoIntegration.treeInExplorer && leoTreeOpened && !config.leojs.treeInExplorer",
           "visibility": "collapsed"
         }
@@ -330,6 +335,7 @@
           "id": "leoIntegration",
           "contextualTitle": "Leo",
           "name": "Integration",
+          "icon": "$(symbol-class)",
           "visibility": "visible"
         },
         {
@@ -339,6 +345,7 @@
           "name": "Find",
           "title": "Find",
           "when": "leoTreeOpened",
+          "icon": "$(search)",
           "visibility": "collapsed"
         },
         {
@@ -346,6 +353,7 @@
           "contextualTitle": "Leo",
           "name": "Documents",
           "when": "leoTreeOpened",
+          "icon": "$(symbol-folder)",
           "visibility": "collapsed"
         },
         {
@@ -353,6 +361,7 @@
           "contextualTitle": "Leo",
           "name": "Undo History",
           "when": "leoTreeOpened",
+          "icon": "$(leo-undo)",
           "visibility": "collapsed"
         },
         {
@@ -360,6 +369,7 @@
           "contextualTitle": "Leo",
           "name": "Buttons",
           "when": "leoTreeOpened",
+          "icon": "$(play)",
           "visibility": "collapsed"
         }
       ]
@@ -2143,6 +2153,12 @@
         "title": "Git Diff"
       },
       {
+        "command": "leointeg.showLineInLeoOutline",
+        "category": "Leo",
+        "enablement": "leoTreeOpened && editorTextFocus",
+        "title": "Show Line In Leo Outline"
+      },
+      {
         "command": "leointeg.tabCycleNext",
         "category": "Leo",
         "enablement": "leoTreeOpened",
@@ -3258,6 +3274,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.showLineInLeoOutline",
+          "when": "false"
+        },
+        {
           "command": "leointeg.openAside",
           "when": "false"
         },
@@ -3529,7 +3549,7 @@
       "explorer/context": [
         {
           "command": "leointeg.openLeoFile",
-          "when": "leoBridgeReady && resourceScheme == file && resourceExtname == .leo || leoBridgeReady && resourceScheme == file && resourceExtname == .leojs",
+          "when": "leoBridgeReady && resourceScheme == file && resourceExtname =~ /^\\.leojs$|^\\.leo$/",
           "group": "navigation@1"
         }
       ],
@@ -3699,6 +3719,11 @@
         {
           "command": "leointeg.findDef",
           "when": "!editorHasMultipleSelections && resourceScheme == leointeg && leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.showLineInLeoOutline",
+          "when": "!editorHasMultipleSelections && resourceScheme =~ /^file$/ && leoTreeOpened",
           "group": "navigation@1"
         },
         {
@@ -4742,7 +4767,7 @@
       {
         "command": "workbench.files.action.collapseExplorerFolders",
         "key": "alt+-",
-        "when": "config.leoIntegration.collapseAllShortcut && !inSearchEditor && !sideBarFocus && resourceScheme == untitled || config.leoIntegration.collapseAllShortcut && !inSearchEditor && !sideBarFocus && resourceScheme == file || config.leoIntegration.collapseAllShortcut && !inSearchEditor && explorerViewletFocus"
+        "when": "config.leoIntegration.collapseAllShortcut && !inSearchEditor && !sideBarFocus &&  resourceScheme =~ /^untitled$|^file$/ || config.leoIntegration.collapseAllShortcut && !inSearchEditor && explorerViewletFocus"
       },
       {
         "command": "workbench.view.extension.leoIntegrationView",
