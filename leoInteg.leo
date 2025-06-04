@@ -1450,7 +1450,7 @@ public async nodeCommand(p_userCommand: UserCommand, p_isNavigation?: boolean): 
  */
 public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
     return this._isBusyTriggerSave(false)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
 
             if (p_node.rclicks.length) {
                 // Has rclicks so show menu to choose
@@ -1488,7 +1488,7 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
                 );
             }
         })
-        .then((p_clickButtonResult: LeoBridgePackage) =&gt; {
+        .then((_p_clickButtonResult: LeoBridgePackage) =&gt; {
             return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
         })
         .then((p_package) =&gt; {
@@ -1506,7 +1506,7 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
             );
             this.launchRefresh();
             return Promise.resolve(true);
-        }, (p_error) =&gt; {
+        }, (_p_error) =&gt; {
             // Pass to catch the rejection if escaped by the user
             return false;
         });
@@ -10919,7 +10919,7 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean, p_fromFocusChange?: boolean
         if (this._onDidHideResolve) {
             console.error('IN triggerBodySave AND _onDidHideResolve PROMISE ALREADY EXISTS!');
         }
-        const w_resolveAfterEditHeadline = new Promise&lt;void&gt;((p_resolve, p_reject) =&gt; {
+        const w_resolveAfterEditHeadline = new Promise&lt;void&gt;((p_resolve, _p_reject) =&gt; {
             this._onDidHideResolve = p_resolve;
         });
         return w_resolveAfterEditHeadline;
@@ -11618,7 +11618,7 @@ public async selectTreeNode(
         // MAYBE DETACHED BODY CHANGED THAT CONTENT!
         this._leoFileSystem.setNewBodyUriTime(utils.strToLeoUri(p_node.gnx));
 
-        return this.showBody(false, this.config.treeKeepFocus).catch((p_error) =&gt; {
+        return this.showBody(false, this.config.treeKeepFocus).catch((_p_error) =&gt; {
             return Promise.resolve(); // intercept cancellation as success: next one is going to replace anyways.
         });
         // Voluntary exit
@@ -11863,7 +11863,7 @@ public async insertNode(
  */
 public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undefined&gt; {
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
                 return this._leoFilesBrowser.getLeoFileUrl(true);
             } else {
@@ -11961,9 +11961,9 @@ public startNetworkServices(): void {
         if (this.config.startServerAutomatically) {
             if (this.config.limitUsers &gt; 1) {
                 utils.findSingleAvailablePort(this.config.connectionPort)
-                    .then((p_availablePort) =&gt; {
+                    .then((_p_availablePort) =&gt; {
                         this.startServer();
-                    }, (p_reason) =&gt; {
+                    }, (_p_reason) =&gt; {
                         // Rejected: Multi user port IN USE so skip start
                         if (this.config.connectToServerAutomatically) {
                             // Still try to connect if auto-connect is 'on'
@@ -12071,7 +12071,7 @@ public async selectOpenedLeoDocument(p_index: number): Promise&lt;LeoBridgePacka
 public closeLeoFile(): Promise&lt;boolean&gt; {
     let w_removeLastFileName: string = '';
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             if (!this.leoStates.fileOpenedReady) {
                 vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLOSE_ERROR);
                 return Promise.reject(Constants.USER_MESSAGES.CLOSE_ERROR);
@@ -12147,7 +12147,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                                     });
                             }
                             return w_savePromise.then(
-                                (p_packageAfterSave) =&gt; {
+                                (_p_packageAfterSave) =&gt; {
                                     return this.sendAction(
                                         Constants.LEOBRIDGE.CLOSE_FILE,
                                         { forced: true }
@@ -12260,7 +12260,7 @@ public async newLeoFile(): Promise&lt;LeoBridgePackage&gt; {
  */
 public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;LeoBridgePackage | undefined&gt; {
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             if (p_leoFileUri &amp;&amp; p_leoFileUri.scheme &amp;&amp; p_leoFileUri.scheme.startsWith("leo")) {
                 p_leoFileUri = undefined; // Was used in the editor/title menu!
             }
@@ -12388,7 +12388,7 @@ public startServer(): void {
             this.config.connectionPort
         )
         .then(
-            (p_message) =&gt; {
+            (_p_message) =&gt; {
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                 if (this.config.connectToServerAutomatically) {
                     setTimeout(() =&gt; {
@@ -12467,7 +12467,7 @@ public connect(): void {
                         // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
                         setTimeout(() =&gt; {
                             // Try to open last opened files, if any
-                            this._openLastFiles().catch(error =&gt; {
+                            this._openLastFiles().catch(_error =&gt; {
                                 // No open files
                             });
                         }, 0);
@@ -12960,7 +12960,7 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
 
     const w_disposables: vscode.Disposable[] = [];
 
-    const q_minibufferQuickPick: Promise&lt;vscode.QuickPickItem | undefined&gt; = new Promise((resolve, reject) =&gt; {
+    const q_minibufferQuickPick: Promise&lt;vscode.QuickPickItem | undefined&gt; = new Promise((resolve, _reject) =&gt; {
         const quickPick = vscode.window.createQuickPick();
         quickPick.items = w_choices;
         quickPick.placeholder = Constants.USER_MESSAGES.MINIBUFFER_PROMPT;
@@ -12973,7 +12973,7 @@ public async minibuffer(): Promise&lt;LeoBridgePackage | undefined&gt; {
                     quickPick.hide();
                 }
             }),
-            quickPick.onDidAccept(accepted =&gt; {
+            quickPick.onDidAccept(_accepted =&gt; {
                 if (/^\d+$/.test(quickPick.value)) {
                     // * Was an integer
                     this.gotoGlobalLine(Number(quickPick.value));
@@ -13479,9 +13479,9 @@ public _changedVisibleTextEditors(p_editors: readonly vscode.TextEditor[]): void
 </t>
 <t tx="felix.20210418014040.2">/**
  * * Whole window has been minimized/restored
- * @param p_windowState the state of the window that changed
+ * @param _p_windowState the state of the window that changed
  */
-public _changedWindowState(p_windowState: vscode.WindowState): void {
+public _changedWindowState(_p_windowState: vscode.WindowState): void {
     // no other action
     this.triggerBodySave(true, true);
 }
@@ -14371,7 +14371,7 @@ public async setSearchSetting(p_id: string): Promise&lt;unknown&gt; {
     }
     await vscode.commands.executeCommand(w_panelID + '.focus');
 
-    return new Promise((p_resolve, p_reject) =&gt; {
+    return new Promise((p_resolve, _p_reject) =&gt; {
         setTimeout(() =&gt; {
             if (this._findPanelWebviewView &amp;&amp; this._findPanelWebviewView.visible) {
                 w_panel = this._findPanelWebviewView;
@@ -14404,7 +14404,7 @@ public findAll(p_replace: boolean): Promise&lt;any&gt; {
     const w_startReplace = this._lastSettingsUsed?.replaceText;
 
     return this._isBusyTriggerSave(false, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             return this._inputFindPattern(false, w_startValue)
                 .then((p_findString) =&gt; {
                     if (!p_findString) {
@@ -14563,7 +14563,7 @@ public gotoGlobalLine(p_lineNumber?: number): void {
                 if (p_inputResult) {
                     const w_line = parseInt(p_inputResult);
                     if (!isNaN(w_line)) {
-                        this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: w_line }).then((p_resultGoto: LeoBridgePackage) =&gt; {
+                        this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: w_line }).then((_p_resultGoto: LeoBridgePackage) =&gt; {
                             this.setupRefresh(Focus.Body, { tree: true, body: true, states: true, });
                             this.launchRefresh();
                         });
@@ -14572,7 +14572,7 @@ public gotoGlobalLine(p_lineNumber?: number): void {
             });
     } else if (!isNaN(p_lineNumber)) {
         // p_lineNumber is a number
-        this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: p_lineNumber }).then((p_resultGoto: LeoBridgePackage) =&gt; {
+        this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: p_lineNumber }).then((_p_resultGoto: LeoBridgePackage) =&gt; {
             this.setupRefresh(Focus.Body, { tree: true, body: true, states: true, });
             this.launchRefresh();
         });
@@ -14732,7 +14732,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
  */
 public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             let q_importFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
             if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
@@ -15125,7 +15125,7 @@ public tagChildren(): void {
                 this.sendAction(
                     Constants.LEOBRIDGE.TAG_CHILDREN,
                     { tag: p_inputResult }
-                ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                ).then((_p_resultTag: LeoBridgePackage) =&gt; {
                     this.setupRefresh(
                         Focus.NoChange,
                         {
@@ -15639,7 +15639,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
  */
 public saveAsLeoJsFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undefined&gt; {
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
                 return this._leoFilesBrowser.getLeoJsFileUrl();
             } else {
@@ -17240,7 +17240,7 @@ public showGotoPane(p_options?: { preserveFocus?: boolean }): Thenable&lt;unknow
         w_panelID = Constants.FIND_ID;
         w_panel = this._findPanelWebviewView;
     }
-    return vscode.commands.executeCommand(w_panelID + '.focus', p_options).then((p_result) =&gt; {
+    return vscode.commands.executeCommand(w_panelID + '.focus', p_options).then((_p_result) =&gt; {
         if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
             w_panel.show(false);
         }
@@ -17381,7 +17381,7 @@ public tagNode(p_node?: ArchivedPosition): void {
                 this.sendAction(
                     Constants.LEOBRIDGE.TAG_NODE,
                     w_param
-                ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                ).then((_p_resultTag: LeoBridgePackage) =&gt; {
 
                     this.setupRefresh(
                         Focus.NoChange,
@@ -17451,7 +17451,7 @@ public removeTag(p_node?: ArchivedPosition): void {
                     this.sendAction(
                         Constants.LEOBRIDGE.REMOVE_TAG,
                         w_param
-                    ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                    ).then((_p_resultTag: LeoBridgePackage) =&gt; {
                         this.setupRefresh(
                             Focus.NoChange,
                             {
@@ -17485,7 +17485,7 @@ public removeTags(p_node?: ArchivedPosition): void {
                 this.sendAction(
                     Constants.LEOBRIDGE.REMOVE_TAGS,
                     p_node ? utils.buildNodeCommand(p_node) : undefined
-                ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                ).then((_p_resultTag: LeoBridgePackage) =&gt; {
                     this.setupRefresh(
                         Focus.NoChange,
                         {
@@ -18024,7 +18024,7 @@ private _setUndoSelection(p_node: LeoUndoNode): void {
             () =&gt; {
                 this._undoPaneReveal = undefined;
             },
-            (p_error) =&gt; {
+            (_p_error) =&gt; {
                 this._undoPaneReveal = undefined;
                 console.log('setUndoSelection could not reveal');
             }
@@ -18161,7 +18161,7 @@ public async setUa(): Promise&lt;unknown&gt; {
             return this.sendAction(
                 Constants.LEOBRIDGE.SET_UA_MEMBER,
                 { name: w_name, value: w_uaVal }
-            ).then((p_resultTag: LeoBridgePackage) =&gt; {
+            ).then((_p_resultTag: LeoBridgePackage) =&gt; {
                 this.setupRefresh(
                     Focus.NoChange,
                     {
@@ -18501,7 +18501,7 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
                     focus: w_focusTree
                 }).then(() =&gt; {
                     // ok
-                }, (p_reason) =&gt; {
+                }, (_p_reason) =&gt; {
                     // Reveal failed. Retry refreshOutline once
                     this._refreshOutline(true, RevealType.RevealSelect);
                 });
@@ -18571,7 +18571,7 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
         if (w_trigger &amp;&amp; !this._documentPaneReveal) {
             this._documentPaneReveal = w_docView.reveal(p_documentNode, { select: true, focus: false })
                 .then(
-                    (p_result) =&gt; {
+                    (_p_result) =&gt; {
                         // Shown document node
                         this._documentPaneReveal = undefined;
                     },
@@ -18876,9 +18876,9 @@ public setFindPanel(p_panel: vscode.WebviewView): void {
  * * Export Outline
  * Export all headlines to an external file.
  */
-public exportHeadlines(p_exportFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
+public exportHeadlines(_p_exportFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
                 return this._leoFilesBrowser.getExportFileUrl(
                     "Export Headlines",
@@ -18923,7 +18923,7 @@ public exportHeadlines(p_exportFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
 public flattenOutline(): Thenable&lt;unknown&gt; {
 
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
                 return this._leoFilesBrowser.getExportFileUrl(
                     "Flatten Selected Outline",
@@ -18966,7 +18966,7 @@ public flattenOutline(): Thenable&lt;unknown&gt; {
 public outlineToCweb(): Thenable&lt;unknown&gt; {
 
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
                 return this._leoFilesBrowser.getExportFileUrl(
                     "Outline To CWEB",
@@ -19010,7 +19010,7 @@ public outlineToCweb(): Thenable&lt;unknown&gt; {
 public outlineToNoweb(): Thenable&lt;unknown&gt; {
 
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
                 return this._leoFilesBrowser.getExportFileUrl(
                     "Outline To Noweb",
@@ -19055,7 +19055,7 @@ public removeSentinels(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
     // Convert one or more files, replacing the original files while removing any sentinels they contain.
 
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             let q_importFiles: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
             if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
@@ -19128,7 +19128,7 @@ public removeSentinels(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
 public weave(): Thenable&lt;unknown&gt; {
 
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
                 return this._leoFilesBrowser.getExportFileUrl(
                     "Weave",
@@ -19191,7 +19191,7 @@ public writeFileFromNode(): Thenable&lt;unknown&gt; {
         q_fileName = Promise.resolve(fileName);
     } else {
         q_fileName = this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) =&gt; {
+            .then((_p_saveResult) =&gt; {
                 if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
                     return this._leoFilesBrowser.getExportFileUrl(
                         "Write file from node",
@@ -19240,7 +19240,7 @@ public writeFileFromNode(): Thenable&lt;unknown&gt; {
 public readFileIntoNode(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
 
     return this._isBusyTriggerSave(true, true)
-        .then((p_saveResult) =&gt; {
+        .then((_p_saveResult) =&gt; {
             let q_importFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
             if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
@@ -19521,7 +19521,7 @@ private async _doMinibufferCommand(p_picked?: vscode.QuickPickItem): Promise&lt;
 <t tx="felix.20220825224916.1">/**
  * Check if search input should be forced-focused again
  */
-public checkForceFindFocus(p_fromInit: boolean): void {
+public checkForceFindFocus(_p_fromInit: boolean): void {
     if (this._findNeedsFocus) {
         let message = 'selectFind';
         if (this._findNeedsFocus === 2) {
@@ -20275,7 +20275,7 @@ public async interactiveSearch(p_backward: boolean, p_regex: boolean, p_word: bo
     const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
 
     try {
-        return await new Promise&lt;unknown&gt;((resolve, reject) =&gt; {
+        return await new Promise&lt;unknown&gt;((resolve, _reject) =&gt; {
             const input = vscode.window.createInputBox();
             input.title = w_searchTitle;
             input.value = w_startValue;
@@ -20646,7 +20646,7 @@ private _showHeadlineInputBox(p_options: vscode.InputBoxOptions): Promise&lt;str
 
     const hib = vscode.window.createInputBox();
     this._hibLastValue = undefined; // Prepare for 'cancel' as default.
-    const q_headlineInputBox = new Promise&lt;string | undefined&gt;((p_resolve, p_reject) =&gt; {
+    const q_headlineInputBox = new Promise&lt;string | undefined&gt;((p_resolve, _p_reject) =&gt; {
 
         hib.ignoreFocusOut = !!p_options.ignoreFocusOut;
         hib.value = p_options.value!;
@@ -20720,7 +20720,7 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 </t>
 <t tx="felix.20231102230431.1">public async findInstallPath(): Promise&lt;string&gt; {
 
-    return new Promise((p_resolve, p_reject) =&gt; {
+    return new Promise((p_resolve, _p_reject) =&gt; {
         // Find Leo's installation folder with command line tricks from Matt Wilkie 
         const options = { encoding: 'utf-8' as BufferEncoding };
         const isWindows = process.platform === 'win32';
@@ -20852,7 +20852,7 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
             return this.sendAction(
                 Constants.LEOBRIDGE.HANDLE_UNL,
                 { unl: p_arg.unl }
-            ).then((p_result: LeoBridgePackage) =&gt; {
+            ).then((_p_result: LeoBridgePackage) =&gt; {
                 this.setupRefresh(
                     Focus.NoChange,
                     {
@@ -22252,7 +22252,7 @@ export async function closeLeoTextEditors(): Promise&lt;unknown&gt; {
  * React to the closing of 'tabs' via
  * events from vscode.window.tabGroups
  */
-public _onTabGroupsChanged(p_event: vscode.TabGroupChangeEvent): void {
+public _onTabGroupsChanged(_p_event: vscode.TabGroupChangeEvent): void {
     this.checkClosedTabs(); // debounced
 }
 
@@ -22261,7 +22261,7 @@ public _onTabGroupsChanged(p_event: vscode.TabGroupChangeEvent): void {
  * React to the closing of 'tabgroups' via
  * events from vscode.window.tabGroups
  */
-public _onTabsChanged(p_event: vscode.TabChangeEvent): void {
+public _onTabsChanged(_p_event: vscode.TabChangeEvent): void {
     this.checkClosedTabs(); // debounced
 }
 
@@ -22796,7 +22796,15 @@ public setGotoContent(): void {
     const document = editor.document;
     const position = editor.selection.active;
     const lineNumber = position.line; // 0-indexed
-    const filePath = document.uri.fsPath;
+    let filePath = document.uri.fsPath;
+
+    if (filePath.length &gt; 1 &amp;&amp; filePath[1] === ':') {
+        // Check if the first character is a letter
+        if (filePath[0] &gt;= 'a' &amp;&amp; filePath[0] &lt;= 'z') {
+            // Convert the first character to uppercase
+            filePath = filePath[0].toUpperCase() + filePath.slice(1);
+        }
+    }
 
     await this.triggerBodySave(true);
     try {
@@ -22832,21 +22840,42 @@ public setGotoContent(): void {
             );
             if (selection === 'Import File in Leo') {
                 // Handle Import File in Leo
-                return this.importAnyFile(document.uri).then(() =&gt; {
 
+                const importResult = await this.sendAction(
+                    Constants.LEOBRIDGE.IMPORT_ANY_FILE,
+                    { filenames: [filePath.replace(/\\/g, '/')] }
+                );
+
+                if (importResult) {
+
+                    // After import, show the line in Leo outline again
+                    const secondShowLine = await this.sendAction(
+                        Constants.LEOBRIDGE.SHOW_LINE_IN_LEO_OUTLINE,
+                        { filePath, lineNumber }
+                    );
+
+                    if (!secondShowLine['found']) {
+                        vscode.window.showInformationMessage(
+                            `The file "${filePath}" was not found in the current Leo outline after import.`
+                        );
+                    }
+                    // refresh the outline and body
                     this.setupRefresh(
-                        Focus.NoChange,
+                        Focus.Body,
                         {
                             tree: true,
                             body: true,
+                            goto: true,
                             states: true,
-                            buttons: false,
                             documents: true,
-                            goto: false,
+                            buttons: true
                         }
                     );
-                    this.launchRefresh();
-                });
+                    return this.launchRefresh();
+
+
+                }
+
             } else {
                 // Handle Cancel or dismiss
                 console.log('User cancelled or dismissed the dialog');
