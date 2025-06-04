@@ -663,9 +663,9 @@ export class LeoIntegration {
             if (this.config.startServerAutomatically) {
                 if (this.config.limitUsers > 1) {
                     utils.findSingleAvailablePort(this.config.connectionPort)
-                        .then((p_availablePort) => {
+                        .then((_p_availablePort) => {
                             this.startServer();
-                        }, (p_reason) => {
+                        }, (_p_reason) => {
                             // Rejected: Multi user port IN USE so skip start
                             if (this.config.connectToServerAutomatically) {
                                 // Still try to connect if auto-connect is 'on'
@@ -686,7 +686,7 @@ export class LeoIntegration {
 
     public async findInstallPath(): Promise<string> {
 
-        return new Promise((p_resolve, p_reject) => {
+        return new Promise((p_resolve, _p_reject) => {
             // Find Leo's installation folder with command line tricks from Matt Wilkie 
             const options = { encoding: 'utf-8' as BufferEncoding };
             const isWindows = process.platform === 'win32';
@@ -777,7 +777,7 @@ export class LeoIntegration {
                 this.config.connectionPort
             )
             .then(
-                (p_message) => {
+                (_p_message) => {
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                     if (this.config.connectToServerAutomatically) {
                         setTimeout(() => {
@@ -869,7 +869,7 @@ export class LeoIntegration {
                             // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
                             setTimeout(() => {
                                 // Try to open last opened files, if any
-                                this._openLastFiles().catch(error => {
+                                this._openLastFiles().catch(_error => {
                                     // No open files
                                 });
                             }, 0);
@@ -1121,7 +1121,7 @@ export class LeoIntegration {
                 return this.sendAction(
                     Constants.LEOBRIDGE.HANDLE_UNL,
                     { unl: p_arg.unl }
-                ).then((p_result: LeoBridgePackage) => {
+                ).then((_p_result: LeoBridgePackage) => {
                     this.setupRefresh(
                         Focus.NoChange,
                         {
@@ -1163,7 +1163,15 @@ export class LeoIntegration {
         const document = editor.document;
         const position = editor.selection.active;
         const lineNumber = position.line; // 0-indexed
-        const filePath = document.uri.fsPath;
+        let filePath = document.uri.fsPath;
+
+        if (filePath.length > 1 && filePath[1] === ':') {
+            // Check if the first character is a letter
+            if (filePath[0] >= 'a' && filePath[0] <= 'z') {
+                // Convert the first character to uppercase
+                filePath = filePath[0].toUpperCase() + filePath.slice(1);
+            }
+        }
 
         await this.triggerBodySave(true);
         try {
@@ -1199,21 +1207,42 @@ export class LeoIntegration {
                 );
                 if (selection === 'Import File in Leo') {
                     // Handle Import File in Leo
-                    return this.importAnyFile(document.uri).then(() => {
 
+                    const importResult = await this.sendAction(
+                        Constants.LEOBRIDGE.IMPORT_ANY_FILE,
+                        { filenames: [filePath.replace(/\\/g, '/')] }
+                    );
+
+                    if (importResult) {
+
+                        // After import, show the line in Leo outline again
+                        const secondShowLine = await this.sendAction(
+                            Constants.LEOBRIDGE.SHOW_LINE_IN_LEO_OUTLINE,
+                            { filePath, lineNumber }
+                        );
+
+                        if (!secondShowLine['found']) {
+                            vscode.window.showInformationMessage(
+                                `The file "${filePath}" was not found in the current Leo outline after import.`
+                            );
+                        }
+                        // refresh the outline and body
                         this.setupRefresh(
-                            Focus.NoChange,
+                            Focus.Body,
                             {
                                 tree: true,
                                 body: true,
+                                goto: true,
                                 states: true,
-                                buttons: false,
                                 documents: true,
-                                goto: false,
+                                buttons: true
                             }
                         );
-                        this.launchRefresh();
-                    });
+                        return this.launchRefresh();
+
+
+                    }
+
                 } else {
                     // Handle Cancel or dismiss
                     console.log('User cancelled or dismissed the dialog');
@@ -1867,7 +1896,7 @@ export class LeoIntegration {
      * React to the closing of 'tabs' via
      * events from vscode.window.tabGroups
      */
-    public _onTabGroupsChanged(p_event: vscode.TabGroupChangeEvent): void {
+    public _onTabGroupsChanged(_p_event: vscode.TabGroupChangeEvent): void {
         this.checkClosedTabs(); // debounced
     }
 
@@ -1875,7 +1904,7 @@ export class LeoIntegration {
      * React to the closing of 'tabgroups' via
      * events from vscode.window.tabGroups
      */
-    public _onTabsChanged(p_event: vscode.TabChangeEvent): void {
+    public _onTabsChanged(_p_event: vscode.TabChangeEvent): void {
         this.checkClosedTabs(); // debounced
     }
 
@@ -1936,9 +1965,9 @@ export class LeoIntegration {
 
     /**
      * * Whole window has been minimized/restored
-     * @param p_windowState the state of the window that changed
+     * @param _p_windowState the state of the window that changed
      */
-    public _changedWindowState(p_windowState: vscode.WindowState): void {
+    public _changedWindowState(_p_windowState: vscode.WindowState): void {
         // no other action
         this.triggerBodySave(true, true);
     }
@@ -2434,7 +2463,7 @@ export class LeoIntegration {
             if (this._onDidHideResolve) {
                 console.error('IN triggerBodySave AND _onDidHideResolve PROMISE ALREADY EXISTS!');
             }
-            const w_resolveAfterEditHeadline = new Promise<void>((p_resolve, p_reject) => {
+            const w_resolveAfterEditHeadline = new Promise<void>((p_resolve, _p_reject) => {
                 this._onDidHideResolve = p_resolve;
             });
             return w_resolveAfterEditHeadline;
@@ -3272,7 +3301,7 @@ export class LeoIntegration {
                         focus: w_focusTree
                     }).then(() => {
                         // ok
-                    }, (p_reason) => {
+                    }, (_p_reason) => {
                         // Reveal failed. Retry refreshOutline once
                         this._refreshOutline(true, RevealType.RevealSelect);
                     });
@@ -4399,7 +4428,7 @@ export class LeoIntegration {
 
         const w_disposables: vscode.Disposable[] = [];
 
-        const q_minibufferQuickPick: Promise<vscode.QuickPickItem | undefined> = new Promise((resolve, reject) => {
+        const q_minibufferQuickPick: Promise<vscode.QuickPickItem | undefined> = new Promise((resolve, _reject) => {
             const quickPick = vscode.window.createQuickPick();
             quickPick.items = w_choices;
             quickPick.placeholder = Constants.USER_MESSAGES.MINIBUFFER_PROMPT;
@@ -4412,7 +4441,7 @@ export class LeoIntegration {
                         quickPick.hide();
                     }
                 }),
-                quickPick.onDidAccept(accepted => {
+                quickPick.onDidAccept(_accepted => {
                     if (/^\d+$/.test(quickPick.value)) {
                         // * Was an integer
                         this.gotoGlobalLine(Number(quickPick.value));
@@ -4535,7 +4564,7 @@ export class LeoIntegration {
 
         const hib = vscode.window.createInputBox();
         this._hibLastValue = undefined; // Prepare for 'cancel' as default.
-        const q_headlineInputBox = new Promise<string | undefined>((p_resolve, p_reject) => {
+        const q_headlineInputBox = new Promise<string | undefined>((p_resolve, _p_reject) => {
 
             hib.ignoreFocusOut = !!p_options.ignoreFocusOut;
             hib.value = p_options.value!;
@@ -4640,7 +4669,7 @@ export class LeoIntegration {
             // MAYBE DETACHED BODY CHANGED THAT CONTENT!
             this._leoFileSystem.setNewBodyUriTime(utils.strToLeoUri(p_node.gnx));
 
-            return this.showBody(false, this.config.treeKeepFocus).catch((p_error) => {
+            return this.showBody(false, this.config.treeKeepFocus).catch((_p_error) => {
                 return Promise.resolve(); // intercept cancellation as success: next one is going to replace anyways.
             });
             // Voluntary exit
@@ -5221,7 +5250,7 @@ export class LeoIntegration {
                 return this.sendAction(
                     Constants.LEOBRIDGE.SET_UA_MEMBER,
                     { name: w_name, value: w_uaVal }
-                ).then((p_resultTag: LeoBridgePackage) => {
+                ).then((_p_resultTag: LeoBridgePackage) => {
                     this.setupRefresh(
                         Focus.NoChange,
                         {
@@ -5545,7 +5574,7 @@ export class LeoIntegration {
             w_panelID = Constants.FIND_ID;
             w_panel = this._findPanelWebviewView;
         }
-        return vscode.commands.executeCommand(w_panelID + '.focus', p_options).then((p_result) => {
+        return vscode.commands.executeCommand(w_panelID + '.focus', p_options).then((_p_result) => {
             if (w_panel && w_panel.show && !w_panel.visible) {
                 w_panel.show(false);
             }
@@ -5747,7 +5776,7 @@ export class LeoIntegration {
     /**
      * Check if search input should be forced-focused again
      */
-    public checkForceFindFocus(p_fromInit: boolean): void {
+    public checkForceFindFocus(_p_fromInit: boolean): void {
         if (this._findNeedsFocus) {
             let message = 'selectFind';
             if (this._findNeedsFocus === 2) {
@@ -5989,7 +6018,7 @@ export class LeoIntegration {
         const w_startValue = this._lastSettingsUsed!.findText === Constants.USER_MESSAGES.FIND_PATTERN_HERE ? '' : this._lastSettingsUsed!.findText;
 
         try {
-            return await new Promise<unknown>((resolve, reject) => {
+            return await new Promise<unknown>((resolve, _reject) => {
                 const input = vscode.window.createInputBox();
                 input.title = w_searchTitle;
                 input.value = w_startValue;
@@ -6097,7 +6126,7 @@ export class LeoIntegration {
         const w_startReplace = this._lastSettingsUsed?.replaceText;
 
         return this._isBusyTriggerSave(false, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 return this._inputFindPattern(false, w_startValue)
                     .then((p_findString) => {
                         if (!p_findString) {
@@ -6246,7 +6275,7 @@ export class LeoIntegration {
         }
         await vscode.commands.executeCommand(w_panelID + '.focus');
 
-        return new Promise((p_resolve, p_reject) => {
+        return new Promise((p_resolve, _p_reject) => {
             setTimeout(() => {
                 if (this._findPanelWebviewView && this._findPanelWebviewView.visible) {
                     w_panel = this._findPanelWebviewView;
@@ -6386,7 +6415,7 @@ export class LeoIntegration {
                     if (p_inputResult) {
                         const w_line = parseInt(p_inputResult);
                         if (!isNaN(w_line)) {
-                            this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: w_line }).then((p_resultGoto: LeoBridgePackage) => {
+                            this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: w_line }).then((_p_resultGoto: LeoBridgePackage) => {
                                 this.setupRefresh(Focus.Body, { tree: true, body: true, states: true, });
                                 this.launchRefresh();
                             });
@@ -6395,7 +6424,7 @@ export class LeoIntegration {
                 });
         } else if (!isNaN(p_lineNumber)) {
             // p_lineNumber is a number
-            this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: p_lineNumber }).then((p_resultGoto: LeoBridgePackage) => {
+            this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: p_lineNumber }).then((_p_resultGoto: LeoBridgePackage) => {
                 this.setupRefresh(Focus.Body, { tree: true, body: true, states: true, });
                 this.launchRefresh();
             });
@@ -6425,7 +6454,7 @@ export class LeoIntegration {
                     this.sendAction(
                         Constants.LEOBRIDGE.TAG_CHILDREN,
                         { tag: p_inputResult }
-                    ).then((p_resultTag: LeoBridgePackage) => {
+                    ).then((_p_resultTag: LeoBridgePackage) => {
                         this.setupRefresh(
                             Focus.NoChange,
                             {
@@ -6472,7 +6501,7 @@ export class LeoIntegration {
                     this.sendAction(
                         Constants.LEOBRIDGE.TAG_NODE,
                         w_param
-                    ).then((p_resultTag: LeoBridgePackage) => {
+                    ).then((_p_resultTag: LeoBridgePackage) => {
 
                         this.setupRefresh(
                             Focus.NoChange,
@@ -6541,7 +6570,7 @@ export class LeoIntegration {
                         this.sendAction(
                             Constants.LEOBRIDGE.REMOVE_TAG,
                             w_param
-                        ).then((p_resultTag: LeoBridgePackage) => {
+                        ).then((_p_resultTag: LeoBridgePackage) => {
                             this.setupRefresh(
                                 Focus.NoChange,
                                 {
@@ -6574,7 +6603,7 @@ export class LeoIntegration {
                     this.sendAction(
                         Constants.LEOBRIDGE.REMOVE_TAGS,
                         p_node ? utils.buildNodeCommand(p_node) : undefined
-                    ).then((p_resultTag: LeoBridgePackage) => {
+                    ).then((_p_resultTag: LeoBridgePackage) => {
                         this.setupRefresh(
                             Focus.NoChange,
                             {
@@ -6663,7 +6692,7 @@ export class LeoIntegration {
             if (w_trigger && !this._documentPaneReveal) {
                 this._documentPaneReveal = w_docView.reveal(p_documentNode, { select: true, focus: false })
                     .then(
-                        (p_result) => {
+                        (_p_result) => {
                             // Shown document node
                             this._documentPaneReveal = undefined;
                         },
@@ -6711,7 +6740,7 @@ export class LeoIntegration {
      */
     public saveAsLeoFile(p_fromOutline?: boolean): Promise<LeoBridgePackage | undefined> {
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
                     return this._leoFilesBrowser.getLeoFileUrl(true);
                 } else {
@@ -6767,7 +6796,7 @@ export class LeoIntegration {
      */
     public saveAsLeoJsFile(p_fromOutline?: boolean): Promise<LeoBridgePackage | undefined> {
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
                     return this._leoFilesBrowser.getLeoJsFileUrl();
                 } else {
@@ -6988,7 +7017,7 @@ export class LeoIntegration {
     public closeLeoFile(): Promise<boolean> {
         let w_removeLastFileName: string = '';
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 if (!this.leoStates.fileOpenedReady) {
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLOSE_ERROR);
                     return Promise.reject(Constants.USER_MESSAGES.CLOSE_ERROR);
@@ -7064,7 +7093,7 @@ export class LeoIntegration {
                                         });
                                 }
                                 return w_savePromise.then(
-                                    (p_packageAfterSave) => {
+                                    (_p_packageAfterSave) => {
                                         return this.sendAction(
                                             Constants.LEOBRIDGE.CLOSE_FILE,
                                             { forced: true }
@@ -7175,7 +7204,7 @@ export class LeoIntegration {
      */
     public openLeoFile(p_leoFileUri?: vscode.Uri): Promise<LeoBridgePackage | undefined> {
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 if (p_leoFileUri && p_leoFileUri.scheme && p_leoFileUri.scheme.startsWith("leo")) {
                     p_leoFileUri = undefined; // Was used in the editor/title menu!
                 }
@@ -7265,7 +7294,7 @@ export class LeoIntegration {
      */
     public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable<unknown> {
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 let q_importFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
                 if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
@@ -7324,9 +7353,9 @@ export class LeoIntegration {
      * * Export Outline
      * Export all headlines to an external file.
      */
-    public exportHeadlines(p_exportFileUri?: vscode.Uri): Thenable<unknown> {
+    public exportHeadlines(_p_exportFileUri?: vscode.Uri): Thenable<unknown> {
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
                     return this._leoFilesBrowser.getExportFileUrl(
                         "Export Headlines",
@@ -7370,7 +7399,7 @@ export class LeoIntegration {
     public flattenOutline(): Thenable<unknown> {
 
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
                     return this._leoFilesBrowser.getExportFileUrl(
                         "Flatten Selected Outline",
@@ -7412,7 +7441,7 @@ export class LeoIntegration {
     public outlineToCweb(): Thenable<unknown> {
 
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
                     return this._leoFilesBrowser.getExportFileUrl(
                         "Outline To CWEB",
@@ -7455,7 +7484,7 @@ export class LeoIntegration {
     public outlineToNoweb(): Thenable<unknown> {
 
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
                     return this._leoFilesBrowser.getExportFileUrl(
                         "Outline To Noweb",
@@ -7499,7 +7528,7 @@ export class LeoIntegration {
         // Convert one or more files, replacing the original files while removing any sentinels they contain.
 
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 let q_importFiles: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
                 if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
@@ -7571,7 +7600,7 @@ export class LeoIntegration {
     public weave(): Thenable<unknown> {
 
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
                     return this._leoFilesBrowser.getExportFileUrl(
                         "Weave",
@@ -7633,7 +7662,7 @@ export class LeoIntegration {
             q_fileName = Promise.resolve(fileName);
         } else {
             q_fileName = this._isBusyTriggerSave(true, true)
-                .then((p_saveResult) => {
+                .then((_p_saveResult) => {
                     if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
                         return this._leoFilesBrowser.getExportFileUrl(
                             "Write file from node",
@@ -7681,7 +7710,7 @@ export class LeoIntegration {
     public readFileIntoNode(p_leoFileUri?: vscode.Uri): Thenable<unknown> {
 
         return this._isBusyTriggerSave(true, true)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
                 let q_importFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
                 if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
                     const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, '/');
@@ -7750,7 +7779,7 @@ export class LeoIntegration {
      */
     public clickAtButton(p_node: LeoButtonNode): Promise<boolean> {
         return this._isBusyTriggerSave(false)
-            .then((p_saveResult) => {
+            .then((_p_saveResult) => {
 
                 if (p_node.rclicks.length) {
                     // Has rclicks so show menu to choose
@@ -7788,7 +7817,7 @@ export class LeoIntegration {
                     );
                 }
             })
-            .then((p_clickButtonResult: LeoBridgePackage) => {
+            .then((_p_clickButtonResult: LeoBridgePackage) => {
                 return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
             })
             .then((p_package) => {
@@ -7806,7 +7835,7 @@ export class LeoIntegration {
                 );
                 this.launchRefresh();
                 return Promise.resolve(true);
-            }, (p_error) => {
+            }, (_p_error) => {
                 // Pass to catch the rejection if escaped by the user
                 return false;
             });
@@ -7941,7 +7970,7 @@ export class LeoIntegration {
                 () => {
                     this._undoPaneReveal = undefined;
                 },
-                (p_error) => {
+                (_p_error) => {
                     this._undoPaneReveal = undefined;
                     console.log('setUndoSelection could not reveal');
                 }
