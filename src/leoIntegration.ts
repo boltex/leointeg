@@ -1184,7 +1184,8 @@ export class LeoIntegration {
                         buttons: false,
                         documents: false,
                         goto: false,
-                    }
+                    },
+                    p_result.node || this.lastSelectedNode
                 );
                 this.launchRefresh();
             } else {
@@ -1212,7 +1213,7 @@ export class LeoIntegration {
 
                     const refreshResult = await this.sendAction(
                         Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE,
-                        utils.buildNodeCommand(this.lastSelectedNode!)
+                        utils.buildNodeCommand(insertResult.node || this.lastSelectedNode!)
                     );
 
                     if (insertResult && refreshResult) {
@@ -1240,7 +1241,8 @@ export class LeoIntegration {
                                 states: true,
                                 documents: true,
                                 buttons: true
-                            }
+                            },
+                            secondShowLine.node || this.lastSelectedNode
                         );
                         return this.launchRefresh();
                     }
