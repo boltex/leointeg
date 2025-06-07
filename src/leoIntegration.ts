@@ -1163,15 +1163,7 @@ export class LeoIntegration {
         const document = editor.document;
         const position = editor.selection.active;
         const lineNumber = position.line; // 0-indexed
-        let filePath = document.uri.fsPath;
-
-        if (filePath.length > 1 && filePath[1] === ':') {
-            // Check if the first character is a letter
-            if (filePath[0] >= 'a' && filePath[0] <= 'z') {
-                // Convert the first character to uppercase
-                filePath = filePath[0].toUpperCase() + filePath.slice(1);
-            }
-        }
+        let filePath = utils.capitalizeDrive(document.uri.fsPath);
 
         await this.triggerBodySave(true);
         try {
@@ -1182,6 +1174,7 @@ export class LeoIntegration {
             );
 
             if (p_result['found']) {
+                await this.showBody(false);
                 this.setupRefresh(
                     Focus.Body,
                     {
@@ -1198,22 +1191,31 @@ export class LeoIntegration {
                 // Not found. Offer to import as an @auto, an @clean, or to cancel.
                 // Open modal dialog with options.
                 const choices = [
-                    'Import File in Leo',
+                    'Import with @clean',
+                    'Import with @edit',
+                    'Import with @asis',
                 ];
                 const selection = await vscode.window.showInformationMessage( // Added await
                     `The file "${filePath}" was not found in the current Leo outline.`,
                     { modal: true },
                     ...choices
                 );
-                if (selection === 'Import File in Leo') {
-                    // Handle Import File in Leo
+                if (selection?.startsWith('Import')) {
 
-                    const importResult = await this.sendAction(
-                        Constants.LEOBRIDGE.IMPORT_ANY_FILE,
-                        { filenames: [filePath.replace(/\\/g, '/')] }
+                    // get which import type was selected
+                    const importType = selection.split(' ')[2].toLowerCase(); // '@clean', '@edit', or '@asis'
+
+                    const insertResult = await this.sendAction(
+                        Constants.LEOBRIDGE.INSERT_FILE_NODE,
+                        { filePath, importType }
                     );
 
-                    if (importResult) {
+                    const refreshResult = await this.sendAction(
+                        Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE,
+                        utils.buildNodeCommand(this.lastSelectedNode!)
+                    );
+
+                    if (insertResult && refreshResult) {
 
                         // After import, show the line in Leo outline again
                         const secondShowLine = await this.sendAction(
@@ -1225,6 +1227,8 @@ export class LeoIntegration {
                             vscode.window.showInformationMessage(
                                 `The file "${filePath}" was not found in the current Leo outline after import.`
                             );
+                        } else {
+                            await this.showBody(false);
                         }
                         // refresh the outline and body
                         this.setupRefresh(
@@ -1239,8 +1243,6 @@ export class LeoIntegration {
                             }
                         );
                         return this.launchRefresh();
-
-
                     }
 
                 } else {

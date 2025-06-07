@@ -700,6 +700,7 @@
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
 <v t="felix.20210612214028.1"><vh>findNextAvailablePort</vh></v>
 <v t="felix.20210820231649.1"><vh>findSingleAvailablePort</vh></v>
+<v t="felix.20250605224634.1"><vh>capitalizeDrive</vh></v>
 </v>
 <v t="felix.20210522001751.1"><vh>@clean src/leoFindPanelWebview.ts</vh>
 <v t="felix.20210522001814.1"><vh>class LeoFindPanelProvider</vh>
@@ -5585,6 +5586,7 @@ public static LEOBRIDGE = {
     INSERT_NAMED_PNODE: "!insert_named_node", // "insertNamedPNode",
     INSERT_CHILD_PNODE: "!insert_child_node",
     INSERT_CHILD_NAMED_PNODE: "!insert_child_named_node",
+    INSERT_FILE_NODE: "!insert_file_node", // "insertFileNode",
     CLONE_PNODE: "!clone_node", // "clonePNode",
     PROMOTE_PNODE: "promote",
     DEMOTE_PNODE: "demote",
@@ -22796,15 +22798,7 @@ public setGotoContent(): void {
     const document = editor.document;
     const position = editor.selection.active;
     const lineNumber = position.line; // 0-indexed
-    let filePath = document.uri.fsPath;
-
-    if (filePath.length &gt; 1 &amp;&amp; filePath[1] === ':') {
-        // Check if the first character is a letter
-        if (filePath[0] &gt;= 'a' &amp;&amp; filePath[0] &lt;= 'z') {
-            // Convert the first character to uppercase
-            filePath = filePath[0].toUpperCase() + filePath.slice(1);
-        }
-    }
+    let filePath = utils.capitalizeDrive(document.uri.fsPath);
 
     await this.triggerBodySave(true);
     try {
@@ -22815,6 +22809,7 @@ public setGotoContent(): void {
         );
 
         if (p_result['found']) {
+            await this.showBody(false);
             this.setupRefresh(
                 Focus.Body,
                 {
@@ -22831,22 +22826,31 @@ public setGotoContent(): void {
             // Not found. Offer to import as an @auto, an @clean, or to cancel.
             // Open modal dialog with options.
             const choices = [
-                'Import File in Leo',
+                'Import with @clean',
+                'Import with @edit',
+                'Import with @asis',
             ];
             const selection = await vscode.window.showInformationMessage( // Added await
                 `The file "${filePath}" was not found in the current Leo outline.`,
                 { modal: true },
                 ...choices
             );
-            if (selection === 'Import File in Leo') {
-                // Handle Import File in Leo
+            if (selection?.startsWith('Import')) {
 
-                const importResult = await this.sendAction(
-                    Constants.LEOBRIDGE.IMPORT_ANY_FILE,
-                    { filenames: [filePath.replace(/\\/g, '/')] }
+                // get which import type was selected
+                const importType = selection.split(' ')[2].toLowerCase(); // '@clean', '@edit', or '@asis'
+
+                const insertResult = await this.sendAction(
+                    Constants.LEOBRIDGE.INSERT_FILE_NODE,
+                    { filePath, importType }
                 );
 
-                if (importResult) {
+                const refreshResult = await this.sendAction(
+                    Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE,
+                    utils.buildNodeCommand(this.lastSelectedNode!)
+                );
+
+                if (insertResult &amp;&amp; refreshResult) {
 
                     // After import, show the line in Leo outline again
                     const secondShowLine = await this.sendAction(
@@ -22858,6 +22862,8 @@ public setGotoContent(): void {
                         vscode.window.showInformationMessage(
                             `The file "${filePath}" was not found in the current Leo outline after import.`
                         );
+                    } else {
+                        await this.showBody(false);
                     }
                     // refresh the outline and body
                     this.setupRefresh(
@@ -22872,8 +22878,6 @@ public setGotoContent(): void {
                         }
                     );
                     return this.launchRefresh();
-
-
                 }
 
             } else {
@@ -22885,6 +22889,18 @@ public setGotoContent(): void {
     catch (e) {
         console.log('FAILED SHOW LINE IN LEO OUTLINE', p_arg);
     }
+}
+
+</t>
+<t tx="felix.20250605224634.1">export function capitalizeDrive(drive: string): string {
+    if (drive.length &gt; 1 &amp;&amp; drive[1] === ':') {
+        // Check if the first character is a letter
+        if (drive[0] &gt;= 'a' &amp;&amp; drive[0] &lt;= 'z') {
+            // Convert the first character to uppercase
+            drive = drive[0].toUpperCase() + drive.slice(1);
+        }
+    }
+    return drive;
 }
 
 </t>

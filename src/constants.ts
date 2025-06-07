@@ -656,6 +656,7 @@ export class Constants {
         INSERT_NAMED_PNODE: "!insert_named_node", // "insertNamedPNode",
         INSERT_CHILD_PNODE: "!insert_child_node",
         INSERT_CHILD_NAMED_PNODE: "!insert_child_named_node",
+        INSERT_FILE_NODE: "!insert_file_node", // "insertFileNode",
         CLONE_PNODE: "!clone_node", // "clonePNode",
         PROMOTE_PNODE: "promote",
         DEMOTE_PNODE: "demote",
