@@ -785,7 +785,7 @@ export class LeoAsync {
  * * Adds message string to leoInteg's log pane, used when leoBridge gets an async 'log' command
  */
 public log(p_message: string, p_color?: string): void {
-    if (p_color &amp;&amp; p_color === Constants.LOG_ALERT_COLOR) {
+    if (this._leoIntegration.isExecuteScript || p_color &amp;&amp; p_color === Constants.LOG_ALERT_COLOR) {
         // Red Detected: Force showing the log pane for 'errors' in the log pane.
         this._leoIntegration.showLogPane();
     }
@@ -6444,6 +6444,13 @@ private _resolveResult(p_package: LeoBridgePackage): void {
     this.lastReceivedNode = p_package.node;
     this.lastReceivedNodeTS = performance.now();
 
+    if (this._leoIntegration.isExecuteScript) {
+        // Reset the flag after small delay.
+        setTimeout(() =&gt; {
+            this._leoIntegration.isExecuteScript = false;
+        }, 250);
+    }
+
     if (!this.size()) {
         // If last is done then do refresh outline and focus on outline, or body, as required
         this._busy = false;
@@ -7324,6 +7331,10 @@ export class LeoBridge {
  * @returns a Promise that will contain the JSON package answered back by leoserver.py
  */
 public action(p_action: string, p_param?: { [key: string]: any }, p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise&lt;LeoBridgePackage&gt; {
+    if (p_action === Constants.LEOBRIDGE.EXECUTE_SCRIPT) {
+        // If this is an 'execute script' command, set the flag
+        this._leoIntegration.isExecuteScript = true;
+    }
     return new Promise((p_resolve, p_reject) =&gt; {
         const w_action: LeoAction = {
             parameter: JSON.stringify(
@@ -9680,6 +9691,7 @@ export class LeoIntegration {
 
     // * State flags
     public leoStates: LeoStates;
+    public isExecuteScript = false; // An execute script (CTRL+B) is running
 
     // * UNL link provider
     public linkProvider: UnlProvider;

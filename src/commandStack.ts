@@ -151,6 +151,13 @@ export class CommandStack {
         this.lastReceivedNode = p_package.node;
         this.lastReceivedNodeTS = performance.now();
 
+        if (this._leoIntegration.isExecuteScript) {
+            // Reset the flag after small delay.
+            setTimeout(() => {
+                this._leoIntegration.isExecuteScript = false;
+            }, 250);
+        }
+
         if (!this.size()) {
             // If last is done then do refresh outline and focus on outline, or body, as required
             this._busy = false;

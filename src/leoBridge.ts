@@ -45,6 +45,10 @@ export class LeoBridge {
      * @returns a Promise that will contain the JSON package answered back by leoserver.py
      */
     public action(p_action: string, p_param?: { [key: string]: any }, p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
+        if (p_action === Constants.LEOBRIDGE.EXECUTE_SCRIPT) {
+            // If this is an 'execute script' command, set the flag
+            this._leoIntegration.isExecuteScript = true;
+        }
         return new Promise((p_resolve, p_reject) => {
             const w_action: LeoAction = {
                 parameter: JSON.stringify(

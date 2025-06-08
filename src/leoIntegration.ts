@@ -55,6 +55,7 @@ export class LeoIntegration {
 
     // * State flags
     public leoStates: LeoStates;
+    public isExecuteScript = false; // An execute script (CTRL+B) is running
 
     // * UNL link provider
     public linkProvider: UnlProvider;
