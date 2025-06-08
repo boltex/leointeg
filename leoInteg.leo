@@ -22791,7 +22791,8 @@ public setGotoContent(): void {
 </t>
 <t tx="felix.20240723210726.1">## 1.0.24
 
-- ...
+- New command (Editor context menu) for usage in external files or files to be imported: **Show Line in Leo Outline**. (will offer to import if not present)
+- g.es now shows the log pane when running user scripts or @buttons
 
 </t>
 <t tx="felix.20250603200522.1">public async showLineInLeoOutline(p_arg: any): Promise&lt;any&gt; {
