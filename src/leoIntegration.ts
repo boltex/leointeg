@@ -1155,6 +1155,10 @@ export class LeoIntegration {
         // to the corresponding line number in the body pane of the selected node.
         // It processes the first matching @file node found.
 
+        if (!utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 12 })) {
+            return Promise.resolve();
+        }
+
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
             void vscode.window.showErrorMessage('No active editor');

@@ -20123,7 +20123,7 @@ private _refreshDesc(): void {
 public static MIN_SERVER_VERSION_NUMBER = {
     major: 1,
     minor: 0,
-    patch: 11,
+    patch: 12,
 };
 
 </t>
@@ -22801,6 +22801,10 @@ public setGotoContent(): void {
     // selects it in the Leo outline, and attempts to place the cursor
     // to the corresponding line number in the body pane of the selected node.
     // It processes the first matching @file node found.
+
+    if (!utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 12 })) {
+        return Promise.resolve();
+    }
 
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
