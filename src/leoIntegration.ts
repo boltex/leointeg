@@ -1263,6 +1263,59 @@ export class LeoIntegration {
         }
     }
 
+    public async importIntoLeoOutline(p_arg: vscode.Uri): Promise<any> {
+
+        let filePath = utils.capitalizeDrive(p_arg.fsPath);
+        const choices = [
+            'Default Import',
+            'As @auto',
+            'As @clean',
+            'As @edit',
+            'As @asis',
+        ];
+
+        // * Use quick pick to ask for import type
+        const selection = await vscode.window.showQuickPick(choices, {
+            placeHolder: 'Import into Leo Outline',
+        });
+
+        if (selection && selection === "Default Import") {
+            // await c.importAnyFile([filePath]);
+
+            // TODO : Implement! 
+        } else if (selection && selection.startsWith("As ")) {
+
+            const importType = selection.split(' ')[1].toLowerCase(); // '@auto', '@clean', '@edit', or '@asis'
+
+
+            // TODO : Implement! 
+            // const p = c.insertHeadline('Open File')!;
+            // p.h = `${importType} ${filePath}`;
+
+            // Now call refresh-from-disk on that position
+            // await c.refreshFromDisk();
+        }
+
+        else {
+            // Handle Cancel or dismiss
+            return Promise.resolve();
+
+        }
+        this.setupRefresh(
+            Focus.NoChange, // No change in focus, but refresh all panels
+            {
+                tree: true,
+                body: true,
+                states: true,
+                buttons: false,
+                documents: true,
+                goto: false,
+            }
+        );
+        return this.launchRefresh();
+
+    }
+
     /**
      * * Open Leo files found in "context.workspaceState.leoFiles"
      * @returns promise that resolves immediately, or rejects if empty, or files not opened.

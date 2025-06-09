@@ -363,6 +363,7 @@
 <v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
 <v t="felix.20240107202609.1"><vh>handleUnl</vh></v>
 <v t="felix.20250603200522.1"><vh>gotoLineInLeoOutline</vh></v>
+<v t="felix.20250609005451.1"><vh>importIntoLeoOutline</vh></v>
 </v>
 <v t="felix.20200719025231.10"><vh>Recently Opened Files</vh>
 <v t="felix.20200719025231.11"><vh>_openLastFiles</vh></v>
@@ -1706,6 +1707,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 })],
 
 [CMD.GOTO_LINE_IN_LEO_OUTLINE, (p_arg: any) =&gt; w_leo.gotoLineInLeoOutline(p_arg)],
+[CMD.IMPORT_INTO_LEO_OUTLINE, (p_arg: any) =&gt; w_leo.importIntoLeoOutline(p_arg)],
 
 [CMD.TAB_CYCLE_NEXT, () =&gt; w_leo.tabCycle()],
 
@@ -3546,6 +3548,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "title": "Show Line In Leo Outline"
 },
 {
+  "command": "leointeg.importIntoLeoOutline",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Import into Leo Outline as..."
+},
+{
   "command": "leointeg.tabCycleNext",
   "category": "Leo",
   "enablement": "leoTreeOpened",
@@ -4500,6 +4508,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "when": "false"
 },
 {
+  "command": "leointeg.importIntoLeoOutline",
+  "when": "false"
+},
+{
   "command": "leointeg.openAside",
   "when": "false"
 },
@@ -4762,6 +4774,11 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   {
     "command": "leointeg.openLeoFile",
     "when": "leoBridgeReady &amp;&amp; resourceScheme == file &amp;&amp; resourceExtname =~ /^\\.leojs$|^\\.leo$/",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.importIntoLeoOutline",
+    "when": "resourceScheme =~ /^vscode-vfs$|^file$/ &amp;&amp; leoTreeOpened &amp;&amp; explorerResourceIsFolder == false",
     "group": "navigation@1"
   }
 ],
@@ -5702,6 +5719,7 @@ public static COMMANDS = {
     MINIBUFFER: Constants.NAME + ".minibuffer",
     GIT_DIFF: Constants.NAME + ".gitDiff",
     GOTO_LINE_IN_LEO_OUTLINE: Constants.NAME + ".gotoLineInLeoOutline",
+    IMPORT_INTO_LEO_OUTLINE: Constants.NAME + ".importIntoLeoOutline",
     TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
     // * Outline selection
     SELECT_NODE: Constants.NAME + ".selectTreeNode",
@@ -15296,6 +15314,11 @@ public async findSymbol(): Promise&lt;any&gt; {
     "group": "navigation@1"
   },
   {
+    "command": "leointeg.importIntoLeoOutline",
+    "when": "resourceScheme =~ /^vscode-vfs$|^file$/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
     "command": "leointeg.extract",
     "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leointeg &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
@@ -22926,6 +22949,60 @@ public setGotoContent(): void {
         }
     }
     return drive;
+}
+
+</t>
+<t tx="felix.20250609005451.1">public async importIntoLeoOutline(p_arg: vscode.Uri): Promise&lt;any&gt; {
+
+    let filePath = utils.capitalizeDrive(p_arg.fsPath);
+    const choices = [
+        'Default Import',
+        'As @auto',
+        'As @clean',
+        'As @edit',
+        'As @asis',
+    ];
+
+    // * Use quick pick to ask for import type
+    const selection = await vscode.window.showQuickPick(choices, {
+        placeHolder: 'Import into Leo Outline',
+    });
+
+    if (selection &amp;&amp; selection === "Default Import") {
+        // await c.importAnyFile([filePath]);
+
+        // TODO : Implement! 
+    } else if (selection &amp;&amp; selection.startsWith("As ")) {
+
+        const importType = selection.split(' ')[1].toLowerCase(); // '@auto', '@clean', '@edit', or '@asis'
+
+
+        // TODO : Implement! 
+        // const p = c.insertHeadline('Open File')!;
+        // p.h = `${importType} ${filePath}`;
+
+        // Now call refresh-from-disk on that position
+        // await c.refreshFromDisk();
+    }
+
+    else {
+        // Handle Cancel or dismiss
+        return Promise.resolve();
+
+    }
+    this.setupRefresh(
+        Focus.NoChange, // No change in focus, but refresh all panels
+        {
+            tree: true,
+            body: true,
+            states: true,
+            buttons: false,
+            documents: true,
+            goto: false,
+        }
+    );
+    return this.launchRefresh();
+
 }
 
 </t>

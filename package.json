@@ -2159,6 +2159,12 @@
         "title": "Show Line In Leo Outline"
       },
       {
+        "command": "leointeg.importIntoLeoOutline",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Import into Leo Outline as..."
+      },
+      {
         "command": "leointeg.tabCycleNext",
         "category": "Leo",
         "enablement": "leoTreeOpened",
@@ -3278,6 +3284,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.importIntoLeoOutline",
+          "when": "false"
+        },
+        {
           "command": "leointeg.openAside",
           "when": "false"
         },
@@ -3551,6 +3561,11 @@
           "command": "leointeg.openLeoFile",
           "when": "leoBridgeReady && resourceScheme == file && resourceExtname =~ /^\\.leojs$|^\\.leo$/",
           "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.importIntoLeoOutline",
+          "when": "resourceScheme =~ /^vscode-vfs$|^file$/ && leoTreeOpened && explorerResourceIsFolder == false",
+          "group": "navigation@1"
         }
       ],
       "editor/title": [
@@ -3724,6 +3739,11 @@
         {
           "command": "leointeg.gotoLineInLeoOutline",
           "when": "!editorHasMultipleSelections && resourceScheme =~ /^file$/ && leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.importIntoLeoOutline",
+          "when": "resourceScheme =~ /^vscode-vfs$|^file$/ && leoTreeOpened",
           "group": "navigation@1"
         },
         {

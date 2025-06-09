@@ -771,6 +771,7 @@ export class Constants {
         MINIBUFFER: Constants.NAME + ".minibuffer",
         GIT_DIFF: Constants.NAME + ".gitDiff",
         GOTO_LINE_IN_LEO_OUTLINE: Constants.NAME + ".gotoLineInLeoOutline",
+        IMPORT_INTO_LEO_OUTLINE: Constants.NAME + ".importIntoLeoOutline",
         TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",

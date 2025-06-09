@@ -148,6 +148,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         })],
 
         [CMD.GOTO_LINE_IN_LEO_OUTLINE, (p_arg: any) => w_leo.gotoLineInLeoOutline(p_arg)],
+        [CMD.IMPORT_INTO_LEO_OUTLINE, (p_arg: any) => w_leo.importIntoLeoOutline(p_arg)],
 
         [CMD.TAB_CYCLE_NEXT, () => w_leo.tabCycle()],
 
