@@ -134,9 +134,9 @@ Use either of the **Save Leo Document**, **Write File Nodes** or **Write Dirty F
 | @file          |    ✔️     |   ✔️    |    ❌     |     ❌     |
 | @nosent        |    ❌     |   ✔️    |    ✔️     |     ✔️     |
 
-You can also create those nodes by using the context menu in vscode's explorer or file editors and choosing the **Import into Leo Outline** command.
+You can also create most of those nodes by using the context menu in vscode's explorer or file editors, and choosing the **Import into Leo Outline** command.
 
-The **Go to Line In Leo Outline** command is also available in the editor context menu to focus on the specific line if found in the outline. It will offer to import it if not already present.
+The **Go to Line In Leo Outline** command is also available in the editor context menu to find a specific line in the outline. It will offer to import the file if no type of **@file** nodes are found in the outline for that file.
 
 ### File changes outside of Leo
 
