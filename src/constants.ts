@@ -686,7 +686,7 @@ export class Constants {
         DELETE_MARKED_NODES: "deleteMarked",
         MOVE_MARKED_NODES: "moveMarked",
         GIT_DIFF: "gitDiff",
-        SHOW_LINE_IN_LEO_OUTLINE: "!show_line_in_leo_outline",
+        GOTO_LINE_IN_LEO_OUTLINE: "!goto_line_in_leo_outline",
         GET_FOCUS: "!get_focus",
 
         GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
@@ -770,7 +770,7 @@ export class Constants {
         GOTO_SCRIPT: Constants.NAME + ".gotoScript",
         MINIBUFFER: Constants.NAME + ".minibuffer",
         GIT_DIFF: Constants.NAME + ".gitDiff",
-        SHOW_LINE_IN_LEO_OUTLINE: Constants.NAME + ".showLineInLeoOutline",
+        GOTO_LINE_IN_LEO_OUTLINE: Constants.NAME + ".gotoLineInLeoOutline",
         TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",

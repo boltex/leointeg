@@ -362,7 +362,7 @@
 <v t="felix.20210613210351.1"><vh>chooseLeoFolder</vh></v>
 <v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
 <v t="felix.20240107202609.1"><vh>handleUnl</vh></v>
-<v t="felix.20250603200522.1"><vh>showLineInLeoOutline</vh></v>
+<v t="felix.20250603200522.1"><vh>gotoLineInLeoOutline</vh></v>
 </v>
 <v t="felix.20200719025231.10"><vh>Recently Opened Files</vh>
 <v t="felix.20200719025231.11"><vh>_openLastFiles</vh></v>
@@ -1705,7 +1705,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     finalFocus: Focus.Body
 })],
 
-[CMD.SHOW_LINE_IN_LEO_OUTLINE, (p_arg: any) =&gt; w_leo.showLineInLeoOutline(p_arg)],
+[CMD.GOTO_LINE_IN_LEO_OUTLINE, (p_arg: any) =&gt; w_leo.gotoLineInLeoOutline(p_arg)],
 
 [CMD.TAB_CYCLE_NEXT, () =&gt; w_leo.tabCycle()],
 
@@ -3540,7 +3540,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "title": "Git Diff"
 },
 {
-  "command": "leointeg.showLineInLeoOutline",
+  "command": "leointeg.gotoLineInLeoOutline",
   "category": "Leo",
   "enablement": "leoTreeOpened &amp;&amp; editorTextFocus",
   "title": "Show Line In Leo Outline"
@@ -4496,7 +4496,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 },
 </t>
 <t tx="ekr.20200815123601.61">{
-  "command": "leointeg.showLineInLeoOutline",
+  "command": "leointeg.gotoLineInLeoOutline",
   "when": "false"
 },
 {
@@ -5616,7 +5616,7 @@ public static LEOBRIDGE = {
     DELETE_MARKED_NODES: "deleteMarked",
     MOVE_MARKED_NODES: "moveMarked",
     GIT_DIFF: "gitDiff",
-    SHOW_LINE_IN_LEO_OUTLINE: "!show_line_in_leo_outline",
+    GOTO_LINE_IN_LEO_OUTLINE: "!goto_line_in_leo_outline",
     GET_FOCUS: "!get_focus",
 
     GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
@@ -5701,7 +5701,7 @@ public static COMMANDS = {
     GOTO_SCRIPT: Constants.NAME + ".gotoScript",
     MINIBUFFER: Constants.NAME + ".minibuffer",
     GIT_DIFF: Constants.NAME + ".gitDiff",
-    SHOW_LINE_IN_LEO_OUTLINE: Constants.NAME + ".showLineInLeoOutline",
+    GOTO_LINE_IN_LEO_OUTLINE: Constants.NAME + ".gotoLineInLeoOutline",
     TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
     // * Outline selection
     SELECT_NODE: Constants.NAME + ".selectTreeNode",
@@ -9087,6 +9087,12 @@ Use either of the **Save Leo Document**, **Write File Nodes** or **Write Dirty F
 | @edit          |    ❌     |   ❌    |    ❌     |     ❌     |
 | @file          |    ✔️     |   ✔️    |    ❌     |     ❌     |
 | @nosent        |    ❌     |   ✔️    |    ✔️     |     ✔️     |
+
+You can also create those nodes by using the context menu in vscode's explorer or file editors and choosing the **Import into Leo Outline** command.
+
+The **Go to Line In Leo Outline** command is also available in the editor context menu to focus on the specific line if found in the outline. It will offer to import it if not already present.
+
+### File changes outside of Leo
 
 Leo will detect external file changes, and will ask to either **refresh from disk** or **ignore the changes**.
 
@@ -15285,7 +15291,7 @@ public async findSymbol(): Promise&lt;any&gt; {
     "group": "navigation@1"
   },
   {
-    "command": "leointeg.showLineInLeoOutline",
+    "command": "leointeg.gotoLineInLeoOutline",
     "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme =~ /^file$/ &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
@@ -22791,11 +22797,11 @@ public setGotoContent(): void {
 </t>
 <t tx="felix.20240723210726.1">## 1.0.24
 
-- New command (Editor context menu) for usage in external files or files to be imported: **Show Line in Leo Outline**. (will offer to import if not present)
+- New command (Editor context menu) for usage in external files or files to be imported: **Go to Line in Leo Outline**. (will offer to import if not present)
 - g.es now shows the log pane when running user scripts or @buttons
 
 </t>
-<t tx="felix.20250603200522.1">public async showLineInLeoOutline(p_arg: any): Promise&lt;any&gt; {
+<t tx="felix.20250603200522.1">public async gotoLineInLeoOutline(p_arg: any): Promise&lt;any&gt; {
     // When the active editor is an external file referenced by an @file node 
     // in the current Leo outline, this method finds that @file node,
     // selects it in the Leo outline, and attempts to place the cursor
@@ -22821,7 +22827,7 @@ public setGotoContent(): void {
     try {
 
         const p_result: LeoBridgePackage = await this.sendAction(
-            Constants.LEOBRIDGE.SHOW_LINE_IN_LEO_OUTLINE,
+            Constants.LEOBRIDGE.GOTO_LINE_IN_LEO_OUTLINE,
             { filePath, lineNumber }
         );
 
@@ -22872,7 +22878,7 @@ public setGotoContent(): void {
 
                     // After import, show the line in Leo outline again
                     const secondShowLine = await this.sendAction(
-                        Constants.LEOBRIDGE.SHOW_LINE_IN_LEO_OUTLINE,
+                        Constants.LEOBRIDGE.GOTO_LINE_IN_LEO_OUTLINE,
                         { filePath, lineNumber }
                     );
 

@@ -1148,7 +1148,7 @@ export class LeoIntegration {
         }
     }
 
-    public async showLineInLeoOutline(p_arg: any): Promise<any> {
+    public async gotoLineInLeoOutline(p_arg: any): Promise<any> {
         // When the active editor is an external file referenced by an @file node 
         // in the current Leo outline, this method finds that @file node,
         // selects it in the Leo outline, and attempts to place the cursor
@@ -1174,7 +1174,7 @@ export class LeoIntegration {
         try {
 
             const p_result: LeoBridgePackage = await this.sendAction(
-                Constants.LEOBRIDGE.SHOW_LINE_IN_LEO_OUTLINE,
+                Constants.LEOBRIDGE.GOTO_LINE_IN_LEO_OUTLINE,
                 { filePath, lineNumber }
             );
 
@@ -1225,7 +1225,7 @@ export class LeoIntegration {
 
                         // After import, show the line in Leo outline again
                         const secondShowLine = await this.sendAction(
-                            Constants.LEOBRIDGE.SHOW_LINE_IN_LEO_OUTLINE,
+                            Constants.LEOBRIDGE.GOTO_LINE_IN_LEO_OUTLINE,
                             { filePath, lineNumber }
                         );
 

@@ -134,6 +134,12 @@ Use either of the **Save Leo Document**, **Write File Nodes** or **Write Dirty F
 | @file          |    ✔️     |   ✔️    |    ❌     |     ❌     |
 | @nosent        |    ❌     |   ✔️    |    ✔️     |     ✔️     |
 
+You can also create those nodes by using the context menu in vscode's explorer or file editors and choosing the **Import into Leo Outline** command.
+
+The **Go to Line In Leo Outline** command is also available in the editor context menu to focus on the specific line if found in the outline. It will offer to import it if not already present.
+
+### File changes outside of Leo
+
 Leo will detect external file changes, and will ask to either **refresh from disk** or **ignore the changes**.
 
 ![Derive files](https://raw.githubusercontent.com/boltex/leointeg/master/resources/derived-file.gif)

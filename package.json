@@ -2153,7 +2153,7 @@
         "title": "Git Diff"
       },
       {
-        "command": "leointeg.showLineInLeoOutline",
+        "command": "leointeg.gotoLineInLeoOutline",
         "category": "Leo",
         "enablement": "leoTreeOpened && editorTextFocus",
         "title": "Show Line In Leo Outline"
@@ -3274,7 +3274,7 @@
           "when": "false"
         },
         {
-          "command": "leointeg.showLineInLeoOutline",
+          "command": "leointeg.gotoLineInLeoOutline",
           "when": "false"
         },
         {
@@ -3722,7 +3722,7 @@
           "group": "navigation@1"
         },
         {
-          "command": "leointeg.showLineInLeoOutline",
+          "command": "leointeg.gotoLineInLeoOutline",
           "when": "!editorHasMultipleSelections && resourceScheme =~ /^file$/ && leoTreeOpened",
           "group": "navigation@1"
         },
