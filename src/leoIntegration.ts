@@ -1274,35 +1274,39 @@ export class LeoIntegration {
             'As @asis',
         ];
 
+        let result: LeoBridgePackage;
+
         // * Use quick pick to ask for import type
         const selection = await vscode.window.showQuickPick(choices, {
             placeHolder: 'Import into Leo Outline',
         });
 
         if (selection && selection === "Default Import") {
-            // await c.importAnyFile([filePath]);
+            result = await this.sendAction(
+                Constants.LEOBRIDGE.IMPORT_ANY_FILE,
+                { filenames: [filePath] }
+            );
 
-            // TODO : Implement! 
         } else if (selection && selection.startsWith("As ")) {
 
             const importType = selection.split(' ')[1].toLowerCase(); // '@auto', '@clean', '@edit', or '@asis'
 
+            const insertResult = await this.sendAction(
+                Constants.LEOBRIDGE.INSERT_FILE_NODE,
+                { filePath, importType }
+            );
 
-            // TODO : Implement! 
-            // const p = c.insertHeadline('Open File')!;
-            // p.h = `${importType} ${filePath}`;
-
-            // Now call refresh-from-disk on that position
-            // await c.refreshFromDisk();
-        }
-
-        else {
+            result = await this.sendAction(
+                Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE,
+                utils.buildNodeCommand(insertResult.node || this.lastSelectedNode!)
+            );
+        } else {
             // Handle Cancel or dismiss
             return Promise.resolve();
-
         }
+
         this.setupRefresh(
-            Focus.NoChange, // No change in focus, but refresh all panels
+            Focus.Outline, // No change in focus, but refresh all panels
             {
                 tree: true,
                 body: true,
@@ -1310,7 +1314,8 @@ export class LeoIntegration {
                 buttons: false,
                 documents: true,
                 goto: false,
-            }
+            },
+            result.node || this.lastSelectedNode
         );
         return this.launchRefresh();
 
