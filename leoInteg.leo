@@ -3542,18 +3542,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "title": "Git Diff"
 },
 {
-  "command": "leointeg.gotoLineInLeoOutline",
-  "category": "Leo",
-  "enablement": "leoTreeOpened &amp;&amp; editorTextFocus",
-  "title": "Show Line In Leo Outline"
-},
-{
-  "command": "leointeg.importIntoLeoOutline",
-  "category": "Leo",
-  "enablement": "leoTreeOpened",
-  "title": "Import into Leo Outline as..."
-},
-{
   "command": "leointeg.tabCycleNext",
   "category": "Leo",
   "enablement": "leoTreeOpened",
@@ -18872,6 +18860,18 @@ public setFindPanel(p_panel: vscode.WebviewView): void {
   "title": "Read File Into Node..."
 },
 {
+  "command": "leointeg.gotoLineInLeoOutline",
+  "category": "Leo",
+  "enablement": "leoTreeOpened &amp;&amp; editorTextFocus",
+  "title": "Show Line In Leo Outline"
+},
+{
+  "command": "leointeg.importIntoLeoOutline",
+  "category": "Leo",
+  "enablement": "leoTreeOpened",
+  "title": "Import into Leo Outline as..."
+},
+{
   "command": "leointeg.exportHeadlines",
   "category": "Leo",
   "enablement": "leoTreeOpened",
@@ -22820,7 +22820,8 @@ public setGotoContent(): void {
 </t>
 <t tx="felix.20240723210726.1">## 1.0.24
 
-- New command (Editor context menu) for usage in external files or files to be imported: **Go to Line in Leo Outline**. (will offer to import if not present)
+- New command (Editor context menu) for external files or files to be imported: **Go to Line in Leo Outline**. (will offer to import if not present)
+- New command (Editor and explorer context menu) for files to be imported: **Import into Leo Outline**.
 - g.es now shows the log pane when running user scripts or @buttons
 
 </t>

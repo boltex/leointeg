@@ -2153,18 +2153,6 @@
         "title": "Git Diff"
       },
       {
-        "command": "leointeg.gotoLineInLeoOutline",
-        "category": "Leo",
-        "enablement": "leoTreeOpened && editorTextFocus",
-        "title": "Show Line In Leo Outline"
-      },
-      {
-        "command": "leointeg.importIntoLeoOutline",
-        "category": "Leo",
-        "enablement": "leoTreeOpened",
-        "title": "Import into Leo Outline as..."
-      },
-      {
         "command": "leointeg.tabCycleNext",
         "category": "Leo",
         "enablement": "leoTreeOpened",
@@ -2182,6 +2170,18 @@
         "category": "Leo",
         "enablement": "leoTreeOpened",
         "title": "Read File Into Node..."
+      },
+      {
+        "command": "leointeg.gotoLineInLeoOutline",
+        "category": "Leo",
+        "enablement": "leoTreeOpened && editorTextFocus",
+        "title": "Show Line In Leo Outline"
+      },
+      {
+        "command": "leointeg.importIntoLeoOutline",
+        "category": "Leo",
+        "enablement": "leoTreeOpened",
+        "title": "Import into Leo Outline as..."
       },
       {
         "command": "leointeg.exportHeadlines",
