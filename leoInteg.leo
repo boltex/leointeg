@@ -14863,16 +14863,19 @@ public getImportFileUrls(p_fileTypes?: { [name: string]: string[]; }, p_single?:
  */
 public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
     "All files": ["*"],
-    "C/C++ files": ["c", "cpp", "h", "hpp"],
-    "FreeMind files": ["mm.html"],
-    "Java files": ["java"],
-    "JavaScript files": ["js"],
-    "Mindjet files": ["csv"],
-    "MORE files": ["MORE"],
-    "Lua files": ["lua"],
-    "Pascal files": ["pas"],
-    "Python files": ["py"],
-    "Text files": ["txt"],
+
+    // * Offer any file instead of restricting to some file types
+    // "C/C++ files": ["c", "cpp", "h", "hpp"],
+    // "FreeMind files": ["mm.html"],
+    // "Java files": ["java"],
+    // "JavaScript files": ["js"],
+    // "Mindjet files": ["csv"],
+    // "MORE files": ["MORE"],
+    // "Lua files": ["lua"],
+    // "Pascal files": ["pas"],
+    // "Python files": ["py"],
+    // "Text files": ["txt"],
+
 };
 
 </t>
@@ -22874,19 +22877,23 @@ public setGotoContent(): void {
             // Not found. Offer to import as an @auto, an @clean, or to cancel.
             // Open modal dialog with options.
             const choices = [
-                'Import with @clean',
-                'Import with @edit',
-                'Import with @asis',
+                { title: '@clean', },
+                { title: '@edit', },
+                { title: '@asis', },
+                { title: 'Cancel', isCloseAffordance: true },
             ];
             const selection = await vscode.window.showInformationMessage( // Added await
                 `The file "${filePath}" was not found in the current Leo outline.`,
-                { modal: true },
+                {
+                    detail: 'Import with...',
+                    modal: true
+                },
                 ...choices
             );
-            if (selection?.startsWith('Import')) {
+            if (selection?.title.startsWith('@')) {
 
                 // get which import type was selected
-                const importType = selection.split(' ')[2].toLowerCase(); // '@clean', '@edit', or '@asis'
+                const importType = selection.title; // '@clean', '@edit', or '@asis'
 
                 const insertResult = await this.sendAction(
                     Constants.LEOBRIDGE.INSERT_FILE_NODE,

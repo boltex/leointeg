@@ -304,16 +304,19 @@ export class Constants {
      */
     public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
         "All files": ["*"],
-        "C/C++ files": ["c", "cpp", "h", "hpp"],
-        "FreeMind files": ["mm.html"],
-        "Java files": ["java"],
-        "JavaScript files": ["js"],
-        "Mindjet files": ["csv"],
-        "MORE files": ["MORE"],
-        "Lua files": ["lua"],
-        "Pascal files": ["pas"],
-        "Python files": ["py"],
-        "Text files": ["txt"],
+
+        // * Offer any file instead of restricting to some file types
+        // "C/C++ files": ["c", "cpp", "h", "hpp"],
+        // "FreeMind files": ["mm.html"],
+        // "Java files": ["java"],
+        // "JavaScript files": ["js"],
+        // "Mindjet files": ["csv"],
+        // "MORE files": ["MORE"],
+        // "Lua files": ["lua"],
+        // "Pascal files": ["pas"],
+        // "Python files": ["py"],
+        // "Text files": ["txt"],
+
     };
 
     /**
