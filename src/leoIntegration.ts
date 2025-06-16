@@ -1186,6 +1186,7 @@ export class LeoIntegration {
                         tree: true,
                         body: true,
                         states: true,
+                        scroll: true, // Scroll to the position in the body
                         buttons: false,
                         documents: false,
                         goto: false,
@@ -1247,6 +1248,7 @@ export class LeoIntegration {
                                 tree: true,
                                 body: true,
                                 goto: true,
+                                scroll: !!secondShowLine['found'], // Scroll to the position in the body if found
                                 states: true,
                                 documents: true,
                                 buttons: true
@@ -6487,7 +6489,7 @@ export class LeoIntegration {
                         const w_line = parseInt(p_inputResult);
                         if (!isNaN(w_line)) {
                             this.sendAction(Constants.LEOBRIDGE.GOTO_GLOBAL_LINE, { line: w_line }).then((_p_resultGoto: LeoBridgePackage) => {
-                                this.setupRefresh(Focus.Body, { tree: true, body: true, states: true, });
+                                this.setupRefresh(Focus.Body, { tree: true, body: true, scroll: true, states: true, });
                                 this.launchRefresh();
                             });
                         }
