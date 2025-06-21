@@ -2108,14 +2108,14 @@
         "command": "leointeg.refreshFromDisk",
         "category": "Leo",
         "title": "Refresh from Disk",
-        "enablement": "leoTreeOpened && leoTreeTitled",
+        "enablement": "leoTreeOpened",
         "icon": "$(leo-refresh)"
       },
       {
         "command": "leointeg.refreshFromDiskSelection",
         "category": "Leo",
         "title": "Refresh from Disk",
-        "enablement": "leoTreeOpened && leoAtFile && leoTreeTitled",
+        "enablement": "leoTreeOpened && leoAtFile",
         "icon": "$(leo-refresh)"
       },
       {

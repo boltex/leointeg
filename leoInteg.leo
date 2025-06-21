@@ -3497,14 +3497,14 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.refreshFromDisk",
   "category": "Leo",
   "title": "Refresh from Disk",
-  "enablement": "leoTreeOpened &amp;&amp; leoTreeTitled",
+  "enablement": "leoTreeOpened",
   "icon": "$(leo-refresh)"
 },
 {
   "command": "leointeg.refreshFromDiskSelection",
   "category": "Leo",
   "title": "Refresh from Disk",
-  "enablement": "leoTreeOpened &amp;&amp; leoAtFile &amp;&amp; leoTreeTitled",
+  "enablement": "leoTreeOpened &amp;&amp; leoAtFile",
   "icon": "$(leo-refresh)"
 },
 {
