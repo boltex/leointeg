@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.24
+
+- New command (Editor context menu) for external files or files to be imported: **Go to Line in Leo Outline**. (will offer to import if not present)
+- New command (Editor and explorer context menu) for files to be imported: **Import into Leo Outline**.
+- g.es now shows the log pane when running user scripts or @buttons
+
 ## 1.0.23
 
 - Fixed 'Save as .leojs' command Icon.

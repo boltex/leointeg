@@ -27,7 +27,7 @@ export class LeoAsync {
      * * Adds message string to leoInteg's log pane, used when leoBridge gets an async 'log' command
      */
     public log(p_message: string, p_color?: string): void {
-        if (p_color && p_color === Constants.LOG_ALERT_COLOR) {
+        if (this._leoIntegration.isExecuteScript || p_color && p_color === Constants.LOG_ALERT_COLOR) {
             // Red Detected: Force showing the log pane for 'errors' in the log pane.
             this._leoIntegration.showLogPane();
         }

@@ -109,7 +109,7 @@ export class Constants {
     public static MIN_SERVER_VERSION_NUMBER = {
         major: 1,
         minor: 0,
-        patch: 11,
+        patch: 12,
     };
 
     /**
@@ -273,7 +273,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.7.8-B1 is recommended.",
+        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.8.5 is recommended.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language coloring not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language coloring not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
@@ -304,16 +304,19 @@ export class Constants {
      */
     public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
         "All files": ["*"],
-        "C/C++ files": ["c", "cpp", "h", "hpp"],
-        "FreeMind files": ["mm.html"],
-        "Java files": ["java"],
-        "JavaScript files": ["js"],
-        "Mindjet files": ["csv"],
-        "MORE files": ["MORE"],
-        "Lua files": ["lua"],
-        "Pascal files": ["pas"],
-        "Python files": ["py"],
-        "Text files": ["txt"],
+
+        // * Offer any file instead of restricting to some file types
+        // "C/C++ files": ["c", "cpp", "h", "hpp"],
+        // "FreeMind files": ["mm.html"],
+        // "Java files": ["java"],
+        // "JavaScript files": ["js"],
+        // "Mindjet files": ["csv"],
+        // "MORE files": ["MORE"],
+        // "Lua files": ["lua"],
+        // "Pascal files": ["pas"],
+        // "Python files": ["py"],
+        // "Text files": ["txt"],
+
     };
 
     /**
@@ -656,6 +659,7 @@ export class Constants {
         INSERT_NAMED_PNODE: "!insert_named_node", // "insertNamedPNode",
         INSERT_CHILD_PNODE: "!insert_child_node",
         INSERT_CHILD_NAMED_PNODE: "!insert_child_named_node",
+        INSERT_FILE_NODE: "!insert_file_node", // "insertFileNode",
         CLONE_PNODE: "!clone_node", // "clonePNode",
         PROMOTE_PNODE: "promote",
         DEMOTE_PNODE: "demote",
@@ -685,6 +689,7 @@ export class Constants {
         DELETE_MARKED_NODES: "deleteMarked",
         MOVE_MARKED_NODES: "moveMarked",
         GIT_DIFF: "gitDiff",
+        GOTO_LINE_IN_LEO_OUTLINE: "!goto_line_in_leo_outline",
         GET_FOCUS: "!get_focus",
 
         GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
@@ -768,6 +773,8 @@ export class Constants {
         GOTO_SCRIPT: Constants.NAME + ".gotoScript",
         MINIBUFFER: Constants.NAME + ".minibuffer",
         GIT_DIFF: Constants.NAME + ".gitDiff",
+        GOTO_LINE_IN_LEO_OUTLINE: Constants.NAME + ".gotoLineInLeoOutline",
+        IMPORT_INTO_LEO_OUTLINE: Constants.NAME + ".importIntoLeoOutline",
         TAB_CYCLE_NEXT: Constants.NAME + ".tabCycleNext",
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
