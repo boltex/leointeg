@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.25
+
+...
+
 ## 1.0.24
 
 - New command (Editor context menu) for external files or files to be imported: **Go to Line in Leo Outline**. (will offer to import if not present)
