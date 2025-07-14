@@ -110,7 +110,12 @@ export class ServerService {
             }
 
             if (p_venvPath) {
-                const pythonName = this._isWin32 ? 'python.exe' : 'python';
+                let pythonName = "";
+                if (p_leoPythonCommand) {
+                    pythonName = p_leoPythonCommand; // User specified python command even for a venv
+                } else {
+                    pythonName = this._isWin32 ? 'python.exe' : 'python'; // User let the default python command for a venv
+                }
                 const candidate = path.join(p_venvPath, (this._isWin32 ? 'Scripts' : 'bin'), pythonName);
                 if (fs.existsSync(candidate)) {
                     w_pythonPath = candidate;

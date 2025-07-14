@@ -8101,9 +8101,14 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
             w_serverScriptPath = Constants.PYTHON_MODULE_LEOSERVER; // Use the leo.core.leoserver module for pip installations
         }
 
-
         if (p_venvPath) {
-            const candidate = path.join(p_venvPath, this._isWin32 ? 'Scripts' : 'bin', 'python');
+            let pythonName = "";
+            if (p_leoPythonCommand) {
+                pythonName = p_leoPythonCommand; // User specified python command even for a venv
+            } else {
+                pythonName = this._isWin32 ? 'python.exe' : 'python'; // User let the default python command for a venv
+            }
+            const candidate = path.join(p_venvPath, (this._isWin32 ? 'Scripts' : 'bin'), pythonName);
             if (fs.existsSync(candidate)) {
                 w_pythonPath = candidate;
             } else {
@@ -8130,6 +8135,11 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         // on windows, if the default py is used, make sure it's got a '-3'
         if (this._isWin32 &amp;&amp; w_pythonPath === "py" &amp;&amp; !p_venvPath) {
             w_args.push("-3");
+        }
+
+        // add -m argument if no path to script is given
+        if (!p_leoEditorPath) {
+            w_args.push("-m");
         }
 
         // The server script itself
@@ -15143,10 +15153,10 @@ public chooseLeoFolder(): void {
  * * Shows dialog for choosing the Leo Editor installation folder path
  * @returns A promise that resolves to the selected resources or undefined
  */
-export function chooseLeoFolderDialog(folder: string): Thenable&lt;vscode.Uri[] | undefined&gt; {
+export function chooseLeoFolderDialog(p_title: string): Thenable&lt;vscode.Uri[] | undefined&gt; {
     return vscode.window.showOpenDialog(
         {
-            title: folder,
+            title: p_title,
             canSelectMany: false,
             openLabel: "Choose Folder",
             canSelectFiles: false,
@@ -24286,6 +24296,9 @@ div.col-nav {
                 }
                 if (w_venvPath) {
                     w_pythonPath = "python"; // if a venv is set, use the python command from there
+                    if (_isWin32) {
+                        w_pythonPath = "python.exe"; // Windows uses python.exe
+                    }
                 }
             }
 
@@ -24297,15 +24310,20 @@ div.col-nav {
                 if (w_pythonPath.startsWith("/") || w_pythonPath.startsWith("\\")) {
                     // If the python path starts with a slash, remove it
                     w_pythonPath = w_pythonPath.slice(1);
-
                 }
+
                 // Simulate node path.join
-                w_pythonPath = w_venvPath.trim() + "/" + (this._isWin32 ? 'Scripts' : 'bin') + "/" + w_pythonPath;
+                w_pythonPath = w_venvPath.trim() + "/" + (_isWin32 ? 'Scripts' : 'bin') + "/" + w_pythonPath;
             }
 
             if (_isWin32 &amp;&amp; w_pythonPath === "py" &amp;&amp; !w_venvPath) {
                 w_args.push("-3");
             }
+
+            if (w_serverScriptPath === 'leo.core.leoserver') {
+                w_args.push("-m");
+            }
+
             w_args.push(w_serverScriptPath.trim());
 
             if (w_limitUsers &gt; 1 &amp;&amp;
@@ -24433,11 +24451,11 @@ div.col-nav {
             href="https://boltex.github.io/"&gt;Sponsor LeoInteg
             &lt;span class="heart"&gt;&amp;#x2764;&lt;/span&gt;
           &lt;/a&gt;
-          &lt;a class="button button--flat" title="LeoInteg's Features"
+          &lt;a class="button button--flat" title="LeoInteg's Readme"
             href="https://github.com/boltex/leointeg#-leo-for-visual-studio-code"&gt;
             Documentation
           &lt;/a&gt;
-          &lt;a class="button button--flat" title="LeoInteg's Features"
+          &lt;a class="button button--flat" title="LeoInteg's Change Log"
             href="https://github.com/boltex/leointeg/blob/master/CHANGELOG.md#change-log"&gt;
             What's New
           &lt;/a&gt;

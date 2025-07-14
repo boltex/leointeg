@@ -409,6 +409,9 @@
                 }
                 if (w_venvPath) {
                     w_pythonPath = "python"; // if a venv is set, use the python command from there
+                    if (_isWin32) {
+                        w_pythonPath = "python.exe"; // Windows uses python.exe
+                    }
                 }
             }
 
@@ -420,8 +423,8 @@
                 if (w_pythonPath.startsWith("/") || w_pythonPath.startsWith("\\")) {
                     // If the python path starts with a slash, remove it
                     w_pythonPath = w_pythonPath.slice(1);
-
                 }
+
                 // Simulate node path.join
                 w_pythonPath = w_venvPath.trim() + "/" + (_isWin32 ? 'Scripts' : 'bin') + "/" + w_pythonPath;
             }
