@@ -334,10 +334,10 @@ export function buildNodeCommand(p_node: ArchivedPosition, p_command?: UserComma
  * * Shows dialog for choosing the Leo Editor installation folder path
  * @returns A promise that resolves to the selected resources or undefined
  */
-export function chooseLeoFolderDialog(): Thenable<vscode.Uri[] | undefined> {
+export function chooseLeoFolderDialog(p_title: string): Thenable<vscode.Uri[] | undefined> {
     return vscode.window.showOpenDialog(
         {
-            title: "Locate Leo-Editor Installation Folder",
+            title: p_title,
             canSelectMany: false,
             openLabel: "Choose Folder",
             canSelectFiles: false,

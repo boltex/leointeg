@@ -53,6 +53,7 @@ export class Constants {
 
     public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";
+    public static PYTHON_MODULE_LEOSERVER: string = "leo.core.leoserver"; // Use the leo.core.leoserver module for pip installations
     public static SERVER_NAME: string = "/leoserver.py";
     public static LEO_ID_NAME: string = ".leoID.txt";
     public static SERVER_PATH: string = "/leo/core";
@@ -109,7 +110,7 @@ export class Constants {
     public static MIN_SERVER_VERSION_NUMBER = {
         major: 1,
         minor: 0,
-        patch: 12,
+        patch: 13,
     };
 
     /**
@@ -185,6 +186,8 @@ export class Constants {
      * * Basic user messages strings: for messages and dialogs
      */
     public static USER_MESSAGES = {
+        LOCATE_LEO_FOLDER: "Locate Leo-Editor Installation Folder",
+        LOCATE_VENV_FOLDER: "Locate Python venv Folder",
         SCRIPT_BUTTON: "from selected node",
         SCRIPT_BUTTON_TOOLTIP:
             "Creates a new button with the presently selected node.\n" +
@@ -273,7 +276,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.8.5 is recommended.",
+        MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.8.6 is recommended.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language coloring not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language coloring not yet supported.", // with leading space
         MINIBUFFER_BUTTON_START: "@button-",
@@ -383,6 +386,7 @@ export class Constants {
 
         INVERT_NODES: "invertNodeContrast",
         LEO_EDITOR_PATH: "leoEditorPath",
+        VENV_PATH: "venvPath",
         LEO_PYTHON_COMMAND: "leoPythonCommand",
         AUTO_START_SERVER: "startServerAutomatically",
         AUTO_CONNECT: "connectToServerAutomatically",
@@ -432,6 +436,7 @@ export class Constants {
         INVERT_NODES: false,
         LEO_PYTHON_COMMAND: "",
         LEO_EDITOR_PATH: "",
+        VENV_PATH: "",
         AUTO_START_SERVER: false,
         AUTO_CONNECT: false,
         IP_ADDRESS: "localhost",

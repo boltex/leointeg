@@ -58,6 +58,7 @@ export class Config implements ConfigMembers {
     public connectToServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_CONNECT;
     public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
     public connectionPort: number = Constants.CONFIG_DEFAULTS.IP_PORT;
+    public venvPath: string = Constants.CONFIG_DEFAULTS.VENV_PATH;
 
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
@@ -128,6 +129,7 @@ export class Config implements ConfigMembers {
             connectToServerAutomatically: this.connectToServerAutomatically,
             connectionAddress: this.connectionAddress,
             connectionPort: this.connectionPort,
+            venvPath: this.venvPath,
 
             setDetached: this.setDetached,
             limitUsers: this.limitUsers,
@@ -381,6 +383,7 @@ export class Config implements ConfigMembers {
             this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
             this.connectionAddress = GET(NAME).get(NAMES.IP_ADDRESS, DEFAULTS.IP_ADDRESS);
             this.connectionPort = GET(NAME).get(NAMES.IP_PORT, DEFAULTS.IP_PORT);
+            this.venvPath = GET(NAME).get(NAMES.VENV_PATH, DEFAULTS.VENV_PATH);
 
             this.setDetached = GET(NAME).get(NAMES.SET_DETACHED, DEFAULTS.SET_DETACHED);
             this.limitUsers = GET(NAME).get(NAMES.LIMIT_USERS, DEFAULTS.LIMIT_USERS);

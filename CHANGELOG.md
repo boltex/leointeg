@@ -2,7 +2,9 @@
 
 ## 1.0.25
 
-...
+- Improved the settings panel to allow setting the Leo Editor path and Python venv path more easily.
+- Fixed display of the Leo Editor and server script path that was not being shown correctly in the settings panel.
+- Updated the minimum Leo version requirement to 6.8.6.
 
 ## 1.0.24
 

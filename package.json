@@ -228,6 +228,12 @@
           "type": "string",
           "description": "Specifies the location of your Leo-Editor installation"
         },
+        "leoIntegration.venvPath": {
+          "scope": "application",
+          "default": "",
+          "type": "string",
+          "description": "Specifies the location of a chosen venv"
+        },
         "leoIntegration.leoPythonCommand": {
           "scope": "application",
           "default": "",
