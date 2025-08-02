@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.26
+
+- ...
+
 ## 1.0.25
 
 - Updated the minimum Leo version requirement to 6.8.6.
