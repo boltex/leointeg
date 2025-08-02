@@ -978,6 +978,11 @@ export class Constants {
     };
 
     public static addMinibufferCommands: { label: string, detail: string }[] = [
+
+        { 'label': 'open-aside', 'detail': 'Open the selected node in a body pane aside the current one.' },
+        { 'label': 'go-anywhere', 'detail': 'Find any position by it\'s headline as you type into the input box.' },
+        { 'label': 'leointeg-settings', 'detail': 'Open the LeoInteg welcome and settings panel.' },
+
         { "label": "close-window", "detail": "Close the Leo window, prompting to save it if it has been changed." },
 
         { "label": "find-quick", "detail": "Opens the Nav tab." },
@@ -1021,6 +1026,10 @@ export class Constants {
      * * Overridden 'good' minibuffer commands
      */
     public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+
+        "open-aside": Constants.COMMANDS.OPEN_ASIDE,
+        "go-anywhere": Constants.COMMANDS.FIND_QUICK_GO_ANYWHERE,
+        "leointeg-settings": Constants.COMMANDS.SHOW_SETTINGS,
 
         "close-window": Constants.COMMANDS.CLOSE_FILE,
 
