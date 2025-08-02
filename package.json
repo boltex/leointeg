@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -227,6 +227,12 @@
           "default": "",
           "type": "string",
           "description": "Specifies the location of your Leo-Editor installation"
+        },
+        "leoIntegration.venvPath": {
+          "scope": "application",
+          "default": "",
+          "type": "string",
+          "description": "Specifies the location of a chosen venv"
         },
         "leoIntegration.leoPythonCommand": {
           "scope": "application",

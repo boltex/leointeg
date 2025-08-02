@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.0.25
+
+- Updated the minimum Leo version requirement to 6.8.6.
+- Implemented python venv support and added controls in setting panel to set the Leo Editor path and Python venv path more easily.
+- Fixed display of the Leo Editor and server script path that was not being shown correctly in the settings panel.
+- Added 'open-aside', 'go-anywhere' and 'leointeg-welcome'/'leointeg-settings' commanDS to the minibuffer.
+
 ## 1.0.24
 
 - New command (Editor context menu) for external files or files to be imported: **Go to Line in Leo Outline**. (will offer to import if not present)

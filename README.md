@@ -15,13 +15,18 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Requirements
 
-- Leo Editor 6.8.0 or later\
+- Leo Editor 6.8.6 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
 - Websocket Python Library\
+  _Should be already installed if Leo was installed with pip_\
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/](https://websockets.readthedocs.io/))
+
+## Python virtual environment (venv)
+
+If you installed Leo in a Python virtual environment (venv), fill up the **Python venv Path** option instead of the **Leo Editor Path** option in LeoInteg's [Extension Settings](#extension-settings) shown below.
 
 ## Features
 

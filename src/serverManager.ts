@@ -44,7 +44,11 @@ export class ServerService {
      * @param p_leoPythonCommand String command to start python on this computer
      * @returns A promise that resolves when the server is started, or that is rejected in case of problem while starting
      */
-    public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: number): Promise<any> {
+    public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: number, p_venvPath?: string): Promise<any> {
+
+        if (p_venvPath?.trim) {
+            p_venvPath = p_venvPath.trim(); // Make sure the path is trimmed if its not undefined
+        }
 
         /*
             * -----------------------------------------------------------------
@@ -70,7 +74,7 @@ export class ServerService {
         this._skippedFirstEmpty = false;
 
         if (!p_leoEditorPath || !p_leoEditorPath.trim()) {
-            return Promise.reject(Constants.USER_MESSAGES.LEO_PATH_MISSING);
+            p_leoEditorPath = ""; // Default to empty string if not set
         }
         p_leoEditorPath = p_leoEditorPath.trim();
 
@@ -85,22 +89,41 @@ export class ServerService {
             this.usingPort = p_availablePort;
 
             // Leo Editor installation path is mandatory - Start with Leo Editor's folder
-            let w_serverScriptPath = p_leoEditorPath + Constants.SERVER_PATH;
+            let w_serverScriptPath;
 
-            try {
-                if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
-                    w_serverScriptPath += Constants.SERVER_NAME;
-                } else {
+            if (p_leoEditorPath) {
+                // User specified a Leo Editor path
+                w_serverScriptPath = p_leoEditorPath + Constants.SERVER_PATH; // Default to leo/core folder in that path
+                try {
+                    // Check if the server script exists in the leo/core folder
+                    if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
+                        w_serverScriptPath += Constants.SERVER_NAME;
+                    } else {
+                        return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
+                    }
+                } catch (p_err) {
+                    console.error(p_err);
                     return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
                 }
-            } catch (p_err) {
-                console.error(p_err);
-                return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
+            } else {
+                w_serverScriptPath = Constants.PYTHON_MODULE_LEOSERVER; // Use the leo.core.leoserver module for pip installations
             }
 
-            if (p_leoPythonCommand && p_leoPythonCommand.length) {
-                // Start by running command (see executeCommand for multiple useful snippets)
-                w_pythonPath = p_leoPythonCommand; // Set path
+            if (p_venvPath) {
+                let pythonName = "";
+                if (p_leoPythonCommand) {
+                    pythonName = p_leoPythonCommand; // User specified python command even for a venv
+                } else {
+                    pythonName = this._isWin32 ? 'python.exe' : 'python'; // User let the default python command for a venv
+                }
+                const candidate = path.join(p_venvPath, (this._isWin32 ? 'Scripts' : 'bin'), pythonName);
+                if (fs.existsSync(candidate)) {
+                    w_pythonPath = candidate;
+                } else {
+                    return Promise.reject(`Python not found in virtual environment at: ${candidate}`);
+                }
+            } else if (p_leoPythonCommand && p_leoPythonCommand.length) {
+                w_pythonPath = p_leoPythonCommand;
             } else {
                 w_pythonPath = Constants.DEFAULT_PYTHON;
                 if (this._isWin32) {
@@ -118,8 +141,13 @@ export class ServerService {
             let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
 
             // on windows, if the default py is used, make sure it's got a '-3'
-            if (this._isWin32 && w_pythonPath === "py") {
+            if (this._isWin32 && w_pythonPath === "py" && !p_venvPath) {
                 w_args.push("-3");
+            }
+
+            // add -m argument if no path to script is given
+            if (!p_leoEditorPath) {
+                w_args.push("-m");
             }
 
             // The server script itself
@@ -144,8 +172,7 @@ export class ServerService {
             };
 
             this._leoIntegration.addLogPaneEntry(
-                'Launching server with command: ' +
-                w_pythonPath + " " + w_args.join(" ")
+                'Launching server with command: ' + w_pythonPath + " " + w_args.join(" ")
             );
 
             // Spawn the process

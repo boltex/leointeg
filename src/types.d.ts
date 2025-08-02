@@ -47,6 +47,7 @@ export interface ConfigMembers {
 
     invertNodeContrast: boolean;
     leoEditorPath: string;
+    venvPath: string;
     leoPythonCommand: string;
     startServerAutomatically: boolean;
     connectToServerAutomatically: boolean;

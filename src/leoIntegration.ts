@@ -652,40 +652,34 @@ export class LeoIntegration {
      */
     public startNetworkServices(): void {
 
-        let q_checkPath;
-        if (!this.config.leoEditorPath.trim()) {
-            q_checkPath = this.findInstallPath();
-        } else {
-            q_checkPath = Promise.resolve();
-        }
-
         // * Check settings and start a server accordingly
-        q_checkPath.then(() => {
-            if (this.config.startServerAutomatically) {
-                if (this.config.limitUsers > 1) {
-                    utils.findSingleAvailablePort(this.config.connectionPort)
-                        .then((_p_availablePort) => {
-                            this.startServer();
-                        }, (_p_reason) => {
-                            // Rejected: Multi user port IN USE so skip start
-                            if (this.config.connectToServerAutomatically) {
-                                // Still try to connect if auto-connect is 'on'
-                                this.connect();
-                            }
-                        });
-                } else {
-                    this.startServer();
-                }
-            } else if (this.config.connectToServerAutomatically) {
-                // * (via settings) Connect to Leo Bridge server automatically without starting one first
-                this.connect();
+        if (this.config.startServerAutomatically) {
+            if (this.config.limitUsers > 1) {
+                utils.findSingleAvailablePort(this.config.connectionPort)
+                    .then((_p_availablePort) => {
+                        this.startServer();
+                    }, (_p_reason) => {
+                        // Rejected: Multi user port IN USE so skip start
+                        if (this.config.connectToServerAutomatically) {
+                            // Still try to connect if auto-connect is 'on'
+                            this.connect();
+                        }
+                    });
             } else {
-                this.leoStates.leoStartupFinished = true;
+                this.startServer();
             }
-        });
+        } else if (this.config.connectToServerAutomatically) {
+            // * (via settings) Connect to Leo Bridge server automatically without starting one first
+            this.connect();
+        } else {
+            this.leoStates.leoStartupFinished = true;
+        }
     }
 
     public async findInstallPath(): Promise<string> {
+
+        // * UNUSED BECAUSE WE NOW ALLOW SERVER TO BE CALLED 
+        // * WITH 'leo.core.leoserver' PYTHON MODULE WHEN LEO INSTALL PATH IS NOT KNOWN!
 
         return new Promise((p_resolve, _p_reject) => {
             // Find Leo's installation folder with command line tricks from Matt Wilkie 
@@ -775,7 +769,8 @@ export class LeoIntegration {
             .startServer(
                 this.config.leoPythonCommand,
                 this.config.leoEditorPath,
-                this.config.connectionPort
+                this.config.connectionPort,
+                this.config.venvPath
             )
             .then(
                 (_p_message) => {
@@ -1067,7 +1062,7 @@ export class LeoIntegration {
      * * Popup browser to choose Leo-Editor installation folder path
      */
     public chooseLeoFolder(): void {
-        utils.chooseLeoFolderDialog().then(p_chosenPath => {
+        utils.chooseLeoFolderDialog(Constants.USER_MESSAGES.LOCATE_LEO_FOLDER).then(p_chosenPath => {
             if (p_chosenPath && p_chosenPath.length) {
                 this.config.setLeoIntegSettings(
                     [{

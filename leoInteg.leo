@@ -23,6 +23,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20250708172435.1"><vh>1.0.25</vh></v>
 <v t="felix.20240723210726.1"><vh>1.0.24</vh></v>
 <v t="felix.20240716191935.1"><vh>1.0.23</vh></v>
 <v t="felix.20240714123516.1"><vh>1.0.22</vh></v>
@@ -980,6 +981,7 @@ public static CONFIG_DEFAULTS = {
     INVERT_NODES: false,
     LEO_PYTHON_COMMAND: "",
     LEO_EDITOR_PATH: "",
+    VENV_PATH: "",
     AUTO_START_SERVER: false,
     AUTO_CONNECT: false,
     IP_ADDRESS: "localhost",
@@ -2298,7 +2300,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -4777,6 +4779,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "type": "string",
   "description": "Specifies the location of your Leo-Editor installation"
 },
+"leoIntegration.venvPath": {
+  "scope": "application",
+  "default": "",
+  "type": "string",
+  "description": "Specifies the location of a chosen venv"
+},
 "leoIntegration.leoPythonCommand": {
   "scope": "application",
   "default": "",
@@ -5962,6 +5970,7 @@ public static LAST_ACTIVE_FILE_KEY: string = "leoLastActiveFile";
 
 public static DEFAULT_PYTHON: string = "python3";
 public static WIN32_PYTHON: string = "py";
+public static PYTHON_MODULE_LEOSERVER: string = "leo.core.leoserver"; // Use the leo.core.leoserver module for pip installations
 public static SERVER_NAME: string = "/leoserver.py";
 public static LEO_ID_NAME: string = ".leoID.txt";
 public static SERVER_PATH: string = "/leo/core";
@@ -6042,6 +6051,8 @@ public static GUI = {
  * * Basic user messages strings: for messages and dialogs
  */
 public static USER_MESSAGES = {
+    LOCATE_LEO_FOLDER: "Locate Leo-Editor Installation Folder",
+    LOCATE_VENV_FOLDER: "Locate Python venv Folder",
     SCRIPT_BUTTON: "from selected node",
     SCRIPT_BUTTON_TOOLTIP:
         "Creates a new button with the presently selected node.\n" +
@@ -6130,7 +6141,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.8.5 is recommended.",
+    MINIMUM_LEO_VERSION_STRING: "Please update your Leo Installation: Leo 6.8.6 is recommended.",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language coloring not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language coloring not yet supported.", // with leading space
     MINIBUFFER_BUTTON_START: "@button-",
@@ -6212,6 +6223,7 @@ public static CONFIG_NAMES = {
 
     INVERT_NODES: "invertNodeContrast",
     LEO_EDITOR_PATH: "leoEditorPath",
+    VENV_PATH: "venvPath",
     LEO_PYTHON_COMMAND: "leoPythonCommand",
     AUTO_START_SERVER: "startServerAutomatically",
     AUTO_CONNECT: "connectToServerAutomatically",
@@ -6545,6 +6557,7 @@ export class Config implements ConfigMembers {
     public connectToServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_CONNECT;
     public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
     public connectionPort: number = Constants.CONFIG_DEFAULTS.IP_PORT;
+    public venvPath: string = Constants.CONFIG_DEFAULTS.VENV_PATH;
 
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
@@ -6618,6 +6631,7 @@ public getConfig(): ConfigMembers {
         connectToServerAutomatically: this.connectToServerAutomatically,
         connectionAddress: this.connectionAddress,
         connectionPort: this.connectionPort,
+        venvPath: this.venvPath,
 
         setDetached: this.setDetached,
         limitUsers: this.limitUsers,
@@ -6724,6 +6738,7 @@ public buildFromSavedSettings(): boolean {
         this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
         this.connectionAddress = GET(NAME).get(NAMES.IP_ADDRESS, DEFAULTS.IP_ADDRESS);
         this.connectionPort = GET(NAME).get(NAMES.IP_PORT, DEFAULTS.IP_PORT);
+        this.venvPath = GET(NAME).get(NAMES.VENV_PATH, DEFAULTS.VENV_PATH);
 
         this.setDetached = GET(NAME).get(NAMES.SET_DETACHED, DEFAULTS.SET_DETACHED);
         this.limitUsers = GET(NAME).get(NAMES.LIMIT_USERS, DEFAULTS.LIMIT_USERS);
@@ -8021,7 +8036,11 @@ export class ServerService {
  * @param p_leoPythonCommand String command to start python on this computer
  * @returns A promise that resolves when the server is started, or that is rejected in case of problem while starting
  */
-public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: number): Promise&lt;any&gt; {
+public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: number, p_venvPath?: string): Promise&lt;any&gt; {
+
+    if (p_venvPath?.trim) {
+        p_venvPath = p_venvPath.trim(); // Make sure the path is trimmed if its not undefined
+    }
 
     /*
         * -----------------------------------------------------------------
@@ -8047,7 +8066,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
     this._skippedFirstEmpty = false;
 
     if (!p_leoEditorPath || !p_leoEditorPath.trim()) {
-        return Promise.reject(Constants.USER_MESSAGES.LEO_PATH_MISSING);
+        p_leoEditorPath = ""; // Default to empty string if not set
     }
     p_leoEditorPath = p_leoEditorPath.trim();
 
@@ -8062,22 +8081,41 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         this.usingPort = p_availablePort;
 
         // Leo Editor installation path is mandatory - Start with Leo Editor's folder
-        let w_serverScriptPath = p_leoEditorPath + Constants.SERVER_PATH;
+        let w_serverScriptPath;
 
-        try {
-            if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
-                w_serverScriptPath += Constants.SERVER_NAME;
-            } else {
+        if (p_leoEditorPath) {
+            // User specified a Leo Editor path
+            w_serverScriptPath = p_leoEditorPath + Constants.SERVER_PATH; // Default to leo/core folder in that path
+            try {
+                // Check if the server script exists in the leo/core folder
+                if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
+                    w_serverScriptPath += Constants.SERVER_NAME;
+                } else {
+                    return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
+                }
+            } catch (p_err) {
+                console.error(p_err);
                 return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
             }
-        } catch (p_err) {
-            console.error(p_err);
-            return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
+        } else {
+            w_serverScriptPath = Constants.PYTHON_MODULE_LEOSERVER; // Use the leo.core.leoserver module for pip installations
         }
 
-        if (p_leoPythonCommand &amp;&amp; p_leoPythonCommand.length) {
-            // Start by running command (see executeCommand for multiple useful snippets)
-            w_pythonPath = p_leoPythonCommand; // Set path
+        if (p_venvPath) {
+            let pythonName = "";
+            if (p_leoPythonCommand) {
+                pythonName = p_leoPythonCommand; // User specified python command even for a venv
+            } else {
+                pythonName = this._isWin32 ? 'python.exe' : 'python'; // User let the default python command for a venv
+            }
+            const candidate = path.join(p_venvPath, (this._isWin32 ? 'Scripts' : 'bin'), pythonName);
+            if (fs.existsSync(candidate)) {
+                w_pythonPath = candidate;
+            } else {
+                return Promise.reject(`Python not found in virtual environment at: ${candidate}`);
+            }
+        } else if (p_leoPythonCommand &amp;&amp; p_leoPythonCommand.length) {
+            w_pythonPath = p_leoPythonCommand;
         } else {
             w_pythonPath = Constants.DEFAULT_PYTHON;
             if (this._isWin32) {
@@ -8095,8 +8133,13 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
 
         // on windows, if the default py is used, make sure it's got a '-3'
-        if (this._isWin32 &amp;&amp; w_pythonPath === "py") {
+        if (this._isWin32 &amp;&amp; w_pythonPath === "py" &amp;&amp; !p_venvPath) {
             w_args.push("-3");
+        }
+
+        // add -m argument if no path to script is given
+        if (!p_leoEditorPath) {
+            w_args.push("-m");
         }
 
         // The server script itself
@@ -8121,8 +8164,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         };
 
         this._leoIntegration.addLogPaneEntry(
-            'Launching server with command: ' +
-            w_pythonPath + " " + w_args.join(" ")
+            'Launching server with command: ' + w_pythonPath + " " + w_args.join(" ")
         );
 
         // Spawn the process
@@ -8703,6 +8745,7 @@ export interface ConfigMembers {
 
     invertNodeContrast: boolean;
     leoEditorPath: string;
+    venvPath: string;
     leoPythonCommand: string;
     startServerAutomatically: boolean;
     connectToServerAutomatically: boolean;
@@ -8985,13 +9028,18 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.8.0 or later\
+- Leo Editor 6.8.6 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
 - Websocket Python Library\
+  _Should be already installed if Leo was installed with pip_\
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/](https://websockets.readthedocs.io/))
+
+## Python virtual environment (venv)
+
+If you installed Leo in a Python virtual environment (venv), fill up the **Python venv Path** option instead of the **Leo Editor Path** option in LeoInteg's [Extension Settings](#extension-settings) shown below.
 
 </t>
 <t tx="felix.20200718222035.1">## Features
@@ -11975,37 +12023,28 @@ public async saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage |
  */
 public startNetworkServices(): void {
 
-    let q_checkPath;
-    if (!this.config.leoEditorPath.trim()) {
-        q_checkPath = this.findInstallPath();
-    } else {
-        q_checkPath = Promise.resolve();
-    }
-
     // * Check settings and start a server accordingly
-    q_checkPath.then(() =&gt; {
-        if (this.config.startServerAutomatically) {
-            if (this.config.limitUsers &gt; 1) {
-                utils.findSingleAvailablePort(this.config.connectionPort)
-                    .then((_p_availablePort) =&gt; {
-                        this.startServer();
-                    }, (_p_reason) =&gt; {
-                        // Rejected: Multi user port IN USE so skip start
-                        if (this.config.connectToServerAutomatically) {
-                            // Still try to connect if auto-connect is 'on'
-                            this.connect();
-                        }
-                    });
-            } else {
-                this.startServer();
-            }
-        } else if (this.config.connectToServerAutomatically) {
-            // * (via settings) Connect to Leo Bridge server automatically without starting one first
-            this.connect();
+    if (this.config.startServerAutomatically) {
+        if (this.config.limitUsers &gt; 1) {
+            utils.findSingleAvailablePort(this.config.connectionPort)
+                .then((_p_availablePort) =&gt; {
+                    this.startServer();
+                }, (_p_reason) =&gt; {
+                    // Rejected: Multi user port IN USE so skip start
+                    if (this.config.connectToServerAutomatically) {
+                        // Still try to connect if auto-connect is 'on'
+                        this.connect();
+                    }
+                });
         } else {
-            this.leoStates.leoStartupFinished = true;
+            this.startServer();
         }
-    });
+    } else if (this.config.connectToServerAutomatically) {
+        // * (via settings) Connect to Leo Bridge server automatically without starting one first
+        this.connect();
+    } else {
+        this.leoStates.leoStartupFinished = true;
+    }
 }
 
 </t>
@@ -12411,7 +12450,8 @@ public startServer(): void {
         .startServer(
             this.config.leoPythonCommand,
             this.config.leoEditorPath,
-            this.config.connectionPort
+            this.config.connectionPort,
+            this.config.venvPath
         )
         .then(
             (_p_message) =&gt; {
@@ -14611,6 +14651,10 @@ public gotoGlobalLine(p_lineNumber?: number): void {
  */
 public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
 
+    "open-aside": Constants.COMMANDS.OPEN_ASIDE,
+    "go-anywhere": Constants.COMMANDS.FIND_QUICK_GO_ANYWHERE,
+    "leointeg-settings": Constants.COMMANDS.SHOW_SETTINGS,
+
     "close-window": Constants.COMMANDS.CLOSE_FILE,
 
     "find-quick": Constants.COMMANDS.FIND_QUICK,
@@ -15095,7 +15139,7 @@ private _inputFindPattern(p_replace?: boolean, p_value?: string): Thenable&lt;st
  * * Popup browser to choose Leo-Editor installation folder path
  */
 public chooseLeoFolder(): void {
-    utils.chooseLeoFolderDialog().then(p_chosenPath =&gt; {
+    utils.chooseLeoFolderDialog(Constants.USER_MESSAGES.LOCATE_LEO_FOLDER).then(p_chosenPath =&gt; {
         if (p_chosenPath &amp;&amp; p_chosenPath.length) {
             this.config.setLeoIntegSettings(
                 [{
@@ -15118,10 +15162,10 @@ public chooseLeoFolder(): void {
  * * Shows dialog for choosing the Leo Editor installation folder path
  * @returns A promise that resolves to the selected resources or undefined
  */
-export function chooseLeoFolderDialog(): Thenable&lt;vscode.Uri[] | undefined&gt; {
+export function chooseLeoFolderDialog(p_title: string): Thenable&lt;vscode.Uri[] | undefined&gt; {
     return vscode.window.showOpenDialog(
         {
-            title: "Locate Leo-Editor Installation Folder",
+            title: p_title,
             canSelectMany: false,
             openLabel: "Choose Folder",
             canSelectFiles: false,
@@ -17586,6 +17630,11 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 
 </t>
 <t tx="felix.20220321211021.1">public static addMinibufferCommands: { label: string, detail: string }[] = [
+
+    { 'label': 'open-aside', 'detail': 'Open the selected node in a body pane aside the current one.' },
+    { 'label': 'go-anywhere', 'detail': 'Find any position by it\'s headline as you type into the input box.' },
+    { 'label': 'leointeg-settings', 'detail': 'Open the LeoInteg welcome and settings panel.' },
+
     { "label": "close-window", "detail": "Close the Leo window, prompting to save it if it has been changed." },
 
     { "label": "find-quick", "detail": "Opens the Nav tab." },
@@ -20155,7 +20204,7 @@ private _refreshDesc(): void {
 public static MIN_SERVER_VERSION_NUMBER = {
     major: 1,
     minor: 0,
-    patch: 12,
+    patch: 13,
 };
 
 </t>
@@ -20765,6 +20814,9 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 
 </t>
 <t tx="felix.20231102230431.1">public async findInstallPath(): Promise&lt;string&gt; {
+
+    // * UNUSED BECAUSE WE NOW ALLOW SERVER TO BE CALLED 
+    // * WITH 'leo.core.leoserver' PYTHON MODULE WHEN LEO INSTALL PATH IS NOT KNOWN!
 
     return new Promise((p_resolve, _p_reject) =&gt; {
         // Find Leo's installation folder with command line tricks from Matt Wilkie 
@@ -23021,11 +23073,20 @@ public setGotoContent(): void {
 }
 
 </t>
+<t tx="felix.20250708172435.1">## 1.0.25
+
+- Updated the minimum Leo version requirement to 6.8.6.
+- Implemented python venv support and added controls in setting panel to set the Leo Editor path and Python venv path more easily.
+- Fixed display of the Leo Editor and server script path that was not being shown correctly in the settings panel.
+- Added 'open-aside', 'go-anywhere' and 'leointeg-welcome'/'leointeg-settings' commanDS to the minibuffer.
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
 import { LeoIntegration } from "./leoIntegration";
 import * as utils from "./utils";
+import { Constants } from "./constants";
 
 @language typescript
 @tabwidth -4
@@ -23099,12 +23160,24 @@ import * as utils from "./utils";
                                     void vscode.window.showErrorMessage(message.text);
                                     break;
                                 case 'chooseLeoEditorPath':
-                                    utils.chooseLeoFolderDialog().then(p_chosenPath =&gt; {
+                                    utils.chooseLeoFolderDialog(Constants.USER_MESSAGES.LOCATE_LEO_FOLDER).then(p_chosenPath =&gt; {
                                         if (this._panel &amp;&amp; p_chosenPath &amp;&amp; p_chosenPath.length) {
                                             this._panel.webview.postMessage(
                                                 {
                                                     command: 'newEditorPath',
                                                     editorPath: p_chosenPath[0].fsPath
+                                                }
+                                            );
+                                        }
+                                    });
+                                    break;
+                                case 'chooseVenvPath':
+                                    utils.chooseLeoFolderDialog(Constants.USER_MESSAGES.LOCATE_VENV_FOLDER).then(p_chosenPath =&gt; {
+                                        if (this._panel &amp;&amp; p_chosenPath &amp;&amp; p_chosenPath.length) {
+                                            this._panel.webview.postMessage(
+                                                {
+                                                    command: 'newVenvPath',
+                                                    venvPath: p_chosenPath[0].fsPath
                                                 }
                                             );
                                         }
@@ -23843,6 +23916,7 @@ div.col-nav {
     const resultingCommandEl = document.getElementById("resultingCommand");
     const leoPythonCommandEl = document.getElementById("leoPythonCommand");
     const leoEditorPathEl = document.getElementById("leoEditorPath");
+    const venvPathPathEl = document.getElementById("venvPath");
     const connectionPortEl = document.getElementById("connectionPort");
     const limitUsersEl = document.getElementById("limitUsers");
 
@@ -23893,6 +23967,13 @@ div.col-nav {
                     if (w_element) {
                         w_element.value = message.editorPath;
                         onInputChanged(w_element);
+                    }
+                    break;
+                case "newVenvPath":
+                    const w_venvElement = document.getElementById("venvPath");
+                    if (w_venvElement) {
+                        w_venvElement.value = message.venvPath;
+                        onInputChanged(w_venvElement);
                     }
                     break;
                 default:
@@ -24044,6 +24125,11 @@ div.col-nav {
     function chooseLeoEditorPath() {
         vscode.postMessage({
             command: "chooseLeoEditorPath"
+        });
+    }
+    function chooseVenvPath() {
+        vscode.postMessage({
+            command: "chooseVenvPath"
         });
     }
 
@@ -24199,11 +24285,13 @@ div.col-nav {
     function resultingCommand() {
 
         if (resultingCommandEl &amp;&amp; leoPythonCommandEl) {
-            let w_serverScriptPath = (leoEditorPathEl.value &amp;&amp; leoEditorPathEl.value.trim()) ? leoEditorPathEl.value.trim() + "/leo/core" : "";
+
+            let w_venvPath = venvPathPathEl.value ? venvPathPathEl.value.trim() : "";
+
+            let w_serverScriptPath = (leoEditorPathEl.value &amp;&amp; leoEditorPathEl.value.trim()) ? leoEditorPathEl.value.trim() + "/leo/core/leoserver.py" : "";
             if (!w_serverScriptPath.trim()) {
-                resultingCommandEl.innerHTML = "Please set your Leo-Editor installation path";
-                resultingCommandEl.style.opacity = "0.3";
-                return;
+                // Instead of a real 'file' path, consider using the pip installed Lee's leoserver.py
+                w_serverScriptPath = 'leo.core.leoserver';
             }
 
             let w_pythonPath = ""; // Command of child.spawn call
@@ -24221,13 +24309,37 @@ div.col-nav {
                 if (_isWin32) {
                     w_pythonPath = "py";
                 }
+                if (w_venvPath) {
+                    w_pythonPath = "python"; // if a venv is set, use the python command from there
+                    if (_isWin32) {
+                        w_pythonPath = "python.exe"; // Windows uses python.exe
+                    }
+                }
             }
 
-            if (_isWin32 &amp;&amp; w_pythonPath === "py") {
+            if (w_venvPath &amp;&amp; w_venvPath.length) {
+                if (w_venvPath.endsWith("/") || w_venvPath.endsWith("\\")) {
+                    // If the path ends with a slash, remove it
+                    w_venvPath = w_venvPath.slice(0, -1);
+                }
+                if (w_pythonPath.startsWith("/") || w_pythonPath.startsWith("\\")) {
+                    // If the python path starts with a slash, remove it
+                    w_pythonPath = w_pythonPath.slice(1);
+                }
+
+                // Simulate node path.join
+                w_pythonPath = w_venvPath.trim() + "/" + (_isWin32 ? 'Scripts' : 'bin') + "/" + w_pythonPath;
+            }
+
+            if (_isWin32 &amp;&amp; w_pythonPath === "py" &amp;&amp; !w_venvPath) {
                 w_args.push("-3");
             }
-            w_args.push(w_serverScriptPath.trim());
 
+            if (w_serverScriptPath === 'leo.core.leoserver') {
+                w_args.push("-m");
+            }
+
+            w_args.push(w_serverScriptPath.trim());
 
             if (w_limitUsers &gt; 1 &amp;&amp;
                 w_limitUsers &lt; 256) {
@@ -24290,9 +24402,13 @@ div.col-nav {
     );
 
     // START
-    const w_button = document.getElementById('chooseLeoEditorPath');
-    if (w_button) {
-        w_button.onclick = chooseLeoEditorPath;
+    const w_buttonLeoEditorPath = document.getElementById('chooseLeoEditorPath');
+    if (w_buttonLeoEditorPath) {
+        w_buttonLeoEditorPath.onclick = chooseLeoEditorPath;
+    }
+    const w_buttonVenvPath = document.getElementById('chooseVenvPath');
+    if (w_buttonVenvPath) {
+        w_buttonVenvPath.onclick = chooseVenvPath;
     }
     setControls();
     setVisibility(frontConfig);
@@ -24342,7 +24458,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.24&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.25&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"
@@ -24350,9 +24466,13 @@ div.col-nav {
             href="https://boltex.github.io/"&gt;Sponsor LeoInteg
             &lt;span class="heart"&gt;&amp;#x2764;&lt;/span&gt;
           &lt;/a&gt;
-          &lt;a class="button button--flat" title="LeoInteg's Features"
-            href="https://github.com/boltex/leointeg#features-"&gt;
-            See What's New in LeoInteg 1.0.24
+          &lt;a class="button button--flat" title="LeoInteg's Readme"
+            href="https://github.com/boltex/leointeg#-leo-for-visual-studio-code"&gt;
+            Documentation
+          &lt;/a&gt;
+          &lt;a class="button button--flat" title="LeoInteg's Change Log"
+            href="https://github.com/boltex/leointeg/blob/master/CHANGELOG.md#change-log"&gt;
+            What's New
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
@@ -24395,24 +24515,40 @@ div.col-nav {
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;label for="leoEditorPath"&gt;Leo&amp;#8209;Editor&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
-                &lt;input id="leoEditorPath" name="leoEditorPath" type="text" maxlength="256" placeholder="C:/leo-editor"
-                  data-setting /&gt;
+                &lt;label
+                  for="leoEditorPath"&gt;Leo&amp;#8209;Editor&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;input id="leoEditorPath" name="leoEditorPath" type="text" maxlength="256"
+                  placeholder="Specific installation path" data-setting /&gt;
                 &lt;button type="button" id="chooseLeoEditorPath" name="chooseLeoEditorPath"
                   class="button btn button--flat button--flat-primary button--choose-path"&gt;
                   Browse For Folder...
                 &lt;/button&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Location of your Leo-Editor installation&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;(Optional if installed with pip) Location of your Leo-Editor
+                installation&lt;/span&gt;
             &lt;/div&gt;
+
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="venvPath"&gt;Python&amp;nbsp;venv&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;input id="venvPath" name="venvPath" type="text" maxlength="256" placeholder="venv folder path"
+                  data-setting /&gt;
+                &lt;button type="button" id="chooseVenvPath" name="chooseVenvPath"
+                  class="button btn button--flat button--flat-primary button--choose-path"&gt;
+                  Browse For Folder...
+                &lt;/button&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;(Optional) Location of your venv&lt;/span&gt;
+            &lt;/div&gt;
+
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="leoPythonCommand"&gt;Python&amp;nbsp;Command&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
                 &lt;input id="leoPythonCommand" name="leoPythonCommand" type="text" maxlength="256"
                   placeholder="Empty for default" data-setting /&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Command for starting python (Defaults to 'py' on windows, or
-                'python3' otherwise)&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Command for starting python (Defaults to 'py' on windows, 'python3'
+                otherwise)&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
@@ -24432,7 +24568,9 @@ div.col-nav {
             &lt;/div&gt;
             &lt;div class="break"&gt;&lt;/div&gt;
             &lt;fieldset class="info"&gt;
-              &lt;legend title="The resulting server process spawn command"&gt;Server Process Launch Command&lt;/legend&gt;
+              &lt;legend title="The resulting server process spawn command"&gt;Server Process Launch Command
+                &lt;i&gt;- from above settings&lt;/i&gt;
+              &lt;/legend&gt;
               &lt;div class="setting"&gt;
                 &lt;div class="setting__input"&gt;
                   &lt;p id="resultingCommand" name="resultingCommand" title="The resulting server process spawn command"
@@ -24873,7 +25011,7 @@ div.col-nav {
           &lt;/li&gt;
           &lt;li&gt;
             &lt;a href="#outline-commands" title="Outline Pane settings"&gt;Outline Pane Commands&lt;/a&gt;
-          &lt;/li&gt;/
+          &lt;/li&gt;
           &lt;li&gt;
             &lt;a href="#node-commands" title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
           &lt;/li&gt;

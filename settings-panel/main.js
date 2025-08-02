@@ -14,6 +14,7 @@
     const resultingCommandEl = document.getElementById("resultingCommand");
     const leoPythonCommandEl = document.getElementById("leoPythonCommand");
     const leoEditorPathEl = document.getElementById("leoEditorPath");
+    const venvPathPathEl = document.getElementById("venvPath");
     const connectionPortEl = document.getElementById("connectionPort");
     const limitUsersEl = document.getElementById("limitUsers");
 
@@ -64,6 +65,13 @@
                     if (w_element) {
                         w_element.value = message.editorPath;
                         onInputChanged(w_element);
+                    }
+                    break;
+                case "newVenvPath":
+                    const w_venvElement = document.getElementById("venvPath");
+                    if (w_venvElement) {
+                        w_venvElement.value = message.venvPath;
+                        onInputChanged(w_venvElement);
                     }
                     break;
                 default:
@@ -215,6 +223,11 @@
     function chooseLeoEditorPath() {
         vscode.postMessage({
             command: "chooseLeoEditorPath"
+        });
+    }
+    function chooseVenvPath() {
+        vscode.postMessage({
+            command: "chooseVenvPath"
         });
     }
 
@@ -370,11 +383,13 @@
     function resultingCommand() {
 
         if (resultingCommandEl && leoPythonCommandEl) {
-            let w_serverScriptPath = (leoEditorPathEl.value && leoEditorPathEl.value.trim()) ? leoEditorPathEl.value.trim() + "/leo/core" : "";
+
+            let w_venvPath = venvPathPathEl.value ? venvPathPathEl.value.trim() : "";
+
+            let w_serverScriptPath = (leoEditorPathEl.value && leoEditorPathEl.value.trim()) ? leoEditorPathEl.value.trim() + "/leo/core/leoserver.py" : "";
             if (!w_serverScriptPath.trim()) {
-                resultingCommandEl.innerHTML = "Please set your Leo-Editor installation path";
-                resultingCommandEl.style.opacity = "0.3";
-                return;
+                // Instead of a real 'file' path, consider using the pip installed Lee's leoserver.py
+                w_serverScriptPath = 'leo.core.leoserver';
             }
 
             let w_pythonPath = ""; // Command of child.spawn call
@@ -392,13 +407,37 @@
                 if (_isWin32) {
                     w_pythonPath = "py";
                 }
+                if (w_venvPath) {
+                    w_pythonPath = "python"; // if a venv is set, use the python command from there
+                    if (_isWin32) {
+                        w_pythonPath = "python.exe"; // Windows uses python.exe
+                    }
+                }
             }
 
-            if (_isWin32 && w_pythonPath === "py") {
+            if (w_venvPath && w_venvPath.length) {
+                if (w_venvPath.endsWith("/") || w_venvPath.endsWith("\\")) {
+                    // If the path ends with a slash, remove it
+                    w_venvPath = w_venvPath.slice(0, -1);
+                }
+                if (w_pythonPath.startsWith("/") || w_pythonPath.startsWith("\\")) {
+                    // If the python path starts with a slash, remove it
+                    w_pythonPath = w_pythonPath.slice(1);
+                }
+
+                // Simulate node path.join
+                w_pythonPath = w_venvPath.trim() + "/" + (_isWin32 ? 'Scripts' : 'bin') + "/" + w_pythonPath;
+            }
+
+            if (_isWin32 && w_pythonPath === "py" && !w_venvPath) {
                 w_args.push("-3");
             }
-            w_args.push(w_serverScriptPath.trim());
 
+            if (w_serverScriptPath === 'leo.core.leoserver') {
+                w_args.push("-m");
+            }
+
+            w_args.push(w_serverScriptPath.trim());
 
             if (w_limitUsers > 1 &&
                 w_limitUsers < 256) {
@@ -461,9 +500,13 @@
     );
 
     // START
-    const w_button = document.getElementById('chooseLeoEditorPath');
-    if (w_button) {
-        w_button.onclick = chooseLeoEditorPath;
+    const w_buttonLeoEditorPath = document.getElementById('chooseLeoEditorPath');
+    if (w_buttonLeoEditorPath) {
+        w_buttonLeoEditorPath.onclick = chooseLeoEditorPath;
+    }
+    const w_buttonVenvPath = document.getElementById('chooseVenvPath');
+    if (w_buttonVenvPath) {
+        w_buttonVenvPath.onclick = chooseVenvPath;
     }
     setControls();
     setVisibility(frontConfig);

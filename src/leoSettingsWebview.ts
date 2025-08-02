@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as os from 'os';
 import { LeoIntegration } from "./leoIntegration";
 import * as utils from "./utils";
+import { Constants } from "./constants";
 
 export class LeoSettingsProvider {
 
@@ -68,12 +69,24 @@ export class LeoSettingsProvider {
                                         void vscode.window.showErrorMessage(message.text);
                                         break;
                                     case 'chooseLeoEditorPath':
-                                        utils.chooseLeoFolderDialog().then(p_chosenPath => {
+                                        utils.chooseLeoFolderDialog(Constants.USER_MESSAGES.LOCATE_LEO_FOLDER).then(p_chosenPath => {
                                             if (this._panel && p_chosenPath && p_chosenPath.length) {
                                                 this._panel.webview.postMessage(
                                                     {
                                                         command: 'newEditorPath',
                                                         editorPath: p_chosenPath[0].fsPath
+                                                    }
+                                                );
+                                            }
+                                        });
+                                        break;
+                                    case 'chooseVenvPath':
+                                        utils.chooseLeoFolderDialog(Constants.USER_MESSAGES.LOCATE_VENV_FOLDER).then(p_chosenPath => {
+                                            if (this._panel && p_chosenPath && p_chosenPath.length) {
+                                                this._panel.webview.postMessage(
+                                                    {
+                                                        command: 'newVenvPath',
+                                                        venvPath: p_chosenPath[0].fsPath
                                                     }
                                                 );
                                             }
