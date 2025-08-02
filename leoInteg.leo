@@ -9033,8 +9033,13 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
    _Or with git._ (See [Installing Leo with git](https://leo-editor.github.io/leo-editor/installing.html#installing-leo-with-git))
 
 - Websocket Python Library\
+  _Should be already installed if Leo was installed with pip_\
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/](https://websockets.readthedocs.io/))
+
+## Python virtual environment (venv)
+
+If you installed Leo in a Python virtual environment (venv), fill up the **Python venv Path** option instead of the **Leo Editor Path** option in LeoInteg's [Extension Settings](#extension-settings) shown below.
 
 </t>
 <t tx="felix.20200718222035.1">## Features
@@ -14646,6 +14651,10 @@ public gotoGlobalLine(p_lineNumber?: number): void {
  */
 public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
 
+    "open-aside": Constants.COMMANDS.OPEN_ASIDE,
+    "go-anywhere": Constants.COMMANDS.FIND_QUICK_GO_ANYWHERE,
+    "leointeg-settings": Constants.COMMANDS.SHOW_SETTINGS,
+
     "close-window": Constants.COMMANDS.CLOSE_FILE,
 
     "find-quick": Constants.COMMANDS.FIND_QUICK,
@@ -17621,6 +17630,11 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 
 </t>
 <t tx="felix.20220321211021.1">public static addMinibufferCommands: { label: string, detail: string }[] = [
+
+    { 'label': 'open-aside', 'detail': 'Open the selected node in a body pane aside the current one.' },
+    { 'label': 'go-anywhere', 'detail': 'Find any position by it\'s headline as you type into the input box.' },
+    { 'label': 'leointeg-settings', 'detail': 'Open the LeoInteg welcome and settings panel.' },
+
     { "label": "close-window", "detail": "Close the Leo window, prompting to save it if it has been changed." },
 
     { "label": "find-quick", "detail": "Opens the Nav tab." },
@@ -23061,9 +23075,10 @@ public setGotoContent(): void {
 </t>
 <t tx="felix.20250708172435.1">## 1.0.25
 
-- Improved the settings panel to allow setting the Leo Editor path and Python venv path more easily.
-- Fixed display of the Leo Editor and server script path that was not being shown correctly in the settings panel.
 - Updated the minimum Leo version requirement to 6.8.6.
+- Implemented python venv support and added controls in setting panel to set the Leo Editor path and Python venv path more easily.
+- Fixed display of the Leo Editor and server script path that was not being shown correctly in the settings panel.
+- Added 'open-aside', 'go-anywhere' and 'leointeg-welcome'/'leointeg-settings' commanDS to the minibuffer.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
