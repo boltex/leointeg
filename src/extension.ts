@@ -115,6 +115,10 @@ export function activate(p_context: vscode.ExtensionContext) {
             finalFocus: Focus.Body
         })],
 
+        [CMD.OPEN_AT_LEO_FILE, (p_ap: ArchivedPosition) => w_leo.openAtLeoFile(p_ap, true)],
+        [CMD.OPEN_AT_LEO_FILE_SELECTION, () => w_leo.openAtLeoFile(U, false)],
+        [CMD.OPEN_AT_LEO_FILE_SELECTION_FO, () => w_leo.openAtLeoFile(U, true)],
+
         [CMD.WRITE_AT_FILE_NODES, () => w_leo.nodeCommand({
             action: BRIDGE.WRITE_AT_FILE_NODES,
             node: U,

@@ -2,7 +2,7 @@
 
 ## 1.0.26
 
-- ...
+- Added support for `@leo <path>` nodes. (Requires Leo 6.8.7)
 
 ## 1.0.25
 
