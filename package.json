@@ -2125,6 +2125,27 @@
         "icon": "$(leo-refresh)"
       },
       {
+        "command": "leointeg.openAtLeoFile",
+        "category": "Leo",
+        "title": "Open @leo file",
+        "enablement": "leoTreeOpened",
+        "icon": "$(leo-folder)"
+      },
+      {
+        "command": "leointeg.openAtLeoFileSelection",
+        "category": "Leo",
+        "title": "Open @leo file",
+        "enablement": "leoTreeOpened && leoAtLeoFile",
+        "icon": "$(leo-folder)"
+      },
+      {
+        "command": "leointeg.openAtLeoFileSelectionFromOutline",
+        "category": "Leo",
+        "title": "Open @leo file",
+        "enablement": "leoTreeOpened && leoAtLeoFile",
+        "icon": "$(leo-folder)"
+      },
+      {
         "command": "leointeg.writeAtFileNodes",
         "category": "Leo",
         "enablement": "leoTreeOpened",
@@ -3278,6 +3299,14 @@
           "when": "false"
         },
         {
+          "command": "leointeg.openAtLeoFile",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.openAtLeoFileSelectionFromOutline",
+          "when": "false"
+        },
+        {
           "command": "leointeg.writeAtFileNodesFromOutline",
           "when": "false"
         },
@@ -4044,6 +4073,11 @@
         {
           "command": "leointeg.refreshFromDisk",
           "when": "viewItem =~ /leoNodeAtFile/",
+          "group": "leoNodeContext1@3"
+        },
+        {
+          "command": "leointeg.openAtLeoFile",
+          "when": "viewItem =~ /leoNodeAtLeoFile/",
           "group": "leoNodeContext1@3"
         },
         {

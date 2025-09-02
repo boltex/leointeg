@@ -489,11 +489,13 @@ export class Constants {
         SELECTED_EMPTY: "leoEmpty",
         SELECTED_CHILD: "leoChild", // Has children
         SELECTED_ATFILE: "leoAtFile", // Can be refreshed
+        SELECTED_ATLEOFILE: "leoAtLeoFile", // Can be used with 'open-at-leo-file' command
 
         // Outline nodes: text Flags for 'when' clauses. Used as concatenated strings.
         NODE_MARKED: "leoNodeMarked",  // Selected node is marked
         NODE_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked (Needed for regexp)
         NODE_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
+        NODE_ATLEOFILE: "leoNodeAtLeoFile", // Selected node is an @leo file
         NODE_CLONED: "leoNodeCloned",
         NODE_ROOT: "leoNodeRoot",
         NODE_NOT_ROOT: "leoNodeNotRoot",
@@ -669,6 +671,7 @@ export class Constants {
         PROMOTE_PNODE: "promote",
         DEMOTE_PNODE: "demote",
         REFRESH_FROM_DISK_PNODE: "refreshFromDisk",
+        OPEN_AT_LEO_FILE_PNODE: "!open_at_leo_file",
         WRITE_AT_FILE_NODES: '-write-at-file-nodes',
         WRITE_DIRTY_AT_FILE_NODES: '-write-dirty-at-file-nodes',
         SORT_CHILDREN: "sortChildren",
@@ -853,6 +856,7 @@ export class Constants {
         PROMOTE: Constants.NAME + ".promote",
         DEMOTE: Constants.NAME + ".demote",
         REFRESH_FROM_DISK: Constants.NAME + ".refreshFromDisk",
+        OPEN_AT_LEO_FILE: Constants.NAME + ".openAtLeoFile",
         WRITE_AT_FILE_NODES: Constants.NAME + ".writeAtFileNodes",
         WRITE_AT_FILE_NODES_FO: Constants.NAME + ".writeAtFileNodesFromOutline",
         WRITE_DIRTY_AT_FILE_NODES: Constants.NAME + ".writeDirtyAtFileNodes",
@@ -879,6 +883,7 @@ export class Constants {
         PROMOTE_SELECTION: Constants.NAME + ".promoteSelection",
         DEMOTE_SELECTION: Constants.NAME + ".demoteSelection",
         REFRESH_FROM_DISK_SELECTION: Constants.NAME + ".refreshFromDiskSelection",
+        OPEN_AT_LEO_FILE_SELECTION: Constants.NAME + ".openAtLeoFileSelection",
         // * Commands from keyboard, while focus on OUTLINE
         MARK_SELECTION_FO: Constants.NAME + ".markSelectionFromOutline",
         UNMARK_SELECTION_FO: Constants.NAME + ".unmarkSelectionFromOutline",
@@ -896,6 +901,7 @@ export class Constants {
         CLONE_SELECTION_FO: Constants.NAME + ".cloneNodeSelectionFromOutline",
         PROMOTE_SELECTION_FO: Constants.NAME + ".promoteSelectionFromOutline",
         DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
+        OPEN_AT_LEO_FILE_SELECTION_FO: Constants.NAME + ".openAtLeoFileSelectionFromOutline",
         HOIST: Constants.NAME + ".hoistNode",
         HOIST_SELECTION: Constants.NAME + ".hoistSelection",
         HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",

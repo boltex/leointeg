@@ -399,6 +399,16 @@ export function isApEqual(p_a: ArchivedPosition, p_b: ArchivedPosition): boolean
     return true;
 }
 
+export function isAtLeoFileNode(headline: string): boolean {
+    if (headline.startsWith("@leo ")) {
+        // Extract the rest of the string after '@Leo '
+        const rest = headline.slice(5).trim();
+        return rest.trim().length > 0; // Ensure there's something after '@Leo '
+    } else {
+        return false;
+    }
+}
+
 /**
  * * Checks if a node would become dirty if it were to now have body content at all
  * @param p_node LeoNode from vscode's outline

@@ -276,6 +276,15 @@ export class LeoStates {
         this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ATFILE, p_value);
     }
 
+    private _leoAtLeoFile: boolean = false;
+    get leoAtLeoFile(): boolean {
+        return this._leoAtLeoFile;
+    }
+    set leoAtLeoFile(p_value: boolean) {
+        this._leoAtLeoFile = p_value;
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ATLEOFILE, p_value);
+    }
+
     constructor(
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
@@ -291,7 +300,8 @@ export class LeoStates {
         this.leoDirty = p_node.dirty;
         this.leoEmpty = !p_node.hasBody;
         this.leoChild = p_node.hasChildren; // !(p_node.collapsibleState === vscode.TreeItemCollapsibleState.None);
-        this.leoAtFile = p_node.atFile;
+        this.leoAtFile = p_node.atFile && !p_node.headline.startsWith("@Leo"); // Make sure it's not an at-Leo node
+        this.leoAtLeoFile = utils.isAtLeoFileNode(p_node.headline); // Just check the headline
     }
 
     public setLeoStateFlags(p_states: LeoPackageStates): void {
@@ -314,4 +324,5 @@ export class LeoStates {
         this.leoTopHoistChapter = p_states.topHoistChapter;
 
     }
+
 }
