@@ -2316,7 +2316,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "url": "https://boltex.github.io/"
   },
   "publisher": "boltex",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/boltex/leointeg"
