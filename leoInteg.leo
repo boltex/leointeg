@@ -23,6 +23,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20250801235213.1"><vh>1.0.26</vh></v>
 <v t="felix.20250708172435.1"><vh>1.0.25</vh></v>
 <v t="felix.20240723210726.1"><vh>1.0.24</vh></v>
 <v t="felix.20240716191935.1"><vh>1.0.23</vh></v>
@@ -537,6 +538,7 @@
 <v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
 <v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
 <v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
+<v t="felix.20250901185138.1"><vh>openAtLeoFile</vh></v>
 </v>
 <v t="felix.20220808233838.1"><vh>Export/Import Commands</vh>
 <v t="felix.20210602155312.1"><vh>importFile</vh></v>
@@ -605,6 +607,7 @@
 <v t="felix.20200718193348.1"><vh>leoEmpty</vh></v>
 <v t="felix.20200718193350.1"><vh>leoChild</vh></v>
 <v t="felix.20200718193353.1"><vh>leoAtFile</vh></v>
+<v t="felix.20250901150259.1"><vh>leoAtLeoFile</vh></v>
 </v>
 <v t="felix.20200718193500.1"><vh>constructor</vh></v>
 <v t="felix.20200718192411.2"><vh>selectedNodeFlags</vh></v>
@@ -692,6 +695,7 @@
 <v t="felix.20200718195558.7"><vh>getFileFromPath</vh></v>
 <v t="felix.20230808224051.1"><vh>getOnce</vh></v>
 <v t="felix.20220826200039.1"><vh>isApEqual</vh></v>
+<v t="felix.20250901152631.1"><vh>isAtLeoFileNode</vh></v>
 <v t="felix.20200718195558.8"><vh>isIconChangedByEdit</vh></v>
 <v t="felix.20200718195558.9"><vh>isHexColor</vh></v>
 <v t="felix.20220327230102.1"><vh>isAlphaNum</vh></v>
@@ -1676,6 +1680,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     finalFocus: Focus.Body
 })],
 
+[CMD.OPEN_AT_LEO_FILE, (p_ap: ArchivedPosition) =&gt; w_leo.openAtLeoFile(p_ap, true)],
+[CMD.OPEN_AT_LEO_FILE_SELECTION, () =&gt; w_leo.openAtLeoFile(U, false)],
+[CMD.OPEN_AT_LEO_FILE_SELECTION_FO, () =&gt; w_leo.openAtLeoFile(U, true)],
+
 [CMD.WRITE_AT_FILE_NODES, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.WRITE_AT_FILE_NODES,
     node: U,
@@ -2300,7 +2308,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -2308,7 +2316,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     "url": "https://boltex.github.io/"
   },
   "publisher": "boltex",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/boltex/leointeg"
@@ -3510,6 +3518,27 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "icon": "$(leo-refresh)"
 },
 {
+  "command": "leointeg.openAtLeoFile",
+  "category": "Leo",
+  "title": "Open @leo file",
+  "enablement": "leoTreeOpened",
+  "icon": "$(leo-folder)"
+},
+{
+  "command": "leointeg.openAtLeoFileSelection",
+  "category": "Leo",
+  "title": "Open @leo file",
+  "enablement": "leoTreeOpened &amp;&amp; leoAtLeoFile",
+  "icon": "$(leo-folder)"
+},
+{
+  "command": "leointeg.openAtLeoFileSelectionFromOutline",
+  "category": "Leo",
+  "title": "Open @leo file",
+  "enablement": "leoTreeOpened &amp;&amp; leoAtLeoFile",
+  "icon": "$(leo-folder)"
+},
+{
   "command": "leointeg.writeAtFileNodes",
   "category": "Leo",
   "enablement": "leoTreeOpened",
@@ -4482,6 +4511,14 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 },
 {
   "command": "leointeg.refreshFromDisk",
+  "when": "false"
+},
+{
+  "command": "leointeg.openAtLeoFile",
+  "when": "false"
+},
+{
+  "command": "leointeg.openAtLeoFileSelectionFromOutline",
   "when": "false"
 },
 {
@@ -5604,6 +5641,7 @@ public static LEOBRIDGE = {
     PROMOTE_PNODE: "promote",
     DEMOTE_PNODE: "demote",
     REFRESH_FROM_DISK_PNODE: "refreshFromDisk",
+    OPEN_AT_LEO_FILE_PNODE: "!open_at_leo_file",
     WRITE_AT_FILE_NODES: '-write-at-file-nodes',
     WRITE_DIRTY_AT_FILE_NODES: '-write-dirty-at-file-nodes',
     SORT_CHILDREN: "sortChildren",
@@ -5789,6 +5827,7 @@ public static COMMANDS = {
     PROMOTE: Constants.NAME + ".promote",
     DEMOTE: Constants.NAME + ".demote",
     REFRESH_FROM_DISK: Constants.NAME + ".refreshFromDisk",
+    OPEN_AT_LEO_FILE: Constants.NAME + ".openAtLeoFile",
     WRITE_AT_FILE_NODES: Constants.NAME + ".writeAtFileNodes",
     WRITE_AT_FILE_NODES_FO: Constants.NAME + ".writeAtFileNodesFromOutline",
     WRITE_DIRTY_AT_FILE_NODES: Constants.NAME + ".writeDirtyAtFileNodes",
@@ -5815,6 +5854,7 @@ public static COMMANDS = {
     PROMOTE_SELECTION: Constants.NAME + ".promoteSelection",
     DEMOTE_SELECTION: Constants.NAME + ".demoteSelection",
     REFRESH_FROM_DISK_SELECTION: Constants.NAME + ".refreshFromDiskSelection",
+    OPEN_AT_LEO_FILE_SELECTION: Constants.NAME + ".openAtLeoFileSelection",
     // * Commands from keyboard, while focus on OUTLINE
     MARK_SELECTION_FO: Constants.NAME + ".markSelectionFromOutline",
     UNMARK_SELECTION_FO: Constants.NAME + ".unmarkSelectionFromOutline",
@@ -5832,6 +5872,7 @@ public static COMMANDS = {
     CLONE_SELECTION_FO: Constants.NAME + ".cloneNodeSelectionFromOutline",
     PROMOTE_SELECTION_FO: Constants.NAME + ".promoteSelectionFromOutline",
     DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
+    OPEN_AT_LEO_FILE_SELECTION_FO: Constants.NAME + ".openAtLeoFileSelectionFromOutline",
     HOIST: Constants.NAME + ".hoistNode",
     HOIST_SELECTION: Constants.NAME + ".hoistSelection",
     HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",
@@ -6271,11 +6312,13 @@ public static CONTEXT_FLAGS = {
     SELECTED_EMPTY: "leoEmpty",
     SELECTED_CHILD: "leoChild", // Has children
     SELECTED_ATFILE: "leoAtFile", // Can be refreshed
+    SELECTED_ATLEOFILE: "leoAtLeoFile", // Can be used with 'open-at-leo-file' command
 
     // Outline nodes: text Flags for 'when' clauses. Used as concatenated strings.
     NODE_MARKED: "leoNodeMarked",  // Selected node is marked
     NODE_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked (Needed for regexp)
     NODE_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
+    NODE_ATLEOFILE: "leoNodeAtLeoFile", // Selected node is an @leo file
     NODE_CLONED: "leoNodeCloned",
     NODE_ROOT: "leoNodeRoot",
     NODE_NOT_ROOT: "leoNodeNotRoot",
@@ -8335,7 +8378,8 @@ export class LeoStates {
     this.leoDirty = p_node.dirty;
     this.leoEmpty = !p_node.hasBody;
     this.leoChild = p_node.hasChildren; // !(p_node.collapsibleState === vscode.TreeItemCollapsibleState.None);
-    this.leoAtFile = p_node.atFile;
+    this.leoAtFile = p_node.atFile &amp;&amp; !p_node.headline.startsWith("@Leo"); // Make sure it's not an at-Leo node
+    this.leoAtLeoFile = utils.isAtLeoFileNode(p_node.headline); // Just check the headline
 }
 
 </t>
@@ -8359,6 +8403,7 @@ export class LeoStates {
     this.leoTopHoistChapter = p_states.topHoistChapter;
 
 }
+
 </t>
 <t tx="felix.20200718193219.1">// * Connected to a Leo bridge server
 private _leoBridgeReady: boolean = false;
@@ -13396,6 +13441,11 @@ public static VSCODE_COMMANDS = {
     "group": "leoNodeContext1@3"
   },
   {
+    "command": "leointeg.openAtLeoFile",
+    "when": "viewItem =~ /leoNodeAtLeoFile/",
+    "group": "leoNodeContext1@3"
+  },
+  {
     "command": "leointeg.mark",
     "when": "viewItem =~ /^leoNodeUnmarked/",
     "group": "leoNodeContext2@1"
@@ -18418,9 +18468,13 @@ public incTreeId(): void {
     if (element.marked) {
         w_contextValue = Constants.CONTEXT_FLAGS.NODE_MARKED;
     }
-    // then append 'leoNodeAtFile' to existing if needed
-    if (element.atFile) {
+    // then append 'leoNodeAtFile' to existing if needed (check if not at-Leo)
+    if (element.atFile &amp;&amp; !element.headline.startsWith("@leo")) {
         w_contextValue += Constants.CONTEXT_FLAGS.NODE_ATFILE;
+    }
+    // then append 'leoNodeAtLeoFile' to existing if needed
+    if (utils.isAtLeoFileNode(element.headline)) {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_ATLEOFILE;
     }
     // then append 'leoNodeCloned' to existing if needed
     if (element.cloned) {
@@ -23081,6 +23135,62 @@ public setGotoContent(): void {
 - Added 'open-aside', 'go-anywhere' and 'leointeg-welcome'/'leointeg-settings' commanDS to the minibuffer.
 
 </t>
+<t tx="felix.20250801235213.1">## 1.0.26
+
+- Added support for `@leo &lt;path&gt;` nodes. (Requires Leo 6.8.7)
+
+</t>
+<t tx="felix.20250901150259.1">private _leoAtLeoFile: boolean = false;
+get leoAtLeoFile(): boolean {
+    return this._leoAtLeoFile;
+}
+set leoAtLeoFile(p_value: boolean) {
+    this._leoAtLeoFile = p_value;
+    this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ATLEOFILE, p_value);
+}
+
+</t>
+<t tx="felix.20250901152631.1">export function isAtLeoFileNode(headline: string): boolean {
+    if (headline.startsWith("@leo ")) {
+        // Extract the rest of the string after '@Leo '
+        const rest = headline.slice(5).trim();
+        return rest.trim().length &gt; 0; // Ensure there's something after '@Leo '
+    } else {
+        return false;
+    }
+}
+
+</t>
+<t tx="felix.20250901185138.1">public async openAtLeoFile(
+    p_node?: ArchivedPosition,
+    p_fromOutline?: boolean
+): Promise&lt;LeoBridgePackage | undefined&gt; {
+
+    await this._isBusyTriggerSave(false, true);
+
+    // If leoserver version under 1.0.15 (available in Leo 6.8.7), just show info message about upgrading Leo to at least 6.8.6.
+    if (this.serverVersion.major &lt; 1 || (this.serverVersion.major === 1 &amp;&amp; this.serverVersion.minor === 0 &amp;&amp; this.serverVersion.patch &lt; 25)) {
+        void vscode.window.showInformationMessage("Please upgrade Leo to version 6.8.7 or higher.");
+        return;
+    }
+
+    const w_commandResult = this.nodeCommand({
+        action: Constants.LEOBRIDGE.OPEN_AT_LEO_FILE_PNODE,
+        node: p_node,
+        refreshType: {
+            tree: true,
+            body: true,
+            documents: true,
+            buttons: true,
+            states: true,
+        },
+        finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
+    });
+    return w_commandResult;
+
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -24458,7 +24568,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.25&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.26&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"

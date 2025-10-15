@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.26
+
+- Added support for `@leo <path>` nodes. (Requires Leo 6.8.7)
+
 ## 1.0.25
 
 - Updated the minimum Leo version requirement to 6.8.6.

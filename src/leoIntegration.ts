@@ -7355,6 +7355,35 @@ export class LeoIntegration {
             );
     }
 
+    public async openAtLeoFile(
+        p_node?: ArchivedPosition,
+        p_fromOutline?: boolean
+    ): Promise<LeoBridgePackage | undefined> {
+
+        await this._isBusyTriggerSave(false, true);
+
+        // If leoserver version under 1.0.15 (available in Leo 6.8.7), just show info message about upgrading Leo to at least 6.8.6.
+        if (this.serverVersion.major < 1 || (this.serverVersion.major === 1 && this.serverVersion.minor === 0 && this.serverVersion.patch < 25)) {
+            void vscode.window.showInformationMessage("Please upgrade Leo to version 6.8.7 or higher.");
+            return;
+        }
+
+        const w_commandResult = this.nodeCommand({
+            action: Constants.LEOBRIDGE.OPEN_AT_LEO_FILE_PNODE,
+            node: p_node,
+            refreshType: {
+                tree: true,
+                body: true,
+                documents: true,
+                buttons: true,
+                states: true,
+            },
+            finalFocus: p_fromOutline ? Focus.Outline : Focus.Body,
+        });
+        return w_commandResult;
+
+    }
+
     /**
      * * Import any File(s)
      * No URL passed from the command definition.
