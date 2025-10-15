@@ -23,6 +23,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20251014210209.1"><vh>1.0.27</vh></v>
 <v t="felix.20250801235213.1"><vh>1.0.26</vh></v>
 <v t="felix.20250708172435.1"><vh>1.0.25</vh></v>
 <v t="felix.20240723210726.1"><vh>1.0.24</vh></v>
@@ -2308,7 +2309,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -23191,6 +23192,11 @@ set leoAtLeoFile(p_value: boolean) {
 }
 
 </t>
+<t tx="felix.20251014210209.1">## 1.0.27
+
+- ...
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -24568,7 +24574,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.26&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.27&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"
