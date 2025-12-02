@@ -2,7 +2,7 @@
 
 ## 1.0.27
 
-- ...
+- Fixed support for minibuffer import-any-file and import-text-file command aliases.
 
 ## 1.0.26
 

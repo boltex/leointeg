@@ -2303,7 +2303,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
 </t>
-<t tx="ekr.20200815123601.1">@language json
+<t tx="ekr.20200815123601.1" _mod_time="46313736303439343138312e3132310a2e">@language json
 @tabwidth -2
 {
   "name": "leointeg",
@@ -5499,7 +5499,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   ]
 },
 </t>
-<t tx="felix.20200718020912.1">import * as vscode from "vscode";
+<t tx="felix.20200718020912.1" _mod_time="46313736343634393636352e3439340a2e">import * as vscode from "vscode";
 
 @language typescript
 @tabwidth -4
@@ -6341,7 +6341,7 @@ public static CONTEXT_FLAGS = {
 };
 
 </t>
-<t tx="felix.20200718024635.1">import * as vscode from "vscode";
+<t tx="felix.20200718024635.1" _mod_time="46313735363737333031322e3237330a2e">import * as vscode from "vscode";
 import * as utils from "./utils";
 import { UserCommand, LeoBridgePackage, ReqRefresh, ArchivedPosition, Focus } from "./types";
 import { LeoIntegration } from "./leoIntegration";
@@ -6537,7 +6537,7 @@ private _resolveResult(p_package: LeoBridgePackage): void {
 }
 
 </t>
-<t tx="felix.20200718030926.1">import * as vscode from "vscode";
+<t tx="felix.20200718030926.1" _mod_time="46313735363737333031322e3237350a2e">import * as vscode from "vscode";
 import { ConfigMembers, ConfigSetting } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
@@ -6808,7 +6808,7 @@ public buildFromSavedSettings(): boolean {
 }
 
 </t>
-<t tx="felix.20200718031424.1">import * as vscode from "vscode";
+<t tx="felix.20200718031424.1" _mod_time="46313736303439323833392e3836390a2e">import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
 import { ArchivedPosition, Focus, LeoGotoNavKey, ReqRefresh } from "./types";
@@ -6972,7 +6972,7 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
     }
 }
 </t>
-<t tx="felix.20200718035737.1">import * as vscode from "vscode";
+<t tx="felix.20200718035737.1" _mod_time="46313735363737333031322e3237380a2e">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import {
     AskMessageItem,
@@ -6986,7 +6986,7 @@ import { LeoIntegration } from "./leoIntegration";
 
 @others
 </t>
-<t tx="felix.20200718040540.1">import * as vscode from "vscode";
+<t tx="felix.20200718040540.1" _mod_time="46313732313137313839342e3631380a2e">import * as vscode from "vscode";
 import * as utils from "./utils";
 import * as path from 'path';
 import { Constants } from "./constants";
@@ -7249,7 +7249,7 @@ public fireRefreshFile(p_gnx: string): void {
 }
 
 </t>
-<t tx="felix.20200718153505.1">import * as vscode from "vscode";
+<t tx="felix.20200718153505.1" _mod_time="46313735363737333031322e3237390a2e">import * as vscode from "vscode";
 import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
@@ -7608,7 +7608,7 @@ public get description(): string | boolean {
 }
 
 </t>
-<t tx="felix.20200718164130.1">import * as vscode from "vscode";
+<t tx="felix.20200718164130.1" _mod_time="46313731343631343530312e3137380a2e">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
@@ -7729,7 +7729,7 @@ public get id(): string {
 }
 
 </t>
-<t tx="felix.20200718165108.1">import * as vscode from "vscode";
+<t tx="felix.20200718165108.1" _mod_time="46313732313137313839342e3631390a2e">import * as vscode from "vscode";
 import * as utils from './utils';
 import { LeoIntegration } from "./leoIntegration";
 import { ProviderResult } from "vscode";
@@ -7808,7 +7808,7 @@ public refreshTreeRoot(): void {
 
 </t>
 <t tx="felix.20200718165721.1"></t>
-<t tx="felix.20200718170429.1">import * as vscode from "vscode";
+<t tx="felix.20200718170429.1" _mod_time="46313730353839313437312e3830310a2e">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import * as utils from './utils';
 import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
@@ -7913,7 +7913,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean, p_customTitle?: string): Promise&lt
 }
 
 </t>
-<t tx="felix.20200718185403.1">import * as vscode from "vscode";
+<t tx="felix.20200718185403.1" _mod_time="46313731343631343530312e3138370a2e">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -8026,7 +8026,7 @@ private _updateLeoObjectIndicator(): void {
 }
 
 </t>
-<t tx="felix.20200718191946.1">import * as os from 'os';
+<t tx="felix.20200718191946.1" _mod_time="46313735363737333031322e3238360a2e">import * as os from 'os';
 import * as fs from 'fs';
 import * as child from 'child_process';
 import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
@@ -8318,7 +8318,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
 }
 
 </t>
-<t tx="felix.20200718192351.1">import * as vscode from "vscode";
+<t tx="felix.20200718192351.1" _mod_time="46313736303439323833392e3837340a2e">import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
@@ -8600,7 +8600,7 @@ set leoAtFile(p_value: boolean) {
 </t>
 <t tx="felix.20200718193719.1"></t>
 <t tx="felix.20200718193731.1"></t>
-<t tx="felix.20200718194857.1">import * as vscode from "vscode";
+<t tx="felix.20200718194857.1" _mod_time="46313735363737333031322e3238370a2e">import * as vscode from "vscode";
 
 @language typescript
 @tabwidth -4
@@ -8911,7 +8911,7 @@ export interface ArchivedPosition {
 }
 
 </t>
-<t tx="felix.20200718195558.1">import * as vscode from "vscode";
+<t tx="felix.20200718195558.1" _mod_time="46313736303439323833392e3837350a2e">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition, Version } from "./types";
 
@@ -9036,7 +9036,7 @@ export function isHexColor(p_hexString: string): boolean {
 
 </t>
 <t tx="felix.20200718220811.1"></t>
-<t tx="felix.20200718220818.1">@language md
+<t tx="felix.20200718220818.1" _mod_time="46313735363737333031322e3235380a2e">@language md
 @tabwidth -4
 # ![Leo Editor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
 
@@ -9058,13 +9058,13 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)
 </t>
-<t tx="felix.20200718220833.1">@language md
+<t tx="felix.20200718220833.1" _mod_time="46313736343634393833342e3637390a2e">@language md
 @tabwidth -4
 # Change Log
 
 @others
 </t>
-<t tx="felix.20200718220833.2">@language md
+<t tx="felix.20200718220833.2" _mod_time="46313639323530313332372e3935350a2e">@language md
 @tabwidth -4
 # How to install and run the development version
 
@@ -9505,7 +9505,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
-<t tx="felix.20200719025231.1">import * as vscode from 'vscode';
+<t tx="felix.20200719025231.1" _mod_time="46313736303439323833392e3837330a2e">import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
@@ -14208,7 +14208,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
-<t tx="felix.20210522001751.1">import * as vscode from 'vscode';
+<t tx="felix.20210522001751.1" _mod_time="46313732313137313839342e36320a2e">import * as vscode from 'vscode';
 import { Constants } from './constants';
 import { LeoIntegration } from './leoIntegration';
 import * as utils from './utils';
@@ -14742,6 +14742,8 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     "remove-all-tags": Constants.COMMANDS.REMOVE_TAGS,
     "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
     "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
+    "import-any-file": Constants.COMMANDS.IMPORT_ANY_FILE,
+    "import-text-file": Constants.COMMANDS.IMPORT_ANY_FILE,
     "redo": Constants.COMMANDS.REDO,
     "undo": Constants.COMMANDS.UNDO,
     "clone-find-all": Constants.COMMANDS.CLONE_FIND_ALL,
@@ -17150,7 +17152,7 @@ public async navTextChange(): Promise&lt;LeoBridgePackage&gt; {
 }
 
 </t>
-<t tx="felix.20220307233825.1">import * as vscode from "vscode";
+<t tx="felix.20220307233825.1" _mod_time="46313732313137313839342e3632310a2e">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
@@ -17937,7 +17939,7 @@ set leoCanHoist(p_value: boolean) {
 }
 
 </t>
-<t tx="felix.20220705000805.1">import * as vscode from "vscode";
+<t tx="felix.20220705000805.1" _mod_time="46313638363739303838322e3130360a2e">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { Constants } from "./constants";
 import { Icon } from "./types";
@@ -18337,7 +18339,7 @@ set leoTopHoistChapter(p_value: boolean) {
 }
 
 </t>
-<t tx="felix.20220721204822.1">import * as vscode from 'vscode';
+<t tx="felix.20220721204822.1" _mod_time="46313736303439323833392e38370a2e">import * as vscode from 'vscode';
 import * as utils from './utils';
 import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
@@ -20582,7 +20584,7 @@ Press **`Enter`** to freeze the results and show results also found in **body te
 If you check the **Tag** option, the **Nav** field is then used to find nodes by their tag 🏷 _ua_ (user attribute).
 
 </t>
-<t tx="felix.20230304215145.1">@language md
+<t tx="felix.20230304215145.1" _mod_time="46313732313137313839342e3538390a2e">@language md
 @tabwidth -4
 # Sponsors and Backers 🏅
 
@@ -21032,7 +21034,7 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 }
 
 </t>
-<t tx="felix.20240107210250.1">import * as vscode from 'vscode';
+<t tx="felix.20240107210250.1" _mod_time="46313731343631343530312e3138390a2e">import * as vscode from 'vscode';
 import { Constants } from "./constants";
 
 export class UnlProvider implements vscode.DocumentLinkProvider {
@@ -21776,7 +21778,7 @@ public unlToClipboard(unlType?: UnlType): Thenable&lt;void&gt; {
     }
 }
 </t>
-<t tx="felix.20240502002356.1">import * as vscode from "vscode";
+<t tx="felix.20240502002356.1" _mod_time="46313732313137313839342e3631380a2e">import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
 import * as path from 'path';
@@ -22677,7 +22679,7 @@ private _hideBodiesUnknownToFileSys(p_editors: readonly vscode.TextEditor[]): vo
 }
 
 </t>
-<t tx="felix.20240709214141.1">&lt;!DOCTYPE html&gt;
+<t tx="felix.20240709214141.1" _mod_time="46313732313137313839342e3539310a2e">&lt;!DOCTYPE html&gt;
 &lt;html lang="en" tabindex="-1"&gt;
 
 &lt;head&gt;
@@ -23194,10 +23196,10 @@ set leoAtLeoFile(p_value: boolean) {
 </t>
 <t tx="felix.20251014210209.1">## 1.0.27
 
-- ...
+- Fixed support for minibuffer import-any-file and import-text-file command aliases.
 
 </t>
-<t tx="fil.20210603195218.1">import * as vscode from "vscode";
+<t tx="fil.20210603195218.1" _mod_time="46313735363737333031322e3238340a2e">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
 import { LeoIntegration } from "./leoIntegration";
@@ -23508,7 +23510,7 @@ private async _getBaseHtml(): Promise&lt;string&gt; {
 
 </t>
 <t tx="fil.20210603223013.1"></t>
-<t tx="fil.20210603223013.2">@language css
+<t tx="fil.20210603223013.2" _mod_time="46313732313137313839342e3539330a2e">@language css
 html {
   box-sizing: border-box;
   font-size: 13px;
@@ -24010,12 +24012,12 @@ div.col-nav {
   height: 3px;
 }
 </t>
-<t tx="fil.20210603223013.4">@others
+<t tx="fil.20210603223013.4" _mod_time="46313732313137313839342e3539320a2e">@others
 @language javascript
 @tabwidth -4
 </t>
 <t tx="fil.20210603223933.1"></t>
-<t tx="fil.20210603223933.165">@language javascript
+<t tx="fil.20210603223933.165" _mod_time="46313735363737333031322e3237320a2e">@language javascript
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 // Send message to LeoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
@@ -24534,7 +24536,7 @@ div.col-nav {
 })();
 
 </t>
-<t tx="fil.20210603223933.9">@language html
+<t tx="fil.20210603223933.9" _mod_time="46313736303439343138312e3132330a2e">@language html
 @tabwidth -2
 &lt;!DOCTYPE html&gt;
 &lt;html lang="en" tabindex="-1"&gt;
@@ -25166,7 +25168,7 @@ div.col-nav {
 
 &lt;/html&gt;
 </t>
-<t tx="fil.20210603223956.2">@language css
+<t tx="fil.20210603223956.2" _mod_time="46313732313738333139302e3736320a2e">@language css
 html {
   height: 100%;
   font-size: 62.5%;
