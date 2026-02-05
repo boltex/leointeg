@@ -674,6 +674,7 @@
 <v t="felix.20240223230656.1"><vh>UnlType</vh></v>
 </v>
 <v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
+<v t="felix.20260205002853.1"><vh>performanceNow</vh></v>
 <v t="felix.20210706233101.1"><vh>uniqueId</vh></v>
 <v t="felix.20210706233106.1"><vh>getUniqueId</vh></v>
 <v t="felix.20240502215719.1"><vh>closeLeoTextEditors</vh></v>
@@ -8911,7 +8912,7 @@ export interface ArchivedPosition {
 }
 
 </t>
-<t tx="felix.20200718195558.1" _mod_time="46313736303439323833392e3837350a2e">import * as vscode from "vscode";
+<t tx="felix.20200718195558.1" _mod_time="46313737303236393333342e3530340a2e">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition, Version } from "./types";
 
@@ -9058,7 +9059,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)
 </t>
-<t tx="felix.20200718220833.1" _mod_time="46313736343634393833342e3637390a2e">@language md
+<t tx="felix.20200718220833.1" _mod_time="46313737303237303634352e3936360a2e">@language md
 @tabwidth -4
 # Change Log
 
@@ -9505,7 +9506,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
-<t tx="felix.20200719025231.1" _mod_time="46313736303439323833392e3837330a2e">import * as vscode from 'vscode';
+<t tx="felix.20200719025231.1" _mod_time="46313737303237303035372e3237320a2e">import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
@@ -9912,9 +9913,11 @@ export class LeoIntegration {
 
     private _revealNodeRetriedRefreshOutline: boolean = false; // USED IN _refreshOutline and _revealNode
 
+
     // Last selected node we got a hold of;
     //  -  leoTreeView.selection maybe newer (user click) and unprocessed
     //  -  this._refreshNode maybe newer (refresh from server) and unprocessed
+    public lastSelectedNodeTime: number | undefined = 0; // Falsy means not set
     private _lastSelectedNode: ArchivedPosition | undefined;
     private _lastSelectedNodeTS: number = 0;
     get lastSelectedNode(): ArchivedPosition | undefined {
@@ -11714,6 +11717,30 @@ public async selectTreeNode(
     p_internalCall?: boolean,
     //p_aside?: boolean
 ): Promise&lt;void | LeoBridgePackage | vscode.TextEditor&gt; {
+
+    // Todo first check for double click
+    let isDoubleClick = false;
+
+    // Check for double-click: if called recently (under 500ms) on exact same node.
+    if (!p_internalCall &amp;&amp; this.lastSelectedNode &amp;&amp; this.lastSelectedNode === p_node &amp;&amp; this.lastSelectedNodeTime) {
+        if (utils.performanceNow() - this.lastSelectedNodeTime &lt; 500) {
+            // Double click on the same node
+            this.lastSelectedNodeTime = undefined;
+            const w_headline = p_node.headline.trim() || "";
+            isDoubleClick = true;
+            if (w_headline.startsWith("unl:")) {
+                return this.handleUnl({
+                    unl: w_headline,
+                    scheme: Constants.URI_LEO_SCHEME,
+                });
+            }
+        }
+    }
+
+    // Was not a double-click, proceed as usual
+
+    // Note: this.lastSelectedNode is set in gotSelectedNode and _tryApplyNodeToBody 
+    this.lastSelectedNodeTime = utils.performanceNow();
 
     await this.triggerBodySave(true);
 
@@ -21034,7 +21061,7 @@ export function compareVersions(p_version: Version, p_min: Version): boolean {
 }
 
 </t>
-<t tx="felix.20240107210250.1" _mod_time="46313731343631343530312e3138390a2e">import * as vscode from 'vscode';
+<t tx="felix.20240107210250.1" _mod_time="46313737303236383130312e3839350a2e">import * as vscode from 'vscode';
 import { Constants } from "./constants";
 
 export class UnlProvider implements vscode.DocumentLinkProvider {
@@ -21079,6 +21106,8 @@ export class UnlProvider implements vscode.DocumentLinkProvider {
 
     private gnxUnlRegex = /\bunl:gnx:\/\/[^\r\n#]*#\S*/g; // This allows spaces and content after the UNL.
     private headlineUnlRegex = /\bunl:\/\/[^\r\n#]*#[^\r\n]*\S/g; // This goes on until end of line.
+    private gnxOnlyRegex = /(?&lt;![:\w])gnx:[\w.]+/g; // gnx only links are of the form "gnx:felix.20251231182235.2" Important, do not match inside of gnxUnlRegex matches! (must be empty or a space before gnx:)
+
 
     public provideDocumentLinks(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult&lt;vscode.DocumentLink[]&gt; {
         const text = document.getText();
@@ -21097,6 +21126,16 @@ export class UnlProvider implements vscode.DocumentLinkProvider {
         while ((match = this.headlineUnlRegex.exec(text)) !== null) {
             const range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
             const args = encodeURIComponent(JSON.stringify({ unl: match[0], scheme: scheme }));
+            links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:${Constants.COMMANDS.HANDLE_UNL}?${args}`)));
+        }
+
+        this.gnxOnlyRegex.lastIndex = 0;
+        // GNX-only links
+        while ((match = this.gnxOnlyRegex.exec(text)) !== null) {
+            const range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
+            // gnx only are not valid unls, so build one from it knowing that the file-name part will be empty
+            const unl = `unl:gnx://#${match[0].substring(4)}`;
+            const args = encodeURIComponent(JSON.stringify({ unl, scheme: scheme }));
             links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:${Constants.COMMANDS.HANDLE_UNL}?${args}`)));
         }
 
@@ -23197,6 +23236,18 @@ set leoAtLeoFile(p_value: boolean) {
 <t tx="felix.20251014210209.1">## 1.0.27
 
 - Fixed support for minibuffer import-any-file and import-text-file command aliases.
+- Fixed body pane url links to also support direct "gxn:" links. (non unl)
+- Added double clicking on headlines containing a unl to follow that link
+
+</t>
+<t tx="felix.20260205002853.1">/**
+ * * window.performace.now browser/node crossover utility
+ */
+export function performanceNow(): number {
+    const w_now = process.hrtime();
+    const [w_secs, w_nanosecs] = w_now;
+    return w_secs * 1000 + Math.floor(w_nanosecs / 1000000);
+}
 
 </t>
 <t tx="fil.20210603195218.1" _mod_time="46313735363737333031322e3238340a2e">import * as vscode from "vscode";
