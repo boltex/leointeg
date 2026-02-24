@@ -22718,7 +22718,7 @@ private _hideBodiesUnknownToFileSys(p_editors: readonly vscode.TextEditor[]): vo
 }
 
 </t>
-<t tx="felix.20240709214141.1" _mod_time="46313732313137313839342e3539310a2e">&lt;!DOCTYPE html&gt;
+<t tx="felix.20240709214141.1" _mod_time="46313737313930353939392e3631350a2e">&lt;!DOCTYPE html&gt;
 &lt;html lang="en" tabindex="-1"&gt;
 
 &lt;head&gt;
@@ -22755,42 +22755,42 @@ private _hideBodiesUnknownToFileSys(p_editors: readonly vscode.TextEditor[]): vo
                 &lt;div class="col"&gt;
                     &lt;input type="checkbox" id="wholeWord" name="wholeWord"&gt;
                     &lt;label title="Match Whole Word (Ctrl+Alt+W)" class="label-fix" for="wholeWord"&gt;Whole
-                        &lt;u&gt;w&lt;/u&gt;ord&lt;/label&gt;&lt;br&gt;
+                        &lt;u&gt;W&lt;/u&gt;ord&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="ignoreCase" name="ignoreCase"&gt;
                     &lt;label title="Matches Ignore Case (Ctrl+Alt+I)" class="label-fix" for="ignoreCase"&gt;&lt;u&gt;I&lt;/u&gt;gnore
-                        case&lt;/label&gt;&lt;br&gt;
+                        Case&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="regExp" name="regExp"&gt;
                     &lt;label title="Use Regular Expression (Ctrl+Alt+X)" class="label-fix"
                         for="regExp"&gt;Rege&lt;u&gt;x&lt;/u&gt;p&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="markFinds" name="markFinds"&gt;
                     &lt;label title="Mark Found nodes (Ctrl+Alt+F)" class="label-fix" for="markFinds"&gt;Mark
-                        &lt;u&gt;f&lt;/u&gt;inds&lt;/label&gt;&lt;br&gt;
+                        &lt;u&gt;F&lt;/u&gt;inds&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="markChanges" name="markChanges"&gt;
                     &lt;label title="Mark Changed nodes (Ctrl+Alt+C)" class="label-fix" for="markChanges"&gt;Mark
-                        &lt;u&gt;c&lt;/u&gt;hanges&lt;/label&gt;
+                        &lt;u&gt;C&lt;/u&gt;hanges&lt;/label&gt;
                 &lt;/div&gt;
                 &lt;div class="col"&gt;
                     &lt;!-- RADIOS --&gt;
                     &lt;input type="radio" id="entireOutline" name="searchScope" value="0"&gt;
                     &lt;label title="Search in Whole Outline (Ctrl+Alt+E)" class="label-fix"
                         for="entireOutline"&gt;&lt;u&gt;E&lt;/u&gt;ntire
-                        outline&lt;/label&gt;&lt;br&gt;
+                        Outline&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="subOutlineOnly" name="searchScope" value="1"&gt;
                     &lt;label title="Limit to Selected Outline (Ctrl+Alt+S)" class="label-fix"
                         for="subOutlineOnly"&gt;&lt;u&gt;S&lt;/u&gt;uboutline Only&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="nodeOnly" name="searchScope" value="2"&gt;
                     &lt;label title="Limit to Selected Node (Ctrl+Alt+N)" class="label-fix" for="nodeOnly"&gt;&lt;u&gt;N&lt;/u&gt;ode
-                        only&lt;/label&gt;&lt;br&gt;
+                        Only&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="fileOnly" name="searchScope" value="3"&gt;
                     &lt;label title="Limit to External Files (Ctrl+Alt+L)" class="label-fix" for="fileOnly"&gt;Fi&lt;u&gt;l&lt;/u&gt;e
-                        only&lt;/label&gt;&lt;br&gt;
+                        Only&lt;/label&gt;&lt;br&gt;
                     &lt;!-- CHECKBOXES --&gt;
                     &lt;input type="checkbox" id="searchHeadline" name="searchHeadline"&gt;
                     &lt;label title="Search in Headlines (Ctrl+Alt+H)" class="label-fix" for="searchHeadline"&gt;Search
-                        &lt;u&gt;h&lt;/u&gt;eadline&lt;/label&gt;&lt;br&gt;
+                        &lt;u&gt;H&lt;/u&gt;eadline&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="searchBody" name="searchBody"&gt;
                     &lt;label title="Search in Body Text (Ctrl+Alt+B)" class="label-fix" for="searchBody"&gt;Search
-                        &lt;u&gt;b&lt;/u&gt;ody&lt;/label&gt;
+                        &lt;u&gt;B&lt;/u&gt;ody&lt;/label&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
