@@ -14235,7 +14235,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
-<t tx="felix.20210522001751.1" _mod_time="46313732313137313839342e36320a2e">import * as vscode from 'vscode';
+<t tx="felix.20210522001751.1" _mod_time="46313737323339393039332e3831380a2e">import * as vscode from 'vscode';
 import { Constants } from './constants';
 import { LeoIntegration } from './leoIntegration';
 import * as utils from './utils';
@@ -23493,6 +23493,7 @@ import { Constants } from "./constants";
                 }
                 case 'navigateNavEntry': {
                     void this._leoIntegration.navigateNavEntry(data.value);
+                    break;
                 }
                 case 'refreshSearchConfig': {
                     // Leave a cycle before getting settings
