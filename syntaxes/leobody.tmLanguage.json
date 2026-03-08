@@ -10,9 +10,6 @@
             "include": "#leo-keywords"
         },
         {
-            "include": "#leo-languages"
-        },
-        {
             "include": "#leo-no-color"
         },
         {
@@ -109,67 +106,6 @@
                 {
                     "match": "^(@comment|@delims)($|\\s+)",
                     "name": "invalid"
-                }
-            ]
-        },
-        "strings": {
-            "patterns": [
-                {
-                    "name": "string.quoted.double.leobody",
-                    "begin": "\"",
-                    "end": "\"",
-                    "patterns": [
-                        {
-                            "name": "constant.character.escape.leobody",
-                            "match": "\\\\."
-                        }
-                    ]
-                },
-                {
-                    "name": "string.quoted.single.leobody",
-                    "begin": "\\'",
-                    "end": "\\'",
-                    "patterns": [
-                        {
-                            "name": "constant.character.escape.leobody",
-                            "match": "\\\\."
-                        }
-                    ]
-                }
-            ]
-        },
-        "leo-languages": {
-            "patterns": [],
-            "// TEST patterns": [
-                {
-                    "begin": "^(@language python)($|\\s+)",
-                    "end": "^(@language)($|\\s+)",
-                    "beginCaptures": {
-                        "0": {
-                            "name": "keyword"
-                        }
-                    },
-                    "endCaptures": {
-                        "0": {
-                            "name": "keyword"
-                        }
-                    },
-                    "name": "meta.embedded.block.leobody.python"
-                },
-                {
-                    "begin": "^(@language typescript)($|\\s+)",
-                    "end": "^(@language)($|\\s+)",
-                    "beginCaptures": {
-                        "0": {
-                            "name": "keyword"
-                        }
-                    },
-                    "endCaptures": {
-                        "0": {
-                            "name": "keyword"
-                        }
-                    },
-                    "name": "meta.embedded.block.leobody.typescript"
                 }
             ]
         }
