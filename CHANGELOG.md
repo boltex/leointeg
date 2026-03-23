@@ -4,7 +4,8 @@
 
 - Fixed support for minibuffer import-any-file and import-text-file command aliases.
 - Fixed body pane url links to also support direct "gxn:" links. (non unl)
-- Added double clicking on headlines containing a unl to follow that link
+- Added double clicking on headlines containing a unl to follow that link.
+- Fixed node icon dirty/clean outline contrast to match Leo's defaults.
 
 ## 1.0.26
 

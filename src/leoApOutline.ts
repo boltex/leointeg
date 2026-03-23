@@ -83,7 +83,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
         }
 
         const w_icon: number =
-            (+(this._invertDirty !== !!element.dirty) << 3) |
+            (+(this._invertDirty !== !element.dirty) << 3) |
             (+element.cloned << 2) |
             (+element.marked << 1) |
             +element.hasBody;
