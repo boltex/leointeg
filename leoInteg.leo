@@ -2304,7 +2304,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
 </t>
-<t tx="ekr.20200815123601.1" _mod_time="46313736303439343138312e3132310a2e">@language json
+<t tx="ekr.20200815123601.1" _mod_time="46313737353838323230392e37350a2e">@language json
 @tabwidth -2
 {
   "name": "leointeg",
@@ -2385,7 +2385,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "dependencies": {
     "bufferutil": "^4.0.1",
     "hasbin": "^1.2.3",
-    "lodash": "^4.17.21",
+    "lodash": "^4.18",
     "portfinder": "^1.0.28",
     "tree-kill": "^1.2.2",
     "ws": "^7.4.6"
@@ -18366,7 +18366,7 @@ set leoTopHoistChapter(p_value: boolean) {
 }
 
 </t>
-<t tx="felix.20220721204822.1" _mod_time="46313737343239363732322e36350a2e">import * as vscode from 'vscode';
+<t tx="felix.20220721204822.1" _mod_time="46313737343239363736392e3731370a2e">import * as vscode from 'vscode';
 import * as utils from './utils';
 import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
