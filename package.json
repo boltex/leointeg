@@ -4888,7 +4888,7 @@
   "dependencies": {
     "bufferutil": "^4.0.1",
     "hasbin": "^1.2.3",
-    "lodash": "^4.17.21",
+    "lodash": "^4.18",
     "portfinder": "^1.0.28",
     "tree-kill": "^1.2.2",
     "ws": "^7.4.6"
