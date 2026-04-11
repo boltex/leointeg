@@ -9059,7 +9059,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)
 </t>
-<t tx="felix.20200718220833.1" _mod_time="46313737343239363836382e3534370a2e">@language md
+<t tx="felix.20200718220833.1" _mod_time="46313737353934343331382e3337330a2e">@language md
 @tabwidth -4
 # Change Log
 
@@ -18366,7 +18366,7 @@ set leoTopHoistChapter(p_value: boolean) {
 }
 
 </t>
-<t tx="felix.20220721204822.1" _mod_time="46313737343239363736392e3731370a2e">import * as vscode from 'vscode';
+<t tx="felix.20220721204822.1" _mod_time="46313737353934343230332e3837320a2e">import * as vscode from 'vscode';
 import * as utils from './utils';
 import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
@@ -18518,7 +18518,7 @@ public incTreeId(): void {
     }
 
     const w_icon: number =
-        (+(this._invertDirty !== !element.dirty) &lt;&lt; 3) |
+        (+(this._invertDirty !== !!element.dirty) &lt;&lt; 3) |
         (+element.cloned &lt;&lt; 2) |
         (+element.marked &lt;&lt; 1) |
         +element.hasBody;
@@ -23238,7 +23238,7 @@ set leoAtLeoFile(p_value: boolean) {
 - Fixed support for minibuffer import-any-file and import-text-file command aliases.
 - Fixed body pane url links to also support direct "gxn:" links. (non unl)
 - Added double clicking on headlines containing a unl to follow that link.
-- Fixed node icon dirty/clean outline contrast to match Leo's defaults.
+- Improved 'folder' icon image.
 
 </t>
 <t tx="felix.20260205002853.1">/**
