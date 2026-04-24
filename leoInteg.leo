@@ -9037,7 +9037,7 @@ export function isHexColor(p_hexString: string): boolean {
 
 </t>
 <t tx="felix.20200718220811.1"></t>
-<t tx="felix.20200718220818.1" _mod_time="46313735363737333031322e3235380a2e">@language md
+<t tx="felix.20200718220818.1" _mod_time="46313737373030323133352e3634350a2e">@language md
 @tabwidth -4
 # ![Leo Editor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
 
@@ -9265,6 +9265,11 @@ The outline pane is made by implementing a
 [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics),
 while the body-pane's _virtual document_ is made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api)
 and using the outline's selected node 'gnx' as identifier.
+
+## Other Leo Editor implementations and IDE integrations ports
+
+- [Leo-Web](https://boltex.github.io/leo-web/) A browser-based TypeScript implementation of the Leo Editor that uses the browser's File System API for local file access.
+- [LeoJS](https://marketplace.visualstudio.com/items?itemName=boltex.leojs) A TypeScript implementation of the Leo Editor, designed as an extension for [Visual Studio Code](https://code.visualstudio.com/) and [vscodium.com](https://vscodium.com/).
 
 ---
 
