@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.28
+
+- ...
+
 ## 1.0.27
 
 - Fixed support for minibuffer import-any-file and import-text-file command aliases.
