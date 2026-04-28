@@ -275,6 +275,11 @@ The outline pane is made by implementing a
 while the body-pane's _virtual document_ is made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api)
 and using the outline's selected node 'gnx' as identifier.
 
+## Other Leo Editor implementations and IDE integrations ports
+
+- [Leo-Web](https://boltex.github.io/leo-web/) A browser-based TypeScript implementation of the Leo Editor that uses the browser's File System API for local file access.
+- [LeoJS](https://marketplace.visualstudio.com/items?itemName=boltex.leojs) A TypeScript implementation of the Leo Editor, designed as an extension for [Visual Studio Code](https://code.visualstudio.com/) and [vscodium.com](https://vscodium.com/).
+
 ---
 
 ## Acknowledgments

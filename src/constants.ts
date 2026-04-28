@@ -1073,6 +1073,8 @@ export class Constants {
         "remove-all-tags": Constants.COMMANDS.REMOVE_TAGS,
         "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
         "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
+        "import-any-file": Constants.COMMANDS.IMPORT_ANY_FILE,
+        "import-text-file": Constants.COMMANDS.IMPORT_ANY_FILE,
         "redo": Constants.COMMANDS.REDO,
         "undo": Constants.COMMANDS.UNDO,
         "clone-find-all": Constants.COMMANDS.CLONE_FIND_ALL,

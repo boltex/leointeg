@@ -170,9 +170,11 @@ export class LeoIntegration {
 
     private _revealNodeRetriedRefreshOutline: boolean = false; // USED IN _refreshOutline and _revealNode
 
+
     // Last selected node we got a hold of;
     //  -  leoTreeView.selection maybe newer (user click) and unprocessed
     //  -  this._refreshNode maybe newer (refresh from server) and unprocessed
+    public lastSelectedNodeTime: number | undefined = 0; // Falsy means not set
     private _lastSelectedNode: ArchivedPosition | undefined;
     private _lastSelectedNodeTS: number = 0;
     get lastSelectedNode(): ArchivedPosition | undefined {
@@ -4713,6 +4715,30 @@ export class LeoIntegration {
         p_internalCall?: boolean,
         //p_aside?: boolean
     ): Promise<void | LeoBridgePackage | vscode.TextEditor> {
+
+        // Todo first check for double click
+        let isDoubleClick = false;
+
+        // Check for double-click: if called recently (under 500ms) on exact same node.
+        if (!p_internalCall && this.lastSelectedNode && this.lastSelectedNode === p_node && this.lastSelectedNodeTime) {
+            if (utils.performanceNow() - this.lastSelectedNodeTime < 500) {
+                // Double click on the same node
+                this.lastSelectedNodeTime = undefined;
+                const w_headline = p_node.headline.trim() || "";
+                isDoubleClick = true;
+                if (w_headline.startsWith("unl:")) {
+                    return this.handleUnl({
+                        unl: w_headline,
+                        scheme: Constants.URI_LEO_SCHEME,
+                    });
+                }
+            }
+        }
+
+        // Was not a double-click, proceed as usual
+
+        // Note: this.lastSelectedNode is set in gotSelectedNode and _tryApplyNodeToBody 
+        this.lastSelectedNodeTime = utils.performanceNow();
 
         await this.triggerBodySave(true);
 

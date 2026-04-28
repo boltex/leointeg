@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.0.27
+
+- Fixed support for minibuffer import-any-file and import-text-file command aliases.
+- Fixed body pane url links to also support direct "gxn:" links. (non unl)
+- Added double clicking on headlines containing a unl to follow that link.
+- Improved 'folder' icon image.
+
 ## 1.0.26
 
 - Added support for `@leo <path>` nodes. (Requires Leo 6.8.7)

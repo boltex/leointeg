@@ -5,6 +5,15 @@ import { Icon, UserCommand, ArchivedPosition, Version } from "./types";
 var portfinder = require('portfinder');
 
 /**
+ * * window.performace.now browser/node crossover utility
+ */
+export function performanceNow(): number {
+    const w_now = process.hrtime();
+    const [w_secs, w_nanosecs] = w_now;
+    return w_secs * 1000 + Math.floor(w_nanosecs / 1000000);
+}
+
+/**
  * * Unique numeric Id
  */
 var uniqueId: number = 0;

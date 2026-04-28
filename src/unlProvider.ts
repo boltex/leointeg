@@ -43,6 +43,8 @@ export class UnlProvider implements vscode.DocumentLinkProvider {
 
     private gnxUnlRegex = /\bunl:gnx:\/\/[^\r\n#]*#\S*/g; // This allows spaces and content after the UNL.
     private headlineUnlRegex = /\bunl:\/\/[^\r\n#]*#[^\r\n]*\S/g; // This goes on until end of line.
+    private gnxOnlyRegex = /(?<![:\w])gnx:[\w.]+/g; // gnx only links are of the form "gnx:felix.20251231182235.2" Important, do not match inside of gnxUnlRegex matches! (must be empty or a space before gnx:)
+
 
     public provideDocumentLinks(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.DocumentLink[]> {
         const text = document.getText();
@@ -61,6 +63,16 @@ export class UnlProvider implements vscode.DocumentLinkProvider {
         while ((match = this.headlineUnlRegex.exec(text)) !== null) {
             const range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
             const args = encodeURIComponent(JSON.stringify({ unl: match[0], scheme: scheme }));
+            links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:${Constants.COMMANDS.HANDLE_UNL}?${args}`)));
+        }
+
+        this.gnxOnlyRegex.lastIndex = 0;
+        // GNX-only links
+        while ((match = this.gnxOnlyRegex.exec(text)) !== null) {
+            const range = new vscode.Range(document.positionAt(match.index), document.positionAt(match.index + match[0].length));
+            // gnx only are not valid unls, so build one from it knowing that the file-name part will be empty
+            const unl = `unl:gnx://#${match[0].substring(4)}`;
+            const args = encodeURIComponent(JSON.stringify({ unl, scheme: scheme }));
             links.push(new vscode.DocumentLink(range, vscode.Uri.parse(`command:${Constants.COMMANDS.HANDLE_UNL}?${args}`)));
         }
 

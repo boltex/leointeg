@@ -76,6 +76,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                     }
                     case 'navigateNavEntry': {
                         void this._leoIntegration.navigateNavEntry(data.value);
+                        break;
                     }
                     case 'refreshSearchConfig': {
                         // Leave a cycle before getting settings
