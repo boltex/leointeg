@@ -986,6 +986,7 @@ public static CONFIG_DEFAULTS = {
     SHOW_BRANCH_OUTLINE: false,
 
     INVERT_NODES: false,
+    LEO_SERVER_PASSWORD: "",
     LEO_PYTHON_COMMAND: "",
     LEO_EDITOR_PATH: "",
     VENV_PATH: "",
@@ -2305,7 +2306,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
 </t>
-<t tx="ekr.20200815123601.1" _mod_time="46313737373335323532372e3337320a2e">@language json
+<t tx="ekr.20200815123601.1" _mod_time="46313737393431383233342e3435330a2e">@language json
 @tabwidth -2
 {
   "name": "leointeg",
@@ -4825,6 +4826,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "type": "string",
   "description": "Specifies the location of a chosen venv"
 },
+"leoIntegration.leoServerPassword": {
+  "scope": "application",
+  "default": "",
+  "type": "string",
+  "description": "Specifies the password for the Leo server (Blank for none)"
+},
 "leoIntegration.leoPythonCommand": {
   "scope": "application",
   "default": "",
@@ -5501,7 +5508,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   ]
 },
 </t>
-<t tx="felix.20200718020912.1" _mod_time="46313736343634393636352e3439340a2e">import * as vscode from "vscode";
+<t tx="felix.20200718020912.1" _mod_time="46313737393431383132382e3537390a2e">import * as vscode from "vscode";
 
 @language typescript
 @tabwidth -4
@@ -6268,6 +6275,7 @@ public static CONFIG_NAMES = {
     INVERT_NODES: "invertNodeContrast",
     LEO_EDITOR_PATH: "leoEditorPath",
     VENV_PATH: "venvPath",
+    LEO_SERVER_PASSWORD: "leoServerPassword",
     LEO_PYTHON_COMMAND: "leoPythonCommand",
     AUTO_START_SERVER: "startServerAutomatically",
     AUTO_CONNECT: "connectToServerAutomatically",
@@ -6539,7 +6547,7 @@ private _resolveResult(p_package: LeoBridgePackage): void {
 }
 
 </t>
-<t tx="felix.20200718030926.1" _mod_time="46313735363737333031322e3237350a2e">import * as vscode from "vscode";
+<t tx="felix.20200718030926.1" _mod_time="46313737393431383132392e3937380a2e">import * as vscode from "vscode";
 import { ConfigMembers, ConfigSetting } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
@@ -6597,6 +6605,7 @@ export class Config implements ConfigMembers {
     // public showSortOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_SORT_BODY;
 
     public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
+    public leoServerPassword: string = Constants.CONFIG_DEFAULTS.LEO_SERVER_PASSWORD;
     public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
     public leoEditorPath: string = Constants.CONFIG_DEFAULTS.LEO_EDITOR_PATH;
     public startServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_START_SERVER;
@@ -6671,6 +6680,7 @@ public getConfig(): ConfigMembers {
         // showSortOnBody: this.showSortOnBody,
 
         invertNodeContrast: this.invertNodeContrast,
+        leoServerPassword: this.leoServerPassword,
         leoPythonCommand: this.leoPythonCommand,
         leoEditorPath: this.leoEditorPath,
         startServerAutomatically: this.startServerAutomatically,
@@ -6779,6 +6789,7 @@ public buildFromSavedSettings(): boolean {
 
         this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
         this.leoEditorPath = GET(NAME).get(NAMES.LEO_EDITOR_PATH, DEFAULTS.LEO_EDITOR_PATH);
+        this.leoServerPassword = GET(NAME).get(NAMES.LEO_SERVER_PASSWORD, DEFAULTS.LEO_SERVER_PASSWORD);
         this.leoPythonCommand = GET(NAME).get(NAMES.LEO_PYTHON_COMMAND, DEFAULTS.LEO_PYTHON_COMMAND);
         this.startServerAutomatically = GET(NAME).get(NAMES.AUTO_START_SERVER, DEFAULTS.AUTO_START_SERVER);
         this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
@@ -8602,7 +8613,7 @@ set leoAtFile(p_value: boolean) {
 </t>
 <t tx="felix.20200718193719.1"></t>
 <t tx="felix.20200718193731.1"></t>
-<t tx="felix.20200718194857.1" _mod_time="46313735363737333031322e3238370a2e">import * as vscode from "vscode";
+<t tx="felix.20200718194857.1" _mod_time="46313737393431383133392e3938310a2e">import * as vscode from "vscode";
 
 @language typescript
 @tabwidth -4
@@ -8794,6 +8805,7 @@ export interface ConfigMembers {
     invertNodeContrast: boolean;
     leoEditorPath: string;
     venvPath: string;
+    leoServerPassword: string;
     leoPythonCommand: string;
     startServerAutomatically: boolean;
     connectToServerAutomatically: boolean;
@@ -24081,7 +24093,7 @@ div.col-nav {
 @tabwidth -4
 </t>
 <t tx="fil.20210603223933.1"></t>
-<t tx="fil.20210603223933.165" _mod_time="46313735363737333031322e3237320a2e">@language javascript
+<t tx="fil.20210603223933.165" _mod_time="46313737393431383033342e3530350a2e">@language javascript
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 // Send message to LeoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
@@ -24097,6 +24109,7 @@ div.col-nav {
     const dirty = document.getElementById("dirty-config-toast");
     const resultingCommandEl = document.getElementById("resultingCommand");
     const leoPythonCommandEl = document.getElementById("leoPythonCommand");
+    const serverPasswordEl = document.getElementById("serverPassword");
     const leoEditorPathEl = document.getElementById("leoEditorPath");
     const venvPathPathEl = document.getElementById("venvPath");
     const connectionPortEl = document.getElementById("connectionPort");
@@ -24479,6 +24492,7 @@ div.col-nav {
             let w_pythonPath = ""; // Command of child.spawn call
             let w_args = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
             let w_leoPythonCommand = leoPythonCommandEl.value ? leoPythonCommandEl.value : "";
+            let w_password = serverPasswordEl.value ? serverPasswordEl.value : "";
 
             let w_usingPort = connectionPortEl.value ? connectionPortEl.value : 32125;
             let w_limitUsers = limitUsersEl.value ? limitUsersEl.value : 0;
@@ -24532,6 +24546,11 @@ div.col-nav {
             // Add port
             w_args.push("--port");
             w_args.push(w_usingPort.toString());
+
+            if (w_password &amp;&amp; w_password.length) {
+                w_args.push("--password");
+                w_args.push(w_password);
+            }
 
             resultingCommandEl.innerHTML = escapeHtml(w_pythonPath + " " + w_args.join(" ")).trim();
             resultingCommandEl.style.opacity = "1.0";
@@ -24600,7 +24619,7 @@ div.col-nav {
 })();
 
 </t>
-<t tx="fil.20210603223933.9" _mod_time="46313737373335323530362e3538360a2e">@language html
+<t tx="fil.20210603223933.9" _mod_time="46313737393431383233342e3539350a2e">@language html
 @tabwidth -2
 &lt;!DOCTYPE html&gt;
 &lt;html lang="en" tabindex="-1"&gt;
@@ -24723,6 +24742,14 @@ div.col-nav {
               &lt;span class="setting__hint"&gt;(Optional) Location of your venv&lt;/span&gt;
             &lt;/div&gt;
 
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="serverPassword"&gt;Server&amp;nbsp;Password&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;input id="serverPassword" name="serverPassword" type="text" maxlength="256"
+                  placeholder="Empty for default" data-setting /&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Authentication password (Blank for none)&lt;/span&gt;
+            &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="leoPythonCommand"&gt;Python&amp;nbsp;Command&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
