@@ -13,6 +13,7 @@
     const dirty = document.getElementById("dirty-config-toast");
     const resultingCommandEl = document.getElementById("resultingCommand");
     const leoPythonCommandEl = document.getElementById("leoPythonCommand");
+    const serverPasswordEl = document.getElementById("serverPassword");
     const leoEditorPathEl = document.getElementById("leoEditorPath");
     const venvPathPathEl = document.getElementById("venvPath");
     const connectionPortEl = document.getElementById("connectionPort");
@@ -395,6 +396,7 @@
             let w_pythonPath = ""; // Command of child.spawn call
             let w_args = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
             let w_leoPythonCommand = leoPythonCommandEl.value ? leoPythonCommandEl.value : "";
+            let w_password = serverPasswordEl.value ? serverPasswordEl.value : "";
 
             let w_usingPort = connectionPortEl.value ? connectionPortEl.value : 32125;
             let w_limitUsers = limitUsersEl.value ? limitUsersEl.value : 0;
@@ -448,6 +450,11 @@
             // Add port
             w_args.push("--port");
             w_args.push(w_usingPort.toString());
+
+            if (w_password && w_password.length) {
+                w_args.push("--password");
+                w_args.push(w_password);
+            }
 
             resultingCommandEl.innerHTML = escapeHtml(w_pythonPath + " " + w_args.join(" ")).trim();
             resultingCommandEl.style.opacity = "1.0";

@@ -234,6 +234,12 @@
           "type": "string",
           "description": "Specifies the location of a chosen venv"
         },
+        "leoIntegration.leoServerPassword": {
+          "scope": "application",
+          "default": "",
+          "type": "string",
+          "description": "Specifies the password for the Leo server (Blank for none)"
+        },
         "leoIntegration.leoPythonCommand": {
           "scope": "application",
           "default": "",

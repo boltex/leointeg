@@ -52,6 +52,7 @@ export class Config implements ConfigMembers {
     // public showSortOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_SORT_BODY;
 
     public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
+    public leoServerPassword: string = Constants.CONFIG_DEFAULTS.LEO_SERVER_PASSWORD;
     public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
     public leoEditorPath: string = Constants.CONFIG_DEFAULTS.LEO_EDITOR_PATH;
     public startServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_START_SERVER;
@@ -123,6 +124,7 @@ export class Config implements ConfigMembers {
             // showSortOnBody: this.showSortOnBody,
 
             invertNodeContrast: this.invertNodeContrast,
+            leoServerPassword: this.leoServerPassword,
             leoPythonCommand: this.leoPythonCommand,
             leoEditorPath: this.leoEditorPath,
             startServerAutomatically: this.startServerAutomatically,
@@ -378,6 +380,7 @@ export class Config implements ConfigMembers {
 
             this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
             this.leoEditorPath = GET(NAME).get(NAMES.LEO_EDITOR_PATH, DEFAULTS.LEO_EDITOR_PATH);
+            this.leoServerPassword = GET(NAME).get(NAMES.LEO_SERVER_PASSWORD, DEFAULTS.LEO_SERVER_PASSWORD);
             this.leoPythonCommand = GET(NAME).get(NAMES.LEO_PYTHON_COMMAND, DEFAULTS.LEO_PYTHON_COMMAND);
             this.startServerAutomatically = GET(NAME).get(NAMES.AUTO_START_SERVER, DEFAULTS.AUTO_START_SERVER);
             this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
