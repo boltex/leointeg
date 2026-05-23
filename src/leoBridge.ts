@@ -234,16 +234,16 @@ export class LeoBridge {
             (p_port ? p_port : this._leoIntegration.config.connectionPort)
         );
         // * Capture the python process output
-        this._websocket.onmessage = (p_event) => {
+        this._websocket!.onmessage = (p_event) => {
             this._receivedTotal++;
             if (p_event.data) {
                 this._processAnswer(p_event.data.toString());
             }
         };
-        this._websocket.onerror = (p_event: WebSocket.ErrorEvent) => {
+        this._websocket!.onerror = (p_event: WebSocket.ErrorEvent) => {
             console.error(`Websocket error: ${p_event.message}`);
         };
-        this._websocket.onclose = (p_event: WebSocket.CloseEvent) => {
+        this._websocket!.onclose = (p_event: WebSocket.CloseEvent) => {
             // * Disconnected from server
             // console.log(`Websocket closed, code: ${p_event.code}`);
             if (!this._leoIntegration.activated) {
@@ -255,6 +255,35 @@ export class LeoBridge {
                 this._leoIntegration.cancelConnect(`Connection to server closed. Code: ${p_event.code}`);
             }
         };
+
+        /* server does this:
+                    print(wsPassword)
+                    print(f"{tag}: authenticating {peer}", flush=True)
+                    auth_message = await asyncio.wait_for(websocket.recv(), timeout=10)
+                    if len(auth_message) > 4096:
+                        raise ValueError("oversized auth packet")
+
+                    auth_data = json.loads(auth_message)
+
+                    if not (
+                        auth_data.get("action") == "!auth"
+                        and hmac.compare_digest(auth_data.get("password", ""), wsPassword)
+                    ):
+                        raise ValueError("invalid credentials")
+
+                    print(f"{tag}: authentication success {peer}", flush=True)
+        */
+
+        if (this._leoIntegration.config.leoServerPassword) {
+            this._websocket!.onopen = () => {
+                const authMessage = JSON.stringify({
+                    action: "!auth",
+                    password: this._leoIntegration.config.leoServerPassword
+                });
+                this._websocket?.send(authMessage);
+            };
+        }
+
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
         this._readyPromise = this.action("", undefined, { id: Constants.STARTING_PACKAGE_ID }, true);
         return this._readyPromise; // This promise will resolve when the started python process starts

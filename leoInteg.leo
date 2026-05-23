@@ -7262,7 +7262,7 @@ public fireRefreshFile(p_gnx: string): void {
 }
 
 </t>
-<t tx="felix.20200718153505.1" _mod_time="46313735363737333031322e3237390a2e">import * as vscode from "vscode";
+<t tx="felix.20200718153505.1" _mod_time="46313737393530393230392e3031370a2e">import * as vscode from "vscode";
 import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
@@ -7324,16 +7324,16 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
         (p_port ? p_port : this._leoIntegration.config.connectionPort)
     );
     // * Capture the python process output
-    this._websocket.onmessage = (p_event) =&gt; {
+    this._websocket!.onmessage = (p_event) =&gt; {
         this._receivedTotal++;
         if (p_event.data) {
             this._processAnswer(p_event.data.toString());
         }
     };
-    this._websocket.onerror = (p_event: WebSocket.ErrorEvent) =&gt; {
+    this._websocket!.onerror = (p_event: WebSocket.ErrorEvent) =&gt; {
         console.error(`Websocket error: ${p_event.message}`);
     };
-    this._websocket.onclose = (p_event: WebSocket.CloseEvent) =&gt; {
+    this._websocket!.onclose = (p_event: WebSocket.CloseEvent) =&gt; {
         // * Disconnected from server
         // console.log(`Websocket closed, code: ${p_event.code}`);
         if (!this._leoIntegration.activated) {
@@ -7345,6 +7345,35 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
             this._leoIntegration.cancelConnect(`Connection to server closed. Code: ${p_event.code}`);
         }
     };
+
+    /* server does this:
+                print(wsPassword)
+                print(f"{tag}: authenticating {peer}", flush=True)
+                auth_message = await asyncio.wait_for(websocket.recv(), timeout=10)
+                if len(auth_message) &gt; 4096:
+                    raise ValueError("oversized auth packet")
+
+                auth_data = json.loads(auth_message)
+
+                if not (
+                    auth_data.get("action") == "!auth"
+                    and hmac.compare_digest(auth_data.get("password", ""), wsPassword)
+                ):
+                    raise ValueError("invalid credentials")
+
+                print(f"{tag}: authentication success {peer}", flush=True)
+    */
+
+    if (this._leoIntegration.config.leoServerPassword) {
+        this._websocket!.onopen = () =&gt; {
+            const authMessage = JSON.stringify({
+                action: "!auth",
+                password: this._leoIntegration.config.leoServerPassword
+            });
+            this._websocket?.send(authMessage);
+        };
+    }
+
     // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
     this._readyPromise = this.action("", undefined, { id: Constants.STARTING_PACKAGE_ID }, true);
     return this._readyPromise; // This promise will resolve when the started python process starts
@@ -8039,7 +8068,7 @@ private _updateLeoObjectIndicator(): void {
 }
 
 </t>
-<t tx="felix.20200718191946.1" _mod_time="46313735363737333031322e3238360a2e">import * as os from 'os';
+<t tx="felix.20200718191946.1" _mod_time="46313737393530313234302e3336320a2e">import * as os from 'os';
 import * as fs from 'fs';
 import * as child from 'child_process';
 import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
@@ -8211,6 +8240,12 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         // Add port
         w_args.push("--port");
         w_args.push(this.usingPort.toString());
+
+        const password = this._leoIntegration.config.leoServerPassword;
+        if (password &amp;&amp; password.trim()) {
+            w_args.push("--password");
+            w_args.push(password.trim());
+        }
 
         const w_options: child.SpawnOptions = {
             // Child to run independently of its parent process.
@@ -24093,7 +24128,7 @@ div.col-nav {
 @tabwidth -4
 </t>
 <t tx="fil.20210603223933.1"></t>
-<t tx="fil.20210603223933.165" _mod_time="46313737393431383033342e3530350a2e">@language javascript
+<t tx="fil.20210603223933.165" _mod_time="46313737393439393730382e3931340a2e">@language javascript
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 // Send message to LeoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
@@ -24109,7 +24144,7 @@ div.col-nav {
     const dirty = document.getElementById("dirty-config-toast");
     const resultingCommandEl = document.getElementById("resultingCommand");
     const leoPythonCommandEl = document.getElementById("leoPythonCommand");
-    const serverPasswordEl = document.getElementById("serverPassword");
+    const serverPasswordEl = document.getElementById("leoServerPassword");
     const leoEditorPathEl = document.getElementById("leoEditorPath");
     const venvPathPathEl = document.getElementById("venvPath");
     const connectionPortEl = document.getElementById("connectionPort");
@@ -24619,7 +24654,7 @@ div.col-nav {
 })();
 
 </t>
-<t tx="fil.20210603223933.9" _mod_time="46313737393431383233342e3539350a2e">@language html
+<t tx="fil.20210603223933.9" _mod_time="46313737393530343330362e3234340a2e">@language html
 @tabwidth -2
 &lt;!DOCTYPE html&gt;
 &lt;html lang="en" tabindex="-1"&gt;
@@ -24744,11 +24779,12 @@ div.col-nav {
 
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;label for="serverPassword"&gt;Server&amp;nbsp;Password&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
-                &lt;input id="serverPassword" name="serverPassword" type="text" maxlength="256"
+                &lt;label for="leoServerPassword"&gt;Server&amp;nbsp;Password&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;input id="leoServerPassword" name="leoServerPassword" type="text" maxlength="256"
                   placeholder="Empty for default" data-setting /&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Authentication password (Blank for none)&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Authentication password (Blank for none) - Required for Leo 6.8.9 and
+                up&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;

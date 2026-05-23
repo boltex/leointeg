@@ -13,7 +13,7 @@
     const dirty = document.getElementById("dirty-config-toast");
     const resultingCommandEl = document.getElementById("resultingCommand");
     const leoPythonCommandEl = document.getElementById("leoPythonCommand");
-    const serverPasswordEl = document.getElementById("serverPassword");
+    const serverPasswordEl = document.getElementById("leoServerPassword");
     const leoEditorPathEl = document.getElementById("leoEditorPath");
     const venvPathPathEl = document.getElementById("venvPath");
     const connectionPortEl = document.getElementById("connectionPort");
