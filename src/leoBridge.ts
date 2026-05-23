@@ -227,6 +227,7 @@ export class LeoBridge {
      * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
      */
     public initLeoProcess(p_port?: number): Promise<LeoBridgePackage> {
+
         this._websocket = new WebSocket(
             Constants.TCPIP_DEFAULT_PROTOCOL +
             this._leoIntegration.config.connectionAddress +

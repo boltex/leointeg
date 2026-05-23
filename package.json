@@ -1974,7 +1974,7 @@
         "command": "leointeg.stopServer",
         "category": "Leo",
         "title": "Stop the Leo Server",
-        "enablement": "leoStartingServer || leoServerStarted && !leoTreeOpened",
+        "enablement": "leoStartingServer || leoServerStarted",
         "icon": "$(leo-close-server)"
       },
       {

@@ -2,7 +2,8 @@
 
 ## 1.0.28
 
-- ...
+- Added password setting: Used as password argument when starting a server to enforce authentication, and given to a server to allow authorization when connecting to it. (Requires Leo 6.8.9 and up)
+- Allow close-server command after being connected (command palette)
 
 ## 1.0.27
 

@@ -816,6 +816,9 @@ export class LeoIntegration {
      */
     public killServer(): void {
         this._serverService.killServer();
+        // killserver does set all the proper states, but the tree view needs to be refreshed to avoid showing the outline.
+        // (it should bring back the 'viewsWelcome' content)
+        this._leoTreeProvider.refreshTreeRoot();
     }
 
     /**

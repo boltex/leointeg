@@ -2306,7 +2306,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
 </t>
-<t tx="ekr.20200815123601.1" _mod_time="46313737393431383233342e3435330a2e">@language json
+<t tx="ekr.20200815123601.1" _mod_time="46313737393537303831352e3532340a2e">@language json
 @tabwidth -2
 {
   "name": "leointeg",
@@ -3362,7 +3362,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.stopServer",
   "category": "Leo",
   "title": "Stop the Leo Server",
-  "enablement": "leoStartingServer || leoServerStarted &amp;&amp; !leoTreeOpened",
+  "enablement": "leoStartingServer || leoServerStarted",
   "icon": "$(leo-close-server)"
 },
 {
@@ -7262,7 +7262,7 @@ public fireRefreshFile(p_gnx: string): void {
 }
 
 </t>
-<t tx="felix.20200718153505.1" _mod_time="46313737393530393230392e3031370a2e">import * as vscode from "vscode";
+<t tx="felix.20200718153505.1" _mod_time="46313737393537303733352e3939350a2e">import * as vscode from "vscode";
 import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
@@ -7317,6 +7317,7 @@ private _processAnswer(p_data: string): void {
  * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
  */
 public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
+
     this._websocket = new WebSocket(
         Constants.TCPIP_DEFAULT_PROTOCOL +
         this._leoIntegration.config.connectionAddress +
@@ -9085,7 +9086,7 @@ export function isHexColor(p_hexString: string): boolean {
 
 </t>
 <t tx="felix.20200718220811.1"></t>
-<t tx="felix.20200718220818.1" _mod_time="46313737373030323133352e3634350a2e">@language md
+<t tx="felix.20200718220818.1" _mod_time="46313737393536373730382e3532370a2e">@language md
 @tabwidth -4
 # ![Leo Editor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
 
@@ -9107,7 +9108,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)
 </t>
-<t tx="felix.20200718220833.1" _mod_time="46313737373335323439332e3637350a2e">@language md
+<t tx="felix.20200718220833.1" _mod_time="46313737393537333036332e3435330a2e">@language md
 @tabwidth -4
 # Change Log
 
@@ -9267,7 +9268,7 @@ A **notification** will inform you of the action taken instead.
 - Show additional icons on outline nodes (Move, delete, mark, copy, paste...)
 - Choose to either focus on the body pane, or keep focus in the outline when a node is selected.
 - Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
-- Set preferences for setting the address and port, and for automatically starting, and/or connecting to a Leo server.
+- Set preferences for choosing a password, address and port, or for automatically starting, and/or connecting to a Leo server.
 
 ![Settings](https://raw.githubusercontent.com/boltex/leointeg/master/resources/welcome-settings.gif)
 
@@ -9559,7 +9560,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
-<t tx="felix.20200719025231.1" _mod_time="46313737303237303035372e3237320a2e">import * as vscode from 'vscode';
+<t tx="felix.20200719025231.1" _mod_time="46313737393537303831302e3331370a2e">import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
@@ -15533,6 +15534,9 @@ public killServer(): void {
  */
 public killServer(): void {
     this._serverService.killServer();
+    // killserver does set all the proper states, but the tree view needs to be refreshed to avoid showing the outline.
+    // (it should bring back the 'viewsWelcome' content)
+    this._leoTreeProvider.refreshTreeRoot();
 }
 
 </t>
@@ -23306,7 +23310,8 @@ export function performanceNow(): number {
 </t>
 <t tx="felix.20260428010123.1">## 1.0.28
 
-- ...
+- Added password setting: Used as password argument when starting a server to enforce authentication, and given to a server to allow authorization when connecting to it. (Requires Leo 6.8.9 and up)
+- Allow close-server command after being connected (command palette)
 
 </t>
 <t tx="fil.20210603195218.1" _mod_time="46313735363737333031322e3238340a2e">import * as vscode from "vscode";
