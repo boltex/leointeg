@@ -250,6 +250,7 @@ export class Constants {
 
         START_SERVER_ERROR: "Error - Cannot start server: ",
         CONNECT_FAILED: "Leo Server Connection Failed",
+        CONNECT_FAILED_AUTH: "Authentication Error. Check password in Leo Settings and try again.",
         CONNECT_ERROR: "Leo Server Connection Error: Incorrect id",
         CONNECTED: "Connected",
         ALREADY_CONNECTED: "Already connected",

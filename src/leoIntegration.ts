@@ -910,7 +910,13 @@ export class LeoIntegration {
 
             },
             (p_reason) => {
-                this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
+                // CONNECT_FAILED_AUTH
+                if (p_reason.includes('1008')) {
+                    // Code 1008 is 'Policy Violation' and is what the server sends when the authentication fails.
+                    this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED_AUTH + ': ' + p_reason);
+                } else {
+                    this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
+                }
             }
         );
     }

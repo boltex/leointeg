@@ -5508,7 +5508,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   ]
 },
 </t>
-<t tx="felix.20200718020912.1" _mod_time="46313737393431383132382e3537390a2e">import * as vscode from "vscode";
+<t tx="felix.20200718020912.1" _mod_time="46313737393538373331382e3538380a2e">import * as vscode from "vscode";
 
 @language typescript
 @tabwidth -4
@@ -6166,6 +6166,7 @@ public static USER_MESSAGES = {
 
     START_SERVER_ERROR: "Error - Cannot start server: ",
     CONNECT_FAILED: "Leo Server Connection Failed",
+    CONNECT_FAILED_AUTH: "Authentication Error. Check password in Leo Settings and try again.",
     CONNECT_ERROR: "Leo Server Connection Error: Incorrect id",
     CONNECTED: "Connected",
     ALREADY_CONNECTED: "Already connected",
@@ -7262,12 +7263,13 @@ public fireRefreshFile(p_gnx: string): void {
 }
 
 </t>
-<t tx="felix.20200718153505.1" _mod_time="46313737393537303733352e3939350a2e">import * as vscode from "vscode";
+<t tx="felix.20200718153505.1" _mod_time="46313737393538353638352e3030310a2e">import * as vscode from "vscode";
 import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoAsync } from "./leoAsync";
+import * as crypto from "node:crypto";
 
 @language typescript
 @tabwidth -4
@@ -7318,6 +7320,37 @@ private _processAnswer(p_data: string): void {
  */
 public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
 
+    this._authenticated = false; // Reset authentication state on new connection attempt
+
+    /* Server now does this:
+
+        if wsPassword:
+            print(f"{tag}: authenticating {peer}", flush=True)
+
+            # First, send 'challenge' to the client to be used as salt with the returned password for authentication.
+            challenge = os.urandom(16).hex()
+            await websocket.send(json.dumps({"action": "challenge", "challenge": challenge}))
+
+            auth_message = await asyncio.wait_for(websocket.recv(), timeout=5)
+            if len(auth_message) &gt; 4096:
+                raise ValueError("oversized auth packet")
+
+            auth_data = json.loads(auth_message)
+            expected_hash = hmac.new(wsPassword.encode(), challenge.encode(), hashlib.sha256).hexdigest()
+
+            if not (
+                auth_data.get("action") == "!auth"
+                and hmac.compare_digest(auth_data.get("response", ""), expected_hash)
+            ):
+                raise ValueError("invalid credentials")
+
+            print(f"{tag}: authentication success {peer}", flush=True)
+        else:
+            print(f"{tag}: no authentication required for {peer}", flush=True)
+
+    */
+
+    // @ts-ignore The constructor signature of WebSocket is actually compatible with the ws library.
     this._websocket = new WebSocket(
         Constants.TCPIP_DEFAULT_PROTOCOL +
         this._leoIntegration.config.connectionAddress +
@@ -7327,9 +7360,22 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
     // * Capture the python process output
     this._websocket!.onmessage = (p_event) =&gt; {
         this._receivedTotal++;
-        if (p_event.data) {
-            this._processAnswer(p_event.data.toString());
+        if (p_event.data &amp;&amp; !this._authenticated &amp;&amp; this._leoIntegration.config.leoServerPassword) {
+            const w_parsedData = this._tryParseJSON(p_event.data.toString());
+            if (w_parsedData &amp;&amp; w_parsedData.action === "challenge" &amp;&amp; w_parsedData.challenge) {
+                const w_challenge: string = w_parsedData.challenge;
+                const w_response = crypto.createHmac('sha256', this._leoIntegration.config.leoServerPassword).update(w_challenge).digest('hex');
+                const w_authMessage = JSON.stringify({ action: "!auth", response: w_response });
+                this._websocket!.send(w_authMessage);
+                this._authenticated = true;
+            }
+
+        } else {
+            if (p_event.data) {
+                this._processAnswer(p_event.data.toString());
+            }
         }
+
     };
     this._websocket!.onerror = (p_event: WebSocket.ErrorEvent) =&gt; {
         console.error(`Websocket error: ${p_event.message}`);
@@ -7347,32 +7393,8 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
         }
     };
 
-    /* server does this:
-                print(wsPassword)
-                print(f"{tag}: authenticating {peer}", flush=True)
-                auth_message = await asyncio.wait_for(websocket.recv(), timeout=10)
-                if len(auth_message) &gt; 4096:
-                    raise ValueError("oversized auth packet")
-
-                auth_data = json.loads(auth_message)
-
-                if not (
-                    auth_data.get("action") == "!auth"
-                    and hmac.compare_digest(auth_data.get("password", ""), wsPassword)
-                ):
-                    raise ValueError("invalid credentials")
-
-                print(f"{tag}: authentication success {peer}", flush=True)
-    */
-
-    if (this._leoIntegration.config.leoServerPassword) {
-        this._websocket!.onopen = () =&gt; {
-            const authMessage = JSON.stringify({
-                action: "!auth",
-                password: this._leoIntegration.config.leoServerPassword
-            });
-            this._websocket?.send(authMessage);
-        };
+    if (!this._leoIntegration.config.leoServerPassword) {
+        this._authenticated = true; // If no password is set, consider the connection authenticated immediately
     }
 
     // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
@@ -7416,6 +7438,8 @@ export class LeoBridge {
     private _updateWarningShown: number = 0; // timestamp in seconds
 
     private _receivedTotal: number = 0; // Websocket message received total
+
+    private _authenticated: boolean = false; // Whether the websocket connection has been authenticated (if password is set)
 
     // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
     // private _hasbin = require('hasbin');
@@ -9560,7 +9584,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
-<t tx="felix.20200719025231.1" _mod_time="46313737393537303831302e3331370a2e">import * as vscode from 'vscode';
+<t tx="felix.20200719025231.1" _mod_time="46313737393538373231302e3237320a2e">import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
@@ -12700,7 +12724,13 @@ public connect(): void {
 
         },
         (p_reason) =&gt; {
-            this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
+            // CONNECT_FAILED_AUTH
+            if (p_reason.includes('1008')) {
+                // Code 1008 is 'Policy Violation' and is what the server sends when the authentication fails.
+                this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED_AUTH + ': ' + p_reason);
+            } else {
+                this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
+            }
         }
     );
 }
@@ -18423,7 +18453,7 @@ set leoTopHoistChapter(p_value: boolean) {
 }
 
 </t>
-<t tx="felix.20220721204822.1" _mod_time="46313737353934343230332e3837320a2e">import * as vscode from 'vscode';
+<t tx="felix.20220721204822.1" _mod_time="46313737393536393038352e3031350a2e">import * as vscode from 'vscode';
 import * as utils from './utils';
 import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
