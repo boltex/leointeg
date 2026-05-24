@@ -23,6 +23,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20260523220426.1"><vh>1.0.29</vh></v>
 <v t="felix.20260428010123.1"><vh>1.0.28</vh></v>
 <v t="felix.20251014210209.1"><vh>1.0.27</vh></v>
 <v t="felix.20250801235213.1"><vh>1.0.26</vh></v>
@@ -2306,13 +2307,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
 </t>
-<t tx="ekr.20200815123601.1" _mod_time="46313737393537303831352e3532340a2e">@language json
+<t tx="ekr.20200815123601.1" _mod_time="46313737393538383232352e3332310a2e">@language json
 @tabwidth -2
 {
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -9132,7 +9133,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)
 </t>
-<t tx="felix.20200718220833.1" _mod_time="46313737393538383035392e3131360a2e">@language md
+<t tx="felix.20200718220833.1" _mod_time="46313737393538383237382e3038380a2e">@language md
 @tabwidth -4
 # Change Log
 
@@ -23344,6 +23345,11 @@ export function performanceNow(): number {
 - Allow close-server command after being connected (command palette)
 
 </t>
+<t tx="felix.20260523220426.1">## 1.0.29
+
+- ...
+
+</t>
 <t tx="fil.20210603195218.1" _mod_time="46313735363737333031322e3238340a2e">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -24689,7 +24695,7 @@ div.col-nav {
 })();
 
 </t>
-<t tx="fil.20210603223933.9" _mod_time="46313737393530343330362e3234340a2e">@language html
+<t tx="fil.20210603223933.9" _mod_time="46313737393538383239352e3234320a2e">@language html
 @tabwidth -2
 &lt;!DOCTYPE html&gt;
 &lt;html lang="en" tabindex="-1"&gt;
@@ -24729,7 +24735,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.28&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.29&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"
