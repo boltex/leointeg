@@ -250,6 +250,7 @@ export class Constants {
 
         START_SERVER_ERROR: "Error - Cannot start server: ",
         CONNECT_FAILED: "Leo Server Connection Failed",
+        CONNECT_FAILED_AUTH: "Authentication Error. Check password in Leo Settings and try again.",
         CONNECT_ERROR: "Leo Server Connection Error: Incorrect id",
         CONNECTED: "Connected",
         ALREADY_CONNECTED: "Already connected",
@@ -387,6 +388,7 @@ export class Constants {
         INVERT_NODES: "invertNodeContrast",
         LEO_EDITOR_PATH: "leoEditorPath",
         VENV_PATH: "venvPath",
+        LEO_SERVER_PASSWORD: "leoServerPassword",
         LEO_PYTHON_COMMAND: "leoPythonCommand",
         AUTO_START_SERVER: "startServerAutomatically",
         AUTO_CONNECT: "connectToServerAutomatically",
@@ -434,6 +436,7 @@ export class Constants {
         SHOW_BRANCH_OUTLINE: false,
 
         INVERT_NODES: false,
+        LEO_SERVER_PASSWORD: "",
         LEO_PYTHON_COMMAND: "",
         LEO_EDITOR_PATH: "",
         VENV_PATH: "",

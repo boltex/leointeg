@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.0.28
+
+- Added password setting: Used as password argument if starting a server to enforce authentication, also given to a server to allow authorization when connecting to it. (Requires Leo 6.8.9 and up)
+- Allow close-server command after being connected (command palette)
+
 ## 1.0.27
 
 - Fixed support for minibuffer import-any-file and import-text-file command aliases.

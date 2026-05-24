@@ -4,6 +4,7 @@ import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoAsync } from "./leoAsync";
+import * as crypto from "node:crypto";
 
 /**
  * * Handles communication with the leoserver.py python script via websockets
@@ -25,6 +26,8 @@ export class LeoBridge {
     private _updateWarningShown: number = 0; // timestamp in seconds
 
     private _receivedTotal: number = 0; // Websocket message received total
+
+    private _authenticated: boolean = false; // Whether the websocket connection has been authenticated (if password is set)
 
     // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
     // private _hasbin = require('hasbin');
@@ -227,6 +230,38 @@ export class LeoBridge {
      * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
      */
     public initLeoProcess(p_port?: number): Promise<LeoBridgePackage> {
+
+        this._authenticated = false; // Reset authentication state on new connection attempt
+
+        /* Server now does this:
+
+            if wsPassword:
+                print(f"{tag}: authenticating {peer}", flush=True)
+
+                # First, send 'challenge' to the client to be used as salt with the returned password for authentication.
+                challenge = os.urandom(16).hex()
+                await websocket.send(json.dumps({"action": "challenge", "challenge": challenge}))
+
+                auth_message = await asyncio.wait_for(websocket.recv(), timeout=5)
+                if len(auth_message) > 4096:
+                    raise ValueError("oversized auth packet")
+
+                auth_data = json.loads(auth_message)
+                expected_hash = hmac.new(wsPassword.encode(), challenge.encode(), hashlib.sha256).hexdigest()
+
+                if not (
+                    auth_data.get("action") == "!auth"
+                    and hmac.compare_digest(auth_data.get("response", ""), expected_hash)
+                ):
+                    raise ValueError("invalid credentials")
+
+                print(f"{tag}: authentication success {peer}", flush=True)
+            else:
+                print(f"{tag}: no authentication required for {peer}", flush=True)
+
+        */
+
+        // @ts-ignore The constructor signature of WebSocket is actually compatible with the ws library.
         this._websocket = new WebSocket(
             Constants.TCPIP_DEFAULT_PROTOCOL +
             this._leoIntegration.config.connectionAddress +
@@ -234,16 +269,29 @@ export class LeoBridge {
             (p_port ? p_port : this._leoIntegration.config.connectionPort)
         );
         // * Capture the python process output
-        this._websocket.onmessage = (p_event) => {
+        this._websocket!.onmessage = (p_event) => {
             this._receivedTotal++;
-            if (p_event.data) {
-                this._processAnswer(p_event.data.toString());
+            if (p_event.data && !this._authenticated && this._leoIntegration.config.leoServerPassword) {
+                const w_parsedData = this._tryParseJSON(p_event.data.toString());
+                if (w_parsedData && w_parsedData.action === "challenge" && w_parsedData.challenge) {
+                    const w_challenge: string = w_parsedData.challenge;
+                    const w_response = crypto.createHmac('sha256', this._leoIntegration.config.leoServerPassword).update(w_challenge).digest('hex');
+                    const w_authMessage = JSON.stringify({ action: "!auth", response: w_response });
+                    this._websocket!.send(w_authMessage);
+                    this._authenticated = true;
+                }
+
+            } else {
+                if (p_event.data) {
+                    this._processAnswer(p_event.data.toString());
+                }
             }
+
         };
-        this._websocket.onerror = (p_event: WebSocket.ErrorEvent) => {
+        this._websocket!.onerror = (p_event: WebSocket.ErrorEvent) => {
             console.error(`Websocket error: ${p_event.message}`);
         };
-        this._websocket.onclose = (p_event: WebSocket.CloseEvent) => {
+        this._websocket!.onclose = (p_event: WebSocket.CloseEvent) => {
             // * Disconnected from server
             // console.log(`Websocket closed, code: ${p_event.code}`);
             if (!this._leoIntegration.activated) {
@@ -255,6 +303,11 @@ export class LeoBridge {
                 this._leoIntegration.cancelConnect(`Connection to server closed. Code: ${p_event.code}`);
             }
         };
+
+        if (!this._leoIntegration.config.leoServerPassword) {
+            this._authenticated = true; // If no password is set, consider the connection authenticated immediately
+        }
+
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
         this._readyPromise = this.action("", undefined, { id: Constants.STARTING_PACKAGE_ID }, true);
         return this._readyPromise; // This promise will resolve when the started python process starts

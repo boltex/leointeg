@@ -163,6 +163,12 @@ export class ServerService {
             w_args.push("--port");
             w_args.push(this.usingPort.toString());
 
+            const password = this._leoIntegration.config.leoServerPassword;
+            if (password && password.trim()) {
+                w_args.push("--password");
+                w_args.push(password.trim());
+            }
+
             const w_options: child.SpawnOptions = {
                 // Child to run independently of its parent process.
                 // (Depends on the platform)

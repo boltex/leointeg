@@ -23,6 +23,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20260428010123.1"><vh>1.0.28</vh></v>
 <v t="felix.20251014210209.1"><vh>1.0.27</vh></v>
 <v t="felix.20250801235213.1"><vh>1.0.26</vh></v>
 <v t="felix.20250708172435.1"><vh>1.0.25</vh></v>
@@ -985,6 +986,7 @@ public static CONFIG_DEFAULTS = {
     SHOW_BRANCH_OUTLINE: false,
 
     INVERT_NODES: false,
+    LEO_SERVER_PASSWORD: "",
     LEO_PYTHON_COMMAND: "",
     LEO_EDITOR_PATH: "",
     VENV_PATH: "",
@@ -2304,13 +2306,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
 </t>
-<t tx="ekr.20200815123601.1" _mod_time="46313737353838323230392e37350a2e">@language json
+<t tx="ekr.20200815123601.1" _mod_time="46313737393537303831352e3532340a2e">@language json
 @tabwidth -2
 {
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -3360,7 +3362,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "command": "leointeg.stopServer",
   "category": "Leo",
   "title": "Stop the Leo Server",
-  "enablement": "leoStartingServer || leoServerStarted &amp;&amp; !leoTreeOpened",
+  "enablement": "leoStartingServer || leoServerStarted",
   "icon": "$(leo-close-server)"
 },
 {
@@ -4824,6 +4826,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   "type": "string",
   "description": "Specifies the location of a chosen venv"
 },
+"leoIntegration.leoServerPassword": {
+  "scope": "application",
+  "default": "",
+  "type": "string",
+  "description": "Specifies the password for the Leo server (Blank for none)"
+},
 "leoIntegration.leoPythonCommand": {
   "scope": "application",
   "default": "",
@@ -5500,7 +5508,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   ]
 },
 </t>
-<t tx="felix.20200718020912.1" _mod_time="46313736343634393636352e3439340a2e">import * as vscode from "vscode";
+<t tx="felix.20200718020912.1" _mod_time="46313737393538373331382e3538380a2e">import * as vscode from "vscode";
 
 @language typescript
 @tabwidth -4
@@ -6158,6 +6166,7 @@ public static USER_MESSAGES = {
 
     START_SERVER_ERROR: "Error - Cannot start server: ",
     CONNECT_FAILED: "Leo Server Connection Failed",
+    CONNECT_FAILED_AUTH: "Authentication Error. Check password in Leo Settings and try again.",
     CONNECT_ERROR: "Leo Server Connection Error: Incorrect id",
     CONNECTED: "Connected",
     ALREADY_CONNECTED: "Already connected",
@@ -6267,6 +6276,7 @@ public static CONFIG_NAMES = {
     INVERT_NODES: "invertNodeContrast",
     LEO_EDITOR_PATH: "leoEditorPath",
     VENV_PATH: "venvPath",
+    LEO_SERVER_PASSWORD: "leoServerPassword",
     LEO_PYTHON_COMMAND: "leoPythonCommand",
     AUTO_START_SERVER: "startServerAutomatically",
     AUTO_CONNECT: "connectToServerAutomatically",
@@ -6538,7 +6548,7 @@ private _resolveResult(p_package: LeoBridgePackage): void {
 }
 
 </t>
-<t tx="felix.20200718030926.1" _mod_time="46313735363737333031322e3237350a2e">import * as vscode from "vscode";
+<t tx="felix.20200718030926.1" _mod_time="46313737393431383132392e3937380a2e">import * as vscode from "vscode";
 import { ConfigMembers, ConfigSetting } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
@@ -6596,6 +6606,7 @@ export class Config implements ConfigMembers {
     // public showSortOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_SORT_BODY;
 
     public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
+    public leoServerPassword: string = Constants.CONFIG_DEFAULTS.LEO_SERVER_PASSWORD;
     public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
     public leoEditorPath: string = Constants.CONFIG_DEFAULTS.LEO_EDITOR_PATH;
     public startServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_START_SERVER;
@@ -6670,6 +6681,7 @@ public getConfig(): ConfigMembers {
         // showSortOnBody: this.showSortOnBody,
 
         invertNodeContrast: this.invertNodeContrast,
+        leoServerPassword: this.leoServerPassword,
         leoPythonCommand: this.leoPythonCommand,
         leoEditorPath: this.leoEditorPath,
         startServerAutomatically: this.startServerAutomatically,
@@ -6778,6 +6790,7 @@ public buildFromSavedSettings(): boolean {
 
         this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
         this.leoEditorPath = GET(NAME).get(NAMES.LEO_EDITOR_PATH, DEFAULTS.LEO_EDITOR_PATH);
+        this.leoServerPassword = GET(NAME).get(NAMES.LEO_SERVER_PASSWORD, DEFAULTS.LEO_SERVER_PASSWORD);
         this.leoPythonCommand = GET(NAME).get(NAMES.LEO_PYTHON_COMMAND, DEFAULTS.LEO_PYTHON_COMMAND);
         this.startServerAutomatically = GET(NAME).get(NAMES.AUTO_START_SERVER, DEFAULTS.AUTO_START_SERVER);
         this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
@@ -7250,12 +7263,13 @@ public fireRefreshFile(p_gnx: string): void {
 }
 
 </t>
-<t tx="felix.20200718153505.1" _mod_time="46313735363737333031322e3237390a2e">import * as vscode from "vscode";
+<t tx="felix.20200718153505.1" _mod_time="46313737393538353638352e3030310a2e">import * as vscode from "vscode";
 import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoAsync } from "./leoAsync";
+import * as crypto from "node:crypto";
 
 @language typescript
 @tabwidth -4
@@ -7305,6 +7319,38 @@ private _processAnswer(p_data: string): void {
  * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
  */
 public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
+
+    this._authenticated = false; // Reset authentication state on new connection attempt
+
+    /* Server now does this:
+
+        if wsPassword:
+            print(f"{tag}: authenticating {peer}", flush=True)
+
+            # First, send 'challenge' to the client to be used as salt with the returned password for authentication.
+            challenge = os.urandom(16).hex()
+            await websocket.send(json.dumps({"action": "challenge", "challenge": challenge}))
+
+            auth_message = await asyncio.wait_for(websocket.recv(), timeout=5)
+            if len(auth_message) &gt; 4096:
+                raise ValueError("oversized auth packet")
+
+            auth_data = json.loads(auth_message)
+            expected_hash = hmac.new(wsPassword.encode(), challenge.encode(), hashlib.sha256).hexdigest()
+
+            if not (
+                auth_data.get("action") == "!auth"
+                and hmac.compare_digest(auth_data.get("response", ""), expected_hash)
+            ):
+                raise ValueError("invalid credentials")
+
+            print(f"{tag}: authentication success {peer}", flush=True)
+        else:
+            print(f"{tag}: no authentication required for {peer}", flush=True)
+
+    */
+
+    // @ts-ignore The constructor signature of WebSocket is actually compatible with the ws library.
     this._websocket = new WebSocket(
         Constants.TCPIP_DEFAULT_PROTOCOL +
         this._leoIntegration.config.connectionAddress +
@@ -7312,16 +7358,29 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
         (p_port ? p_port : this._leoIntegration.config.connectionPort)
     );
     // * Capture the python process output
-    this._websocket.onmessage = (p_event) =&gt; {
+    this._websocket!.onmessage = (p_event) =&gt; {
         this._receivedTotal++;
-        if (p_event.data) {
-            this._processAnswer(p_event.data.toString());
+        if (p_event.data &amp;&amp; !this._authenticated &amp;&amp; this._leoIntegration.config.leoServerPassword) {
+            const w_parsedData = this._tryParseJSON(p_event.data.toString());
+            if (w_parsedData &amp;&amp; w_parsedData.action === "challenge" &amp;&amp; w_parsedData.challenge) {
+                const w_challenge: string = w_parsedData.challenge;
+                const w_response = crypto.createHmac('sha256', this._leoIntegration.config.leoServerPassword).update(w_challenge).digest('hex');
+                const w_authMessage = JSON.stringify({ action: "!auth", response: w_response });
+                this._websocket!.send(w_authMessage);
+                this._authenticated = true;
+            }
+
+        } else {
+            if (p_event.data) {
+                this._processAnswer(p_event.data.toString());
+            }
         }
+
     };
-    this._websocket.onerror = (p_event: WebSocket.ErrorEvent) =&gt; {
+    this._websocket!.onerror = (p_event: WebSocket.ErrorEvent) =&gt; {
         console.error(`Websocket error: ${p_event.message}`);
     };
-    this._websocket.onclose = (p_event: WebSocket.CloseEvent) =&gt; {
+    this._websocket!.onclose = (p_event: WebSocket.CloseEvent) =&gt; {
         // * Disconnected from server
         // console.log(`Websocket closed, code: ${p_event.code}`);
         if (!this._leoIntegration.activated) {
@@ -7333,6 +7392,11 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
             this._leoIntegration.cancelConnect(`Connection to server closed. Code: ${p_event.code}`);
         }
     };
+
+    if (!this._leoIntegration.config.leoServerPassword) {
+        this._authenticated = true; // If no password is set, consider the connection authenticated immediately
+    }
+
     // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
     this._readyPromise = this.action("", undefined, { id: Constants.STARTING_PACKAGE_ID }, true);
     return this._readyPromise; // This promise will resolve when the started python process starts
@@ -7374,6 +7438,8 @@ export class LeoBridge {
     private _updateWarningShown: number = 0; // timestamp in seconds
 
     private _receivedTotal: number = 0; // Websocket message received total
+
+    private _authenticated: boolean = false; // Whether the websocket connection has been authenticated (if password is set)
 
     // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
     // private _hasbin = require('hasbin');
@@ -8027,7 +8093,7 @@ private _updateLeoObjectIndicator(): void {
 }
 
 </t>
-<t tx="felix.20200718191946.1" _mod_time="46313735363737333031322e3238360a2e">import * as os from 'os';
+<t tx="felix.20200718191946.1" _mod_time="46313737393530313234302e3336320a2e">import * as os from 'os';
 import * as fs from 'fs';
 import * as child from 'child_process';
 import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
@@ -8199,6 +8265,12 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         // Add port
         w_args.push("--port");
         w_args.push(this.usingPort.toString());
+
+        const password = this._leoIntegration.config.leoServerPassword;
+        if (password &amp;&amp; password.trim()) {
+            w_args.push("--password");
+            w_args.push(password.trim());
+        }
 
         const w_options: child.SpawnOptions = {
             // Child to run independently of its parent process.
@@ -8601,7 +8673,7 @@ set leoAtFile(p_value: boolean) {
 </t>
 <t tx="felix.20200718193719.1"></t>
 <t tx="felix.20200718193731.1"></t>
-<t tx="felix.20200718194857.1" _mod_time="46313735363737333031322e3238370a2e">import * as vscode from "vscode";
+<t tx="felix.20200718194857.1" _mod_time="46313737393431383133392e3938310a2e">import * as vscode from "vscode";
 
 @language typescript
 @tabwidth -4
@@ -8793,6 +8865,7 @@ export interface ConfigMembers {
     invertNodeContrast: boolean;
     leoEditorPath: string;
     venvPath: string;
+    leoServerPassword: string;
     leoPythonCommand: string;
     startServerAutomatically: boolean;
     connectToServerAutomatically: boolean;
@@ -9037,7 +9110,7 @@ export function isHexColor(p_hexString: string): boolean {
 
 </t>
 <t tx="felix.20200718220811.1"></t>
-<t tx="felix.20200718220818.1" _mod_time="46313737373030323133352e3634350a2e">@language md
+<t tx="felix.20200718220818.1" _mod_time="46313737393536373730382e3532370a2e">@language md
 @tabwidth -4
 # ![Leo Editor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for Visual Studio Code
 
@@ -9059,7 +9132,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)
 </t>
-<t tx="felix.20200718220833.1" _mod_time="46313737353934343331382e3337330a2e">@language md
+<t tx="felix.20200718220833.1" _mod_time="46313737393538383035392e3131360a2e">@language md
 @tabwidth -4
 # Change Log
 
@@ -9219,7 +9292,7 @@ A **notification** will inform you of the action taken instead.
 - Show additional icons on outline nodes (Move, delete, mark, copy, paste...)
 - Choose to either focus on the body pane, or keep focus in the outline when a node is selected.
 - Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
-- Set preferences for setting the address and port, and for automatically starting, and/or connecting to a Leo server.
+- Set preferences for choosing a password, address and port, or for automatically starting, and/or connecting to a Leo server.
 
 ![Settings](https://raw.githubusercontent.com/boltex/leointeg/master/resources/welcome-settings.gif)
 
@@ -9511,7 +9584,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
-<t tx="felix.20200719025231.1" _mod_time="46313737303237303035372e3237320a2e">import * as vscode from 'vscode';
+<t tx="felix.20200719025231.1" _mod_time="46313737393538373231302e3237320a2e">import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
@@ -12651,7 +12724,13 @@ public connect(): void {
 
         },
         (p_reason) =&gt; {
-            this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
+            // CONNECT_FAILED_AUTH
+            if (p_reason.includes('1008')) {
+                // Code 1008 is 'Policy Violation' and is what the server sends when the authentication fails.
+                this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED_AUTH + ': ' + p_reason);
+            } else {
+                this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
+            }
         }
     );
 }
@@ -15485,6 +15564,9 @@ public killServer(): void {
  */
 public killServer(): void {
     this._serverService.killServer();
+    // killserver does set all the proper states, but the tree view needs to be refreshed to avoid showing the outline.
+    // (it should bring back the 'viewsWelcome' content)
+    this._leoTreeProvider.refreshTreeRoot();
 }
 
 </t>
@@ -18371,7 +18453,7 @@ set leoTopHoistChapter(p_value: boolean) {
 }
 
 </t>
-<t tx="felix.20220721204822.1" _mod_time="46313737353934343230332e3837320a2e">import * as vscode from 'vscode';
+<t tx="felix.20220721204822.1" _mod_time="46313737393536393038352e3031350a2e">import * as vscode from 'vscode';
 import * as utils from './utils';
 import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
@@ -23256,6 +23338,12 @@ export function performanceNow(): number {
 }
 
 </t>
+<t tx="felix.20260428010123.1">## 1.0.28
+
+- Added password setting: Used as password argument if starting a server to enforce authentication, also given to a server to allow authorization when connecting to it. (Requires Leo 6.8.9 and up)
+- Allow close-server command after being connected (command palette)
+
+</t>
 <t tx="fil.20210603195218.1" _mod_time="46313735363737333031322e3238340a2e">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -24075,7 +24163,7 @@ div.col-nav {
 @tabwidth -4
 </t>
 <t tx="fil.20210603223933.1"></t>
-<t tx="fil.20210603223933.165" _mod_time="46313735363737333031322e3237320a2e">@language javascript
+<t tx="fil.20210603223933.165" _mod_time="46313737393439393730382e3931340a2e">@language javascript
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 // Send message to LeoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
@@ -24091,6 +24179,7 @@ div.col-nav {
     const dirty = document.getElementById("dirty-config-toast");
     const resultingCommandEl = document.getElementById("resultingCommand");
     const leoPythonCommandEl = document.getElementById("leoPythonCommand");
+    const serverPasswordEl = document.getElementById("leoServerPassword");
     const leoEditorPathEl = document.getElementById("leoEditorPath");
     const venvPathPathEl = document.getElementById("venvPath");
     const connectionPortEl = document.getElementById("connectionPort");
@@ -24473,6 +24562,7 @@ div.col-nav {
             let w_pythonPath = ""; // Command of child.spawn call
             let w_args = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
             let w_leoPythonCommand = leoPythonCommandEl.value ? leoPythonCommandEl.value : "";
+            let w_password = serverPasswordEl.value ? serverPasswordEl.value : "";
 
             let w_usingPort = connectionPortEl.value ? connectionPortEl.value : 32125;
             let w_limitUsers = limitUsersEl.value ? limitUsersEl.value : 0;
@@ -24526,6 +24616,11 @@ div.col-nav {
             // Add port
             w_args.push("--port");
             w_args.push(w_usingPort.toString());
+
+            if (w_password &amp;&amp; w_password.length) {
+                w_args.push("--password");
+                w_args.push(w_password);
+            }
 
             resultingCommandEl.innerHTML = escapeHtml(w_pythonPath + " " + w_args.join(" ")).trim();
             resultingCommandEl.style.opacity = "1.0";
@@ -24594,7 +24689,7 @@ div.col-nav {
 })();
 
 </t>
-<t tx="fil.20210603223933.9" _mod_time="46313736303439343138312e3132330a2e">@language html
+<t tx="fil.20210603223933.9" _mod_time="46313737393530343330362e3234340a2e">@language html
 @tabwidth -2
 &lt;!DOCTYPE html&gt;
 &lt;html lang="en" tabindex="-1"&gt;
@@ -24634,7 +24729,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.27&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.28&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"
@@ -24717,6 +24812,15 @@ div.col-nav {
               &lt;span class="setting__hint"&gt;(Optional) Location of your venv&lt;/span&gt;
             &lt;/div&gt;
 
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="leoServerPassword"&gt;Server&amp;nbsp;Password&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;input id="leoServerPassword" name="leoServerPassword" type="text" maxlength="256"
+                  placeholder="Empty for default" data-setting /&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Authentication password (Blank for none) - Required for Leo 6.8.9 and
+                up&lt;/span&gt;
+            &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="leoPythonCommand"&gt;Python&amp;nbsp;Command&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;

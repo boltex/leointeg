@@ -167,7 +167,7 @@ A **notification** will inform you of the action taken instead.
 - Show additional icons on outline nodes (Move, delete, mark, copy, paste...)
 - Choose to either focus on the body pane, or keep focus in the outline when a node is selected.
 - Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
-- Set preferences for setting the address and port, and for automatically starting, and/or connecting to a Leo server.
+- Set preferences for choosing a password, address and port, or for automatically starting, and/or connecting to a Leo server.
 
 ![Settings](https://raw.githubusercontent.com/boltex/leointeg/master/resources/welcome-settings.gif)
 
