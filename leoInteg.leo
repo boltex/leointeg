@@ -24737,7 +24737,7 @@ div.col-nav {
 })();
 
 </t>
-<t tx="fil.20210603223933.9" _mod_time="46313737393538383239352e3234320a2e">@language html
+<t tx="fil.20210603223933.9" _mod_time="46313738303139393133332e35350a2e">@language html
 @tabwidth -2
 &lt;!DOCTYPE html&gt;
 &lt;html lang="en" tabindex="-1"&gt;
@@ -24862,9 +24862,9 @@ div.col-nav {
 
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;label for="leoServerPassword"&gt;Server&amp;nbsp;Password&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;label for="leoServerPassword"&gt;Connection&amp;nbsp;Password&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
                 &lt;input id="leoServerPassword" name="leoServerPassword" type="text" maxlength="256"
-                  placeholder="Empty for default" data-setting /&gt;
+                  placeholder="Password" data-setting /&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Authentication password (Blank for none) - Required for Leo 6.8.9 and
                 up&lt;/span&gt;
