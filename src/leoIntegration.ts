@@ -5809,6 +5809,11 @@ export class LeoIntegration {
      * Call the Leo do_arrow function with that char parameter, then refresh the find panel settings.
      */
     public doArrow(char: string): void {
+        // First check for server version, if too old, do nothing because the command won't be there and would throw an error
+        if (!utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 16 })) {
+            return;
+        }
+
         // No need to refresh anything else than the find panel settings!
         this.sendAction(Constants.LEOBRIDGE.DO_ARROW, { char: char }).then(() => {
             this.loadSearchSettings();
