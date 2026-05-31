@@ -2,7 +2,7 @@
 
 ## 1.0.29
 
-- ...
+- Added support for up/down arrows in find-pane text input box.
 
 ## 1.0.28
 

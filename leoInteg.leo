@@ -9135,7 +9135,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)
 </t>
-<t tx="felix.20200718220833.1" _mod_time="46313737393538383237382e3038380a2e">@language md
+<t tx="felix.20200718220833.1" _mod_time="46313738303139303436342e3436340a2e">@language md
 @tabwidth -4
 # Change Log
 
@@ -23369,7 +23369,7 @@ export function performanceNow(): number {
 </t>
 <t tx="felix.20260523220426.1">## 1.0.29
 
-- ...
+- Added support for up/down arrows in find-pane text input box.
 
 </t>
 <t tx="felix.20260529214923.1">/**
