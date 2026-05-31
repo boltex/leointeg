@@ -5806,6 +5806,17 @@ export class LeoIntegration {
     }
 
     /**
+     * Call the Leo do_arrow function with that char parameter, then refresh the find panel settings.
+     */
+    public doArrow(char: string): void {
+        // No need to refresh anything else than the find panel settings!
+        this.sendAction(Constants.LEOBRIDGE.DO_ARROW, { char: char }).then(() => {
+            this.loadSearchSettings();
+        });
+
+    }
+
+    /**
      * * Handles an enter press in the 'nav pattern' input
      */
     public async navEnter(): Promise<LeoBridgePackage> {

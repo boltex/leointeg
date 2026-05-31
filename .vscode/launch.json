@@ -37,7 +37,8 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/leobridgeserver.py",
 			"args": [
-				"-p 32126"
+				"-p 32126",
+				"--password test"
 			],
 			"console": "integratedTerminal"
 		},
@@ -47,7 +48,8 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/leoserver.py",
 			"args": [
-				"-p 32126"
+				"-p 32126",
+				"--password test"
 			],
 			"console": "integratedTerminal"
 		}

@@ -505,6 +505,7 @@
 <v t="felix.20220903192048.1"><vh>navigateNavEntry</vh></v>
 </v>
 <v t="felix.20210530225640.1"><vh>Search</vh>
+<v t="felix.20260529214923.1"><vh>doArrow</vh></v>
 <v t="felix.20220305225942.1"><vh>navEnter</vh></v>
 <v t="felix.20220305231404.1"><vh>navTextChange</vh></v>
 <v t="felix.20220925181748.1"><vh>navTextClear</vh></v>
@@ -5509,7 +5510,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   ]
 },
 </t>
-<t tx="felix.20200718020912.1" _mod_time="46313737393538373331382e3538380a2e">import * as vscode from "vscode";
+<t tx="felix.20200718020912.1" _mod_time="46313738303130353938352e3631380a2e">import * as vscode from "vscode";
 
 @language typescript
 @tabwidth -4
@@ -5699,6 +5700,7 @@ public static LEOBRIDGE = {
     SET_SEARCH_SETTINGS: "!set_search_settings",
     INTERACTIVE_SEARCH: "!interactive_search",
 
+    DO_ARROW: "!do_arrow",
     FIND_ALL: "!find_all",
     FIND_NEXT: "!find_next",
     FIND_PREVIOUS: "!find_previous",
@@ -9585,7 +9587,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
-<t tx="felix.20200719025231.1" _mod_time="46313737393538373231302e3237320a2e">import * as vscode from 'vscode';
+<t tx="felix.20200719025231.1" _mod_time="46313738303130363131342e3239390a2e">import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
@@ -14320,7 +14322,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
-<t tx="felix.20210522001751.1" _mod_time="46313737323339393039332e3831380a2e">import * as vscode from 'vscode';
+<t tx="felix.20210522001751.1" _mod_time="46313738303130353836382e3431390a2e">import * as vscode from 'vscode';
 import { Constants } from './constants';
 import { LeoIntegration } from './leoIntegration';
 import * as utils from './utils';
@@ -17027,6 +17029,26 @@ public getTextFromClipboard(): string {
             processChange();
         });
 
+    }
+
+    const findTextEl = document.getElementById('findText');
+    // Listen to arrowUp or arrowDown to trigger call to do_arroww command in leointeg
+    if (findTextEl) {
+        findTextEl.onkeydown = function (p_event) {
+            if (!p_event) {
+                p_event = window.event;
+            }
+            const keyCode = p_event.code || p_event.key;
+            if (keyCode === 'ArrowUp') {
+                p_event.preventDefault();
+                p_event.stopPropagation();
+                vscode.postMessage({ type: 'leoArrowUp' });
+            } else if (keyCode === 'ArrowDown') {
+                p_event.preventDefault();
+                p_event.stopPropagation();
+                vscode.postMessage({ type: 'leoArrowDown' });
+            }
+        };
     }
 
     findReplaceInputIds.forEach((p_inputId) =&gt; {
@@ -23350,6 +23372,18 @@ export function performanceNow(): number {
 - ...
 
 </t>
+<t tx="felix.20260529214923.1">/**
+ * Call the Leo do_arrow function with that char parameter, then refresh the find panel settings.
+ */
+public doArrow(char: string): void {
+    // No need to refresh anything else than the find panel settings!
+    this.sendAction(Constants.LEOBRIDGE.DO_ARROW, { char: char }).then(() =&gt; {
+        this.loadSearchSettings();
+    });
+
+}
+
+</t>
 <t tx="fil.20210603195218.1" _mod_time="46313735363737333031322e3238340a2e">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -23577,6 +23611,14 @@ import { Constants } from "./constants";
                 }
                 case 'leoFindPrevious': {
                     vscode.commands.executeCommand(Constants.COMMANDS.FIND_PREVIOUS);
+                    break;
+                }
+                case 'leoArrowUp': {
+                    this._leoIntegration.doArrow('Up');
+                    break;
+                }
+                case 'leoArrowDown': {
+                    this._leoIntegration.doArrow('Down');
                     break;
                 }
                 case 'searchConfig': {
@@ -24164,7 +24206,7 @@ div.col-nav {
   height: 3px;
 }
 </t>
-<t tx="fil.20210603223013.4" _mod_time="46313732313137313839342e3539320a2e">@others
+<t tx="fil.20210603223013.4" _mod_time="46313738303130353636322e3038350a2e">@others
 @language javascript
 @tabwidth -4
 </t>
