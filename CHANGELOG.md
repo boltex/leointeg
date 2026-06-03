@@ -3,6 +3,7 @@
 ## 1.0.29
 
 - Added support for up/down arrows in find-pane text input box.
+- Fixed placeholder text of the password setting in welcome/settings panel.
 
 ## 1.0.28
 
