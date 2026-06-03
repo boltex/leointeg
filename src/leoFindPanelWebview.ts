@@ -62,6 +62,14 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                         vscode.commands.executeCommand(Constants.COMMANDS.FIND_PREVIOUS);
                         break;
                     }
+                    case 'leoArrowUp': {
+                        this._leoIntegration.doArrow('Up');
+                        break;
+                    }
+                    case 'leoArrowDown': {
+                        this._leoIntegration.doArrow('Down');
+                        break;
+                    }
                     case 'searchConfig': {
                         this._leoIntegration.saveSearchSettings(data.value);
                         break;

@@ -23,6 +23,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20260523220426.1"><vh>1.0.29</vh></v>
 <v t="felix.20260428010123.1"><vh>1.0.28</vh></v>
 <v t="felix.20251014210209.1"><vh>1.0.27</vh></v>
 <v t="felix.20250801235213.1"><vh>1.0.26</vh></v>
@@ -504,6 +505,7 @@
 <v t="felix.20220903192048.1"><vh>navigateNavEntry</vh></v>
 </v>
 <v t="felix.20210530225640.1"><vh>Search</vh>
+<v t="felix.20260529214923.1"><vh>doArrow</vh></v>
 <v t="felix.20220305225942.1"><vh>navEnter</vh></v>
 <v t="felix.20220305231404.1"><vh>navTextChange</vh></v>
 <v t="felix.20220925181748.1"><vh>navTextClear</vh></v>
@@ -2306,13 +2308,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
 </t>
-<t tx="ekr.20200815123601.1" _mod_time="46313737393537303831352e3532340a2e">@language json
+<t tx="ekr.20200815123601.1" _mod_time="46313737393538383232352e3332310a2e">@language json
 @tabwidth -2
 {
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -5508,7 +5510,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
   ]
 },
 </t>
-<t tx="felix.20200718020912.1" _mod_time="46313737393538373331382e3538380a2e">import * as vscode from "vscode";
+<t tx="felix.20200718020912.1" _mod_time="46313738303130353938352e3631380a2e">import * as vscode from "vscode";
 
 @language typescript
 @tabwidth -4
@@ -5698,6 +5700,7 @@ public static LEOBRIDGE = {
     SET_SEARCH_SETTINGS: "!set_search_settings",
     INTERACTIVE_SEARCH: "!interactive_search",
 
+    DO_ARROW: "!do_arrow",
     FIND_ALL: "!find_all",
     FIND_NEXT: "!find_next",
     FIND_PREVIOUS: "!find_previous",
@@ -9132,7 +9135,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)
 </t>
-<t tx="felix.20200718220833.1" _mod_time="46313737393538383035392e3131360a2e">@language md
+<t tx="felix.20200718220833.1" _mod_time="46313738303532363139372e3435330a2e">@language md
 @tabwidth -4
 # Change Log
 
@@ -9584,7 +9587,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
-<t tx="felix.20200719025231.1" _mod_time="46313737393538373231302e3237320a2e">import * as vscode from 'vscode';
+<t tx="felix.20200719025231.1" _mod_time="46313738303139393333382e3932370a2e">import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
@@ -14319,7 +14322,7 @@ public async find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt
   "when": "leoEditHeadline || leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoUndos|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leointeg"
 },
 </t>
-<t tx="felix.20210522001751.1" _mod_time="46313737323339393039332e3831380a2e">import * as vscode from 'vscode';
+<t tx="felix.20210522001751.1" _mod_time="46313738303130353836382e3431390a2e">import * as vscode from 'vscode';
 import { Constants } from './constants';
 import { LeoIntegration } from './leoIntegration';
 import * as utils from './utils';
@@ -17026,6 +17029,26 @@ public getTextFromClipboard(): string {
             processChange();
         });
 
+    }
+
+    const findTextEl = document.getElementById('findText');
+    // Listen to arrowUp or arrowDown to trigger call to do_arroww command in leointeg
+    if (findTextEl) {
+        findTextEl.onkeydown = function (p_event) {
+            if (!p_event) {
+                p_event = window.event;
+            }
+            const keyCode = p_event.code || p_event.key;
+            if (keyCode === 'ArrowUp') {
+                p_event.preventDefault();
+                p_event.stopPropagation();
+                vscode.postMessage({ type: 'leoArrowUp' });
+            } else if (keyCode === 'ArrowDown') {
+                p_event.preventDefault();
+                p_event.stopPropagation();
+                vscode.postMessage({ type: 'leoArrowDown' });
+            }
+        };
     }
 
     findReplaceInputIds.forEach((p_inputId) =&gt; {
@@ -23344,6 +23367,29 @@ export function performanceNow(): number {
 - Allow close-server command after being connected (command palette)
 
 </t>
+<t tx="felix.20260523220426.1">## 1.0.29
+
+- Added support for up/down arrows in find-pane text input box. (Requires Leo 6.8.9 and up)
+- Fixed placeholder text of the password setting in welcome/settings panel.
+
+</t>
+<t tx="felix.20260529214923.1">/**
+ * Call the Leo do_arrow function with that char parameter, then refresh the find panel settings.
+ */
+public doArrow(char: string): void {
+    // First check for server version, if too old, do nothing because the command won't be there and would throw an error
+    if (!utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 16 })) {
+        return;
+    }
+
+    // No need to refresh anything else than the find panel settings!
+    this.sendAction(Constants.LEOBRIDGE.DO_ARROW, { char: char }).then(() =&gt; {
+        this.loadSearchSettings();
+    });
+
+}
+
+</t>
 <t tx="fil.20210603195218.1" _mod_time="46313735363737333031322e3238340a2e">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -23571,6 +23617,14 @@ import { Constants } from "./constants";
                 }
                 case 'leoFindPrevious': {
                     vscode.commands.executeCommand(Constants.COMMANDS.FIND_PREVIOUS);
+                    break;
+                }
+                case 'leoArrowUp': {
+                    this._leoIntegration.doArrow('Up');
+                    break;
+                }
+                case 'leoArrowDown': {
+                    this._leoIntegration.doArrow('Down');
                     break;
                 }
                 case 'searchConfig': {
@@ -24158,7 +24212,7 @@ div.col-nav {
   height: 3px;
 }
 </t>
-<t tx="fil.20210603223013.4" _mod_time="46313732313137313839342e3539320a2e">@others
+<t tx="fil.20210603223013.4" _mod_time="46313738303130353636322e3038350a2e">@others
 @language javascript
 @tabwidth -4
 </t>
@@ -24689,7 +24743,7 @@ div.col-nav {
 })();
 
 </t>
-<t tx="fil.20210603223933.9" _mod_time="46313737393530343330362e3234340a2e">@language html
+<t tx="fil.20210603223933.9" _mod_time="46313738303139393133332e35350a2e">@language html
 @tabwidth -2
 &lt;!DOCTYPE html&gt;
 &lt;html lang="en" tabindex="-1"&gt;
@@ -24729,7 +24783,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.28&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.29&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"
@@ -24814,9 +24868,9 @@ div.col-nav {
 
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;label for="leoServerPassword"&gt;Server&amp;nbsp;Password&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;label for="leoServerPassword"&gt;Connection&amp;nbsp;Password&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
                 &lt;input id="leoServerPassword" name="leoServerPassword" type="text" maxlength="256"
-                  placeholder="Empty for default" data-setting /&gt;
+                  placeholder="Password" data-setting /&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Authentication password (Blank for none) - Required for Leo 6.8.9 and
                 up&lt;/span&gt;

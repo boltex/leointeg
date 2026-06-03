@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.0.29
+
+- Added support for up/down arrows in find-pane text input box. (Requires Leo 6.8.9 and up)
+- Fixed placeholder text of the password setting in welcome/settings panel.
+
 ## 1.0.28
 
 - Added password setting: Used as password argument if starting a server to enforce authentication, also given to a server to allow authorization when connecting to it. (Requires Leo 6.8.9 and up)

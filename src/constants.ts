@@ -721,6 +721,7 @@ export class Constants {
         SET_SEARCH_SETTINGS: "!set_search_settings",
         INTERACTIVE_SEARCH: "!interactive_search",
 
+        DO_ARROW: "!do_arrow",
         FIND_ALL: "!find_all",
         FIND_NEXT: "!find_next",
         FIND_PREVIOUS: "!find_previous",
