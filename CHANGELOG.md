@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.30
+
+- ...
+
 ## 1.0.29
 
 - Added support for up/down arrows in find-pane text input box. (Requires Leo 6.8.9 and up)
