@@ -9135,7 +9135,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)
 </t>
-<t tx="felix.20200718220833.1" _mod_time="46313738303139303436342e3436340a2e">@language md
+<t tx="felix.20200718220833.1" _mod_time="46313738303532363139372e3435330a2e">@language md
 @tabwidth -4
 # Change Log
 
@@ -9587,7 +9587,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
-<t tx="felix.20200719025231.1" _mod_time="46313738303130363131342e3239390a2e">import * as vscode from 'vscode';
+<t tx="felix.20200719025231.1" _mod_time="46313738303139393333382e3932370a2e">import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
@@ -23369,13 +23369,19 @@ export function performanceNow(): number {
 </t>
 <t tx="felix.20260523220426.1">## 1.0.29
 
-- Added support for up/down arrows in find-pane text input box.
+- Added support for up/down arrows in find-pane text input box. (Requires Leo 6.8.9 and up)
+- Fixed placeholder text of the password setting in welcome/settings panel.
 
 </t>
 <t tx="felix.20260529214923.1">/**
  * Call the Leo do_arrow function with that char parameter, then refresh the find panel settings.
  */
 public doArrow(char: string): void {
+    // First check for server version, if too old, do nothing because the command won't be there and would throw an error
+    if (!utils.compareVersions(this.serverVersion, { major: 1, minor: 0, patch: 16 })) {
+        return;
+    }
+
     // No need to refresh anything else than the find panel settings!
     this.sendAction(Constants.LEOBRIDGE.DO_ARROW, { char: char }).then(() =&gt; {
         this.loadSearchSettings();
