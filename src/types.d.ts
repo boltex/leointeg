@@ -308,6 +308,7 @@ export const enum LeoSearchScope {
  */
 export interface LeoSearchSettings {
     // Nav options
+    frozen: boolean;
     navText: string;
     isTag: boolean;
     showParents: boolean;
@@ -331,6 +332,7 @@ export interface LeoSearchSettings {
  */
 export interface LeoGuiFindTabManagerSettings {
     // Nav options
+    frozen: boolean;
     nav_text: string;
     is_tag: boolean;
     show_parents: boolean;
