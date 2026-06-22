@@ -197,7 +197,10 @@
 
     function setSettings(p_settings) {
         // Nav controls
-        setFrozen(p_settings["frozen"]);
+        if (p_settings["frozen"] != null) {
+            // Check first because the version of the server may not have this property yet (Leo 6.8.10 and up) 
+            setFrozen(p_settings["frozen"]);
+        }
 
         document.getElementById("navText").value = p_settings["navText"];
         searchSettings["navText"] = p_settings["navText"];

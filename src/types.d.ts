@@ -304,11 +304,11 @@ export const enum LeoSearchScope {
 }
 
 /**
- * * LeoInteg search settings structure for use with the 'find' webview
+ * * LeoInteg search settings structure for use within the 'find' webview
  */
 export interface LeoSearchSettings {
     // Nav options
-    frozen: boolean;
+    frozen: boolean | undefined; // May be undefined if the server is older than Leo 6.8.10
     navText: string;
     isTag: boolean;
     showParents: boolean;
@@ -332,7 +332,7 @@ export interface LeoSearchSettings {
  */
 export interface LeoGuiFindTabManagerSettings {
     // Nav options
-    frozen: boolean;
+    frozen: boolean | undefined; // May be undefined if the server is older than Leo 6.8.10
     nav_text: string;
     is_tag: boolean;
     show_parents: boolean;

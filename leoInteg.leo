@@ -8677,7 +8677,7 @@ set leoAtFile(p_value: boolean) {
 </t>
 <t tx="felix.20200718193719.1"></t>
 <t tx="felix.20200718193731.1"></t>
-<t tx="felix.20200718194857.1" _mod_time="46313738323037353331362e390a2e">import * as vscode from "vscode";
+<t tx="felix.20200718194857.1" _mod_time="46313738323038363436302e3734310a2e">import * as vscode from "vscode";
 
 @language typescript
 @tabwidth -4
@@ -9588,7 +9588,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
-<t tx="felix.20200719025231.1" _mod_time="46313738323037353337372e3630350a2e">import * as vscode from 'vscode';
+<t tx="felix.20200719025231.1" _mod_time="46313738323038363438392e3431390a2e">import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
@@ -14347,11 +14347,11 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 }
 </t>
 <t tx="felix.20210522152739.1">/**
- * * LeoInteg search settings structure for use with the 'find' webview
+ * * LeoInteg search settings structure for use within the 'find' webview
  */
 export interface LeoSearchSettings {
     // Nav options
-    frozen: boolean;
+    frozen: boolean | undefined; // May be undefined if the server is older than Leo 6.8.10
     navText: string;
     isTag: boolean;
     showParents: boolean;
@@ -14399,7 +14399,7 @@ export const enum LeoSearchScope {
  */
 export interface LeoGuiFindTabManagerSettings {
     // Nav options
-    frozen: boolean;
+    frozen: boolean | undefined; // May be undefined if the server is older than Leo 6.8.10
     nav_text: string;
     is_tag: boolean;
     show_parents: boolean;
@@ -14431,7 +14431,7 @@ public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePa
     // convert to LeoGuiFindTabManagerSettings
     const w_settings: LeoGuiFindTabManagerSettings = {
         // Nav settings
-        frozen: !!p_settings.frozen,
+        frozen: p_settings.frozen, // May be undefined
         is_tag: p_settings.isTag,
         nav_text: p_settings.navText,
         show_parents: p_settings.showParents,
@@ -14466,7 +14466,7 @@ public loadSearchSettings(): void {
         (p_result: LeoBridgePackage) =&gt; {
             const w_searchSettings: LeoGuiFindTabManagerSettings = p_result.searchSettings!;
             const w_settings: LeoSearchSettings = {
-                frozen: !!w_searchSettings.frozen,
+                frozen: w_searchSettings.frozen, // May be undefined 
                 isTag: w_searchSettings.is_tag,
                 navText: w_searchSettings.nav_text,
                 showParents: w_searchSettings.show_parents,
@@ -16576,7 +16576,10 @@ public getTextFromClipboard(): string {
 
     function setSettings(p_settings) {
         // Nav controls
-        setFrozen(p_settings["frozen"]);
+        if (p_settings["frozen"] !== undefined) {
+            // Check first because the version of the server may not have this property yet (Leo 6.8.10 and up) 
+            setFrozen(p_settings["frozen"]);
+        }
 
         document.getElementById("navText").value = p_settings["navText"];
         searchSettings["navText"] = p_settings["navText"];
@@ -24209,7 +24212,7 @@ div.col-nav {
   height: 3px;
 }
 </t>
-<t tx="fil.20210603223013.4" _mod_time="46313738323038323731332e3435390a2e">@others
+<t tx="fil.20210603223013.4" _mod_time="46313738323038363334342e3632310a2e">@others
 @language javascript
 @tabwidth -4
 </t>
