@@ -9588,7 +9588,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
-<t tx="felix.20200719025231.1" _mod_time="46313738323038363438392e3431390a2e">import * as vscode from 'vscode';
+<t tx="felix.20200719025231.1" _mod_time="46313738323038383435332e3838360a2e">import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
@@ -16576,7 +16576,7 @@ public getTextFromClipboard(): string {
 
     function setSettings(p_settings) {
         // Nav controls
-        if (p_settings["frozen"] !== undefined) {
+        if (p_settings["frozen"] != null) {
             // Check first because the version of the server may not have this property yet (Leo 6.8.10 and up) 
             setFrozen(p_settings["frozen"]);
         }
@@ -24212,7 +24212,7 @@ div.col-nav {
   height: 3px;
 }
 </t>
-<t tx="fil.20210603223013.4" _mod_time="46313738323038363334342e3632310a2e">@others
+<t tx="fil.20210603223013.4" _mod_time="46313738323038383434322e3732390a2e">@others
 @language javascript
 @tabwidth -4
 </t>
