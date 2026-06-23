@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.31
+
+- ...
+
 ## 1.0.30
 
 - Fixed nav pane frozen icon state persistence between document changes/refresh. (Requires Leo 6.8.10 and up)
