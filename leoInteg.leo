@@ -23,6 +23,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20260603184548.1"><vh>1.0.30</vh></v>
 <v t="felix.20260523220426.1"><vh>1.0.29</vh></v>
 <v t="felix.20260428010123.1"><vh>1.0.28</vh></v>
 <v t="felix.20251014210209.1"><vh>1.0.27</vh></v>
@@ -2308,13 +2309,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
 </t>
-<t tx="ekr.20200815123601.1" _mod_time="46313737393538383232352e3332310a2e">@language json
+<t tx="ekr.20200815123601.1" _mod_time="46313738303532363634312e3133340a2e">@language json
 @tabwidth -2
 {
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "author": {
     "name": "Félix Malboeuf"
   },
@@ -8676,7 +8677,7 @@ set leoAtFile(p_value: boolean) {
 </t>
 <t tx="felix.20200718193719.1"></t>
 <t tx="felix.20200718193731.1"></t>
-<t tx="felix.20200718194857.1" _mod_time="46313737393431383133392e3938310a2e">import * as vscode from "vscode";
+<t tx="felix.20200718194857.1" _mod_time="46313738323038363436302e3734310a2e">import * as vscode from "vscode";
 
 @language typescript
 @tabwidth -4
@@ -9135,7 +9136,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)
 </t>
-<t tx="felix.20200718220833.1" _mod_time="46313738303532363139372e3435330a2e">@language md
+<t tx="felix.20200718220833.1" _mod_time="46313738323038323933332e3337330a2e">@language md
 @tabwidth -4
 # Change Log
 
@@ -9587,7 +9588,7 @@ For more information about the Leo server see [Using leoserver.py](https://leo-e
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
-<t tx="felix.20200719025231.1" _mod_time="46313738303139393333382e3932370a2e">import * as vscode from 'vscode';
+<t tx="felix.20200719025231.1" _mod_time="46313738323038383435332e3838360a2e">import * as vscode from 'vscode';
 import { execSync } from 'child_process';
 import { debounce } from "lodash";
 import * as fs from 'fs';
@@ -14346,10 +14347,11 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 }
 </t>
 <t tx="felix.20210522152739.1">/**
- * * LeoInteg search settings structure for use with the 'find' webview
+ * * LeoInteg search settings structure for use within the 'find' webview
  */
 export interface LeoSearchSettings {
     // Nav options
+    frozen: boolean | undefined; // May be undefined if the server is older than Leo 6.8.10
     navText: string;
     isTag: boolean;
     showParents: boolean;
@@ -14397,6 +14399,7 @@ export const enum LeoSearchScope {
  */
 export interface LeoGuiFindTabManagerSettings {
     // Nav options
+    frozen: boolean | undefined; // May be undefined if the server is older than Leo 6.8.10
     nav_text: string;
     is_tag: boolean;
     show_parents: boolean;
@@ -14428,6 +14431,7 @@ public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePa
     // convert to LeoGuiFindTabManagerSettings
     const w_settings: LeoGuiFindTabManagerSettings = {
         // Nav settings
+        frozen: p_settings.frozen, // May be undefined
         is_tag: p_settings.isTag,
         nav_text: p_settings.navText,
         show_parents: p_settings.showParents,
@@ -14462,6 +14466,7 @@ public loadSearchSettings(): void {
         (p_result: LeoBridgePackage) =&gt; {
             const w_searchSettings: LeoGuiFindTabManagerSettings = p_result.searchSettings!;
             const w_settings: LeoSearchSettings = {
+                frozen: w_searchSettings.frozen, // May be undefined 
                 isTag: w_searchSettings.is_tag,
                 navText: w_searchSettings.nav_text,
                 showParents: w_searchSettings.show_parents,
@@ -16382,7 +16387,6 @@ public getTextFromClipboard(): string {
 
     let timer; // for debouncing sending the settings from this webview to LeoInteg
     let dirty = false; // all but nav input
-    let navTextDirty = false;
 
     let activeTab = 'tab2'; // Initial active tab
     let firstFindTabElId = 'findText';
@@ -16392,12 +16396,6 @@ public getTextFromClipboard(): string {
     let lastGotoContent = [];
     let lastSelectedGotoItem;
 
-    /**
-     * * Flag for freezing the nav 'search as you type' headlines (concept from original nav plugin)
-     * - Resets when switching to tag, or when clearing the input field.
-     * - Sets when pressing Enter with non-empty input field &amp;&amp; not tag mode.
-     */
-    let frozen = false;
     let w_freezeElement = document.getElementById("freeze");
     if (w_freezeElement) {
         w_freezeElement.style.display = 'none';
@@ -16407,6 +16405,7 @@ public getTextFromClipboard(): string {
     // * LeoSearchSettings Type
     let searchSettings = {
         // Nav settings
+        frozen: false,
         navText: '',
         showParents: true,
         isTag: false,
@@ -16439,13 +16438,10 @@ public getTextFromClipboard(): string {
 
     function resetTagNav() {
         navSearchTimer = setTimeout(() =&gt; {
-            if (navTextDirty) {
-                navTextDirty = false;
-                if (navSearchTimer) {
-                    clearTimeout(navSearchTimer);
-                }
-                sendSearchConfig();
+            if (navSearchTimer) {
+                clearTimeout(navSearchTimer);
             }
+            sendSearchConfig();
             vscode.postMessage({ type: 'leoNavTextChange' });
         }, 250); // quarter second
     }
@@ -16459,6 +16455,7 @@ public getTextFromClipboard(): string {
         // * Needed Checks
         if (searchSettings.navText.length === 0) {
             setFrozen(false);
+            sendSearchConfig();
             // if tagging but empty: SEND SEARCH LIST-ALL-TAGS COMMAND
             if (searchSettings.isTag) {
                 resetTagNav();
@@ -16468,13 +16465,10 @@ public getTextFromClipboard(): string {
         if (searchSettings.navText === "m" &amp;&amp; !searchSettings.isTag) {
             // ! Easter Egg: calls 'marked-list', which list all marked nodes !
             navSearchTimer = setTimeout(() =&gt; {
-                if (navTextDirty) {
-                    navTextDirty = false;
-                    if (navSearchTimer) {
-                        clearTimeout(navSearchTimer);
-                    }
-                    sendSearchConfig();
+                if (navSearchTimer) {
+                    clearTimeout(navSearchTimer);
                 }
+                sendSearchConfig();
                 vscode.postMessage({ type: 'leoNavMarkedList' });
 
             }, 40); // Shorter delay for this command
@@ -16482,19 +16476,16 @@ public getTextFromClipboard(): string {
         }
 
         // User changed text in nav text input
-        if (frozen || searchSettings.navText.length &lt; 3) {
+        if (searchSettings.frozen || searchSettings.navText.length &lt; 3) {
             return; // dont even continue if not long enough or already frozen
         }
 
         // DEBOUNCE .25 to .5 seconds with navSearchTimer
         navSearchTimer = setTimeout(() =&gt; {
-            if (navTextDirty) {
-                navTextDirty = false;
-                if (navSearchTimer) {
-                    clearTimeout(navSearchTimer);
-                }
-                sendSearchConfig();
+            if (navSearchTimer) {
+                clearTimeout(navSearchTimer);
             }
+            sendSearchConfig();
             vscode.postMessage({ type: 'leoNavTextChange' });
         }, 400); // almost half second
 
@@ -16572,10 +16563,10 @@ public getTextFromClipboard(): string {
     }
 
     function setFrozen(p_focus) {
-        frozen = p_focus;
+        searchSettings.frozen = p_focus;
         w_freezeElement = document.getElementById("freeze");
         if (w_freezeElement) {
-            if (frozen) {
+            if (searchSettings.frozen) {
                 w_freezeElement.style.display = '';
             } else {
                 w_freezeElement.style.display = 'none';
@@ -16585,6 +16576,11 @@ public getTextFromClipboard(): string {
 
     function setSettings(p_settings) {
         // Nav controls
+        if (p_settings["frozen"] != null) {
+            // Check first because the version of the server may not have this property yet (Leo 6.8.10 and up) 
+            setFrozen(p_settings["frozen"]);
+        }
+
         document.getElementById("navText").value = p_settings["navText"];
         searchSettings["navText"] = p_settings["navText"];
 
@@ -16796,7 +16792,10 @@ public getTextFromClipboard(): string {
             }
         }
 
-        if (activeTab === 'tab3' &amp;&amp; lastGotoContent.length &amp;&amp; actEl &amp;&amp; gotoPaneContainer &amp;&amp; (actEl === gotoPaneContainer || gotoPaneContainer.contains(actEl))) {
+        if (
+            activeTab === 'tab3' &amp;&amp; lastGotoContent.length &amp;&amp; actEl &amp;&amp; gotoPaneContainer &amp;&amp;
+            (actEl === gotoPaneContainer || gotoPaneContainer.contains(actEl))
+        ) {
             navKeyHandler(p_event);
         }
 
@@ -16958,16 +16957,13 @@ public getTextFromClipboard(): string {
         } else {
             if (searchSettings.navText.length &gt;= 3 || searchSettings.isTag) {
                 setFrozen(true);
-                if (navTextDirty) {
-                    navTextDirty = false;
-                    if (timer) {
-                        clearTimeout(timer);
-                    }
-                    if (navSearchTimer) {
-                        clearTimeout(navSearchTimer);
-                    }
-                    sendSearchConfig();
+                if (timer) {
+                    clearTimeout(timer);
                 }
+                if (navSearchTimer) {
+                    clearTimeout(navSearchTimer);
+                }
+                sendSearchConfig();
                 vscode.postMessage({ type: 'leoNavEnter' });
             }
             if (searchSettings.navText.length === 0) {
@@ -16990,7 +16986,6 @@ public getTextFromClipboard(): string {
 
         w_navTextEl.addEventListener('input', function (p_event) {
             searchSettings.navText = this.value;
-            navTextDirty = true;
             navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
         });
     }
@@ -23390,6 +23385,11 @@ public doArrow(char: string): void {
 }
 
 </t>
+<t tx="felix.20260603184548.1">## 1.0.30
+
+- Fixed nav pane frozen icon state persistence between document changes/refresh. (Requires Leo 6.8.10 and up)
+
+</t>
 <t tx="fil.20210603195218.1" _mod_time="46313735363737333031322e3238340a2e">import * as vscode from "vscode";
 import * as path from 'path';
 import * as os from 'os';
@@ -24212,7 +24212,7 @@ div.col-nav {
   height: 3px;
 }
 </t>
-<t tx="fil.20210603223013.4" _mod_time="46313738303130353636322e3038350a2e">@others
+<t tx="fil.20210603223013.4" _mod_time="46313738323038383434322e3732390a2e">@others
 @language javascript
 @tabwidth -4
 </t>
@@ -24743,7 +24743,7 @@ div.col-nav {
 })();
 
 </t>
-<t tx="fil.20210603223933.9" _mod_time="46313738303139393133332e35350a2e">@language html
+<t tx="fil.20210603223933.9" _mod_time="46313738303532363636302e3634360a2e">@language html
 @tabwidth -2
 &lt;!DOCTYPE html&gt;
 &lt;html lang="en" tabindex="-1"&gt;
@@ -24783,7 +24783,7 @@ div.col-nav {
     &lt;div class="content__area"&gt;
       &lt;section id="welcome" class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.29&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.30&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden"

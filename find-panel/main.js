@@ -8,7 +8,6 @@
 
     let timer; // for debouncing sending the settings from this webview to LeoInteg
     let dirty = false; // all but nav input
-    let navTextDirty = false;
 
     let activeTab = 'tab2'; // Initial active tab
     let firstFindTabElId = 'findText';
@@ -18,12 +17,6 @@
     let lastGotoContent = [];
     let lastSelectedGotoItem;
 
-    /**
-     * * Flag for freezing the nav 'search as you type' headlines (concept from original nav plugin)
-     * - Resets when switching to tag, or when clearing the input field.
-     * - Sets when pressing Enter with non-empty input field && not tag mode.
-     */
-    let frozen = false;
     let w_freezeElement = document.getElementById("freeze");
     if (w_freezeElement) {
         w_freezeElement.style.display = 'none';
@@ -33,6 +26,7 @@
     // * LeoSearchSettings Type
     let searchSettings = {
         // Nav settings
+        frozen: false,
         navText: '',
         showParents: true,
         isTag: false,
@@ -65,13 +59,10 @@
 
     function resetTagNav() {
         navSearchTimer = setTimeout(() => {
-            if (navTextDirty) {
-                navTextDirty = false;
-                if (navSearchTimer) {
-                    clearTimeout(navSearchTimer);
-                }
-                sendSearchConfig();
+            if (navSearchTimer) {
+                clearTimeout(navSearchTimer);
             }
+            sendSearchConfig();
             vscode.postMessage({ type: 'leoNavTextChange' });
         }, 250); // quarter second
     }
@@ -85,6 +76,7 @@
         // * Needed Checks
         if (searchSettings.navText.length === 0) {
             setFrozen(false);
+            sendSearchConfig();
             // if tagging but empty: SEND SEARCH LIST-ALL-TAGS COMMAND
             if (searchSettings.isTag) {
                 resetTagNav();
@@ -94,13 +86,10 @@
         if (searchSettings.navText === "m" && !searchSettings.isTag) {
             // ! Easter Egg: calls 'marked-list', which list all marked nodes !
             navSearchTimer = setTimeout(() => {
-                if (navTextDirty) {
-                    navTextDirty = false;
-                    if (navSearchTimer) {
-                        clearTimeout(navSearchTimer);
-                    }
-                    sendSearchConfig();
+                if (navSearchTimer) {
+                    clearTimeout(navSearchTimer);
                 }
+                sendSearchConfig();
                 vscode.postMessage({ type: 'leoNavMarkedList' });
 
             }, 40); // Shorter delay for this command
@@ -108,19 +97,16 @@
         }
 
         // User changed text in nav text input
-        if (frozen || searchSettings.navText.length < 3) {
+        if (searchSettings.frozen || searchSettings.navText.length < 3) {
             return; // dont even continue if not long enough or already frozen
         }
 
         // DEBOUNCE .25 to .5 seconds with navSearchTimer
         navSearchTimer = setTimeout(() => {
-            if (navTextDirty) {
-                navTextDirty = false;
-                if (navSearchTimer) {
-                    clearTimeout(navSearchTimer);
-                }
-                sendSearchConfig();
+            if (navSearchTimer) {
+                clearTimeout(navSearchTimer);
             }
+            sendSearchConfig();
             vscode.postMessage({ type: 'leoNavTextChange' });
         }, 400); // almost half second
 
@@ -198,10 +184,10 @@
     }
 
     function setFrozen(p_focus) {
-        frozen = p_focus;
+        searchSettings.frozen = p_focus;
         w_freezeElement = document.getElementById("freeze");
         if (w_freezeElement) {
-            if (frozen) {
+            if (searchSettings.frozen) {
                 w_freezeElement.style.display = '';
             } else {
                 w_freezeElement.style.display = 'none';
@@ -211,6 +197,11 @@
 
     function setSettings(p_settings) {
         // Nav controls
+        if (p_settings["frozen"] != null) {
+            // Check first because the version of the server may not have this property yet (Leo 6.8.10 and up) 
+            setFrozen(p_settings["frozen"]);
+        }
+
         document.getElementById("navText").value = p_settings["navText"];
         searchSettings["navText"] = p_settings["navText"];
 
@@ -422,7 +413,10 @@
             }
         }
 
-        if (activeTab === 'tab3' && lastGotoContent.length && actEl && gotoPaneContainer && (actEl === gotoPaneContainer || gotoPaneContainer.contains(actEl))) {
+        if (
+            activeTab === 'tab3' && lastGotoContent.length && actEl && gotoPaneContainer &&
+            (actEl === gotoPaneContainer || gotoPaneContainer.contains(actEl))
+        ) {
             navKeyHandler(p_event);
         }
 
@@ -584,16 +578,13 @@
         } else {
             if (searchSettings.navText.length >= 3 || searchSettings.isTag) {
                 setFrozen(true);
-                if (navTextDirty) {
-                    navTextDirty = false;
-                    if (timer) {
-                        clearTimeout(timer);
-                    }
-                    if (navSearchTimer) {
-                        clearTimeout(navSearchTimer);
-                    }
-                    sendSearchConfig();
+                if (timer) {
+                    clearTimeout(timer);
                 }
+                if (navSearchTimer) {
+                    clearTimeout(navSearchTimer);
+                }
+                sendSearchConfig();
                 vscode.postMessage({ type: 'leoNavEnter' });
             }
             if (searchSettings.navText.length === 0) {
@@ -616,7 +607,6 @@
 
         w_navTextEl.addEventListener('input', function (p_event) {
             searchSettings.navText = this.value;
-            navTextDirty = true;
             navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
         });
     }
