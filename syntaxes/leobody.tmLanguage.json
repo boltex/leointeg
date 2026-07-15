@@ -84,7 +84,7 @@
                     "name": "keyword"
                 },
                 {
-                    "match": "^(@encoding|@ignore|@lineending|@path|@pagewidth|@tabwidth)($|\\s+)",
+                    "match": "^(@encoding|@ignore|@lineending|@path|@pagewidth|@tabwidth|@noheader)($|\\s+)",
                     "name": "keyword"
                 },
                 {
