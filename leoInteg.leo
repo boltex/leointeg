@@ -9137,7 +9137,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## 🤍 To sponsor, donate or contribute see my [user page 🦁](https://boltex.github.io/)
 </t>
-<t tx="felix.20200718220833.1" _mod_time="46313738323137373237362e3334390a2e">@language md
+<t tx="felix.20200718220833.1" _mod_time="46313738343038353031362e3732380a2e">@language md
 @tabwidth -4
 # Change Log
 
@@ -23393,7 +23393,7 @@ public doArrow(char: string): void {
 </t>
 <t tx="felix.20260622211426.1">## 1.0.31
 
-- ...
+- Added support for '@noheader' keyword in body pane syntax highlighting
 
 </t>
 <t tx="fil.20210603195218.1" _mod_time="46313735363737333031322e3238340a2e">import * as vscode from "vscode";

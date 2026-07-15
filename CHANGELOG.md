@@ -2,7 +2,7 @@
 
 ## 1.0.31
 
-- ...
+- Added support for '@noheader' keyword in body pane syntax highlighting
 
 ## 1.0.30
 
